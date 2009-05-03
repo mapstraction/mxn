@@ -3,6 +3,14 @@
 var $m = mxn.util.$m;
 
 /**
+ * Initialise our provider. This function should only be called 
+ * from within mapstraction code, not exposed as part of the API.
+ */
+var init = function() {
+	this.invoker.go('init', [ this.currentElement, this.api ]);
+};
+
+/**
  * Mapstraction instantiates a map with some API choice into the HTML element given
  * @param {String} element The HTML element to replace with a map
  * @param {String} api The API to use, one of 'google', 'yahoo', 'microsoft', 'openstreetmap', 'multimap', 'map24', 'openlayers', 'mapquest'
@@ -35,7 +43,7 @@ var $m = mxn.util.$m;
 	mxn.addEvents(this, ['load', 'endPan', 'markerAdded', 'markerRemoved', 'polylineAdded', 'polylineRemoved']);
 	
 	// finally initialize our proper API map
-	this.invoker.go('init', [ this.currentElement, api ]);
+	init.apply(this);
 }
 
 // Map type constants
@@ -78,7 +86,7 @@ Mapstraction.prototype.enableScrollWheelZoom = function() {
  * @param element
  */
 Mapstraction.prototype.swap = function(element,api) {
-	if (this.api == api) {
+	if (this.api === api) {
 		return;
 	}
 
@@ -88,7 +96,6 @@ Mapstraction.prototype.swap = function(element,api) {
 	this.currentElement.style.visibility = 'hidden';
 	this.currentElement.style.display = 'none';
 
-
 	this.currentElement = $m(element);
 	this.currentElement.style.visibility = 'visible';
 	this.currentElement.style.display = 'block';
@@ -96,7 +103,7 @@ Mapstraction.prototype.swap = function(element,api) {
 	this.api = api;
 
 	if (this.maps[this.api] === undefined) {
-		this.addAPI($m(element),api);
+		init.apply(this);
 
 		this.setCenterAndZoom(center,zoom);
 

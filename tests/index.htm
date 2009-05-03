@@ -5,9 +5,9 @@
     <title>Mapstraction V2 demo</title>
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAY70wuSo0zF3ZtJVp5bDm1BS1Y2ErAqCHV5rDhHSzgjy23KqwdRRaoSBuZk72oDzzAYxVBjtsLqSmTw" type="text/javascript"></script>
 	<script src="domReady.js" type="text/javascript"></script>
-	<script src="mxn.js" type="text/javascript"></script>
-	<script src="mxn.core.js" type="text/javascript"></script>
-	<script src="mxn.google.core.js" type="text/javascript"></script>
+	<script src="../source/mxn.js" type="text/javascript"></script>
+	<script src="../source/mxn.core.js" type="text/javascript"></script>
+	<script src="../source/mxn.google.core.js" type="text/javascript"></script>
     <script type="text/javascript">
     //<![CDATA[
 	
@@ -112,6 +112,14 @@
 					m.addPolyline(pl);
 				}
 			},
+			{
+				desc: 'Swap API',
+				action: function(){
+					// TODO: Change this to some other provider when available
+					m.swap('map', 'google');
+				}
+			},
+			
 			{ desc: 'Done.', action: function(){} }
 		];
 		
