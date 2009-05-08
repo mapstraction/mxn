@@ -64,8 +64,15 @@ var mxn = (function(){
 		 * Calls the API specific implementation of a particular method
 		 */
 		invoke: function(sApiId, sObjName, sFnName, oScope, args){
-			if(typeof(apis[sApiId][sObjName]) == 'undefined' || 
-				typeof(apis[sApiId][sObjName][sFnName]) == 'undefined') {
+			if(typeof(apis[sApiId]) == 'undefined') {
+				throw 'API ' + sApiId + ' not loaded. Are you missing a script tag?';
+			}
+			
+			if(typeof(apis[sApiId][sObjName]) == 'undefined') {
+				throw 'Object definition ' + sObjName + ' in API ' + sApiId + ' not loaded. Are you missing a script tag?'; 
+			}
+				
+			if(typeof(apis[sApiId][sObjName][sFnName]) == 'undefined') {
 				throw 'Method ' + sFnName + ' of object ' + sObjName + ' is not supported by API ' + sApiId + '. Are you missing a script tag?';
 			}
 			return apis[sApiId][sObjName][sFnName].apply(oScope, args);

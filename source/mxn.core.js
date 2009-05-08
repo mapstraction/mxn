@@ -37,7 +37,7 @@ var init = function() {
 	this.addControlsArgs = {};
 	
 	// set up our invoker for calling API methods
-	this.invoker = new mxn.Invoker(this, 'Mapstraction', function(){ return api; });
+	this.invoker = new mxn.Invoker(this, 'Mapstraction', function(){ return this.api; });
 		
 	// TODO: Events
 	mxn.addEvents(this, ['load', 'endPan', 'markerAdded', 'markerRemoved', 'polylineAdded', 'polylineRemoved']);
@@ -616,35 +616,23 @@ Mapstraction.prototype.setImageOpacity = function(id, opacity) {
 };
 
 Mapstraction.prototype.setImagePosition = function(id) {
-	if(this.loaded[this.api] === false) {
-		var me = this;
-		this.onload[this.api].push( function() {
-			me.setImagePosition(id);
-		} );
-		return;
-	}
+	var imgElement = document.getElementById(id);
+	var oContext = {
+		latLng: { 
+			top: imgElement.getAttribute('north'),
+			left: imgElement.getAttribute('west'),
+			bottom: imgElement.getAttribute('south'),
+			right: imgElement.getAttribute('east')
+		},
+		pixels: { top: 0, right: 0, bottom: 0, left: 0 }
+	};
+	
+	this.invoker.go('setImagePosition', arguments, false, oContext);
 
-	var map = this.maps[this.api];
-	var x = document.getElementById(id);
-	var d; var e;
-
-	switch (this.api) {
-		case 'google':
-		case 'openstreetmap':
-			d = map.fromLatLngToDivPixel(new GLatLng(x.getAttribute('north'), x.getAttribute('west')));
-			e = map.fromLatLngToDivPixel(new GLatLng(x.getAttribute('south'), x.getAttribute('east')));
-			break;
-		case 'multimap':
-			d = map.geoPosToContainerPixels(new MMLatLon(x.getAttribute('north'), x.getAttribute('west')));
-			e = map.geoPosToContainerPixels(new MMLatLon(x.getAttribute('south'), x.getAttribute('east')));
-			break;
-		case 'viamichelin': // TODO
-	}
-
-	x.style.top = d.y.toString() + 'px';
-	x.style.left = d.x.toString() + 'px';
-	x.style.width = (e.x - d.x).toString() + 'px';
-	x.style.height = (e.y - d.y).toString() + 'px';
+	imgElement.style.top = oContext.pixels.top.toString() + 'px';
+	imgElement.style.left = oContext.pixels.left.toString() + 'px';
+	imgElement.style.width = (oContext.pixels.right - oContext.pixels.left).toString() + 'px';
+	imgElement.style.height = (oContext.pixels.bottom - oContext.pixels.top).toString() + 'px';
 };
 
 Mapstraction.prototype.addJSON = function(json) {

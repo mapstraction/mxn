@@ -34,12 +34,11 @@ Mapstraction: {
 	},
 	
 	applyOptions: function(){
-	
+		var map = this.maps[this.api];
 		if(this.options.enableScrollWheelZoom){
 			map.enableContinuousZoom();
 			map.enableScrollWheelZoom();
 		}
-		
 	},
 
 	resizeTo: function(width, height){	
@@ -49,10 +48,7 @@ Mapstraction: {
 	},
 
 	addControls: function( args ) {
-
 		var map = this.maps[this.api];
-
-		this.addControlsArgs = args;
 	
 		//remove old controls
 		if (this.controls) {
@@ -140,13 +136,12 @@ Mapstraction: {
 
 	removeAllMarkers: function() {
 		var map = this.maps[this.api];
-		// got a feeling this doesn't only delete markers FIXME
+		// FIXME: got a feeling this doesn't only delete markers
 		map.clearOverlays();
 	},
 	
 	declutterMarkers: function(opts) {
-		var map = this.maps[this.api];
-		// No implementation for google, MarkerManager?
+		throw 'Not implemented';
 	},
 
 	addPolyline: function(polyline, old) {
@@ -233,7 +228,6 @@ Mapstraction: {
 	},
 
 	getBounds: function () {
-		
 		var map = this.maps[this.api];
 		var ne, sw, nw, se;
 		var gbox = map.getBounds();
@@ -251,6 +245,7 @@ Mapstraction: {
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
+		var map = this.maps[this.api];
 		map.getPane(G_MAP_MAP_PANE).appendChild(oContext.imgElm);
 		this.setImageOpacity(id, opacity);
 		this.setImagePosition(id);
@@ -262,19 +257,17 @@ Mapstraction: {
 		});
 	},
 
-	setImagePosition: function(id) {
-	   
+	setImagePosition: function(id, oContext) {
 		var map = this.maps[this.api];
-		var x = document.getElementById(id);
-		var d; var e;
+		var topLeftPoint; var bottomRightPoint;
 
-		d = map.fromLatLngToDivPixel(new GLatLng(x.getAttribute('north'), x.getAttribute('west')));
-		e = map.fromLatLngToDivPixel(new GLatLng(x.getAttribute('south'), x.getAttribute('east')));
-
-		x.style.top = d.y.toString() + 'px';
-		x.style.left = d.x.toString() + 'px';
-		x.style.width = (e.x - d.x).toString() + 'px';
-		x.style.height = (e.y - d.y).toString() + 'px';
+		topLeftPoint = map.fromLatLngToDivPixel( new GLatLng(oContext.latLng.top, oContext.latLng.left) );
+		bottomRightPoint = map.fromLatLngToDivPixel( new GLatLng(oContext.latLng.bottom, oContext.latLng.right) );
+		
+		oContext.pixels.top = topLeftPoint.y;
+		oContext.pixels.left = topLeftPoint.x;
+		oContext.pixels.bottom = bottomRightPoint.y;
+		oContext.pixels.right = bottomRightPoint.x;
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
