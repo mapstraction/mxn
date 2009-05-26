@@ -41,12 +41,26 @@
 		var m = new mxn.Mapstraction('map', 'yahoo');
 		
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-			eventsElm.innerHTML += 'Map move: ' + oEvtArgs.center.toString() + '<br/>';
+			var center = oEvtSource.getCenter();
+			eventsElm.innerHTML += 'Map pan: ' + center.toString() + '<br/>';
+		});
+		
+		m.changeZoom.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
+			var zoom = oEvtSource.getZoom();
+			eventsElm.innerHTML += 'Change zoom: ' + zoom.toString() + '<br/>';
 		});
 		
 		m.markerAdded.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Marker added: ' + oEvtArgs.marker.labelText + '<br/>';
 		});
+		
+		m.click.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
+			eventsElm.innerHTML += 'Map clicked: ' + oEvtArgs.location.toString() + '<br/>';
+		});
+		
+		var markerEventHandler = function(sEvtName, oEvtSource, oEvtArgs){
+			eventsElm.innerHTML += 'Marker event: ' + sEvtName + ' - ' + oEvtSource.labelText + '<br/>';
+		};
 		
 		var ops = [
 			{ 
@@ -69,7 +83,6 @@
 					infoElm.innerHTML += 'Bounds:<br/>SW(' + bb.sw.lat.toFixed(5) + ','+ bb.sw.lon.toFixed(5) +')<br/>NE(' + bb.ne.lat.toFixed(5) + ','+ bb.ne.lon.toFixed(5) +')<br/>';
 					var ll = m.getCenter();
 					infoElm.innerHTML += 'Center: (' + ll.lat.toFixed(5) + ','+ ll.lon.toFixed(5) +')<br/>';
-					
 					infoElm.innerHTML += 'Map type: ' + m.getMapType() + '<br/>';
 					infoElm.innerHTML += 'Zoom: ' + m.getZoom() + '<br/>';
 				}
@@ -86,6 +99,9 @@
 					var mkr = new mxn.Marker(new mxn.LatLonPoint(37.3419, -122.0419));
 					mkr.setLabel('Some random place');
 					mkr.setInfoBubble('Some information about the random place');
+					mkr.click.addHandler(markerEventHandler);
+					mkr.openInfoBubble.addHandler(markerEventHandler);
+					mkr.closeInfoBubble.addHandler(markerEventHandler);
 					m.addMarker(mkr);
 				}
 			},

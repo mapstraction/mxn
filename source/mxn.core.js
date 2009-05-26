@@ -8,6 +8,7 @@ var $m = mxn.util.$m;
  */
 var init = function() {
 	this.invoker.go('init', [ this.currentElement, this.api ]);
+	this.applyOptions();
 };
 
 /**
@@ -38,9 +39,17 @@ var init = function() {
 	
 	// set up our invoker for calling API methods
 	this.invoker = new mxn.Invoker(this, 'Mapstraction', function(){ return this.api; });
-		
-	// TODO: Events
-	mxn.addEvents(this, ['load', 'endPan', 'markerAdded', 'markerRemoved', 'polylineAdded', 'polylineRemoved']);
+	
+	mxn.addEvents(this, [
+		'load',				// Map has loaded
+		'click',			// Map is clicked {location: LatLonPoint}
+		'endPan',			// Map is panned
+		'changeZoom',		// Zoom is changed
+		'markerAdded',		// Marker is removed {marker: Marker}
+		'markerRemoved',	// Marker is removed {marker: Marker}
+		'polylineAdded',	// Polyline is added {polyline: Polyline}
+		'polylineRemoved'	// Polyline is removed {polyline: Polyline}
+	]);
 	
 	// finally initialize our proper API map
 	init.apply(this);
@@ -63,7 +72,7 @@ mxn.addProxyMethods(Mapstraction, [
 ]);
 
 Mapstraction.prototype.setOptions = function(oOpts){
-	mxn.merge(this.options, oOpts);
+	mxn.util.merge(this.options, oOpts);
 	this.applyOptions();
 };
 
@@ -304,7 +313,7 @@ Mapstraction.prototype.removeMarker = function(marker) {
 			this.invoker.go('removeMarker', arguments);
 			marker.onmap = false;
 			this.markers.splice(i, 1);
-			this.markerRemoved.fire(marker);
+			this.markerRemoved.fire({'marker': marker});
 			break;
 		}
 	}
@@ -388,13 +397,13 @@ Mapstraction.prototype.addPolyline = function(polyline, old) {
 	if(!old) {
 		this.polylines.push(polyline);
 	}
-	this.polylineAdded.fire(polyline);
+	this.polylineAdded.fire({'polyline': polyline});
 };
 
 Mapstraction.prototype.removePolylineImpl = function(polyline) {
 	this.invoker.go('removePolyline', arguments);
 	polyline.onmap = false;
-	this.polylineRemoved.fire(polyline);
+	this.polylineRemoved.fire({'polyline': polyline});
 };
 
 /**
@@ -589,7 +598,7 @@ Mapstraction.prototype.addImageOverlay = function(id, src, opacity, west, south,
 		imgElm: b
 	};
 	
-	this.invoker.go('addImageOverlay', arguments, false, oContext);
+	this.invoker.go('addImageOverlay', arguments, { context: oContext });
 };
 
 Mapstraction.prototype.setImageOpacity = function(id, opacity) {
@@ -627,7 +636,7 @@ Mapstraction.prototype.setImagePosition = function(id) {
 		pixels: { top: 0, right: 0, bottom: 0, left: 0 }
 	};
 	
-	this.invoker.go('setImagePosition', arguments, false, oContext);
+	this.invoker.go('setImagePosition', arguments, { context: oContext });
 
 	imgElement.style.top = oContext.pixels.top.toString() + 'px';
 	imgElement.style.left = oContext.pixels.left.toString() + 'px';
@@ -1117,7 +1126,11 @@ var Marker = mxn.Marker = function(point) {
 	this.attributes = [];
 	this.pinID = "mspin-"+new Date().getTime()+'-'+(Math.floor(Math.random()*Math.pow(2,16)));
 	this.invoker = new mxn.Invoker(this, 'Marker', function(){return this.api;});
-	mxn.addEvents(this, [ 'infoBubbleOpenned', 'markerClicked']);
+	mxn.addEvents(this, [ 
+		'openInfoBubble',	// Info bubble opened
+		'closeInfoBubble', 	// Info bubble closed
+		'click'				// Marker clicked
+	]);
 }
 
 mxn.addProxyMethods(Marker, [ 
@@ -1131,6 +1144,7 @@ mxn.addProxyMethods(Marker, [
 
 Marker.prototype.setChild = function(some_proprietary_marker) {
 	this.proprietary_marker = some_proprietary_marker;
+	some_proprietary_marker.mapstraction_marker = this;
 	this.onmap = true;
 };
 

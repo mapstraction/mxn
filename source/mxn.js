@@ -3,6 +3,31 @@ var mxn = (function(){
 	// holds all our implementing functions
 	var apis = {};
 	
+	// Our special private methods
+	/**
+	 * Calls the API specific implementation of a particular method.
+	 */
+	var invoke = function(sApiId, sObjName, sFnName, oScope, args){
+		if(!hasImplementation(sApiId, sObjName, sFnName)) {
+			throw 'Method ' + sFnName + ' of object ' + sObjName + ' is not supported by API ' + sApiId + '. Are you missing a script tag?';
+		}
+		return apis[sApiId][sObjName][sFnName].apply(oScope, args);
+	};
+		
+	/**
+	 * Determines whether the specified API provides an implementation for the 
+	 * specified object and function name.
+	 */
+	var hasImplementation = function(sApiId, sObjName, sFnName){
+		if(typeof(apis[sApiId]) == 'undefined') {
+			throw 'API ' + sApiId + ' not loaded. Are you missing a script tag?';
+		}
+		if(typeof(apis[sApiId][sObjName]) == 'undefined') {
+			throw 'Object definition ' + sObjName + ' in API ' + sApiId + ' not loaded. Are you missing a script tag?'; 
+		}
+		return typeof(apis[sApiId][sObjName][sFnName]) == 'function';
+	};
+	
 	return {
 	
 		/**
@@ -10,24 +35,8 @@ var mxn = (function(){
 		 */
 		register: function(sApiId, oApiImpl){
 			if(!apis.hasOwnProperty(sApiId)) apis[sApiId] = {};
-			mxn.merge(apis[sApiId], oApiImpl);
-		},
-		
-		/**
-		 * Merges properties of one object into another recursively.
-		 * @param {Object} oRecv The object receiveing properties
-		 * @param {Object} oGive The object donating properties
-		 */
-		merge: function(oRecv, oGive){
-			for (var sPropName in oGive) if (oGive.hasOwnProperty(sPropName)) {
-				if(!oRecv.hasOwnProperty(sPropName)){
-					oRecv[sPropName] = oGive[sPropName];
-				}
-				else {
-					mxn.merge(oRecv[sPropName], oGive[sPropName]);
-				}			
-			}
-		},
+			mxn.util.merge(apis[sApiId], oApiImpl);
+		},		
 		
 		/**
 		 * Adds a list of named proxy methods to the prototype of a 
@@ -40,7 +49,7 @@ var mxn = (function(){
 			for(var i = 0; i < aryMethods.length; i++) {
 				var sMethodName = aryMethods[i];
 				if(bWithApiArg){
-					func.prototype[sMethodName] = new Function('return this.invoker.go(\'' + sMethodName + '\', arguments, true);');
+					func.prototype[sMethodName] = new Function('return this.invoker.go(\'' + sMethodName + '\', arguments, { overrideApi: true } );');
 				}
 				else {
 					func.prototype[sMethodName] = new Function('return this.invoker.go(\'' + sMethodName + '\', arguments);');
@@ -59,25 +68,6 @@ var mxn = (function(){
 		},
 		*/
 				
-		
-		/**
-		 * Calls the API specific implementation of a particular method
-		 */
-		invoke: function(sApiId, sObjName, sFnName, oScope, args){
-			if(typeof(apis[sApiId]) == 'undefined') {
-				throw 'API ' + sApiId + ' not loaded. Are you missing a script tag?';
-			}
-			
-			if(typeof(apis[sApiId][sObjName]) == 'undefined') {
-				throw 'Object definition ' + sObjName + ' in API ' + sApiId + ' not loaded. Are you missing a script tag?'; 
-			}
-				
-			if(typeof(apis[sApiId][sObjName][sFnName]) == 'undefined') {
-				throw 'Method ' + sFnName + ' of object ' + sObjName + ' is not supported by API ' + sApiId + '. Are you missing a script tag?';
-			}
-			return apis[sApiId][sObjName][sFnName].apply(oScope, args);
-		},
-		
 		/**
 		 * Bulk add some named events to an object.
 		 */
@@ -119,7 +109,7 @@ var mxn = (function(){
 		
 		/**
 		 * Creates a new Invoker, a class which helps with on-the-fly 
-		 * invokation of the correct API methods.
+		 * invocation of the correct API methods.
 		 * @constructor
 		 * @param {Object} aobj The core object whose methods will make cals to go()
 		 * @param {String} asClassName The name of the Mapstraction class to be invoked, normally the same name as aobj's constructor function
@@ -129,32 +119,65 @@ var mxn = (function(){
 			var obj = aobj;
 			var sClassName = asClassName;
 			var fnApiIdGetter = afnApiIdGetter;
+			var defOpts = { 
+				overrideApi: false, // {Boolean} API ID is overridden by value in first argument
+				context: null, // {Object} Local vars can be passed from the body of the method to the API method within this object
+				fallback: null // {Function} If an API implementation doesn't exist this function is run instead
+			};
 			
 			/**
-			 * Change the current api on the fly
-			 * @param {String} sMethodName The API to swap to
+			 * Invoke the API implementation of a specific method.
+			 * @param {String} sMethodName The method name to invoke
 			 * @param {Array} args Arguments to pass on
-			 * @param {String} bApi Optional. API ID is overridden by value in first argument.
-			 * @param {Object} oContext Optional. Local vars can be passed from the body of the method to the API method within this object.
+			 * @param {String} oOptions Optional. Extra options for invocation
 			 */
-			this.go = function(sMethodName, args, bApi, oContext){
-				var sApiId = bApi ? args[0] : fnApiIdGetter.apply(obj);
-				if(typeof(sApiId) == 'string'){
-					if(typeof(oContext) != 'undefined'){
-						// make sure args is an array
-						args = Array.prototype.slice.apply(args);
-						args.push(oContext);
-					}
-					return mxn.invoke(sApiId, sClassName, sMethodName, obj, args);
+			this.go = function(sMethodName, args, oOptions){
+				
+				if(typeof(oOptions) == 'undefined'){
+					oOptions = defOpts;
 				}
-				else{
+								
+				var sApiId = oOptions.overrideApi ? args[0] : fnApiIdGetter.apply(obj);
+				
+				if(typeof(sApiId) != 'string') 
 					throw 'API ID not available.';
+				
+				if(typeof(oOptions.context) != 'undefined' && oOptions.context !== null){
+					// make sure args is an array
+					args = Array.prototype.slice.apply(args);
+					args.push(oOptions.context);
 				}
+				
+				if(typeof(oOptions.fallback) == 'function' && !hasImplementation(sApiId, sClassName, sMethodName)){
+					// we've got no implementation but have got a fallback function
+					return oOptions.fallback.apply(obj, args);
+				}
+				else {				
+					return invoke(sApiId, sClassName, sMethodName, obj, args);
+				}
+				
 			};
+			
 		},
 		
 		util: {
-					
+			
+			/**
+			 * Merges properties of one object into another recursively.
+			 * @param {Object} oRecv The object receiveing properties
+			 * @param {Object} oGive The object donating properties
+			 */
+			merge: function(oRecv, oGive){
+				for (var sPropName in oGive) if (oGive.hasOwnProperty(sPropName)) {
+					if(!oRecv.hasOwnProperty(sPropName)){
+						oRecv[sPropName] = oGive[sPropName];
+					}
+					else {
+						mxn.util.merge(oRecv[sPropName], oGive[sPropName]);
+					}			
+				}
+			},
+			
 			/**
 			 * $m, the dollar function, elegantising getElementById()
 			 * @return An HTML element or array of HTML elements
@@ -310,7 +333,9 @@ var mxn = (function(){
 			 */
 			logN: function(number, base) {
 				return Math.log(number) / Math.log(base);
-			}
+			},
+						
+			dummy: 0
 
 		},
 		

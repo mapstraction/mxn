@@ -9,14 +9,22 @@ Mapstraction: {
 
 			YEvent.Capture(this.maps[api], EventsList.MouseClick, function(event,location) {
 				me.clickHandler(location.Lat, location.Lon, location, me);
+				me.click.fire({'location': new mxn.LatLonPoint(location.Lat, location.Lon)});
 			});
 			YEvent.Capture(this.maps[api], EventsList.changeZoom, function() {
 				me.moveendHandler(me);
+				me.changeZoom.fire();
 			});
 			YEvent.Capture(this.maps[api], EventsList.endPan, function() {
 				me.moveendHandler(me);
+				me.endPan.fire();
 			});
+			YEvent.Capture(this.maps[api], EventsList.endAutoPan, function() {
+				me.endPan.fire();
+			});
+			
 			this.loaded[api] = true;
+			me.load.fire();
 		}
 		else {
 			alert(api + ' map script not imported');
@@ -97,6 +105,15 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var pin = marker.toProprietary(this.api);
 		map.addOverlay(pin);
+		YEvent.Capture(pin, EventsList.MouseClick, function() {
+			marker.click.fire();
+		});
+		YEvent.Capture(pin, EventsList.openSmartWindow, function() {
+			marker.openInfoBubble.fire();
+		});
+		YEvent.Capture(pin, EventsList.closeSmartWindow, function() {
+			marker.closeInfoBubble.fire();
+		});
 		return pin;
 	},
 
@@ -341,17 +358,14 @@ Marker: {
 
 Polyline: {
 
-	toProprietary: function() {
-		var gpoints = [];
-		for (var i = 0,  length = this.points.length ; i< length; i++){
-			gpoints.push(this.points[i].toProprietary('google'));
-		}
-		if (this.closed	|| gpoints[0].equals(gpoints[length-1])) {
-			var gpoly = new GPolygon(gpoints, this.color, this.width, this.opacity, this.fillColor || "#5462E3", this.opacity || "0.3");
-		} else {
-			var gpoly = new GPolyline(gpoints, this.color, this.width, this.opacity);
-		}
-		return gpoly;
+	toProprietary: function() {		
+		var ypolyline;
+	    var ypoints = [];
+	    for (var i = 0, length = this.points.length ; i< length; i++){
+	        ypoints.push(this.points[i].toProprietary('yahoo'));
+	    }
+	    ypolyline = new YPolyline(ypoints,this.color,this.width,this.opacity);
+	    return ypolyline;
 	},
 	
 	show: function() {

@@ -9,20 +9,32 @@ Mapstraction: {
 				this.maps[api] = new GMap2(element);
 
 				GEvent.addListener(this.maps[api], 'click', function(marker,location) {
+					
+					if ( marker && marker.mapstraction_marker ) {
+						marker.mapstraction_marker.click.fire();
+					}
+					else if ( location ) {
+						me.click.fire({'location': new mxn.LatLonPoint(location.y, location.x)});
+					}
+					
 					// If the user puts their own Google markers directly on the map
 					// then there is no location and this event should not fire.
 					if ( location ) {
 						me.clickHandler(location.y,location.x,location,me);
-						
 					}
 				});
 
 				GEvent.addListener(this.maps[api], 'moveend', function() {
 					me.moveendHandler(me);
-					var point = me.getCenter();
-					me.endPan.fire({center: point});
+					me.endPan.fire();
 				});
+				
+				GEvent.addListener(this.maps[api], 'zoomend', function() {
+					me.changeZoom.fire();
+				});
+				
 				this.loaded[api] = true;
+				me.load.fire();
 			}
 			else {
 				alert('browser not compatible with Google Maps');
@@ -126,6 +138,14 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var gpin = marker.toProprietary(this.api);
 		map.addOverlay(gpin);
+		
+		GEvent.addListener(gpin, 'infowindowopen', function() {
+			marker.openInfoBubble.fire();
+		});
+		GEvent.addListener(gpin, 'infowindowclose', function() {
+			marker.closeInfoBubble.fire();
+		});
+		
 		return gpin;
 	},
 
@@ -398,7 +418,7 @@ Marker: {
 			options.draggable = this.draggable;
 		}
 		var gmarker = new GMarker( this.location.toProprietary('google'),options);
-
+				
 		if(this.infoBubble){
 			var theInfo = this.infoBubble;
 			var event_action;
