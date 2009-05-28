@@ -6,7 +6,7 @@ Mapstraction: {
 		var me = this;
 		if (VEMap){
 			this.maps[api] = new VEMap(element.id);
-			
+			document.getElementById(element.id).style.position= 'relative';
 			this.maps[api].AttachEvent('onclick', function(event){
 				me.clickHandler();
 				var x = event.mapX;
