@@ -3,7 +3,55 @@ var mxn = (function(){
 	// holds all our implementing functions
 	var apis = {};
 	
+	// 'Constructor'
+	(function() {	
+		// Defaults
+		var providers   = 'google,yahoo,microsoft';
+		var modules     = 'core';
+		var scriptBase;
+		var scripts = document.getElementsByTagName('script');
+
+		for (var i = 0; i < scripts.length; i++) {
+			var match = scripts[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?$/);
+			if (match != null) {
+				scriptBase = match[1];
+				if (match[3]) {
+					var settings = match[3].split(',[');
+					providers = settings[0].replace(']' , '');
+					if (settings[1]) modules = settings[1];
+				}
+				break;
+		   }
+		}
+		providers = providers.replace(/ /g, '').split(',');
+		modules = modules.replace(/ /g, '').split(',');
+		for (var i = 0; i < modules.length; i++) {
+			loadScript(scriptBase + 'mxn.' + modules[i] + '.js');
+			for (var j = 0; j < providers.length; j++) loadScript(scriptBase + 'mxn.' + providers[j] + '.' + modules[i] + '.js');
+		}
+	})();
+
 	// Our special private methods
+	/**
+	 * loadScript is a JSON data fetcher
+	 * @param {String} src URL to JSON file
+	 * @param {Function} callback Callback function
+	 */
+	function loadScript(src, callback) {
+		var script = document.createElement('script');
+		script.type = 'text/javascript';
+		script.src = src;
+		if (callback) {
+			var evl = {};
+			evl.handleEvent = function(e) {
+				callback();
+			};
+			script.addEventListener('load' ,evl ,true);
+		}
+		document.getElementsByTagName('head')[0].appendChild(script);
+		return;
+	};
+			
 	/**
 	 * Calls the API specific implementation of a particular method.
 	 */
@@ -29,14 +77,14 @@ var mxn = (function(){
 	};
 	
 	return {
-	
+
 		/**
 		 * Registers a set of provider specific implementation functions.
 		 */
 		register: function(sApiId, oApiImpl){
 			if(!apis.hasOwnProperty(sApiId)) apis[sApiId] = {};
 			mxn.util.merge(apis[sApiId], oApiImpl);
-		},		
+		},
 		
 		/**
 		 * Adds a list of named proxy methods to the prototype of a 
@@ -202,21 +250,8 @@ var mxn = (function(){
 			 * @param {String} src URL to JSON file
 			 * @param {Function} callback Callback function
 			 */
-			loadScript: function(src, callback) {
-				var script = document.createElement('script');
-				script.type = 'text/javascript';
-				script.src = src;
-				if (callback) {
-					var evl = {};
-					evl.handleEvent = function(e) {
-						callback();
-					};
-					script.addEventListener('load' ,evl ,true);
-				}
-				document.getElementsByTagName('head')[0].appendChild(script);
-				return;
-			},
-
+			loadScript: loadScript,
+					
 			/**
 			 *
 			 * @param {Object} point
@@ -334,6 +369,16 @@ var mxn = (function(){
 			logN: function(number, base) {
 				return Math.log(number) / Math.log(base);
 			},
+			
+			/**
+			 * returns array of loaded provider apis
+			 * @returns {Array} providers
+			 */
+			getAvailableProviders : function () {
+				var providers = [];
+				for (var propertyName in apis) providers.push(propertyName);
+				return providers;
+			},
 						
 			dummy: 0
 
@@ -341,4 +386,5 @@ var mxn = (function(){
 		
 		dummy: 0
 	};
+    
 })();

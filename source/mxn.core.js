@@ -14,11 +14,12 @@ var init = function() {
 /**
  * Mapstraction instantiates a map with some API choice into the HTML element given
  * @param {String} element The HTML element to replace with a map
- * @param {String} api The API to use, one of 'google', 'yahoo', 'microsoft', 'openstreetmap', 'multimap', 'map24', 'openlayers', 'mapquest'
+ * @param {String} api The API to use, one of 'google', 'yahoo', 'microsoft', 'openstreetmap', 'multimap', 'map24', 'openlayers', 'mapquest'. If omitted, first loaded provider implementation is used.
  * @param {Bool} debug optional parameter to turn on debug support - this uses alert panels for unsupported actions
  * @constructor
  */
  var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
+    if (!api) api = mxn.util.getAvailableProviders()[0];
 	this.api = api;
 	this.maps = {};
 	this.currentElement = $m(element);
