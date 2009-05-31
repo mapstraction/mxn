@@ -1,4 +1,5 @@
-mxn.register('yahoo', {	
+mxn.register('
+oo', {	
 
 Mapstraction: {
 	
