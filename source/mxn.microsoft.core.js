@@ -6,14 +6,15 @@ Mapstraction: {
 		var me = this;
 		if (VEMap){
 			this.maps[api] = new VEMap(element.id);
-			document.getElementById(element.id).style.position= 'relative';
+	 
+			
+			
 			this.maps[api].AttachEvent('onclick', function(event){
 				me.clickHandler();
 				var x = event.mapX;
 				var y = event.mapY;
 			    var pixel = new VEPixel(x,y);
-				var ll= map.PixelTolatLong(pixel);
-				me.click.fire({'location': new mxn.LatLonPoint(ll.Latitude, ll.Longitude)});
+				me.click.fire({'location': new mxn.LatLonPoint(pixel.Latitude, pixel.Longitude)});
 			
 				
 			});
@@ -36,6 +37,7 @@ Mapstraction: {
 			});
 			this.maps[api].LoadMap();
 			document.getElementById("MSVE_obliqueNotification").style.visibility = "hidden"; 
+		
 			//removes the bird's eye pop-up
 			this.loaded[api] = true;
 			me.load.fire();	
@@ -215,16 +217,16 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		switch(type) {
 			case mxn.Mapstraction.ROAD:
-				// TODO: Add provider code
+				map.SetMapStyle(VEMapStyle.Road);
 				break;
 			case mxn.Mapstraction.SATELLITE:
-				// TODO: Add provider code
+				map.SetMapStyle(VEMapStyle.Aerial);
 				break;
 			case mxn.Mapstraction.HYBRID:
-				// TODO: Add provider code
+				map.SetMapStyle(VEMapStyle.Hybrid);
 				break;
 			default:
-				// TODO: Add provider code
+				map.SetMapStyle(VEMapStyle.Road);
 		}	 
 	},
 
@@ -358,15 +360,22 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
+		var to255Color = function(color){
+			this.green = parseInt(color.substr(1,2), 16);
+			this.red = parseInt(color.substr(3,4), 16);
+			this.blue = parseInt(color.substr(5,6), 16);
+		};
 		var mpoints =[];
 		for(var i =0, length = this.points.length; i < length; i++)
 		{
 			mpoints.push(this.points[i].toProprietary('microsoft'));
 		}
 		var mpolyline = new VEShape(VEShapeType.Polyline, mpoints);
-	//	mpolyline.SetLineColor(new VEColor(this.color, this.opacity));
-	//TODO: transfer this.color to the ve color/opacity requirements
-	//	mpolyline.SetLineWidth(this.width);
+		if(this.color){
+		var vecolor = new to255Color(this.color);
+		mpolyline.SetLineColor(new VEColor(vecolor.red, vecolor.green, vecolor.blue, this.opacity));
+		}
+	//	TODO ability to change line width
 		return mpolyline;
 		
 	},
