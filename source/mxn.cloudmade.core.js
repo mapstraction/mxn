@@ -6,49 +6,73 @@ mxn.register('cloudmade', {
             var me = this;		
             var cloudmade = new CM.Tiles.CloudMade.Web({key: cloudmade_key});
             this.maps[api] = new CM.Map(element, cloudmade);
-
             this.loaded[api] = true;
-
         },
 
         applyOptions: function(){
             var map = this.maps[this.api];
 
-            // TODO: Add provider code
+            if(this.options.enableScrollWheelZoom){
+              map.enableScrollWheelZoom();
+            }
         },
 
         resizeTo: function(width, height){	
             // TODO: Add provider code
+            this.maps[this.api].checkResize();
         },
 
         addControls: function( args ) {
             var map = this.maps[this.api];
 
-            // TODO: Add provider code
+	    var c = this.addControlsArgs;
+	    switch (c.zoom) {
+	      case 'large':
+	        this.addLargeControls();
+	      break;
+	      case 'small':
+	        this.addSmallControls();
+	      break;
+	    }
+
+	    if (c.map_type) {
+	      this.addMapTypeControls();
+	    }
+	    if (c.scale) {
+	      map.addControl(new CM.ScaleControl());
+	      this.addControlsArgs.scale = true;
+	    }
         },
 
         addSmallControls: function() {
             var map = this.maps[this.api];
 
-            // TODO: Add provider code
+	    map.addControl(new CM.SmallMapControl());
+	    this.addControlsArgs.zoom = 'small';
         },
 
         addLargeControls: function() {
             var map = this.maps[this.api];
 
-            // TODO: Add provider code
+	    map.addControl(new CM.LargeMapControl());
+	    this.addControlsArgs.zoom = 'large';
         },
 
         addMapTypeControls: function() {
             var map = this.maps[this.api];
 
-            // TODO: Add provider code
+	    map.addControl(new CM.TileLayerControl());
+	    this.addControlsArgs.map_type = true;
         },
 
         dragging: function(on) {
             var map = this.maps[this.api];
 
-            // TODO: Add provider code
+            if (on) {
+              map.enableDragging();
+            } else {
+              map.disableDragging();
+            }
         },
 
         setCenterAndZoom: function(point, zoom) { 
@@ -61,22 +85,17 @@ mxn.register('cloudmade', {
         addMarker: function(marker, old) {
             var map = this.maps[this.api];
             var pin = marker.toProprietary(this.api);
-
-            // TODO: Add provider code
-
+	    map.addOverlay(pin);
             return pin;
         },
 
         removeMarker: function(marker) {
             var map = this.maps[this.api];
-
-            // TODO: Add provider code
+	    map.removeOverlay(marker.proprietary_marker);
         },
 
         removeAllMarkers: function() {
-            var map = this.maps[this.api];
-
-            // TODO: Add provider code
+	    // Done in mxn.core.js
         },
 
         declutterMarkers: function(opts) {
@@ -88,47 +107,37 @@ mxn.register('cloudmade', {
         addPolyline: function(polyline, old) {
             var map = this.maps[this.api];
             var pl = polyline.toProprietary(this.api);
-
-            // TODO: Add provider code
-
+	    map.addOverlay(pl);
             return pl;
         },
 
         removePolyline: function(polyline) {
             var map = this.maps[this.api];
-
-            // TODO: Add provider code
+            map.removeOverlay(polyline.proprietary_polyline);
         },
 
         getCenter: function() {
-            var point;
             var map = this.maps[this.api];
+            var pt = map.getCenter();
 
-            // TODO: Add provider code
-
-            return point;
+            return new mxn.LatLonPoint(pt.lat(), pt.lng());
         },
 
         setCenter: function(point, options) {
             var map = this.maps[this.api];
             var pt = point.toProprietary(this.api);
-
+            if(options != null && options.pan) { map.panTo(pt); }
+            else { map.setCenter(pt); }
         },
 
         setZoom: function(zoom) {
             var map = this.maps[this.api];
-
-            // TODO: Add provider code
-
+	    map.setZoom(zoom);
         },
 
         getZoom: function() {
-            var map = this.maps[this.api];
-            var zoom;
-
-            // TODO: Add provider code
-
-            return zoom;
+	    var map = this.maps[this.api];
+	    return map.getZoom();
         },
 
         getZoomLevelForBoundingBox: function( bbox ) {
@@ -136,15 +145,16 @@ mxn.register('cloudmade', {
             // NE and SW points from the bounding box.
             var ne = bbox.getNorthEast();
             var sw = bbox.getSouthWest();
-            var zoom;
 
-            // TODO: Add provider code
-
+	    var zoom = map.getBoundsZoomLevel(new CM.LatLngBounds(sw.toProprietary(this.api), ne.toProprietary(this.api)));
             return zoom;
         },
 
         setMapType: function(type) {
             var map = this.maps[this.api];
+
+            // TODO: Are there any MapTypes for Cloudmade?
+
             switch(type) {
                 case mxn.Mapstraction.ROAD:
                 // TODO: Add provider code
@@ -163,9 +173,9 @@ mxn.register('cloudmade', {
         getMapType: function() {
             var map = this.maps[this.api];
 
-            // TODO: Add provider code
+            // TODO: Are there any MapTypes for Cloudmade?
 
-            //return mxn.Mapstraction.ROAD;
+            return mxn.Mapstraction.ROAD;
             //return mxn.Mapstraction.SATELLITE;
             //return mxn.Mapstraction.HYBRID;
 
@@ -174,9 +184,11 @@ mxn.register('cloudmade', {
         getBounds: function () {
             var map = this.maps[this.api];
 
-            // TODO: Add provider code
+            var box = map.getBounds();
+            var sw = box.getSouthWest();
+            var ne = box.getNorthEast();
 
-            //return new mxn.BoundingBox( ,  ,  ,  );
+            return new mxn.BoundingBox(sw.lat(), sw.lng(), ne.lat(), ne.lng());
         },
 
         setBounds: function(bounds){
@@ -184,8 +196,7 @@ mxn.register('cloudmade', {
             var sw = bounds.getSouthWest();
             var ne = bounds.getNorthEast();
 
-            // TODO: Add provider code
-
+	    map.zoomToBounds(new CM.LatLngBounds(sw.toProprietary(this.api), ne.toProprietary(this.api)));
         },
 
         addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
@@ -237,11 +248,12 @@ mxn.register('cloudmade', {
     LatLonPoint: {
 
         toProprietary: function() {
-		    return new CM.LatLng(this.lat,this.lon);
+	    var cll = new CM.LatLng(this.lat,this.lon);
+	    return cll;
         },
 
-        fromProprietary: function(googlePoint) {
-            // TODO: Add provider code
+        fromProprietary: function(point) {
+	    return new mxn.LatLonPoint(point.lat(),point.lng());
         }
 
     },
@@ -249,19 +261,52 @@ mxn.register('cloudmade', {
     Marker: {
 
         toProprietary: function() {
-            // TODO: Add provider code
+	    var pt = this.location.toProprietary(this.api);
+	    var options = {};
+
+	    if (this.iconUrl) {
+	      var cicon = new CM.Icon();
+	      cicon.image = this.iconUrl;
+	      if (this.iconSize) {
+	        cicon.iconSize = new CM.Size(this.iconSize[0], this.iconSize[1]);
+	        if (this.iconAnchor) {
+	          cicon.iconAnchor = new CM.Point(this.iconAnchor[0], this.iconAnchor[1]);
+	        }
+	      }
+	      if (this.iconShadowUrl) {
+	        cicon.shadow = this.iconShadowUrl;
+	        if (this.iconShadowSize) {
+	          cicon.shadowSize = new CM.Size(this.iconShadowSize[0], this.iconShadowSize[1]);
+	        }
+	      }
+	      options.icon = cicon;
+	    }
+	    if (this.labelText) {
+ 	      options.title = this.labelText;
+	    }
+	    var cmarker = new CM.Marker(pt, options);
+
+	    if (this.infoBubble) {
+	      cmarker.bindInfoWindow(this.infoBubble);
+	    }
+
+
+	    return cmarker;
         },
 
         openBubble: function() {		
-            // TODO: Add provider code
+            var pin = this.proprietary_marker;
+            pin.openInfoWindow(this.infoBubble);
         },
 
         hide: function() {
-            // TODO: Add provider code
+            var pin = this.proprietary_marker;
+            pin.hide();
         },
 
         show: function() {
-            // TODO: Add provider code
+            var pin = this.proprietary_marker;
+            pin.show();
         },
 
         update: function() {
@@ -273,15 +318,26 @@ mxn.register('cloudmade', {
     Polyline: {
 
         toProprietary: function() {
-            // TODO: Add provider code
+            var pts = [];
+            var poly;
+
+            for (var i = 0,  length = this.points.length ; i< length; i++){
+              pts.push(this.points[i].toProprietary(this.api));
+            }
+            if (this.closed || pts[0].equals(pts[pts.length-1])) {
+              poly = new CM.Polygon(pts, this.color, this.width, this.opacity, this.fillColor || "#5462E3", this.opacity || "0.3");
+            } else {
+              poly = new CM.Polyline(pts, this.color, this.width, this.opacity);
+            }
+            return poly;
         },
 
         show: function() {
-            // TODO: Add provider code
+	    this.proprietary_polyline.show();
         },
 
         hide: function() {
-            // TODO: Add provider code
+	    this.proprietary_polyline.hide();
         }
 
     }
