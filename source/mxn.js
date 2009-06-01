@@ -210,13 +210,21 @@ mxn.util = {
 		script.type = 'text/javascript';
 		script.src = src;
 		if (callback) {
-			var evl = {};
-			evl.handleEvent = function(e) {
-				callback();
-			};
-			script.addEventListener('load' ,evl ,true);
+			if(script.addEventListener){
+				script.addEventListener('load', callback, true);
+			}
+			else if(script.attachEvent){
+				var done = false;
+				script.attachEvent("onreadystatechange",function(){
+					if ( !done && document.readyState === "complete" ) {
+						done = true;
+						callback();
+					}
+				});
+			}			
 		}
-		document.getElementsByTagName('head')[0].appendChild(script);
+		var h = document.getElementsByTagName('head')[0];
+		h.appendChild( script );
 		return;
 	},
 
@@ -393,15 +401,21 @@ mxn.util.Color.prototype.getHexColor = function() {
 
 // Auto-load scripts
 (function() {	
+	
 	// Defaults
 	var providers   = 'google,yahoo,microsoft';
 	var modules     = 'core';
 	var scriptBase;
 	var scripts = document.getElementsByTagName('script');
+	
+	var writeScriptTag = function(src){
+		document.write('<scr' + 'ipt type="text/javascript" src="' + src + '"></scr' + 'ipt>');
+	};
 
 	for (var i = 0; i < scripts.length; i++) {
 		var match = scripts[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?$/);
 		if (match != null) {
+			
 			scriptBase = match[1];
 			if (match[3]) {
 				var settings = match[3].split(',[');
@@ -413,8 +427,9 @@ mxn.util.Color.prototype.getHexColor = function() {
 	}
 	providers = providers.replace(/ /g, '').split(',');
 	modules = modules.replace(/ /g, '').split(',');
-	for (var i = 0; i < modules.length; i++) {
-		mxn.util.loadScript(scriptBase + 'mxn.' + modules[i] + '.js');
-		for (var j = 0; j < providers.length; j++) mxn.util.loadScript(scriptBase + 'mxn.' + providers[j] + '.' + modules[i] + '.js');
+	for (var i = 0; i < modules.length; i++) {	
+		writeScriptTag(scriptBase + 'mxn.' + modules[i] + '.js');
+		for (var j = 0; j < providers.length; j++) writeScriptTag(scriptBase + 'mxn.' + providers[j] + '.' + modules[i] + '.js');
 	}
+
 })();
