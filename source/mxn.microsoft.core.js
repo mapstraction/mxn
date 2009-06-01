@@ -360,11 +360,6 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		var to255Color = function(color){
-			this.green = parseInt(color.substr(1,2), 16);
-			this.red = parseInt(color.substr(3,4), 16);
-			this.blue = parseInt(color.substr(5,6), 16);
-		};
 		var mpoints =[];
 		for(var i =0, length = this.points.length; i < length; i++)
 		{
@@ -372,12 +367,13 @@ Polyline: {
 		}
 		var mpolyline = new VEShape(VEShapeType.Polyline, mpoints);
 		if(this.color){
-		var vecolor = new to255Color(this.color);
-		mpolyline.SetLineColor(new VEColor(vecolor.red, vecolor.green, vecolor.blue, this.opacity));
+			var color = new mxn.util.Color(this.color);
+			var opacity = (typeof(this.opacity) == 'undefined' || this.opacity === null) ? 1.0 : this.opacity;
+			var vecolor = new VEColor(color.red, color.green, color.blue, opacity);
+			mpolyline.SetLineColor(vecolor);
 		}
-	//	TODO ability to change line width
+		//	TODO ability to change line width
 		return mpolyline;
-		
 	},
 	
 	show: function() {

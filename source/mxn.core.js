@@ -443,10 +443,8 @@ Mapstraction.prototype.autoCenterAndZoom = function() {
 	var lat_min = 90;
 	var lon_max = -180;
 	var lon_min = 180;
-
-	for (var i=0; i<this.markers.length; i++) {
-		lat = this.markers[i].location.lat;
-		lon = this.markers[i].location.lon;
+	var lat, lon;
+	var checkMinMax = function(){
 		if (lat > lat_max) {
 			lat_max = lat;
 		}
@@ -459,23 +457,17 @@ Mapstraction.prototype.autoCenterAndZoom = function() {
 		if (lon < lon_min) {
 			lon_min = lon;
 		}
+	};
+	for (var i = 0; i < this.markers.length; i++) {
+		lat = this.markers[i].location.lat;
+		lon = this.markers[i].location.lon;
+		checkMinMax();
 	}
-	for (var i=0; i<this.polylines.length; i++) {
-		for (var j=0; j<this.polylines[i].points.length; j++) {
+	for (var i = 0; i < this.polylines.length; i++) {
+		for (var j = 0; j < this.polylines[i].points.length; j++) {
 			lat = this.polylines[i].points[j].lat;
 			lon = this.polylines[i].points[j].lon;
-			if (lat > lat_max) {
-				lat_max = lat;
-			}
-			if (lat < lat_min) {
-				lat_min = lat;
-			}
-			if (lon > lon_max) {
-				lon_max = lon;
-			}
-			if (lon < lon_min) {
-				lon_min = lon;
-			}
+			checkMinMax();
 		}
 	}
 	this.setBounds( new BoundingBox(lat_min, lon_min, lat_max, lon_max) );
@@ -956,11 +948,8 @@ var LatLonPoint = mxn.LatLonPoint = function(lat, lon) {
 	this.lon = lon;
 	this.lng = lon; // lets be lon/lng agnostic
 	
-	// TODO: put a vlid function for returning the api id in here
-	this.invoker = new mxn.Invoker(this, 'LatLonPoint');	
-	
-	
-}
+	this.invoker = new mxn.Invoker(this, 'LatLonPoint');		
+};
 
 mxn.addProxyMethods(LatLonPoint, [ 
 	'fromProprietary', 'toProprietary'

@@ -40,7 +40,7 @@
 		
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var center = oEvtSource.getCenter();
-			eventsElm.innerHTML += 'Map pan: ' + center.toString() + '<br/>';
+			eventsElm.innerHTML += 'Map pan: (' + center.lat.toFixed(5) + ','+ center.lon.toFixed(5) +')<br/>';
 		});
 		
 		m.changeZoom.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
@@ -53,7 +53,7 @@
 		});
 		
 		m.click.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-			eventsElm.innerHTML += 'Map clicked: ' + oEvtArgs.location.toString() + '<br/>';
+			eventsElm.innerHTML += 'Map clicked: (' + oEvtArgs.location.lat.toFixed(5) + ','+ oEvtArgs.location.lon.toFixed(5) +')<br/>';
 		});
 		
 		var markerEventHandler = function(sEvtName, oEvtSource, oEvtArgs){
@@ -126,13 +126,14 @@
 						new mxn.LatLonPoint(38.3419, -119.0419),
 						new mxn.LatLonPoint(37.3419, -117.0419)
 					]);
+					pl.color = '#00DD55';
 					m.addPolyline(pl);
 				}
 			},
 			{
 				desc: 'Swap API',
 				action: function(){
-					m.swap('map', 'microsoft');
+					m.swap('map', 'yahoo');
 				}
 			},
 			
@@ -176,13 +177,49 @@
     
     //]]>
     </script>
+	<style type="text/css">
+		.box {
+			float: left; 
+			width:300px; 
+			margin-right: 20px;
+			border: 1px solid #AAA;
+		}
+		
+		.box h2 {
+			margin: 0;
+			padding: 5px;
+			font-family: Arial;
+			background-color: #DDD;
+		}
+		
+		.box div {
+			overflow-y: scroll; 
+			height:300px; 
+		}
+	</style>
   </head>
   <body>
-    <div id="map" style="float: left; width:500px;height:300px"></div>
-	<div id="info" style="float: left; width:300px; height:300px; margin-left: 20px; background-color: #DDD;"></div>
-	<ol id="actions" style="clear: left; float: left;">
-	</ol>
-	<div id="events" style="float: left; width:300px; height:300px; overflow-y: scroll; margin-left: 20px; background-color: #DDD;"></div>
+	<div style="margin: 20px;">
+	    <div id="map" style="position: relative; width: 500px; height: 300px;"></div>
+		<div style="margin-top: 20px;">
+			
+			<div class="box">
+				<h2>Actions</h2>
+				<div>
+					<ol id="actions"></ol>
+				</div>
+			</div>
+			<div class="box">
+				<h2>Info</h2>
+				<div id="info"></div>
+			</div>
+			<div class="box">
+				<h2>Events</h2>
+				<div id="events"></div>
+			</div>
+			
+		</div>
+	</div>
   </body>
 </html>
 

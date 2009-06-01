@@ -49,6 +49,9 @@ Mapstraction: {
 			map.addPanControl();
 		}
 		else {
+			// Yahoo doesn't check the pan control is there before trying to remove it
+			// so throws an exception :(
+			map.addPanControl();
 			map.removePanControl();
 		}
 		
