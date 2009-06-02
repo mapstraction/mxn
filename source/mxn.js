@@ -408,14 +408,9 @@ mxn.util.Color.prototype.getHexColor = function() {
 	var scriptBase;
 	var scripts = document.getElementsByTagName('script');
 	
-	var writeScriptTag = function(src){
-		document.write('<scr' + 'ipt type="text/javascript" src="' + src + '"></scr' + 'ipt>');
-	};
-
 	for (var i = 0; i < scripts.length; i++) {
 		var match = scripts[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?$/);
 		if (match != null) {
-			
 			scriptBase = match[1];
 			if (match[3]) {
 				var settings = match[3].split(',[');
@@ -428,8 +423,8 @@ mxn.util.Color.prototype.getHexColor = function() {
 	providers = providers.replace(/ /g, '').split(',');
 	modules = modules.replace(/ /g, '').split(',');
 	for (var i = 0; i < modules.length; i++) {	
-		writeScriptTag(scriptBase + 'mxn.' + modules[i] + '.js');
-		for (var j = 0; j < providers.length; j++) writeScriptTag(scriptBase + 'mxn.' + providers[j] + '.' + modules[i] + '.js');
+		mxn.util.loadScript(scriptBase + 'mxn.' + modules[i] + '.js');
+		for (var j = 0; j < providers.length; j++) mxn.util.loadScript(scriptBase + 'mxn.' + providers[j] + '.' + modules[i] + '.js');
 	}
 
 })();
