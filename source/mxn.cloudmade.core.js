@@ -94,10 +94,6 @@ mxn.register('cloudmade', {
 	    map.removeOverlay(marker.proprietary_marker);
         },
 
-        removeAllMarkers: function() {
-	    // Done in mxn.core.js
-        },
-
         declutterMarkers: function(opts) {
             var map = this.maps[this.api];
 
