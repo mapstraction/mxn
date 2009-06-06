@@ -140,8 +140,9 @@ Mapstraction: {
 
 	removeMarker: function(marker) {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		var id = marker.proprietary_marker.GetID();
+		var microsoftShape = map.GetShapeByID(id);
+		map.DeleteShape(microsoftShape);
 	},
 
 	removeAllMarkers: function() {
@@ -167,8 +168,9 @@ Mapstraction: {
 
 	removePolyline: function(polyline) {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		var id = polyline.proprietary_polyline.GetID();
+		var microsoftShape = map.GetShapeByID(id);
+		map.DeleteShape(microsoftShape);
 	},
 	
 	getCenter: function() {
@@ -310,7 +312,17 @@ Mapstraction: {
 	},
 	
 	mousePosition: function(element) {
-		throw 'Not implemented';
+		var locDisp = document.getElementById(element);
+		if (locDisp != null) {
+			var map = this.maps[this.api];
+			map.AttachEvent("onmousemove", function(veEvent){
+				var latlon = map.PixelToLatLong(new VEPixel(veEvent.mapX, veEvent.mapY));
+				var loc = latlon.Latitude.toFixed(4) + " / " + latlon.Longitude.toFixed(4);
+				locDisp.innerHTML = loc;
+
+			});
+			locDisp.innerHTML = "0.0000 / 0.0000";
+		}
 	}
 },
 
@@ -375,13 +387,13 @@ Polyline: {
 		//	TODO ability to change line width
 		return mpolyline;
 	},
-	
+		
 	show: function() {
-			throw 'Not implemented';
+			this.proprietary_polyline.Show();
 	},
 
 	hide: function() {
-			throw 'Not implemented';
+			this.proprietary_polyline.Hide();
 	}
 	
 }
