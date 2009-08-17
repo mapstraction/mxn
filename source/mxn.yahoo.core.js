@@ -32,10 +32,14 @@ Mapstraction: {
 	},
 	
 	applyOptions: function(){
-		if(this.options.enableScrollWheelZoom){
-			map.enableContinuousZoom();
-			map.enableScrollWheelZoom();
-		}
+		
+		/*
+		if (this.options.enableDragging) {
+			map.enableDragMap();
+		} else {
+			map.disableDragMap();
+		}*/
+		
 	},
 
 	resizeTo: function(width, height){	
@@ -285,22 +289,27 @@ LatLonPoint: {
 Marker: {
 	
 	toProprietary: function() {
-		var ymarker;
-	    var size;
+		var ymarker, size;
+		var infoBubble, event_action, infoDiv, div;
+		
 	    if(this.iconSize) {
 	        size = new YSize(this.iconSize[0], this.iconSize[1]);
 	    }
 	    if(this.iconUrl) {
-	        if(this.iconSize)
+	        if(this.iconSize){
 	            ymarker = new YMarker(this.location.toProprietary('yahoo'), new YImage(this.iconUrl, size));
-	        else
+			}
+	        else {
 	            ymarker = new YMarker(this.location.toProprietary('yahoo'), new YImage(this.iconUrl));
+			}
 	    }
 	    else {
-	        if(this.iconSize)
+	        if(this.iconSize) {
 	            ymarker = new YMarker(this.location.toProprietary('yahoo'), null, size);
-	        else
+			}
+	        else {
 	            ymarker = new YMarker(this.location.toProprietary('yahoo'));
+			}
 	    }
 
 	    if(this.labelText) {
@@ -308,8 +317,7 @@ Marker: {
 	    }
 
 	    if(this.infoBubble) {
-	        var theInfo = this.infoBubble;
-	        var event_action;
+	        infoBubble = this.infoBubble;
 	        if(this.hover) {
 	            event_action = EventsList.MouseOver;
 	        }
@@ -317,15 +325,14 @@ Marker: {
 	            event_action = EventsList.MouseClick;
 	        }
 	        YEvent.Capture(ymarker, event_action, function() {
-	            ymarker.openSmartWindow(theInfo);
+	            ymarker.openSmartWindow(infoBubble);
 	        });
 
 	    }
 
 	    if(this.infoDiv) {
-	        var theInfo = this.infoDiv;
-	        var div = this.div;
-	        var event_div;
+	        infoDiv = this.infoDiv;
+	        div = this.div;
 	        if(this.hover) {
 	            event_action = EventsList.MouseOver;
 	        }
@@ -333,7 +340,7 @@ Marker: {
 	            event_action = EventsList.MouseClick;
 	        }
 	        YEvent.Capture(ymarker, event_action, function() {
-	            document.getElementById(div).innerHTML = theInfo;
+	            document.getElementById(div).innerHTML = infoDiv;
 	        });
 	    }
 

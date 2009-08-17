@@ -6,6 +6,7 @@ var apis = {};
 // Our special private methods
 /**
  * Calls the API specific implementation of a particular method.
+ * @private
  */
 var invoke = function(sApiId, sObjName, sFnName, oScope, args){
 	if(!hasImplementation(sApiId, sObjName, sFnName)) {
@@ -17,6 +18,7 @@ var invoke = function(sApiId, sObjName, sFnName, oScope, args){
 /**
  * Determines whether the specified API provides an implementation for the 
  * specified object and function name.
+ * @private
  */
 var hasImplementation = function(sApiId, sObjName, sFnName){
 	if(typeof(apis[sApiId]) == 'undefined') {
@@ -28,19 +30,29 @@ var hasImplementation = function(sApiId, sObjName, sFnName){
 	return typeof(apis[sApiId][sObjName][sFnName]) == 'function';
 };
 
-var mxn = window.mxn = {
+/**
+ * @name mxn
+ * @namespace
+ */
+var mxn = window.mxn = /** @lends mxn */ {
 	
 	/**
 	 * Registers a set of provider specific implementation functions.
+	 * @function
+	 * @param {String} sApiId The API ID to register implementing functions for.
+	 * @param {Object} oApiImpl An object containing the API implementation.
 	 */
 	register: function(sApiId, oApiImpl){
-		if(!apis.hasOwnProperty(sApiId)) apis[sApiId] = {};
+		if(!apis.hasOwnProperty(sApiId)){
+			apis[sApiId] = {};
+		}
 		mxn.util.merge(apis[sApiId], oApiImpl);
 	},		
 	
 	/**
 	 * Adds a list of named proxy methods to the prototype of a 
 	 * specified constructor function.
+	 * @function
 	 * @param {Function} func Constructor function to add methods to
 	 * @param {Array} aryMethods Array of method names to create
 	 * @param {Boolean} bWithApiArg Optional. Whether the proxy methods will use an API argument
@@ -70,11 +82,16 @@ var mxn = window.mxn = {
 			
 	/**
 	 * Bulk add some named events to an object.
+	 * @function
+	 * @param {Object} oEvtSrc The event source object.
+	 * @param {String[]} aEvtNames Event names to add.
 	 */
 	addEvents: function(oEvtSrc, aEvtNames){
 		for(var i = 0; i < aEvtNames.length; i++){
 			var sEvtName = aEvtNames[i];
-			if(sEvtName in oEvtSrc) throw 'Event or method ' + sEvtName + ' already declared.';
+			if(sEvtName in oEvtSrc){
+				throw 'Event or method ' + sEvtName + ' already declared.';
+			}
 			oEvtSrc[sEvtName] = new mxn.Event(sEvtName, oEvtSrc);
 		}
 	}
@@ -82,15 +99,29 @@ var mxn = window.mxn = {
 };
 
 /**
- * Event 
+ * Instantiates a new Event 
  * @constructor
+ * @param {String} sEvtName The name of the event.
+ * @param {Object} oEvtSource The source object of the event.
  */
 mxn.Event = function(sEvtName, oEvtSource){
 	var handlers = [];
-	if(!sEvtName) throw 'Event name must be provided';
+	if(!sEvtName){
+		throw 'Event name must be provided';
+	}
+	/**
+	 * Add a handler to the Event.
+	 * @param {Function} fn The handler function.
+	 * @param {Object} ctx The context of the handler function.
+	 */
 	this.addHandler = function(fn, ctx){
 		handlers.push({context: ctx, handler: fn});
 	};
+	/**
+	 * Remove a handler from the Event.
+	 * @param {Function} fn The handler function.
+	 * @param {Object} ctx The context of the handler function.
+	 */
 	this.removeHandler = function(fn, ctx){
 		for(var i = 0; i < handlers.length; i++){
 			if(handlers[i].handler == fn && handlers[i].context == ctx){
@@ -98,15 +129,22 @@ mxn.Event = function(sEvtName, oEvtSource){
 			}
 		}
 	};
+	/**
+	 * Remove all handlers from the Event.
+	 */
 	this.removeAllHandlers = function(){
 		handlers = [];
 	};
+	/**
+	 * Fires the Event.
+	 * @param {Object} oEvtArgs Event arguments object to be passed to the handlers.
+	 */
 	this.fire = function(oEvtArgs){
 		var args = [sEvtName, oEvtSource, oEvtArgs];
 		for(var i = 0; i < handlers.length; i++){
 			handlers[i].handler.apply(handlers[i].context, args);
 		}
-	}
+	};
 };
 
 /**
@@ -131,7 +169,10 @@ mxn.Invoker = function(aobj, asClassName, afnApiIdGetter){
 	 * Invoke the API implementation of a specific method.
 	 * @param {String} sMethodName The method name to invoke
 	 * @param {Array} args Arguments to pass on
-	 * @param {String} oOptions Optional. Extra options for invocation
+	 * @param {Object} oOptions Optional. Extra options for invocation
+	 * @param {Boolean} oOptions.overrideApi When true the first argument is used as the API ID.
+	 * @param {Object} oOptions.context A context object for passing extra information on to the provider implementation.
+	 * @param {Function} oOptions.fallback A fallback function to run if the provider implementation is missing.
 	 */
 	this.go = function(sMethodName, args, oOptions){
 		
@@ -141,8 +182,9 @@ mxn.Invoker = function(aobj, asClassName, afnApiIdGetter){
 						
 		var sApiId = oOptions.overrideApi ? args[0] : fnApiIdGetter.apply(obj);
 		
-		if(typeof(sApiId) != 'string') 
+		if(typeof(sApiId) != 'string'){
 			throw 'API ID not available.';
+		}
 		
 		if(typeof(oOptions.context) != 'undefined' && oOptions.context !== null){
 			// make sure args is an array
@@ -162,7 +204,9 @@ mxn.Invoker = function(aobj, asClassName, afnApiIdGetter){
 	
 };
 
-
+/**
+ * @namespace
+ */
 mxn.util = {
 			
 	/**
@@ -171,13 +215,15 @@ mxn.util = {
 	 * @param {Object} oGive The object donating properties
 	 */
 	merge: function(oRecv, oGive){
-		for (var sPropName in oGive) if (oGive.hasOwnProperty(sPropName)) {
-			if(!oRecv.hasOwnProperty(sPropName)){
-				oRecv[sPropName] = oGive[sPropName];
+		for (var sPropName in oGive){
+			if (oGive.hasOwnProperty(sPropName)) {
+				if(!oRecv.hasOwnProperty(sPropName)){
+					oRecv[sPropName] = oGive[sPropName];
+				}
+				else {
+					mxn.util.merge(oRecv[sPropName], oGive[sPropName]);
+				}
 			}
-			else {
-				mxn.util.merge(oRecv[sPropName], oGive[sPropName]);
-			}			
 		}
 	},
 	
@@ -352,12 +398,21 @@ mxn.util = {
 	 */
 	getAvailableProviders : function () {
 		var providers = [];
-		for (var propertyName in apis) providers.push(propertyName);
+		for (var propertyName in apis){
+			if (apis.hasOwnProperty(propertyName)) {
+				providers.push(propertyName);
+			}
+		}
 		return providers;
 	}
 	
 };
 
+/**
+ * Class for converting between HTML and RGB integer color formats.
+ * Accepts either a HTML color string argument or three integers for R, G and B.
+ * @constructor
+ */
 mxn.util.Color = function() {	
 	if(arguments.length == 3) {
 		this.red = arguments[0];
@@ -371,6 +426,10 @@ mxn.util.Color = function() {
 
 mxn.util.Color.prototype.reHex = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
+/**
+ * Set the color from the supplied HTML hex string.
+ * @param {String} strHexColor A HTML hex color string e.g. '#00FF88'.
+ */
 mxn.util.Color.prototype.setHexColor = function(strHexColor) {
 	var match = strHexColor.match(this.reHex);
 	if(match) {
@@ -387,6 +446,10 @@ mxn.util.Color.prototype.setHexColor = function(strHexColor) {
 	this.blue = parseInt(strHexColor.substr(4,2), 16);
 };
 
+/**
+ * Retrieve the color value as an HTML hex string.
+ * @returns {String} Format '00FF88' - note no preceding #.
+ */
 mxn.util.Color.prototype.getHexColor = function() {
 	var vals = [this.red.toString(16), this.green.toString(16), this.blue.toString(16)];
 	for(var i = 0; i < vals.length; i++) {
@@ -410,21 +473,25 @@ mxn.util.Color.prototype.getHexColor = function() {
 	
 	for (var i = 0; i < scripts.length; i++) {
 		var match = scripts[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?$/);
-		if (match != null) {
+		if (match !== null) {
 			scriptBase = match[1];
 			if (match[3]) {
 				var settings = match[3].split(',[');
 				providers = settings[0].replace(']' , '');
-				if (settings[1]) modules = settings[1];
+				if (settings[1]){
+					modules = settings[1];
+				}
 			}
 			break;
 	   }
 	}
 	providers = providers.replace(/ /g, '').split(',');
 	modules = modules.replace(/ /g, '').split(',');
-	for (var i = 0; i < modules.length; i++) {	
+	for (i = 0; i < modules.length; i++) {	
 		mxn.util.loadScript(scriptBase + 'mxn.' + modules[i] + '.js');
-		for (var j = 0; j < providers.length; j++) mxn.util.loadScript(scriptBase + 'mxn.' + providers[j] + '.' + modules[i] + '.js');
+		for (var j = 0; j < providers.length; j++){
+			mxn.util.loadScript(scriptBase + 'mxn.' + providers[j] + '.' + modules[i] + '.js');
+		}
 	}
 
 })();

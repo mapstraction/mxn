@@ -202,10 +202,10 @@ Mapstraction: {
 
 		// TODO: Add provider code
 
-		oContext.pixels.top = ...;
-		oContext.pixels.left = ...;
-		oContext.pixels.bottom = ...;
-		oContext.pixels.right = ...;
+		//oContext.pixels.top = ...;
+		//oContext.pixels.left = ...;
+		//oContext.pixels.bottom = ...;
+		//oContext.pixels.right = ...;
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {

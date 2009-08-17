@@ -47,10 +47,18 @@ Mapstraction: {
 	
 	applyOptions: function(){
 		var map = this.maps[this.api];
+		
 		if(this.options.enableScrollWheelZoom){
 			map.enableContinuousZoom();
 			map.enableScrollWheelZoom();
 		}
+		
+		if (this.options.enableDragging) {
+			map.enableDragging();
+		} else {
+			map.disableDragging();
+		}
+		
 	},
 
 	resizeTo: function(width, height){	
@@ -117,15 +125,6 @@ Mapstraction: {
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
 		map.addControl(new GMapTypeControl());  
-	},
-
-	dragging: function(on) {
-		var map = this.maps[this.api];
-		if (on) {
-			map.enableDragging();
-		} else {
-			map.disableDragging();
-		}
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
@@ -387,6 +386,7 @@ LatLonPoint: {
 Marker: {
 	
 	toProprietary: function() {
+		var infoBubble, event_action, infoDiv, div;
 		var options = {};
 		if(this.labelText){
 			options.title =  this.labelText;
@@ -420,8 +420,7 @@ Marker: {
 		var gmarker = new GMarker( this.location.toProprietary('google'),options);
 				
 		if(this.infoBubble){
-			var theInfo = this.infoBubble;
-			var event_action;
+			infoBubble = this.infoBubble;
 			if(this.hover) {
 				event_action = "mouseover";
 			}
@@ -429,7 +428,7 @@ Marker: {
 				event_action = "click";
 			}
 			GEvent.addListener(gmarker, event_action, function() {
-				gmarker.openInfoWindowHtml(theInfo, {
+				gmarker.openInfoWindowHtml(infoBubble, {
 					maxWidth: 100
 				});
 			});
@@ -445,9 +444,8 @@ Marker: {
 		}
 
 		if(this.infoDiv){
-			var theInfo = this.infoDiv;
-			var div = this.div;
-			var event_action;
+			infoDiv = this.infoDiv;
+			div = this.div;
 			if(this.hover) {
 				event_action = "mouseover";
 			}
@@ -455,7 +453,7 @@ Marker: {
 				event_action = "click";
 			}
 			GEvent.addListener(gmarker, event_action, function() {
-				document.getElementById(div).innerHTML = theInfo;
+				document.getElementById(div).innerHTML = infoDiv;
 			});
 		}
 

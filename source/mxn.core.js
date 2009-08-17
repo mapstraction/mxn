@@ -1,10 +1,14 @@
 (function(){
 
+/**
+ * @exports mxn.util.$m as $m
+ */
 var $m = mxn.util.$m;
 
 /**
  * Initialise our provider. This function should only be called 
  * from within mapstraction code, not exposed as part of the API.
+ * @private
  */
 var init = function() {
 	this.invoker.go('init', [ this.currentElement, this.api ]);
@@ -13,13 +17,17 @@ var init = function() {
 
 /**
  * Mapstraction instantiates a map with some API choice into the HTML element given
+ * @name mxn.Mapstraction
+ * @constructor
  * @param {String} element The HTML element to replace with a map
  * @param {String} api The API to use, one of 'google', 'yahoo', 'microsoft', 'openstreetmap', 'multimap', 'map24', 'openlayers', 'mapquest'. If omitted, first loaded provider implementation is used.
  * @param {Bool} debug optional parameter to turn on debug support - this uses alert panels for unsupported actions
- * @constructor
+ * @exports Mapstraction as mxn.Mapstraction
  */
- var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
-    if (!api) api = mxn.util.getAvailableProviders()[0];
+var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
+    if (!api){
+		api = mxn.util.getAvailableProviders()[0];
+	}
 	this.api = api;
 	this.maps = {};
 	this.currentElement = $m(element);
@@ -33,28 +41,78 @@ var init = function() {
 	
 	// option defaults
 	this.options = {
-		enableScrollWheelZoom: false
-	}
+		enableScrollWheelZoom: false,
+		enableDragging: true
+	};
 	
 	this.addControlsArgs = {};
 	
 	// set up our invoker for calling API methods
 	this.invoker = new mxn.Invoker(this, 'Mapstraction', function(){ return this.api; });
 	
+	// Adding our events
 	mxn.addEvents(this, [
-		'load',				// Map has loaded
-		'click',			// Map is clicked {location: LatLonPoint}
-		'endPan',			// Map is panned
-		'changeZoom',		// Zoom is changed
-		'markerAdded',		// Marker is removed {marker: Marker}
-		'markerRemoved',	// Marker is removed {marker: Marker}
-		'polylineAdded',	// Polyline is added {polyline: Polyline}
-		'polylineRemoved'	// Polyline is removed {polyline: Polyline}
+		
+		/**
+		 * Map has loaded
+		 * @name mxn.Mapstraction#load
+		 * @event
+		 */
+		'load',
+		
+		/**
+		 * Map is clicked {location: LatLonPoint}
+		 * @name mxn.Mapstraction#click
+		 * @event
+		 */
+		'click',
+		
+		/**
+		 * Map is panned
+		 * @name mxn.Mapstraction#endPan
+		 * @event
+		 */
+		'endPan',
+		
+		/**
+		 * Zoom is changed
+		 * @name mxn.Mapstraction#changeZoom
+		 * @event
+		 */
+		'changeZoom',
+		
+		/**
+		 * Marker is removed {marker: Marker}
+		 * @name mxn.Mapstraction#markerAdded
+		 * @event
+		 */
+		'markerAdded',
+		
+		/**
+		 * Marker is removed {marker: Marker}
+		 * @name mxn.Mapstraction#markerRemoved
+		 * @event
+		 */
+		'markerRemoved',
+		
+		/**
+		 * Polyline is added {polyline: Polyline}
+		 * @name mxn.Mapstraction#polylineAdded
+		 * @event
+		 */
+		'polylineAdded',
+		
+		/**
+		 * Polyline is removed {polyline: Polyline}
+		 * @name mxn.Mapstraction#polylineRemoved
+		 * @event
+		 */
+		'polylineRemoved'
 	]);
 	
 	// finally initialize our proper API map
 	init.apply(this);
-}
+};
 
 // Map type constants
 Mapstraction.ROAD = 1;
@@ -63,20 +121,189 @@ Mapstraction.HYBRID = 3;
 
 // methods that have no implementation in mapstraction core
 mxn.addProxyMethods(Mapstraction, [ 
-	'addLargeControls', 'addMarker', 'addMapTypeControls', 'addOverlay', 'addPolyline', 'addSmallControls', 'applyOptions',
-	'dragging', 
-	'getBounds', 'getCenter', 'getMapType', 'getPixelRatio', 'getZoom', 'getZoomLevelForBoundingBox', 
+	/**
+	 * Adds a large map panning control and zoom buttons to the map
+	 * @name mxn.Mapstraction#addLargeControls
+	 * @function
+	 */
+	'addLargeControls',
+		
+	/**
+	 * Adds a map type control to the map (streets, aerial imagery etc)
+	 * @name mxn.Mapstraction#addMapTypeControls
+	 * @function
+	 */
+	'addMapTypeControls', 
+	
+	/**
+	 * Adds a GeoRSS or KML overlay to the map
+	 *  some flavors of GeoRSS and KML are not supported by some of the Map providers
+	 * @name mxn.Mapstraction#addOverlay
+	 * @function
+	 * @param {String} url GeoRSS or KML feed URL
+	 * @param {Boolean} autoCenterAndZoom Set true to auto center and zoom after the feed is loaded
+	 */
+	'addOverlay', 
+	
+	/**
+	 * Adds a small map panning control and zoom buttons to the map
+	 * @name mxn.Mapstraction#addSmallControls
+	 * @function
+	 */
+	'addSmallControls', 
+	
+	/**
+	 * Applies the current option settings
+	 * @name mxn.Mapstraction#applyOptions
+	 * @function
+	 */
+	'applyOptions',
+	
+	/**
+	 * Gets the BoundingBox of the map
+	 * @name mxn.Mapstraction#getBounds
+	 * @function
+	 * @returns {BoundingBox} The bounding box for the current map state
+	 */
+	'getBounds', 
+	
+	/**
+	 * Gets the central point of the map
+	 * @name mxn.Mapstraction#getCenter
+	 * @function
+	 * @returns {LatLonPoint} The center point of the map
+	 */
+	'getCenter', 
+	
+	/**
+	 * Gets the imagery type for the map.
+	 * The type can be one of:
+	 *  mxn.Mapstraction.ROAD
+	 *  mxn.Mapstraction.SATELLITE
+	 *  mxn.Mapstraction.HYBRID
+	 * @name mxn.Mapstraction#getMapType
+	 * @function
+	 * @returns {Number} 
+	 */
+	'getMapType', 
+
+	/**
+	 * Returns a ratio to turn distance into pixels based on current projection
+	 * @name mxn.Mapstraction#getPixelRatio
+	 * @function
+	 * @returns {Float} ratio
+	 */
+	'getPixelRatio', 
+	
+	/**
+	 * Returns the zoom level of the map
+	 * @name mxn.Mapstraction#getZoom
+	 * @function
+	 * @returns {Integer} The zoom level of the map
+	 */
+	'getZoom', 
+	
+	/**
+	 * Returns the best zoom level for bounds given
+	 * @name mxn.Mapstraction#getZoomLevelForBoundingBox
+	 * @function
+	 * @param {BoundingBox} bbox The bounds to fit
+	 * @returns {Integer} The closest zoom level that contains the bounding box
+	 */
+	'getZoomLevelForBoundingBox', 
+	
+	/**
+	 * Displays the coordinates of the cursor in the HTML element
+	 * @name mxn.Mapstraction#mousePosition
+	 * @function
+	 * @param {String} element ID of the HTML element to display the coordinates in
+	 */
 	'mousePosition',
-	'resizeTo', 'removeMarker', 
-	'setBounds', 'setCenter', 'setCenterAndZoom', 'setMapType', 'setOption', 'setZoom',
+	
+	/**
+	 * Resize the current map to the specified width and height
+	 * (since it is actually on a child div of the mapElement passed
+	 * as argument to the Mapstraction constructor, the resizing of this
+	 * mapElement may have no effect on the size of the actual map)
+	 * @name mxn.Mapstraction#resizeTo
+	 * @function
+	 * @param {Integer} width The width the map should be.
+	 * @param {Integer} height The width the map should be.
+	 */
+	'resizeTo', 
+	
+	/**
+	 * Sets the map to the appropriate location and zoom for a given BoundingBox
+	 * @name mxn.Mapstraction#setBounds
+	 * @function
+	 * @param {BoundingBox} bounds The bounding box you want the map to show
+	 */
+	'setBounds', 
+	
+	/**
+	 * setCenter sets the central point of the map
+	 * @name mxn.Mapstraction#setCenter
+	 * @function
+	 * @param {LatLonPoint} point The point at which to center the map
+	 * @param {Object} options Optional parameters
+	 * @param {Boolean} options.pan Whether the map should move to the locations using a pan or just jump straight there
+	 */
+	'setCenter', 
+	
+	/**
+	 * Centers the map to some place and zoom level
+	 * @name mxn.Mapstraction#setCenterAndZoom
+	 * @function
+	 * @param {LatLonPoint} point Where the center of the map should be
+	 * @param {Integer} zoom The zoom level where 0 is all the way out.
+	 */
+	'setCenterAndZoom', 
+	
+	/**
+	 * Sets the imagery type for the map
+	 * The type can be one of:
+	 *  mxn.Mapstraction.ROAD
+	 *  mxn.Mapstraction.SATELLITE
+	 *  mxn.Mapstraction.HYBRID
+	 * @name mxn.Mapstraction#setMapType
+	 * @function
+	 * @param {Number} type 
+	 */
+	'setMapType', 
+	
+	/**
+	 * Sets the zoom level for the map
+	 * MS doesn't seem to do zoom=0, and Gg's sat goes closer than it's maps, and MS's sat goes closer than Y!'s
+	 * TODO: Mapstraction.prototype.getZoomLevels or something.
+	 * @name mxn.Mapstraction#setZoom
+	 * @function
+	 * @param {Number} zoom The (native to the map) level zoom the map to.
+	 */
+	'setZoom',
+	
+	/**
+	 * Turns a Tile Layer on or off
+	 * @name mxn.Mapstraction#toggleTileLayer
+	 * @function
+	 * @param {tile_url} url of the tile layer that was created.
+	 */
 	'toggleTileLayer'
 ]);
 
+/**
+ * Sets the current options to those specified in oOpts and applies them
+ * @param {Object} oOpts Hash of options to set
+ */
 Mapstraction.prototype.setOptions = function(oOpts){
 	mxn.util.merge(this.options, oOpts);
 	this.applyOptions();
 };
 
+/**
+ * Sets an option and applies it.
+ * @param {String} sOptName Option name
+ * @param vVal Option value
+ */
 Mapstraction.prototype.setOption = function(sOptName, vVal){
 	this.options[sOptName] = vVal;
 	this.applyOptions();
@@ -84,10 +311,19 @@ Mapstraction.prototype.setOption = function(sOptName, vVal){
 
 /**
  * Enable scroll wheel zooming
- * Currently only supported by Google
+ * @deprecated Use setOption instead.
  */
 Mapstraction.prototype.enableScrollWheelZoom = function() {
 	this.setOption('enableScrollWheelZoom', true);
+};
+
+/**
+ * Enable/disable dragging of the map
+ * @param {Boolean} on
+ * @deprecated Use setOption instead.
+ */
+Mapstraction.prototype.dragging = function(on) {
+	this.setOption('enableDragging', on);
 };
 
 /**
@@ -138,13 +374,9 @@ Mapstraction.prototype.swap = function(element,api) {
 
 };
 
-
-
-
 /**
  * Returns the loaded state of a Map Provider
  * @param {String} api Optional API to query for. If not specified, returns state of the originally created API
- * @type {Boolean} The state of the map loading
  */
 Mapstraction.prototype.isLoaded = function(api){
 	if (api === null) {
@@ -156,7 +388,6 @@ Mapstraction.prototype.isLoaded = function(api){
 /**
  * Set the debugging on or off - shows alert panels for functions that don't exist in Mapstraction
  * @param {Boolean} debug true to turn on debugging, false to turn it off
- * @type {Boolean} The state of debugging
  */
 Mapstraction.prototype.setDebug = function(debug){
 	if(debug !== null) {
@@ -256,7 +487,6 @@ Mapstraction.prototype.callEventListeners = function(sEventType, oEventArgs) {
  *	 scale:	true,
  *	 map_type: true,
  * }
- *
  * @param {array} args Which controls to switch on
  */
 Mapstraction.prototype.addControls = function( args ) {
@@ -378,6 +608,8 @@ Mapstraction.prototype.declutterMarkers = function(opts) {
 		//	case 'map24':
 		//
 		//	  break;
+		case '  dummy':
+			break;
 		default:
 			if(this.debug) {
 				alert(this.api + ' not supported by Mapstraction.declutterMarkers');
@@ -401,7 +633,8 @@ Mapstraction.prototype.addPolyline = function(polyline, old) {
 	this.polylineAdded.fire({'polyline': polyline});
 };
 
-Mapstraction.prototype.removePolylineImpl = function(polyline) {
+// Private remove implementation
+var removePolylineImpl = function(polyline) {
 	this.invoker.go('removePolyline', arguments);
 	polyline.onmap = false;
 	this.polylineRemoved.fire({'polyline': polyline});
@@ -417,7 +650,7 @@ Mapstraction.prototype.removePolyline = function(polyline) {
 		current_polyline = this.polylines[i];
 		if(polyline == current_polyline) {
 			this.polylines.splice(i, 1);
-			this.removePolylineImpl(polyline);
+			removePolylineImpl.call(this, polyline);
 			break;
 		}
 	}
@@ -430,7 +663,7 @@ Mapstraction.prototype.removeAllPolylines = function() {
 	var current_polyline;
 	while(this.polylines.length > 0) {
 		current_polyline = this.polylines.pop();
-		this.removePolylineImpl(current_polyline);
+		removePolylineImpl.call(this, current_polyline);
 	}
 };
 
@@ -463,7 +696,7 @@ Mapstraction.prototype.autoCenterAndZoom = function() {
 		lon = this.markers[i].location.lon;
 		checkMinMax();
 	}
-	for (var i = 0; i < this.polylines.length; i++) {
+	for(i = 0; i < this.polylines.length; i++) {
 		for (var j = 0; j < this.polylines[i].points.length; j++) {
 			lat = this.polylines[i].points[j].lat;
 			lon = this.polylines[i].points[j].lon;
@@ -498,16 +731,26 @@ Mapstraction.prototype.visibleCenterAndZoom = function() {
 	var lat_min = 90;
 	var lon_max = -180;
 	var lon_min = 180;
-
+	var lat, lon;
+	var checkMinMax = function(){
+		if (lat > lat_max) {
+			lat_max = lat;
+		}
+		if (lat < lat_min) {
+			lat_min = lat;
+		}
+		if (lon > lon_max) {
+			lon_max = lon;
+		}
+		if (lon < lon_min) {
+			lon_min = lon;
+		}
+	};
 	for (var i=0; i<this.markers.length; i++) {
 		if (this.markers[i].getAttribute("visible")) {
 			lat = this.markers[i].location.lat;
 			lon = this.markers[i].location.lon;
-
-			if (lat > lat_max) lat_max = lat;
-			if (lat < lat_min) lat_min = lat;
-			if (lon > lon_max) lon_max = lon;
-			if (lon < lon_min) lon_min = lon;
+			checkMinMax();
 		}
 	}
 
@@ -516,11 +759,7 @@ Mapstraction.prototype.visibleCenterAndZoom = function() {
 			for (j=0; j<this.polylines[i].points.length; j++) {
 				lat = this.polylines[i].points[j].lat;
 				lon = this.polylines[i].points[j].lon;
-
-				if (lat > lat_max) lat_max = lat;
-				if (lat < lat_min) lat_min = lat;
-				if (lon > lon_max) lon_max = lon;
-				if (lon < lon_min) lon_min = lon;
+				checkMinMax();
 			}
 		}
 	}
@@ -539,9 +778,9 @@ Mapstraction.prototype.polylineCenterAndZoom = function(radius) {
 	var lon_max = -180;
 	var lon_min = 180;
 
-	for (i=0; i < mapstraction.polylines.length; i++)
+	for (var i=0; i < mapstraction.polylines.length; i++)
 	{
-		for (j=0; j<mapstraction.polylines[i].points.length; j++)
+		for (var j=0; j<mapstraction.polylines[i].points.length; j++)
 		{
 			lat = mapstraction.polylines[i].points[j].lat;
 			lon = mapstraction.polylines[i].points[j].lon;
@@ -554,10 +793,18 @@ Mapstraction.prototype.polylineCenterAndZoom = function(radius) {
 				lonConv = (radius / mapstraction.polylines[i].points[j].lonConv());
 			}
 
-			if ((lat + latConv) > lat_max) lat_max = (lat + latConv);
-			if ((lat - latConv) < lat_min) lat_min = (lat - latConv);
-			if ((lon + lonConv) > lon_max) lon_max = (lon + lonConv);
-			if ((lon - lonConv) < lon_min) lon_min = (lon - lonConv);
+			if ((lat + latConv) > lat_max) {
+				lat_max = (lat + latConv);
+			}
+			if ((lat - latConv) < lat_min) {
+				lat_min = (lat - latConv);
+			}
+			if ((lon + lonConv) > lon_max) {
+				lon_max = (lon + lonConv);
+			}
+			if ((lon - lonConv) < lon_min) {
+				lon_min = (lon - lonConv);
+			}
 		}
 	}
 
@@ -669,7 +916,6 @@ Mapstraction.prototype.addJSON = function(json) {
 					date : "new Date(\""+item.date+"\")",
 					iconShadow : item.icon_shadow,
 					marker : item.id,
-					date : "new Date(\""+item.date+"\")",
 					iconShadowSize : item.icon_shadow_size,
 					icon : "http://boston.openguides.org/markers/AQUA.png",
 					iconSize : item.icon_size,
@@ -691,6 +937,7 @@ Mapstraction.prototype.addJSON = function(json) {
 					polygon : true
 				});
 				markers.push(polyline);
+				break;
 			default:
 		// console.log("Geometry: " + features.items[i].geometry.type);
 		}
@@ -801,65 +1048,51 @@ Mapstraction.prototype.removeAllFilters = function() {
  * @returns {Int} count of visible markers
  */
 Mapstraction.prototype.doFilter = function(showCallback, hideCallback) {
-	if(this.loaded[this.api] === false) {
-		var me = this;
-		this.onload[this.api].push( function() {
-			me.doFilter(showCallback, hideCallback);
-		} );
-		return;
-	}
-
 	var map = this.maps[this.api];
-
 	var visibleCount = 0;
-
+	var f;
 	if (this.filters) {
 		switch (this.api) {
 			case 'multimap':
 				/* TODO polylines aren't filtered in multimap */
 				var mmfilters = [];
-				for (var f=0; f<this.filters.length; f++) {
+				for (f=0; f<this.filters.length; f++) {
 					mmfilters.push( new MMSearchFilter( this.filters[f][0], this.filters[f][1], this.filters[f][2] ));
 				}
 				map.setMarkerFilters( mmfilters );
 				map.redrawMap();
 				break;
+			case '  dummy':
+				break;
 			default:
 				var vis;
 				for (var m=0; m<this.markers.length; m++) {
 					vis = true;
-					for (var f = 0; f < this.filters.length; f++) {
+					for (f = 0; f < this.filters.length; f++) {
 						if (! this.applyFilter(this.markers[m], this.filters[f])) {
 							vis = false;
 						}
 					}
 					if (vis) {
 						visibleCount ++;
-						if (showCallback) showCallback(this.markers[m]);
-						else this.markers[m].show();
-					} else { 
-						if (hideCallback) hideCallback(this.markers[m]);
-						else this.markers[m].hide();
+						if (showCallback){
+							showCallback(this.markers[m]);
+						}
+						else {
+							this.markers[m].show();
+						}
+					} 
+					else { 
+						if (hideCallback){
+							hideCallback(this.markers[m]);
+						}
+						else {
+							this.markers[m].hide();
+						}
 					}
 
 					this.markers[m].setAttribute("visible", vis);
 				}
-
-				/*
-					 for (var p=0; m<this.polylines.length; p++) {
-					 vis = true;
-					 for (var f=0; f<this.filters.length; f++) {
-					 if (! this.applyFilter(this.polylines[p], this.filters[f])) {
-					 vis = false;
-					 }
-					 }
-					 if (vis) {
-					 this.polylines[p].show();
-					 } else {
-					 this.polylines[p].hide();
-					 }
-					 }
-				 */
 				break;
 		}
 	}
@@ -935,10 +1168,11 @@ Mapstraction.prototype.getMap = function() {
 
 /**
  * LatLonPoint is a point containing a latitude and longitude with helper methods
+ * @name mxn.LatLonPoint
+ * @constructor
  * @param {double} lat is the latitude
  * @param {double} lon is the longitude
- * @returns a new LatLonPoint
- * @type LatLonPoint
+ * @exports LatLonPoint as mxn.LatLonPoint
  */
 var LatLonPoint = mxn.LatLonPoint = function(lat, lon) {
 	// TODO error if undefined?
@@ -997,7 +1231,7 @@ LatLonPoint.prototype.equals = function(otherPoint) {
  */
 LatLonPoint.prototype.latConv = function() {
 	return this.distance(new LatLonPoint(this.lat + 0.1, this.lon))*10;
-}
+};
 
 /**
  * Returns longitude conversion based on current projection
@@ -1005,7 +1239,7 @@ LatLonPoint.prototype.latConv = function() {
  */
 LatLonPoint.prototype.lonConv = function() {
 	return this.distance(new LatLonPoint(this.lat, this.lon + 0.1))*10;
-}
+};
 
 
 //////////////////////////
@@ -1016,21 +1250,20 @@ LatLonPoint.prototype.lonConv = function() {
 
 /**
  * BoundingBox creates a new bounding box object
+ * @name mxn.BoundingBox
+ * @constructor
  * @param {double} swlat the latitude of the south-west point
  * @param {double} swlon the longitude of the south-west point
  * @param {double} nelat the latitude of the north-east point
  * @param {double} nelon the longitude of the north-east point
- * @returns a new BoundingBox
- * @type BoundingBox
- * @constructor
- * @classDescription BoundingBox
+ * @exports BoundingBox as mxn.BoundingBox
  */
 var BoundingBox = mxn.BoundingBox = function(swlat, swlon, nelat, nelon) {
 	//FIXME throw error if box bigger than world
 	//alert('new bbox ' + swlat + ',' +  swlon + ',' +  nelat + ',' + nelon);
 	this.sw = new LatLonPoint(swlat, swlon);
 	this.ne = new LatLonPoint(nelat, nelon);
-}
+};
 
 /**
  * getSouthWest returns a LatLonPoint of the south-west point of the bounding box
@@ -1105,8 +1338,10 @@ BoundingBox.prototype.extend = function(point) {
 
 /**
  * Marker create's a new marker pin
- * @param {LatLonPoint} point the point on the map where the marker should go
+ * @name mxn.Marker
  * @constructor
+ * @param {LatLonPoint} point the point on the map where the marker should go
+ * @exports Marker as mxn.Marker
  */
 var Marker = mxn.Marker = function(point) {
 	this.api = null;
@@ -1121,7 +1356,7 @@ var Marker = mxn.Marker = function(point) {
 		'closeInfoBubble', 	// Info bubble closed
 		'click'				// Marker clicked
 	]);
-}
+};
 
 mxn.addProxyMethods(Marker, [ 
 	'fromProprietary',
@@ -1147,53 +1382,58 @@ Marker.prototype.setLabel = function(labelText) {
  */
 Marker.prototype.addData = function(options){
 	for(var sOptKey in options) {
-		switch(sOptKey) {
-			case 'label':
-				this.setLabel(options.label);
-				break;
-			case 'infoBubble':
-				this.setInfoBubble(options.infoBubble);
-				break;
-			case 'icon':
-				if(options.iconSize && options.iconAnchor) {
-					this.setIcon(options.icon, options.iconSize, options.iconAnchor);
-				}
-				else if(options.iconSize) {
-					this.setIcon(options.icon, options.iconSize);
-				}
-				else {
-					this.setIcon(options.icon);
-				}
-				break;
-			case 'iconShadow':
-				if(options.iconShadowSize)
-					this.setShadowIcon(options.iconShadow, new Array(options.iconShadowSize[0], options.iconShadowSize[1]));
-				else
-					this.setIcon(options.iconShadow);
-				break;
-			case 'infoDiv':
-				this.setInfoDiv(options.infoDiv[0],options.infoDiv[1]);
-				break;
-			case 'draggable':
-				this.setDraggable(options.draggable);
-				break;
-			case 'hover':
-				this.setHover(options.hover);
-			// no break statement here intentionally
-			case 'hoverIcon':
-				this.setHoverIcon(options.hoverIcon);
-				break;
-			case 'openBubble':
-				this.openBubble();
-				break;
-			case 'groupName':
-				this.setGroupName(options.groupName);
-				break;
-			default:
-				// don't have a specific action for this bit of
-				// data so set a named attribute
-				this.setAttribute(sOptKey, options[sOptKey]);
-				break;
+		if(options.hasOwnProperty(sOptKey)){
+			switch(sOptKey) {
+				case 'label':
+					this.setLabel(options.label);
+					break;
+				case 'infoBubble':
+					this.setInfoBubble(options.infoBubble);
+					break;
+				case 'icon':
+					if(options.iconSize && options.iconAnchor) {
+						this.setIcon(options.icon, options.iconSize, options.iconAnchor);
+					}
+					else if(options.iconSize) {
+						this.setIcon(options.icon, options.iconSize);
+					}
+					else {
+						this.setIcon(options.icon);
+					}
+					break;
+				case 'iconShadow':
+					if(options.iconShadowSize) {
+						this.setShadowIcon(options.iconShadow, [ options.iconShadowSize[0], options.iconShadowSize[1] ]);
+					}
+					else {
+						this.setIcon(options.iconShadow);
+					}
+					break;
+				case 'infoDiv':
+					this.setInfoDiv(options.infoDiv[0],options.infoDiv[1]);
+					break;
+				case 'draggable':
+					this.setDraggable(options.draggable);
+					break;
+				case 'hover':
+					this.setHover(options.hover);
+					this.setHoverIcon(options.hoverIcon);
+					break;
+				case 'hoverIcon':
+					this.setHoverIcon(options.hoverIcon);
+					break;
+				case 'openBubble':
+					this.openBubble();
+					break;
+				case 'groupName':
+					this.setGroupName(options.groupName);
+					break;
+				default:
+					// don't have a specific action for this bit of
+					// data so set a named attribute
+					this.setAttribute(sOptKey, options[sOptKey]);
+					break;
+			}
 		}
 	}
 };
@@ -1312,7 +1552,13 @@ Marker.prototype.getAttribute = function(key) {
 // Polyline ///
 ///////////////
 
-
+/**
+ * Instantiates a new Polyline.
+ * @name mxn.Polyline
+ * @constructor
+ * @param {Point[]} points Points that make up the Polyline.
+ * @exports Polyline as mxn.Polyline
+ */
 var Polyline = mxn.Polyline = function(points) {
 	this.api = null;
 	this.points = points;
@@ -1321,7 +1567,7 @@ var Polyline = mxn.Polyline = function(points) {
 	this.proprietary_polyline = false;
 	this.pllID = "mspll-"+new Date().getTime()+'-'+(Math.floor(Math.random()*Math.pow(2,16)));
 	this.invoker = new mxn.Invoker(this, 'Polyline', function(){return this.api;});
-}
+};
 
 mxn.addProxyMethods(Polyline, [ 
 	'fromProprietary', 
@@ -1336,25 +1582,27 @@ mxn.addProxyMethods(Polyline, [
  */
 Polyline.prototype.addData = function(options){
 	for(var sOpt in options) {
-		switch(sOpt) {
-			case 'color':
-				this.setColor(options.color);
-				break;
-			case 'width':
-				this.setWidth(options.width);
-				break;
-			case 'opacity':
-				this.setOpacity(options.opacity);
-				break;
-			case 'closed':
-				this.setClosed(options.closed);
-				break;
-			case 'fillColor':
-				this.setFillColor(options.fillColor);
-				break;
-			default:
-				this.setAttribute(sOpt, options[sOpt]);
-				break;
+		if(options.hasOwnProperty(sOpt)){
+			switch(sOpt) {
+				case 'color':
+					this.setColor(options.color);
+					break;
+				case 'width':
+					this.setWidth(options.width);
+					break;
+				case 'opacity':
+					this.setOpacity(options.opacity);
+					break;
+				case 'closed':
+					this.setClosed(options.closed);
+					break;
+				case 'fillColor':
+					this.setFillColor(options.fillColor);
+					break;
+				default:
+					this.setAttribute(sOpt, options[sOpt]);
+					break;
+			}
 		}
 	}
 };
@@ -1428,19 +1676,20 @@ Polyline.prototype.getAttribute = function(key) {
  * @param {Integer} tolerance (1.0 is a good starting point)
  */
 Polyline.prototype.simplify = function(tolerance) {
-	var reduced = new Array();
+	var reduced = [];
 
 	// First point
 	reduced[0] = this.points[0];
 
 	var markerPoint = 0;
 
-	for (var i = 1; i < this.points.length-1; i++)
+	for (var i = 1; i < this.points.length-1; i++){
 		if (this.points[i].distance(this.points[markerPoint]) >= tolerance)
 		{
 			reduced[reduced.length] = this.points[i];
 			markerPoint = i;
 		}
+	}
 
 	// Last point
 	reduced[reduced.length] = this.points[this.points.length-1];
