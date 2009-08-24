@@ -23,11 +23,11 @@ mxn.register('geocommons', {
 
         addControls: function( args ) {
             var map = this.maps[this.api];
-            showControl("Zoom", args.zoom);
-            showControl("Layers", args.layers);
-            showControl("Styles", args.styles); 
-            showControl("Basemap", args.map_type);
-            showControl("Legend", args.legend, "open"); 
+            map.showControl("Zoom", args.zoom || false);
+            map.showControl("Layers", args.layers || false);
+            map.showControl("Styles", args.styles || false); 
+            map.showControl("Basemap", args.map_type || false);
+            map.showControl("Legend", args.legend || false, "open"); 
             // showControl("Legend", true, "close"); 
         },
 

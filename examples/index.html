@@ -38,7 +38,6 @@
 </script> 
 <h2>Demo Functions</h2>
 <ul>
-  <li><a href="javascript:alert('zoom is ' + mapstraction.getZoomLevelForBoundingBox(new mxn.BoundingBox(51.9,-4.3,52.25,-3.75)));">click me to get zoom for extent</a>.</li>
   <li><a href="javascript:mapstraction.setBounds( new mxn.BoundingBox(51.9,-4.3,52.25,-3.75) );">click me to set bounds</a>.</li>
   <li><a href="javascript:alertBounds();">click me to get bounds</a> </li>
   <li><a href="javascript:mapstraction.setZoom( mapstraction.getZoom()-1 );">click me to decrement zoom</a>.</li>
@@ -47,7 +46,9 @@
   <li><a href="javascript:getCenter();">click me to getCenter</a>.</li>
   <li><a href="javascript:mapstraction.setCenter(new mxn.LatLonPoint(52,0));">click me to setCenter</a>.</li>
   <li><a href="javascript:mapstraction.setCenter(new mxn.LatLonPoint(38.404196,-123.008194), {pan: true});">click me to pan to center</a>.</li>
-  <li><a href="javascript:mapstraction.addControls({zoom:'small', map_type:true});">click me to add controls</a>.</li>
+  <li><a href="javascript:mapstraction.addControls({zoom:true, layers:true});">click me to add controls</a>.</li>
+  <li><a href="javascript:mapstraction.addControls({});">click me to remove controls</a>.</li>
+  <li><a href="javascript:mapstraction.addControls({legend:true});">click me to open legend controls</a>.</li>
   <li><a href="javascript:mapstraction.resizeTo('100px','200px');">click me to resize</a>.</li>
 </ul> 
         </div>
