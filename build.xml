@@ -75,7 +75,7 @@
 			</path>
 			<sequential>
 				<propertyregex override="yes" property="minfile" input="@{file}" regexp=".*[\/\\]([a-z\.\(\)]+)\.js" replace="\1-min.js"/>
-				<java jar="tools/yui-compressor/yuicompressor-2.4.2.jar" args="-o ${build.dir}\${minfile} @{file}" fork="true" failonerror="true"/>
+				<java jar="tools/yui-compressor/yuicompressor-2.4.2.jar" args="-o ${build.dir}/${minfile} @{file}" fork="true" failonerror="true"/>
 			</sequential>
 		</for>		
 		
@@ -86,14 +86,14 @@
 				<fileset dir="${build.dir}" includes="*.js"/>
 			</path>
 			<sequential>
-				<concat destfile="${build.dir}\temp.t">
+				<concat destfile="${build.dir}/temp.t">
 					<header file="license.js"/>
 					<fileset file="@{file}"/>
 					<filterchain>
 						<expandproperties/>
 					</filterchain>
 				</concat>
-				<move file="${build.dir}\temp.t" tofile="@{file}" overwrite="true"/>
+				<move file="${build.dir}/temp.t" tofile="@{file}" overwrite="true"/>
 			</sequential>
 		</for>	
 		
