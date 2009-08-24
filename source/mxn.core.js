@@ -38,6 +38,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	this.images = [];
 	this.loaded = {};
 	this.onload = {};
+	this.element = element;
 	
 	// option defaults
 	this.options = {
