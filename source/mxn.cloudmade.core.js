@@ -11,14 +11,12 @@ mxn.register('cloudmade', {
 
         applyOptions: function(){
             var map = this.maps[this.api];
-
             if(this.options.enableScrollWheelZoom){
               map.enableScrollWheelZoom();
             }
         },
 
         resizeTo: function(width, height){	
-            // TODO: Add provider code
             this.maps[this.api].checkResize();
         },
 
@@ -46,14 +44,12 @@ mxn.register('cloudmade', {
 
         addSmallControls: function() {
             var map = this.maps[this.api];
-
 	    map.addControl(new CM.SmallMapControl());
 	    this.addControlsArgs.zoom = 'small';
         },
 
         addLargeControls: function() {
             var map = this.maps[this.api];
-
 	    map.addControl(new CM.LargeMapControl());
 	    this.addControlsArgs.zoom = 'large';
         },
@@ -92,6 +88,10 @@ mxn.register('cloudmade', {
         removeMarker: function(marker) {
             var map = this.maps[this.api];
 	    map.removeOverlay(marker.proprietary_marker);
+        },
+
+        removeAllMarkers: function() {
+	    // Done in mxn.core.js
         },
 
         declutterMarkers: function(opts) {
