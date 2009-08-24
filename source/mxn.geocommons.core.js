@@ -5,9 +5,9 @@ mxn.register('geocommons', {
         init: function(element, api) {		
             var me = this;
             this.element = element;
-            Maker.maker_host='http://maker.recovery.geocommons.com';
-            Maker.finder_host='http://finder.recovery.geocommons.com';
-            Maker.core_host='http://recovery.geocommons.com';
+            Maker.maker_host='http://maker.geocommons.com';
+            Maker.finder_host='http://finder.geocommons.com';
+            Maker.core_host='http://geocommons.com';
           },
 
         applyOptions: function(){
