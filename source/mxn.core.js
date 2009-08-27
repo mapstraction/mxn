@@ -1350,7 +1350,6 @@ var Marker = mxn.Marker = function(point) {
 	this.onmap = false;
 	this.proprietary_marker = false;
 	this.attributes = [];
-	this.pinID = "mspin-"+new Date().getTime()+'-'+(Math.floor(Math.random()*Math.pow(2,16)));
 	this.invoker = new mxn.Invoker(this, 'Marker', function(){return this.api;});
 	mxn.addEvents(this, [ 
 		'openInfoBubble',	// Info bubble opened

@@ -406,12 +406,21 @@ Marker: {
 				}
 				icon.iconAnchor = anchor;
 			}
-			if(this.iconShadowUrl) {
+			if(typeof(this.iconShadowUrl) != 'undefined') {
 				icon.shadow = this.iconShadowUrl;
 				if(this.iconShadowSize) {
 					icon.shadowSize = new GSize(this.iconShadowSize[0], this.iconShadowSize[1]);
 				}
-			}
+			} else {  // turn off shadow
+  			        icon.shadow = '';
+                                icon.shadowSize = '';
+                        }
+			if(this.transparent) {
+  			        icon.transparent = this.transparent;
+                        }
+			if(this.imageMap) {
+  			        icon.imageMap = this.imageMap;
+                        }
 			options.icon = icon;
 		}
 		if(this.draggable){
