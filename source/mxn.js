@@ -461,8 +461,18 @@ mxn.util.Color.prototype.getHexColor = function() {
 
 })();
 
-
 // Auto-load scripts
+//
+// specify which map providers to load by using
+// <script src="mxn.js?(provider1,[module1],provider2,[module2],provider3)" ...
+// in your HTML
+//
+// for each provider mxn.provider.module.js and mxn.module.js will be loaded
+// by default module is 'core' 
+//
+// NOTE: if you specify 'none' as the provider no scripts will be loaded at all.
+// it is then up to you to load the scripts independently
+//
 (function() {	
 	
 	// Defaults
@@ -470,7 +480,8 @@ mxn.util.Color.prototype.getHexColor = function() {
 	var modules     = 'core';
 	var scriptBase;
 	var scripts = document.getElementsByTagName('script');
-	
+
+        // determine which scripts we need to load	
 	for (var i = 0; i < scripts.length; i++) {
 		var match = scripts[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?$/);
 		if (match !== null) {
@@ -485,8 +496,13 @@ mxn.util.Color.prototype.getHexColor = function() {
 			break;
 	   }
 	}
+        if (providers == 'none'){ // bail out if we don't want to load anything
+            return;
+        }
 	providers = providers.replace(/ /g, '').split(',');
 	modules = modules.replace(/ /g, '').split(',');
+
+        // actually load the scripts
 	for (i = 0; i < modules.length; i++) {	
 		mxn.util.loadScript(scriptBase + 'mxn.' + modules[i] + '.js');
 		for (var j = 0; j < providers.length; j++){
