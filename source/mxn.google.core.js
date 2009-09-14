@@ -315,9 +315,9 @@ Mapstraction: {
 		};
 		tilelayers[0].getTileUrl = function (a, b) {
 			url = tile_url;
-			url = url.replace(/\{Z\}/,b);
-			url = url.replace(/\{X\}/,a.x);
-			url = url.replace(/\{Y\}/,a.y);
+			url = url.replace(/\{Z\}/g,b);
+			url = url.replace(/\{X\}/g,a.x);
+			url = url.replace(/\{Y\}/g,a.y);
 			return url;
 		};
 		tileLayerOverlay = new GTileLayerOverlay(tilelayers[0]);
