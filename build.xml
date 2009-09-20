@@ -33,6 +33,7 @@
 				<file file="${source}/mxn.(provider).core.js"/>
 				<file file="${source}/mxn.cloudmade.core.js"/>
 				<file file="${source}/mxn.google.core.js"/>
+				<file file="${source}/mxn.googlev3.core.js"/>
 				<file file="${source}/mxn.microsoft.core.js"/>
 				<file file="${source}/mxn.yahoo.core.js"/>
 			</resources>
