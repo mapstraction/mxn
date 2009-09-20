@@ -57,6 +57,14 @@
 			<arg value="tools/jslint/jslint.js"/>
 			<arg value="${build.dir}/mxn.core.js"/>
 		</java>
+		<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
+			<arg value="tools/jslint/jslint.js"/>
+			<arg value="${build.dir}/mxn.google.core.js"/>
+		</java>
+		<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
+			<arg value="tools/jslint/jslint.js"/>
+			<arg value="${build.dir}/mxn.googlev3.core.js"/>
+		</java>
 				
 		<!-- document our sources -->
 		<echo>--- DOC ---</echo>

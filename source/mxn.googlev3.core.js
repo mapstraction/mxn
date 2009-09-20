@@ -41,12 +41,14 @@ Mapstraction: {
 	addControls: function( args ) {
 	    var map = this.maps[this.api];	
             // remove old controls
+
             // Google has a combined zoom and pan control.
             if (args.zoom || args.pan) {
-                (args.zoom == 'large') 
-                ? this.addLargeControls() 
-                : this.addSmallControls();
-
+                if (args.zoom == 'large'){ 
+                    this.addLargeControls();
+                } else { 
+                    this.addSmallControls();
+                }
             }
 	},
 
@@ -66,7 +68,7 @@ Mapstraction: {
 	    var map = this.maps[this.api];
             var myOptions = {
                 navigationControl:true,
-		navigationControlOptions: {style:google.maps.NavigationControlStyle.DEFAULT},
+		navigationControlOptions: {style:google.maps.NavigationControlStyle.DEFAULT}
             };
             map.setOptions(myOptions);
             this.addControlsArgs.pan = true;
@@ -77,7 +79,7 @@ Mapstraction: {
 	    var map = this.maps[this.api];
             var myOptions = {
                 mapTypeControl: true,
-                mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DEFAULT},
+                mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DEFAULT}
             };
             map.setOptions(myOptions);
 	    this.addControlsArgs.map_type = true;
@@ -150,7 +152,7 @@ Mapstraction: {
 	setCenter: function(point, options) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
-		if(options && options['pan']) { 
+		if(options && options.pan) { 
 			// TODO: Add provider code
 		}
 		else { 
@@ -205,7 +207,7 @@ Mapstraction: {
 
 	getMapType: function() {
             var map = this.maps[this.api];
-            var type = map.getMapTypeId()
+            var type = map.getMapTypeId();
                 switch(type) {
                         case google.maps.MapTypeId.ROADMAP:
                                 return mxn.Mapstraction.ROAD;

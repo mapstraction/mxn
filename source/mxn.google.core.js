@@ -83,9 +83,11 @@ Mapstraction: {
  
 		// Google has a combined zoom and pan control.
 		if (args.zoom || args.pan) {
-			(args.zoom == 'large') 
-                        ? this.addLargeControls() 
-                        : this.addSmallControls();
+		    if (args.zoom == 'large'){ 
+                        this.addLargeControls();
+                    } else {
+                        this.addSmallControls();
+                    }
 		}
 
 		if (args.scale) {
@@ -184,7 +186,7 @@ Mapstraction: {
 	setCenter: function(point, options) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
-		if(options && options['pan']) { 
+		if(options && options.pan) { 
 			map.panTo(pt); 
 		}
 		else { 
@@ -357,7 +359,7 @@ Mapstraction: {
 	
 	mousePosition: function(element) {
 		var locDisp = document.getElementById(element);
-		if (locDisp != null) {
+		if (locDisp !== null) {
 			var map = this.maps[this.api];
 			GEvent.addListener(map, 'mousemove', function (point) {
 				var loc = point.lat().toFixed(4) + ' / ' + point.lng().toFixed(4);
@@ -496,11 +498,10 @@ Polyline: {
 			gpoints.push(this.points[i].toProprietary('google'));
 		}
 		if (this.closed	|| gpoints[0].equals(gpoints[length-1])) {
-			var gpoly = new GPolygon(gpoints, this.color, this.width, this.opacity, this.fillColor || "#5462E3", this.opacity || "0.3");
+			return new GPolygon(gpoints, this.color, this.width, this.opacity, this.fillColor || "#5462E3", this.opacity || "0.3");
 		} else {
-			var gpoly = new GPolyline(gpoints, this.color, this.width, this.opacity);
+			return new GPolyline(gpoints, this.color, this.width, this.opacity);
 		}
-		return gpoly;
 	},
 	
 	show: function() {
@@ -510,7 +511,6 @@ Polyline: {
 	hide: function() {
 		throw 'Not implemented';
 	}
-	
 }
 
 });
