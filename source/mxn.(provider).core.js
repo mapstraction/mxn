@@ -42,12 +42,6 @@ Mapstraction: {
 		// TODO: Add provider code
 	},
 
-	dragging: function(on) {
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-	},
-
 	setCenterAndZoom: function(point, zoom) { 
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
@@ -109,7 +103,7 @@ Mapstraction: {
 	setCenter: function(point, options) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
-		if(options && options['pan']) { 
+		if(options && options.pan) { 
 			// TODO: Add provider code
 		}
 		else { 
