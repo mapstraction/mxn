@@ -139,24 +139,21 @@ Mapstraction: {
 		
 		// TODO: Add provider code
 	},
-	
+       
 	getCenter: function() {
-		var point;
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-		
-		return point;
+                var pt = map.getCenter();
+                return new mxn.LatLonPoint(pt.lat(),pt.lng());
 	},
 
 	setCenter: function(point, options) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 		if(options && options.pan) { 
-			// TODO: Add provider code
+                    map.panTo(pt);
 		}
 		else { 
-			// TODO: Add provider code
+                    map.setCenter(pt);
 		}
 	},
 
@@ -168,40 +165,29 @@ Mapstraction: {
 	},
 	
 	getZoom: function() {
-		var map = this.maps[this.api];
-		var zoom;
-		
-		// TODO: Add provider code
-		
-		return zoom;
+	    var map = this.maps[this.api];
+            return map.getZoom();
 	},
 
 	getZoomLevelForBoundingBox: function( bbox ) {
 		var map = this.maps[this.api];
-		// NE and SW points from the bounding box.
-		var ne = bbox.getNorthEast();
-		var sw = bbox.getSouthWest();
-		var zoom;
-		
-		// TODO: Add provider code
-		
-		return zoom;
+                throw 'Not implemented';
 	},
 
 	setMapType: function(type) {
 		var map = this.maps[this.api];
 		switch(type) {
 			case mxn.Mapstraction.ROAD:
-				// TODO: Add provider code
-				break;
+                            map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+			    break;
 			case mxn.Mapstraction.SATELLITE:
-				// TODO: Add provider code
-				break;
+                            map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+			    break;
 			case mxn.Mapstraction.HYBRID:
-				// TODO: Add provider code
-				break;
+                            map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+			    break;
 			default:
-				// TODO: Add provider code
+                            map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 		}	 
 	},
 
@@ -312,11 +298,11 @@ Marker: {
 	},
 
 	hide: function() {
-		// TODO: Add provider code
+	    this.proprietary_marker.setOptions({visible:false});
 	},
 
 	show: function() {
-		// TODO: Add provider code
+	    this.proprietary_marker.setOptions({visible:true});
 	},
 
 	update: function() {
@@ -328,15 +314,15 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		// TODO: Add provider code
+            throw 'Not implemented';
 	},
 	
 	show: function() {
-		// TODO: Add provider code
+            throw 'Not implemented';
 	},
 
 	hide: function() {
-		// TODO: Add provider code
+            throw 'Not implemented';
 	}
 	
 }
