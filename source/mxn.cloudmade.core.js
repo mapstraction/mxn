@@ -122,7 +122,7 @@ mxn.register('cloudmade', {
         setCenter: function(point, options) {
             var map = this.maps[this.api];
             var pt = point.toProprietary(this.api);
-            if(options != null && options.pan) { map.panTo(pt); }
+            if(options !== null && options.pan) { map.panTo(pt); }
             else { map.setCenter(pt); }
         },
 
