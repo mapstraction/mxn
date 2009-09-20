@@ -70,61 +70,61 @@ Mapstraction: {
 	addControls: function( args ) {
 		var map = this.maps[this.api];
 	
-		//remove old controls
+		// remove old controls
 		if (this.controls) {
 			while ((ctl = this.controls.pop())) {
+			        // Google specific method
 				map.removeControl(ctl);
 			}
-		}
-		else {
-			this.controls = [];
-		}
-		c = this.controls;
-
+		} else {
+  		        this.controls = [];
+                }
+                c = this.controls;
+ 
 		// Google has a combined zoom and pan control.
 		if (args.zoom || args.pan) {
-			if (args.zoom == 'large') {
-				c.unshift(new GLargeMapControl());
-				map.addControl(c[0]);
-			} else {
-				c.unshift(new GSmallMapControl());
-				map.addControl(c[0]);
-			}
+			(args.zoom == 'large') 
+                        ? this.addLargeControls() 
+                        : this.addSmallControls();
 		}
+
 		if (args.scale) {
-			c.unshift(new GScaleControl()); map.addControl(c[0]);
+                    this.controls.unshift(new GScaleControl());
+	    	    map.addControl(this.controls[0]);
+		    this.addControlsArgs.scale = true;
 		}
 		
 		if (args.overview) {
-			c.unshift(new GOverviewMapControl()); map.addControl(c[0]);
+                        c.unshift(new GOverviewMapControl()); 
+                        map.addControl(c[0]);
+    		        this.addControlsArgs.overview = true;
 		}
 		if (args.map_type) {
-			c.unshift(new GMapTypeControl()); map.addControl(c[0]);
+ 		        this.addMapTypeControls();
 		} 
 	},
 
 	addSmallControls: function() {
 		var map = this.maps[this.api];
-		map.addControl(new GSmallMapControl());
+                this.controls.unshift(new GSmallMapControl());
+		map.addControl(this.controls[0]);
 		this.addControlsArgs.zoom = 'small';
+		this.addControlsArgs.pan = true;
 	},
 
 	addLargeControls: function() {
-		var map = this.maps[this.api];
-		map.addControl(new GMapTypeControl());
-		map.addControl(new GOverviewMapControl()) ;
-		this.addControlsArgs.overview = true;
-		this.addControlsArgs.map_type = true;
-		map.addControl(new GLargeMapControl());
-		map.addControl(new GScaleControl()) ;
-		this.addControlsArgs.pan = true;
+		var map = this.maps[this.api];                
+                this.controls.unshift(new GLargeMapControl());
+		map.addControl(this.controls[0]);
 		this.addControlsArgs.zoom = 'large';
-		this.addControlsArgs.scale = true;			  
+		this.addControlsArgs.pan = true;
 	},
 
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
-		map.addControl(new GMapTypeControl());  
+                this.controls.unshift(new GMapTypeControl());
+		map.addControl(this.controls[0]);
+		this.addControlsArgs.map_type = true;
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
@@ -143,8 +143,7 @@ Mapstraction: {
 		});
 		GEvent.addListener(gpin, 'infowindowclose', function() {
 			marker.closeInfoBubble.fire();
-		});
-		
+		});		
 		return gpin;
 	},
 
@@ -185,8 +184,7 @@ Mapstraction: {
 	setCenter: function(point, options) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
-		if(options && options['pan']) 
-		{ 
+		if(options && options['pan']) { 
 			map.panTo(pt); 
 		}
 		else { 
