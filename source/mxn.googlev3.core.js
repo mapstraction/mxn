@@ -5,7 +5,12 @@ Mapstraction: {
 	init: function(element, api){		
 	    var me = this;         
             if ( google && google.maps ){
-                var map = new google.maps.Map(element, {mapTypeId:google.maps.MapTypeId.ROADMAP});
+                // be default no controls and road map
+                var myOptions = {
+		    disableDefaultUI: true,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+                var map = new google.maps.Map(element, myOptions);
 
                 // deal with click
 
@@ -28,8 +33,15 @@ Mapstraction: {
 	},
 	
 	applyOptions: function(){
-		var map = this.maps[this.api];
-		// TODO: Add provider code
+	    var map = this.maps[this.api];
+	    var myOptions = [];
+            if (this.options.enableDragging) {
+		myOptions.draggable = true;
+            } 
+            if (this.options.enableScrollWheelZoom){
+		myOptions.scrollwheel = true;
+            } 
+	    map.setOptions(myOptions);
 	},
 
 	resizeTo: function(width, height){	
@@ -50,11 +62,20 @@ Mapstraction: {
                     this.addSmallControls();
                 }
             }
+            if (args.scale){
+                var myOptions = {
+                    scaleControl:true,
+		    scaleControlOptions: {style:google.maps.ScaleControlStyle.DEFAULT}                
+                };
+                map.setOptions(myOptions);
+                this.addControlsArgs.scale = true;
+            }
 	},
 
 	addSmallControls: function() {
             var map = this.maps[this.api];
             var myOptions = {
+                scrollwheel: false,
                 navigationControl:true,
 		navigationControlOptions: {style:google.maps.NavigationControlStyle.SMALL}
             };
@@ -83,12 +104,6 @@ Mapstraction: {
             };
             map.setOptions(myOptions);
 	    this.addControlsArgs.map_type = true;
-	},
-
-	dragging: function(on) {
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
