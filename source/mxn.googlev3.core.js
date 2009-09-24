@@ -175,9 +175,7 @@ Mapstraction: {
 
 	setZoom: function(zoom) {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-		
+		map.setZoom(zoom);
 	},
 	
 	getZoom: function() {
