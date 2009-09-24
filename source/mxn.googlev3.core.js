@@ -47,7 +47,8 @@ Mapstraction: {
 	resizeTo: function(width, height){	
             this.currentElement.style.width = width;
             this.currentElement.style.height = height;
-            this.maps[this.api].checkResize(); 
+            var map = this.maps[this.api];
+            google.maps.event.trigger(map,'resize');
   	},
 
 	addControls: function( args ) {
