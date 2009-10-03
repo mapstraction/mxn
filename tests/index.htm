@@ -32,14 +32,15 @@
 	
 	
 	//WhenDomReady(function(){
+	  var m;
 	window.onload = function() {
 		
 		var actionElm = document.getElementById('actions');
 		var infoElm = document.getElementById('info');		
 		var eventsElm = document.getElementById('events');
 		
-		var m = new mxn.Mapstraction('map', 'google');
-		
+		m = new mxn.Mapstraction('map', 'google');
+
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var center = oEvtSource.getCenter();
 			eventsElm.innerHTML += 'Map pan: (' + center.lat.toFixed(5) + ','+ center.lon.toFixed(5) +')<br/>';
@@ -68,89 +69,109 @@
        action: function(){
          m.setCenterAndZoom(new mxn.LatLonPoint(37.4419, -122.1419), 10);
        } 
+      },     
+      {
+        desc: 'Pan map',
+        action: function(){
+          m.setCenter(new mxn.LatLonPoint(37.3419, -122.0419), {pan: true});
+        }
       },
       {
-       desc: 'Pan map',
-       action: function(){
-         m.setCenter(new mxn.LatLonPoint(37.3419, -122.0419), {pan: true});
-       }
+        desc: 'Get info',
+        action: function(){
+          infoElm.innerHTML = 'Info<br/>';
+          var bb = m.getBounds();
+          infoElm.innerHTML += 'Bounds:<br/>SW(' + bb.sw.lat.toFixed(5) + ','+ bb.sw.lon.toFixed(5) +')<br/>NE(' + bb.ne.lat.toFixed(5) + ','+ bb.ne.lon.toFixed(5) +')<br/>';
+          var ll = m.getCenter();
+          infoElm.innerHTML += 'Center: (' + ll.lat.toFixed(5) + ','+ ll.lon.toFixed(5) +')<br/>';
+          infoElm.innerHTML += 'Map type: ' + m.getMapType() + '<br/>';
+          infoElm.innerHTML += 'Zoom: ' + m.getZoom() + '<br/>';
+        }
       },
       {
-       desc: 'Get info',
-       action: function(){
-         infoElm.innerHTML = 'Info<br/>';
-         var bb = m.getBounds();
-         infoElm.innerHTML += 'Bounds:<br/>SW(' + bb.sw.lat.toFixed(5) + ','+ bb.sw.lon.toFixed(5) +')<br/>NE(' + bb.ne.lat.toFixed(5) + ','+ bb.ne.lon.toFixed(5) +')<br/>';
-         var ll = m.getCenter();
-         infoElm.innerHTML += 'Center: (' + ll.lat.toFixed(5) + ','+ ll.lon.toFixed(5) +')<br/>';
-         infoElm.innerHTML += 'Map type: ' + m.getMapType() + '<br/>';
-         infoElm.innerHTML += 'Zoom: ' + m.getZoom() + '<br/>';
-       }
+        desc: 'Set zoom',
+        action: function(){
+          m.setZoom(8);
+        }
       },
       {
-       desc: 'Set zoom',
-       action: function(){
-         m.setZoom(8);
-       }
+        desc: 'Add marker',
+        action: function(){
+          var mkr = new mxn.Marker(new mxn.LatLonPoint(37.3419, -122.0419));
+          mkr.setLabel('Some random place');
+          mkr.setInfoBubble('Some information about the random place');
+          mkr.click.addHandler(markerEventHandler);
+          mkr.openInfoBubble.addHandler(markerEventHandler);
+          mkr.closeInfoBubble.addHandler(markerEventHandler);
+          m.addMarker(mkr);
+        }
       },
       {
-       desc: 'Add marker',
-       action: function(){
-         var mkr = new mxn.Marker(new mxn.LatLonPoint(37.3419, -122.0419));
-         mkr.setLabel('Some random place');
-         mkr.setInfoBubble('Some information about the random place');
-         mkr.click.addHandler(markerEventHandler);
-         mkr.openInfoBubble.addHandler(markerEventHandler);
-         mkr.closeInfoBubble.addHandler(markerEventHandler);
-         m.addMarker(mkr);
-       }
+        desc: 'Add marker offscreen',
+        action: function(){
+          var mkr = new mxn.Marker(new mxn.LatLonPoint(37.3419, -117.0419));
+          mkr.setLabel('Some other place');
+          m.addMarker(mkr);
+        }
       },
       {
-       desc: 'Add marker offscreen',
-       action: function(){
-         var mkr = new mxn.Marker(new mxn.LatLonPoint(37.3419, -117.0419));
-         mkr.setLabel('Some other place');
-         m.addMarker(mkr);
-       }
+        desc: 'Auto center',
+        action: function(){
+          m.autoCenterAndZoom();
+        }
       },
       {
-       desc: 'Auto center',
-       action: function(){
-         m.autoCenterAndZoom();
-       }
+        desc: 'Add line',
+        action: function(){
+          var pl = new mxn.Polyline([
+            new mxn.LatLonPoint(37.3419, -122.0419),
+            new mxn.LatLonPoint(36.3419, -120.0419),
+            new mxn.LatLonPoint(38.3419, -119.0419),
+            new mxn.LatLonPoint(37.3419, -117.0419)
+            ]);
+            pl.color = '#00DD55';
+            m.addPolyline(pl);
+          }
+        },
+     {
+        desc: 'Add controls',
+        action: function() {
+          m.addLargeControls();
+          m.addControls({
+            pan:   true,
+            zoom:   'small',
+            overview: true,
+            scale: true,
+            map_type: true,
+          });
+        }
       },
       {
-       desc: 'Add line',
-       action: function(){
-         var pl = new mxn.Polyline([
-           new mxn.LatLonPoint(37.3419, -122.0419),
-           new mxn.LatLonPoint(36.3419, -120.0419),
-           new mxn.LatLonPoint(38.3419, -119.0419),
-           new mxn.LatLonPoint(37.3419, -117.0419)
-         ]);
-         pl.color = '#00DD55';
-         m.addPolyline(pl);
-       }
-      },
-			{
-				desc: 'Swap API (yahoo)',
-				action: function(){
- 					m.swap('map', 'yahoo');
-  			}
-			},
-			{
-				desc: 'Swap API (microsoft)',
-				action: function(){
- 					m.swap('map', 'microsoft');
-  			}
-			},
-			{
-				desc: 'Swap API (openlayers)',
-				action: function(){
- 					m.swap('map', 'openlayers');
-  			}
-			},
-			
+        desc: 'Add Base map type',
+        action: function() {
+          m.addTileLayer("http://tile.openstreetmap.org/{Z}/{X}/{Y}.png", 1.0, "OSM", 1, 19, true);
+          // m.setMapType("OSM");
+        }
+      },             
+      {
+        desc: 'Swap API (yahoo)',
+        action: function(){
+                  m.swap('map', 'yahoo');
+              }
+       },
+       {
+        desc: 'Swap API (microsoft)',
+        action: function(){
+                  m.swap('map', 'microsoft');
+              }
+       },
+       {
+        desc: 'Swap API (openlayers)',
+        action: function(){
+                  m.swap('map', 'openlayers');
+              }
+       },
+           
 			{ desc: 'Done.', action: function(){} }
 		];
 		
