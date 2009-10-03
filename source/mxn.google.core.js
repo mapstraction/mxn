@@ -227,7 +227,7 @@ Mapstraction: {
 				map.setMapType(G_HYBRID_MAP);
 				break;
 			default:
-				map.setMapType(G_NORMAL_MAP);
+				map.setMapType(type || G_NORMAL_MAP);
 		}	 
 	},
 
@@ -299,12 +299,10 @@ Mapstraction: {
 		});
 	},
 
-	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
-		
+	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 		var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0, "copyleft");
 		var copyrightCollection = new GCopyrightCollection(copyright_text);
 		copyrightCollection.addCopyright(copyright);
-
 		var tilelayers = [];
 		tilelayers[0] = new GTileLayer(copyrightCollection, min_zoom, max_zoom);
 		tilelayers[0].isPng = function() {
@@ -320,11 +318,16 @@ Mapstraction: {
 			url = url.replace(/\{Y\}/g,a.y);
 			return url;
 		};
-		tileLayerOverlay = new GTileLayerOverlay(tilelayers[0]);
-
+		if(map_type) {
+            var tileLayerOverlay = new GMapType(tilelayers, new GMercatorProjection(19), copyright_text, {
+                errorMessage:"More "+copyright_text+" tiles coming soon"
+            });        
+            this.maps[this.api].addMapType(tileLayerOverlay);
+        } else {
+            tileLayerOverlay = new GTileLayerOverlay(tilelayers[0]);
+            this.maps[this.api].addOverlay(tileLayerOverlay);
+        }		
 		this.tileLayers.push( [tile_url, tileLayerOverlay, true] );
-		this.maps[this.api].addOverlay(tileLayerOverlay);
-		
 		return tileLayerOverlay;
 	},
 

@@ -106,19 +106,19 @@ mxn.register('openlayers', {
                 map.controls[i-1].deactivate();
                 map.removeControl(map.controls[i-1]);
             }
-            // FIXME - can pan & zoom be separate?
-            if ( args.pan             )      {
-                map.addControl(new OpenLayers.Control.PanZoomBar());
-            }
-            else {  }
             if ( args.zoom == 'large' )      {
                 map.addControl(new OpenLayers.Control.PanZoomBar());
             }
             else if ( args.zoom == 'small' ) {
-                map.addControl(new OpenLayers.Control.ZoomBox());
+                map.addControl(new OpenLayers.Control.ZoomPanel());
+                if ( args.pan) {
+                    map.addControl(new OpenLayers.Control.PanPanel()); 
+                }
             }
             else {
-                map.addControl(new OpenLayers.Control.ZoomBox());
+                if ( args.pan){
+                    map.addControl(new OpenLayers.Control.PanPanel()); 
+                }
             }
             if ( args.overview ) {
                 map.addControl(new OpenLayers.Control.OverviewMap());

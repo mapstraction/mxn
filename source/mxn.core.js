@@ -36,6 +36,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	this.layers = [];
 	this.polylines = [];
 	this.images = [];
+    this.controls = [];	
 	this.loaded = {};
 	this.onload = {};
 	this.element = element;
@@ -953,15 +954,16 @@ Mapstraction.prototype.addJSON = function(json) {
  *  should go in the URL.
  *
  * For example, the OpenStreetMap tiles are:
- *  http://tile.openstreetmap.org/{Z}/{X}/{Y}.png
+ *  m.addTileLayer("http://tile.openstreetmap.org/{Z}/{X}/{Y}.png", 1.0, "OSM", 1, 19, true);
  *
  * @param {tile_url} template url of the tiles.
  * @param {opacity} opacity of the tile layer - 0 is transparent, 1 is opaque. (default=0.6)
  * @param {copyright_text} copyright text to use for the tile layer. (default=Mapstraction)
  * @param {min_zoom} Minimum (furtherest out) zoom level that tiles are available (default=1)
  * @param {max_zoom} Maximum (closest) zoom level that the tiles are available (default=18)
+ * @param {map_type} Should the tile layer be a selectable map type in the layers palette (default=true)
  */
-Mapstraction.prototype.addTileLayer = function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
+Mapstraction.prototype.addTileLayer = function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 	if(!tile_url) {
 		return;
 	}
@@ -971,8 +973,9 @@ Mapstraction.prototype.addTileLayer = function(tile_url, opacity, copyright_text
 	copyright_text = copyright_text || "Mapstraction";
 	min_zoom = min_zoom || 1;
 	max_zoom = max_zoom || 18;
+	map_type = map_type || true;
 
-	return this.invoker.go('addTileLayer', [ tile_url, opacity, copyright_text, min_zoom, max_zoom ] );
+	return this.invoker.go('addTileLayer', [ tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type] );
 };
 
 /**
