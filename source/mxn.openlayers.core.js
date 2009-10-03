@@ -507,5 +507,4 @@ mxn.register('openlayers', {
 		}
 
 	}
-
 });
