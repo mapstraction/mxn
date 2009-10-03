@@ -961,7 +961,7 @@ Mapstraction.prototype.addJSON = function(json) {
  * @param {copyright_text} copyright text to use for the tile layer. (default=Mapstraction)
  * @param {min_zoom} Minimum (furtherest out) zoom level that tiles are available (default=1)
  * @param {max_zoom} Maximum (closest) zoom level that the tiles are available (default=18)
- * @param {map_type} Should the tile layer be a selectable map type in the layers palette (default=true)
+ * @param {map_type} Should the tile layer be a selectable map type in the layers palette (default=false)
  */
 Mapstraction.prototype.addTileLayer = function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 	if(!tile_url) {
@@ -973,7 +973,7 @@ Mapstraction.prototype.addTileLayer = function(tile_url, opacity, copyright_text
 	copyright_text = copyright_text || "Mapstraction";
 	min_zoom = min_zoom || 1;
 	max_zoom = max_zoom || 18;
-	map_type = map_type || true;
+	map_type = map_type || false;
 
 	return this.invoker.go('addTileLayer', [ tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type] );
 };
