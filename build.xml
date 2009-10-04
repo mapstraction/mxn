@@ -35,6 +35,7 @@
 				<file file="${source}/mxn.google.core.js"/>
 				<file file="${source}/mxn.googlev3.core.js"/>
 				<file file="${source}/mxn.microsoft.core.js"/>
+				<file file="${source}/mxn.openlayers.core.js"/>
 				<file file="${source}/mxn.yahoo.core.js"/>
 			</resources>
 		</copy>
@@ -73,7 +74,6 @@
 			<arg value="tools/jslint/jslint.js"/>
 			<arg value="${build.dir}/mxn.googlev3.core.js"/>
 		</java>
-
 				
 		<!-- document our sources -->
 		<echo>--- DOC ---</echo>

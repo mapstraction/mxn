@@ -36,7 +36,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	this.layers = [];
 	this.polylines = [];
 	this.images = [];
-    this.controls = [];	
+        this.controls = [];	
 	this.loaded = {};
 	this.onload = {};
 	this.element = element;
@@ -1721,11 +1721,12 @@ var Radius = mxn.Radius = function(center, quality) {
 
 	// Create Radian conversion constant
 	var rad = Math.PI / 180;
-	this.calcs = new Array();
+	this.calcs = [];
 
-	for(var i = 0; i < 360; i += quality)
-		this.calcs.push([Math.cos(i * rad) / latConv, Math.sin(i * rad) / lonConv]);
-}
+	for(var i = 0; i < 360; i += quality){
+	    this.calcs.push([Math.cos(i * rad) / latConv, Math.sin(i * rad) / lonConv]);
+        }
+};
 
 /**
  * Returns polyline of a circle around the point based on new radius
@@ -1734,7 +1735,7 @@ var Radius = mxn.Radius = function(center, quality) {
  * @returns {Polyline} Polyline
  */
 Radius.prototype.getPolyline = function(radius, colour) {
-	var points = Array();
+        var points = [];
 
 	for(var i = 0; i < this.calcs.length; i++){
 		var point = new LatLonPoint(
