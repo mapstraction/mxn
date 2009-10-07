@@ -5,13 +5,13 @@ Mapstraction: {
 	init: function(element, api){		
 	    var me = this;         
             if ( google && google.maps ){
-                // be default no controls and road map
+                // by default no controls and road map
                 var myOptions = {
-		    disableDefaultUI: true,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
+		    		disableDefaultUI: true,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
                 };
                 var map = new google.maps.Map(element, myOptions);
-
+                
                 // deal with click
 
                 // deal with zoom change
@@ -29,7 +29,7 @@ Mapstraction: {
 	    }
             else {
                 alert(api + ' map script not imported');
-            }     
+            }
 	},
 	
 	applyOptions: function(){
@@ -76,11 +76,11 @@ Mapstraction: {
 	addSmallControls: function() {
             var map = this.maps[this.api];
             var myOptions = {
-                scrollwheel: false,
-                navigationControl:true,
-		navigationControlOptions: {style:google.maps.NavigationControlStyle.SMALL}
+            	navigationControl: true,
+            	navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL}
             };
             map.setOptions(myOptions);
+
             this.addControlsArgs.pan = false;
             this.addControlsArgs.scale = false;                        
             this.addControlsArgs.zoom = 'small';
@@ -117,8 +117,6 @@ Mapstraction: {
 	addMarker: function(marker, old) {
 		var map = this.maps[this.api];
 		var pin = marker.toProprietary(this.api);
-		
-		// TODO: Add provider code
 		
 		return pin;
 	},
@@ -232,9 +230,9 @@ Mapstraction: {
 
 	setBounds: function(bounds){
 		var map = this.maps[this.api];
-		var sw = bounds.getSouthWest();
-		var ne = bounds.getNorthEast();
-                var gLatLngBounds = new google.maps.LatLngBounds({sw:sw, ne:ne});
+		var sw = bounds.getSouthWest().toProprietary(this.api);
+		var ne = bounds.getNorthEast().toProprietary(this.api);
+		var gLatLngBounds = new google.maps.LatLngBounds(sw, ne);
 		map.fitBounds(gLatLngBounds);
 	},
 
@@ -304,11 +302,51 @@ LatLonPoint: {
 Marker: {
 	
 	toProprietary: function() {
-		// TODO: Add provider code
+		var options = {};
+		if(this.iconUrl) {
+			var image = new google.maps.MarkerImage(this.iconUrl);
+			options.icon = image;
+			if(typeof(this.iconShadowUrl) != 'undefined') {
+				var shadow = new google.maps.MarkerImage(this.iconShadowUrl);
+				options.shadow = shadow;
+			}
+		}
+		if(this.draggable){
+			options.draggable = this.draggable;
+		}
+		if(this.labelText){
+			options.title =  this.labelText;
+		}
+		
+		options.position = this.location.toProprietary(this.api);
+		options.map = this.map;
+		var marker = new google.maps.Marker(options);
+
+		if(this.infoBubble){
+			var infowindow = new google.maps.InfoWindow({
+        		content: this.infoBubble
+		    });
+
+			if(this.hover) {
+				event_action = "mouseover";
+			}
+			else {
+				event_action = "click";
+			}
+			
+			google.maps.event.addListener(marker, event_action, function() {
+				infowindow.open(this.map,marker);
+			});
+		}
+		
+		return marker;
 	},
 
-	openBubble: function() {		
-		// TODO: Add provider code
+	openBubble: function() {
+		var infowindow = new google.maps.InfoWindow({
+       		content: this.infoBubble
+	    });
+	    infowindow.open(this.map,this.proprietary_marker);
 	},
 
 	hide: function() {
