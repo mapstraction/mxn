@@ -311,11 +311,9 @@ Marker: {
 	toProprietary: function() {
 		var options = {};
 		if (this.iconUrl) {
-		    var image = new google.maps.MarkerImage(this.iconUrl);
-		    options.icon = image;
+		    options.icon = new google.maps.MarkerImage(this.iconUrl);
 		    if (typeof(this.iconShadowUrl) != 'undefined') {
-		        var shadow = new google.maps.MarkerImage(this.iconShadowUrl);
-			options.shadow = shadow;
+			options.shadow = new google.maps.MarkerImage(this.iconShadowUrl);
 		    }
 		}
 		if (this.draggable){
@@ -334,20 +332,18 @@ Marker: {
         	        content: this.infoBubble
 		    });
 
+                    var event_action = "click";
 		    if(this.hover) {
 		       event_action = "mouseover";
-		    }
-		    else {
-		       event_action = "click";
 		    }
 		    google.maps.event.addListener(marker, event_action, function() { infowindow.open(this.map,marker); });
 		}
 
                 if (this.hoverIconUrl){
-                    var hicon = new google.maps.MarkerImage(this.hoverIconUrl);
-                    google.maps.event.addListener(marker, "mouseover", function(){ marker.setIcon(hicon); });
-                    var icon = new google.maps.MarkerImage(this.iconUrl);
-                    google.maps.event.addListener(marker, "mouseout", function(){ marker.setIcon(icon); });
+                    google.maps.event.addListener(marker, "mouseover", 
+                                                  function(){ marker.setIcon( new google.maps.MarkerImage(this.hoverIconUrl) ); });
+                    google.maps.event.addListener(marker, "mouseout", 
+                                                  function(){ marker.setIcon( new google.maps.MarkerImage(this.iconUrl) ); });
                 }
 
 		google.maps.event.addListener(marker, 'click', function() {
