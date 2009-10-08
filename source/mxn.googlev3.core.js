@@ -307,41 +307,45 @@ Marker: {
 	
 	toProprietary: function() {
 		var options = {};
-		if(this.iconUrl) {
-			var image = new google.maps.MarkerImage(this.iconUrl);
-			options.icon = image;
-			if(typeof(this.iconShadowUrl) != 'undefined') {
-				var shadow = new google.maps.MarkerImage(this.iconShadowUrl);
-				options.shadow = shadow;
-			}
+		if (this.iconUrl) {
+		    var image = new google.maps.MarkerImage(this.iconUrl);
+		    options.icon = image;
+		    if (typeof(this.iconShadowUrl) != 'undefined') {
+		        var shadow = new google.maps.MarkerImage(this.iconShadowUrl);
+			options.shadow = shadow;
+		    }
 		}
-		if(this.draggable){
-			options.draggable = this.draggable;
+		if (this.draggable){
+		    options.draggable = this.draggable;
 		}
-		if(this.labelText){
-			options.title =  this.labelText;
+		if (this.labelText){
+		    options.title =  this.labelText;
 		}
 		
 		options.position = this.location.toProprietary(this.api);
 		options.map = this.map;
 		var marker = new google.maps.Marker(options);
 
-		if(this.infoBubble){
-			var infowindow = new google.maps.InfoWindow({
-        		content: this.infoBubble
+		if (this.infoBubble){
+		    var infowindow = new google.maps.InfoWindow({
+        	        content: this.infoBubble
 		    });
 
-			if(this.hover) {
-				event_action = "mouseover";
-			}
-			else {
-				event_action = "click";
-			}
-			
-			google.maps.event.addListener(marker, event_action, function() {
-				infowindow.open(this.map,marker);
-			});
+		    if(this.hover) {
+		       event_action = "mouseover";
+		    }
+		    else {
+		       event_action = "click";
+		    }
+		    google.maps.event.addListener(marker, event_action, function() { infowindow.open(this.map,marker); });
 		}
+
+                if (this.hoverIconUrl){
+                    var hicon = new google.maps.MarkerImage(this.hoverIconUrl);
+                    google.maps.event.addListener(marker, "mouseover", function(){ marker.setIcon(hicon); });
+                    var icon = new google.maps.MarkerImage(this.iconUrl);
+                    google.maps.event.addListener(marker, "mouseout", function(){ marker.setIcon(icon); });
+                }
 		
 		return marker;
 	},
