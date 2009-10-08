@@ -8,7 +8,7 @@ Mapstraction: {
                 // by default no controls and road map
                 var myOptions = {
 		    		disableDefaultUI: true,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
                 };
                 var map = new google.maps.Map(element, myOptions);
                 
@@ -177,13 +177,17 @@ Mapstraction: {
 	},
 	
 	getZoom: function() {
-	    var map = this.maps[this.api];
-            return map.getZoom();
+		var map = this.maps[this.api];
+		return map.getZoom();
 	},
 
 	getZoomLevelForBoundingBox: function( bbox ) {
 		var map = this.maps[this.api];
-                throw 'Not implemented';
+		var sw = bbox.getSouthWest().toProprietary(this.api);
+		var ne = bbox.getNorthEast().toProprietary(this.api);
+		var gLatLngBounds = new google.maps.LatLngBounds(sw, ne);
+		map.fitBounds(gLatLngBounds);
+                return map.getZoom();
 	},
 
 	setMapType: function(type) {

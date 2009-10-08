@@ -12,9 +12,10 @@
 <script type="text/javascript">
 //<![CDATA[
 
+  var m;
   function initialize() {
       // create mxn object
-      var m = new mxn.Mapstraction('mapdiv','googlev3');
+      m = new mxn.Mapstraction('mapdiv','googlev3');
       m.addControls({zoom:'small'});
 
       var latlon = new mxn.LatLonPoint(51.53468413093941, -0.09026169776916504)
@@ -22,10 +23,15 @@
       // put map on page
       m.setCenterAndZoom(latlon, 16);
 
-      // add a marker
-      //  var marker = new mxn.Marker(latlon);
-      //  m.addMarker(marker,true); 
+      //add a marker
+      var marker = new mxn.Marker(latlon);
+      m.addMarker(marker,true); 
   }
+
+  function changetohybrid(){
+     m.setMapType(mxn.Mapstraction.HYBRID);  
+  }
+
 //]]>
 </script> 
 
@@ -36,6 +42,7 @@
 <tr><td><div id="mapdiv"></div></td>
 </tr>
 </table>
+<a href='#' onclick='changetohybrid();'>change to hybrid</a>
 </center>
 </body> 
 </html>
