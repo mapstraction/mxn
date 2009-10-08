@@ -13,6 +13,9 @@ Mapstraction: {
                 var map = new google.maps.Map(element, myOptions);
                 
                 // deal with click
+                google.maps.event.addListener(map, 'click', function(location){
+				me.clickHandler(location.latLng.lat(),location.latLng.lng(),location,me);
+                });
 
                 // deal with zoom change
                 google.maps.event.addListener(map, 'zoom_changed', function(){
@@ -346,6 +349,10 @@ Marker: {
                     var icon = new google.maps.MarkerImage(this.iconUrl);
                     google.maps.event.addListener(marker, "mouseout", function(){ marker.setIcon(icon); });
                 }
+
+		google.maps.event.addListener(marker, 'click', function() {
+			marker.mapstraction_marker.click.fire();
+		});
 		
 		return marker;
 	},
