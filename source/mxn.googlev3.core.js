@@ -329,10 +329,18 @@ Marker: {
 		}
 
                 if (this.hoverIconUrl){
-                    google.maps.event.addListener(marker, "mouseover", 
-                                                  function(){ marker.setIcon( new google.maps.MarkerImage(this.hoverIconUrl) ); });
-                    google.maps.event.addListener(marker, "mouseout", 
-                                                  function(){ marker.setIcon( new google.maps.MarkerImage(this.iconUrl) ); });
+                    var hIcon = this.hoverIconUrl;
+                    var Icon = this.iconUrl;
+                    google.maps.event.addListener(
+                        marker, 
+                        "mouseover", 
+                        function(){ marker.setIcon(hIcon); }
+                    );
+                    google.maps.event.addListener(
+                        marker, 
+                        "mouseout", 
+                        function(){ marker.setIcon(Icon); }
+                    );
                 }
 
 		google.maps.event.addListener(marker, 'click', function() {
