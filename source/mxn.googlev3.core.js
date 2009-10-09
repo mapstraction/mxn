@@ -118,42 +118,31 @@ Mapstraction: {
 	},
 	
 	addMarker: function(marker, old) {
-		var map = this.maps[this.api];
-		var pin = marker.toProprietary(this.api);
-		
-		return pin;
+	       return marker.toProprietary(this.api);		
 	},
 
 	removeMarker: function(marker) {
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+                // doesn't really remove them, just hides them
+                marker.hide();
 	},
 
 	removeAllMarkers: function() {
-		var map = this.maps[this.api];
-		
+		var map = this.maps[this.api];		
 		// TODO: Add provider code
 	},
 	
 	declutterMarkers: function(opts) {
 		var map = this.maps[this.api];
-		
 		// TODO: Add provider code
 	},
 
 	addPolyline: function(polyline, old) {
 		var map = this.maps[this.api];
-		var pl = polyline.toProprietary(this.api);
-		
-		// TODO: Add provider code
-		
-		return pl;
+		return polyline.toProprietary(this.api);
 	},
 
 	removePolyline: function(polyline) {
-		var map = this.maps[this.api];
-		
+		var map = this.maps[this.api];		
 		// TODO: Add provider code
 	},
        
