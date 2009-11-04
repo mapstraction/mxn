@@ -7,6 +7,21 @@ mxn.register('cloudmade', {
             var cloudmade = new CM.Tiles.CloudMade.Web({key: cloudmade_key});
             this.maps[api] = new CM.Map(element, cloudmade);
             this.loaded[api] = true;
+
+            CM.Event.addListener(this.maps[api], 'click', function(location,marker) {
+                if ( marker && marker.mapstraction_marker ) {
+                    marker.mapstraction_marker.click.fire();
+                }
+                else if ( location ) {
+                    me.click.fire({'location': new mxn.LatLonPoint(location.lat(), location.lng())});
+                }
+
+                // If the user puts their own Google markers directly on the map
+                // then there is no location and this event should not fire.
+                if ( location ) {
+                    me.clickHandler(location.lat(),location.lng(),location,me);
+                }
+            });
         },
 
         applyOptions: function(){
@@ -87,6 +102,7 @@ mxn.register('cloudmade', {
 
         removeMarker: function(marker) {
             var map = this.maps[this.api];
+            marker.proprietary_marker.closeInfoWindow();
 	    map.removeOverlay(marker.proprietary_marker);
         },
 
