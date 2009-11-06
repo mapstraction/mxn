@@ -299,10 +299,41 @@ Marker: {
 	
 	toProprietary: function() {
 		var options = {};
+
+                // do we have an Anchor?
+                var ax = 0;  // anchor x 
+		var ay = 0;  // anchor y
+
+		if (this.iconAnchor) {
+                    ax = this.iconAnchor[0];
+                    ay = this.iconAnchor[1];
+                }
+                var gAnchorPoint = new google.maps.Point(ax,ay);
+
 		if (this.iconUrl) {
-		    options.icon = new google.maps.MarkerImage(this.iconUrl);
-		    if (typeof(this.iconShadowUrl) != 'undefined') {
-			options.shadow = new google.maps.MarkerImage(this.iconShadowUrl);
+ 		    options.icon = new google.maps.MarkerImage(
+			this.iconUrl,
+                        new google.maps.Size(this.iconSize[0],
+					     this.iconSize[1]),
+                        new google.maps.Point(0,0),
+                        gAnchorPoint
+                    );
+
+                    // do we have a Shadow?
+		    if (this.iconShadowUrl) {
+  			if (this.iconShadowSize) {
+                            var x = this.iconShadowSize[0];
+                            var y = this.iconShadowSize[1];
+  			    options.shadow = new google.maps.MarkerImage(
+				this.iconShadowUrl,
+                                new google.maps.Size(x,y),
+                                new google.maps.Point(0,0),
+                                gAnchorPoint 
+			    );
+			}
+                        else {
+  			    options.shadow = new google.maps.MarkerImage(this.iconShadowUrl);
+			}
 		    }
 		}
 		if (this.draggable){
@@ -311,6 +342,12 @@ Marker: {
 		if (this.labelText){
 		    options.title =  this.labelText;
 		}
+		if (this.imageMap){
+                    options.shape = {
+                        coord: this.imageMap,
+                        type: 'poly'
+		    };
+                }
 		
 		options.position = this.location.toProprietary(this.api);
 		options.map = this.map;
@@ -322,19 +359,33 @@ Marker: {
 		    });
 
                     var event_action = "click";
-		    if(this.hover) {
-		       event_action = "mouseover";
+		    if (this.hover) {
+		        event_action = "mouseover";
 		    }
 		    google.maps.event.addListener(marker, event_action, function() { infowindow.open(this.map,marker); });
 		}
 
                 if (this.hoverIconUrl){
-                    var hIcon = this.hoverIconUrl;
-                    var Icon = this.iconUrl;
+ 		    var hIcon = new google.maps.MarkerImage(
+			this.hoverIconUrl,
+                        new google.maps.Size(this.iconSize[0],
+					     this.iconSize[1]),
+                        new google.maps.Point(0,0),
+                        gAnchorPoint
+                    );
+ 		    var Icon = new google.maps.MarkerImage(
+			this.iconUrl,
+                        new google.maps.Size(this.iconSize[0],
+					     this.iconSize[1]),
+                        new google.maps.Point(0,0),
+                        gAnchorPoint
+                    );
                     google.maps.event.addListener(
                         marker, 
                         "mouseover", 
-                        function(){ marker.setIcon(hIcon); }
+                        function(){ 
+                            marker.setIcon(hIcon); 
+                        }
                     );
                     google.maps.event.addListener(
                         marker, 
