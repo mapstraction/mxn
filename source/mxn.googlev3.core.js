@@ -351,6 +351,7 @@ Marker: {
 		
 		options.position = this.location.toProprietary(this.api);
 		options.map = this.map;
+
 		var marker = new google.maps.Marker(options);
 
 		if (this.infoBubble){
@@ -366,18 +367,19 @@ Marker: {
 		}
 
                 if (this.hoverIconUrl){
+                    var gSize = new google.maps.Size(this.iconSize[0],
+			                            this.iconSize[1]);
+                    var zerozero = new google.maps.Point(0,0);
  		    var hIcon = new google.maps.MarkerImage(
 			this.hoverIconUrl,
-                        new google.maps.Size(this.iconSize[0],
-					     this.iconSize[1]),
-                        new google.maps.Point(0,0),
+                        gSize,
+                        zerozero,
                         gAnchorPoint
                     );
  		    var Icon = new google.maps.MarkerImage(
 			this.iconUrl,
-                        new google.maps.Size(this.iconSize[0],
-					     this.iconSize[1]),
-                        new google.maps.Point(0,0),
+			gSize,
+                        zerozero,
                         gAnchorPoint
                     );
                     google.maps.event.addListener(
