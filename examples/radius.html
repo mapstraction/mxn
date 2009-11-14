@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Mapstraction Examples - Radius</title>
+    <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAY70wuSo0zF3ZtJVp5bDm1BS1Y2ErAqCHV5rDhHSzgjy23KqwdRRaoSBuZk72oDzzAYxVBjtsLqSmTw"></script>
+    <script src="lib/prototype.js" type="text/javascript"></script>
+	<script src="lib/scriptaculous.js?load=slider" type="text/javascript"></script>
+    <script src="../source/mxn.js?(google)" type="text/javascript"></script>
+    <script type="text/javascript">
+    //<![CDATA[
+        function initialize() {
+            map = new mxn.Mapstraction('mapstraction');
+            map.enableScrollWheelZoom();
+
+            point = new mxn.LatLonPoint(52.250873, 0.110292)
+            map.setCenterAndZoom(point, 12);
+
+            centerRadius = new mxn.Radius(point, 20);
+            addMarkers(50);
+            addSlider();
+            sliderChanged(1);
+        }
+        
+        function addMarkers(count) {
+            var bounds = map.getBounds();
+            var sw = bounds.getSouthWest();
+            var ne = bounds.getNorthEast();
+            while ( count-- ) {
+                var ll = new mxn.LatLonPoint( sw.lat + ( ( ne.lat - sw.lat ) * Math.random() ), sw.lon + ( ( ne.lon - sw.lon ) * Math.random() ) );
+                var marker = new mxn.Marker(ll);
+                var distance = mxn.util.KMToMiles(marker.location.distance(point));
+                var el = document.createElement('strong');
+                el.appendChild( document.createTextNode('Distance: ' + distance.toFixed(2) + ' Mile(s)'));
+                marker.setInfoBubble(el);
+                marker.setAttribute('distance', distance);
+                map.addMarker(marker);
+            }
+        }
+        
+        function addSlider() {
+            slider = new Control.Slider('handle', 'track', {
+                range:$R(0, 5, false),
+                step:1,
+                restricted:true,
+                sliderValue: 1,
+                onChange: sliderChanged,
+                onSlide: sliderChanged
+            });
+        }
+
+        function sliderChanged(radius) {
+            map.removeAllPolylines();
+            map.removeAllFilters();
+            map.addPolyline(centerRadius.getPolyline(mxn.util.milesToKM(radius), '#00F'));
+            map.addFilter('distance', 'le', radius);
+            var selectedCount = map.doFilter();
+            var tw = document.getElementById( 'timeWindow' );
+            tw.innerHTML = 'Radius: ' + radius.toFixed(2) + ' Mile(s)<br/>Selected Markers: ' + selectedCount;
+        }
+    //]]>
+    </script>
+
+    <style type="text/css">
+        #mapstraction { height: 400px; }
+        /* put the left rounded edge on the track */
+			#track-left {
+				position: absolute;
+				width: 5px;
+				height: 9px;
+				background: transparent url(images/slider-images-track-left.png) no-repeat top left;
+			}
+			/* put the track and the right rounded edge on the track */
+			#track {
+				background: transparent url(images/slider-images-track-right.png) no-repeat top right;
+			}
+
+    </style>
+    
+</head>
+<body onload="initialize();">
+    <h2>Radius Searching</h2>
+    <p>Fifty markers are randomly generated and plotted. The <a href="http://script.aculo.us/">scriptaculous</a> slider adjusts a radius search around a central point.</p>
+    <div id="track" style="width:200px; height:9px; margin:20px;">
+        <div id="track-left"></div>
+        <div id="handle" style="width:19px; height:20px;"><img src="images/slider-images-handle.png" alt="" style="float: left;" /></div>
+    </div>
+    <div id="timeWindow" style="padding:10px; font-size: small; width: 600px;"></div>
+    <table border='1' width='50%'>
+        <tr><td>
+            <div id="mapstraction"></div>
+        </td></tr>
+    </table>   
+</body>
+</html>
