@@ -1,3 +1,46 @@
+// Auto-load scripts
+//
+// specify which map providers to load by using
+// <script src="mxn.js?(provider1,provider2,[module1,module2])" ...
+// in your HTML
+//
+// for each provider mxn.provider.module.js and mxn.module.js will be loaded
+// module 'core' is always loaded
+//
+// NOTE: if you call without providers
+// <script src="mxn.js" ...
+// no scripts will be loaded at all and it is then up to you to load the scripts independently
+(function() {
+	var providers = null;
+	var modules = 'core';
+	var scriptBase;
+	var scripts = document.getElementsByTagName('script');
+
+	// Determine which scripts we need to load	
+	for (var i = 0; i < scripts.length; i++) {
+		var match = scripts[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?$/);
+		if (match != null) {
+			scriptBase = match[1];
+			if (match[3]) {
+				var settings = match[3].split(',[');
+				providers = settings[0].replace(']' , '');
+				if (settings[1]) modules += ',' + settings[1];
+			}
+			break;
+	   }
+	}
+	
+    if (providers == null || providers == 'none') return; // Bail out if no auto-load has been found
+	providers = providers.replace(/ /g, '').split(',');
+	modules = modules.replace(/ /g, '').split(',');
+
+	// Actually load the scripts
+	for (i = 0; i < modules.length; i++) {
+	    document.write("<script type='text/javascript' src='" + scriptBase + 'mxn.' + modules[i] + '.js' + "'></script>");
+	    for (var j = 0; j < providers.length; j++) document.write("<script type='text/javascript' src='" + scriptBase + 'mxn.' + providers[j] + '.' + modules[i] + '.js' + "'></script>");
+	}
+})();
+
 (function(){
 
 // holds all our implementing functions
@@ -458,56 +501,5 @@ mxn.util.Color.prototype.getHexColor = function() {
 	}
 	return vals.join('');
 };
-
-})();
-
-// Auto-load scripts
-//
-// specify which map providers to load by using
-// <script src="mxn.js?(provider1,[module1],provider2,[module2],provider3)" ...
-// in your HTML
-//
-// for each provider mxn.provider.module.js and mxn.module.js will be loaded
-// by default module is 'core' 
-//
-// NOTE: if you specify 'none' as the provider no scripts will be loaded at all.
-// it is then up to you to load the scripts independently
-//
-(function() {	
-	
-	// Defaults
-	var providers   = 'google,yahoo,microsoft';
-	var modules     = 'core';
-	var scriptBase;
-	var scripts = document.getElementsByTagName('script');
-
-        // determine which scripts we need to load	
-	for (var i = 0; i < scripts.length; i++) {
-		var match = scripts[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?$/);
-		if (match !== null) {
-			scriptBase = match[1];
-			if (match[3]) {
-				var settings = match[3].split(',[');
-				providers = settings[0].replace(']' , '');
-				if (settings[1]){
-					modules = settings[1];
-				}
-			}
-			break;
-	   }
-	}
-        if (providers == 'none'){ // bail out if we don't want to load anything
-            return;
-        }
-	providers = providers.replace(/ /g, '').split(',');
-	modules = modules.replace(/ /g, '').split(',');
-
-        // actually load the scripts
-	for (i = 0; i < modules.length; i++) {	
-		mxn.util.loadScript(scriptBase + 'mxn.' + modules[i] + '.js');
-		for (var j = 0; j < providers.length; j++){
-			mxn.util.loadScript(scriptBase + 'mxn.' + providers[j] + '.' + modules[i] + '.js');
-		}
-	}
 
 })();
