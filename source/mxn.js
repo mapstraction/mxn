@@ -147,7 +147,7 @@ var mxn = window.mxn = /** @lends mxn */ {
 			fnCall.call(this);
 		}
 	},
-	
+
 	/**
 	 * Bulk add some named events to an object.
 	 * @function
