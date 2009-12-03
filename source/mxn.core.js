@@ -448,8 +448,13 @@ Mapstraction.prototype.setDebug = function(debug){
  * @param {Boolean} set deferred to true to turn on deferment
  */
 Mapstraction.prototype.setDefer = function(deferred){
+<<<<<<< HEAD:source/mxn.core.js
 	this.loaded[this.api] = !deferred;
 };
+=======
+    this.loaded[this.api] = !deferred
+}
+>>>>>>> GeoCommons provider working with deferred calls:source/mxn.core.js
 
 /**
  * Run any queued provider API calls for the methods defined in the provider's implementation.
@@ -458,10 +463,17 @@ Mapstraction.prototype.setDefer = function(deferred){
  * implementation loads the map, it calls this.runDeferred and any queued calls will be run.
  */
 Mapstraction.prototype.runDeferred = function(){
+<<<<<<< HEAD:source/mxn.core.js
 	while(this.onload[this.api].length > 0) {  
 		this.onload[this.api].shift().apply(this); //run deferred calls
 	}
 };
+=======
+    while(this.onload[this.api].length > 0) {  
+        this.onload[this.api].shift().apply(this) //run deferred calls
+    }
+}, 
+>>>>>>> GeoCommons provider working with deferred calls:source/mxn.core.js
 
 /////////////////////////
 //
