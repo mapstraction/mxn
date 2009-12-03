@@ -19,26 +19,36 @@
 	// Determine which scripts we need to load	
 	for (var i = 0; i < scripts.length; i++) {
 		var match = scripts[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?$/);
-		if (match != null) {
+		if (match !== null) {
 			scriptBase = match[1];
 			if (match[3]) {
 				var settings = match[3].split(',[');
 				providers = settings[0].replace(']' , '');
-				if (settings[1]) modules += ',' + settings[1];
+				if (settings[1]) {
+					modules += ',' + settings[1];
+				}
 			}
 			break;
 	   }
 	}
 	
-    if (providers == null || providers == 'none') return; // Bail out if no auto-load has been found
+    if (providers === null || providers == 'none') {
+		return; // Bail out if no auto-load has been found
+	}
 	providers = providers.replace(/ /g, '').split(',');
 	modules = modules.replace(/ /g, '').split(',');
 
 	// Actually load the scripts
+	var scriptTagStart = '<script type="text/javascript" src="' + scriptBase + 'mxn.';
+	var scriptTagEnd = '.js"></script>';
+	var scriptsAry = [];
 	for (i = 0; i < modules.length; i++) {
-	    document.write("<script type='text/javascript' src='" + scriptBase + 'mxn.' + modules[i] + '.js' + "'></script>");
-	    for (var j = 0; j < providers.length; j++) document.write("<script type='text/javascript' src='" + scriptBase + 'mxn.' + providers[j] + '.' + modules[i] + '.js' + "'></script>");
+		scriptsAry.push(scriptTagStart + modules[i] + scriptTagEnd);
+	    for (var j = 0; j < providers.length; j++) {
+			scriptsAry.push(scriptTagStart + providers[j] + '.' + modules[i] + scriptTagEnd);
+		}
 	}
+	document.write(scriptsAry.join(''));
 })();
 
 (function(){
@@ -447,7 +457,21 @@ mxn.util = {
 			}
 		}
 		return providers;
-	}
+	},
+	
+	/**
+	 * Formats a string, inserting values of subsequent parameters at specified 
+	 * locations. e.g. stringFormat('{0} {1}', 'hello', 'world');
+	 */
+	stringFormat: function(strIn){
+		var replaceRegEx = /\{\d+\}/g;
+		var args = Array.slice.apply(arguments);
+		args.shift();
+		return strIn.replace(replaceRegEx, function(strVal){
+			var num = strVal.slice(1, -1);
+			return args[num];
+		});
+	}	
 	
 };
 
