@@ -39,6 +39,9 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
     this.controls = [];	
 	this.loaded = {};
 	this.onload = {};
+    this.loaded[api] = true;
+    this.onload[api] = []; 
+	
 	this.element = element;
 	
 	// option defaults
@@ -398,6 +401,26 @@ Mapstraction.prototype.setDebug = function(debug){
 	return this.debug;
 };
 
+/**
+ * Set the api call deferment on or off - When it's on, mxn.invoke will queue up provider API calls until
+ * runDeferred is called, at which time everything in the queue will be run in the order it was added. 
+ * @param {Boolean} set deferred to true to turn on deferment
+ */
+Mapstraction.prototype.setDefer = function(deferred){
+    this.loaded[this.api] = !deferred
+}
+
+/**
+ * Run any queued provider API calls for the methods defined in the provider's implementation.
+ * For example, if defferable in mxn.[provider].core.js is set to {getCenter: true, setCenter: true}
+ * then any calls to map.setCenter or map.getCenter will be queued up in this.onload. When the provider's
+ * implementation loads the map, it calls this.runDeferred and any queued calls will be run.
+ */
+Mapstraction.prototype.runDeferred = function(){
+    while(this.onload[this.api].length > 0) {  
+        this.onload[this.api].shift().apply(this) //run deferred calls
+    }
+}, 
 
 /////////////////////////
 //

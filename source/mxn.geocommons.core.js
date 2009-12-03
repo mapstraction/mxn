@@ -2,6 +2,32 @@ mxn.register('geocommons', {
 
     Mapstraction: {
 
+        // These methods can be called anytime but will only execute
+        // once the map has loaded. 
+        deferrable: {
+            applyOptions: true,
+            resizeTo: true,
+            addControls: true,
+            addSmallControls: true,
+            addLargeControls: true,
+            addMapTypeControls: true,
+            dragging: true,
+            setCenterAndZoom: true,
+            getCenter: true,
+            setCenter: true,
+            setZoom: true,
+            getZoom: true,
+            getZoomLevelForBoundingBox: true,
+            setMapType: true,
+            getMapType: true,
+            getBounds: true,
+            setBounds: true,
+            addTileLayer: true,
+            toggleTileLayer: true,
+            getPixelRatio: true,
+            mousePosition: true
+        },
+
         init: function(element, api) {		
             var me = this;
             this.element = element;
@@ -11,16 +37,17 @@ mxn.register('geocommons', {
             F1.Maker.maker_host='http://localhost:4002';
             F1.Maker.finder_host='http://localhost:4001';
             F1.Maker.core_host='http://localhost:4000';
-            url = 7566;
+
             this.loaded[this.api] = false; // Loading will take a little bit.
+            
+            url = "1";
             new F1.Maker.Map({map_id:url, dom_id:this.element.id,
+                flashvars: {"map_id":url},                
                 onload: function(map){ 
                     me.maps[me.api] = map;
-                    me.loaded[me.api] = true; 
-                        console.log("Map loaded, calling methods for " + me.api);
-                    
+                    // f1_swfobject21.getObjectById(this.element.id);                    
+                    me.loaded[me.api] = true;                     
                     for (var i = 0; i < me.onload[me.api].length; i++) {
-                        console.log("calling method: " + i);
                         me.onload[me.api][i]();
                     }
                  }});
@@ -81,7 +108,7 @@ mxn.register('geocommons', {
         getCenter: function() {
             var map = this.maps[this.api];
             var point = map.getCenterZoom()[0];
-            return mxn.LatLonPoint(point.lat,point.lon);
+            return new mxn.LatLonPoint(point.lat,point.lon);
         },
 
         setCenter: function(point, options) {

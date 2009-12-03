@@ -59,13 +59,21 @@ var apis = {};
 // Our special private methods
 /**
  * Calls the API specific implementation of a particular method.
+ * Deferrable: If the API implmentation includes a deferable hash such as { getCenter: true, setCenter: true},
+ * then the methods calls mentioned with in it will be queued until runDeferred is called.
+ *   
  * @private
  */
 var invoke = function(sApiId, sObjName, sFnName, oScope, args){
 	if(!hasImplementation(sApiId, sObjName, sFnName)) {
 		throw 'Method ' + sFnName + ' of object ' + sObjName + ' is not supported by API ' + sApiId + '. Are you missing a script tag?';
 	}
-	return apis[sApiId][sObjName][sFnName].apply(oScope, args);
+    if(typeof(apis[sApiId][sObjName].deferrable) != 'undefined' && apis[sApiId][sObjName].deferrable[sFnName] === true) {
+        return mxn.deferUntilLoaded.call(oScope, function(){return apis[sApiId][sObjName][sFnName].apply(oScope, args);} )
+    } 
+    else {
+        return apis[sApiId][sObjName][sFnName].apply(oScope, args);
+    } 
 };
 	
 /**
@@ -130,7 +138,14 @@ var mxn = window.mxn = /** @lends mxn */ {
 		}
 		return false;
 	},
-			
+    deferUntilLoaded: function(fnCall) {
+        if(this.loaded[this.api] === false) {
+            var scope = this;
+            this.onload[this.api].push( fnCall )
+        } else {
+            return fnCall.call(this)
+        }
+    },
 	/**
 	 * Bulk add some named events to an object.
 	 * @function

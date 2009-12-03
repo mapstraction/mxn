@@ -43,12 +43,7 @@
 		var infoElm = document.getElementById('info');		
 		var eventsElm = document.getElementById('events');
 		
-<<<<<<< HEAD:tests/index.htm
-		m = new mxn.Mapstraction('map', 'google');
-=======
-		var m = new mxn.Mapstraction('map', 'geocommons');
-    m.addOverlay(7566);
->>>>>>> Working on updating GeoCommons provider:tests/index.htm
+		m = new mxn.Mapstraction('map', 'geocommons');
 
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var center = oEvtSource.getCenter();
@@ -214,7 +209,7 @@
 				e.moveNext();
 			}
 		}
-		intervalID = setInterval(doNextAction, 2000);
+    // intervalID = setInterval(doNextAction, 2000);
 	}
     
     //]]>
@@ -241,7 +236,7 @@
 	</style>
   </head>
   <body>
-	<div style="margin: 20px;">
+	<div style="height: 400px; width: 800px; margin: 20px;">
 	    <div id="map" style="position: relative; width: 500px; height: 300px;"></div>
 		<div style="margin-top: 20px;">
 			
