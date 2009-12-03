@@ -41,7 +41,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	this.onload = {};
     this.loaded[api] = true;
     this.onload[api] = []; 
-	
+
 	this.element = element;
 	
 	// option defaults

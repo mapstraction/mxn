@@ -108,7 +108,11 @@ mxn.register('geocommons', {
         getCenter: function() {
             var map = this.maps[this.api];
             var point = map.getCenterZoom()[0];
+<<<<<<< HEAD:source/mxn.geocommons.core.js
             return new mxn.LatLonPoint(point.lat,point.lon);
+=======
+            return mxn.LatLonPoint(point.lat,point.lon);
+>>>>>>> d21fbd4ecc5df7d4f0c94fe4e96ee265f5de6b0f:source/mxn.geocommons.core.js
         },
 
         setCenter: function(point, options) {
@@ -193,9 +197,14 @@ mxn.register('geocommons', {
         addOverlay: function(url, autoCenterAndZoom) {
             var map = this.maps[this.api];
             var me = this;
+<<<<<<< HEAD:source/mxn.geocommons.core.js
             new F1.Maker.Map({map_id:url, dom_id:this.element.id,
                 onload: function(map){ me.maps[me.api] = map }});
             // setTimeout(function() { me.maps[me.api] = swfobject.getObjectById(FlashMap.dom_id);}, 500);
+=======
+            Maker.load_map(this.element.id, url);
+            setTimeout(function() { me.maps[me.api] = swfobject.getObjectById(FlashMap.dom_id);}, 500);
+>>>>>>> d21fbd4ecc5df7d4f0c94fe4e96ee265f5de6b0f:source/mxn.geocommons.core.js
         },
 
         addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
