@@ -6,15 +6,13 @@
     
     <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAY70wuSo0zF3ZtJVp5bDm1BS1Y2ErAqCHV5rDhHSzgjy23KqwdRRaoSBuZk72oDzzAYxVBjtsLqSmTw"></script>
 
-  <!-- <script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=5wTxDW_V34GQjK.7glLG6OnJSRxCvfLj7ktMsuOoR42Gkm16vDVEjjw6FGWJ1Gky"></script> 
-    <script charset="UTF-8" type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.2"></script>
+  <script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=5wTxDW_V34GQjK.7glLG6OnJSRxCvfLj7ktMsuOoR42Gkm16vDVEjjw6FGWJ1Gky"></script> 
   <script src="http://openlayers.org/api/OpenLayers.js"></script>
 
-  <script src="../source/mxn.js?(google,yahoo,microsoft,openlayers)" type="text/javascript"></script> -->
-  <script charset="UTF-8" type="text/javascript" src="http://localhost:4002/javascripts/embed.js"></script>
+  <script charset="UTF-8" type="text/javascript" src="http://river.dev.fortiusone.local/api.js"></script>
+  <script src="../source/mxn.js?(google,yahoo,openlayers,geocommons)" type="text/javascript"></script>
   
 	<!--<script src="domReady.js" type="text/javascript"></script>-->
-	<script src="../source/mxn.js?(google, geocommons)" type="text/javascript"></script>
 
 	<script type="text/javascript">
     //<![CDATA[
@@ -164,12 +162,6 @@
               }
        },
        {
-        desc: 'Swap API (microsoft)',
-        action: function(){
-                  m.swap('map', 'microsoft');
-              }
-       },
-       {
         desc: 'Swap API (openlayers)',
         action: function(){
                   m.swap('map', 'openlayers');
@@ -236,7 +228,7 @@
 	</style>
   </head>
   <body>
-	<div style="height: 400px; width: 800px; margin: 20px;">
+	<div style="height: 400px; width: 1000px; margin: 20px;">
 	    <div id="map" style="position: relative; width: 500px; height: 300px;"></div>
 		<div style="margin-top: 20px;">
 			

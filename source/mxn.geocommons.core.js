@@ -31,21 +31,16 @@ mxn.register('geocommons', {
         init: function(element, api) {		
             var me = this;
             this.element = element;
-            // Maker.maker_host='http://maker.geocommons.com';
-            // Maker.finder_host='http://finder.geocommons.com';
-            // Maker.core_host='http://geocommons.com';            
-            F1.Maker.maker_host='http://localhost:4002';
-            F1.Maker.finder_host='http://localhost:4001';
-            F1.Maker.core_host='http://localhost:4000';
-
             this.loaded[this.api] = false; // Loading will take a little bit.
-            
-            url = "1";
-            new F1.Maker.Map({map_id:url, dom_id:this.element.id,
-                flashvars: {"map_id":url},                
-                onload: function(map){ 
-                    me.maps[me.api] = map;
-                    // f1_swfobject21.getObjectById(this.element.id);                    
+            F1.Maker.core_host = f1_core_host;
+            F1.Maker.finder_host = f1_finder_host;
+            F1.Maker.maker_host = f1_maker_host;
+
+            new F1.Maker.Map({dom_id:this.element.id,
+                flashvars: {},                
+                onload: function(map){
+                    
+                    me.maps[me.api] = map.swf; // Get the actual Flash object
                     me.loaded[me.api] = true;                     
                     for (var i = 0; i < me.onload[me.api].length; i++) {
                         me.onload[me.api][i]();
@@ -77,15 +72,21 @@ mxn.register('geocommons', {
 
         addSmallControls: function() {
             var map = this.maps[this.api];
-            showControl("Zoom", args.zoom);
-            showControl("Legend", args.legend, "open"); 
+            this.addControls({
+                zoom:   'small',
+                legend: "open"
+            });
+            // showControl("Zoom", args.zoom);
+            // showControl("Legend", args.legend, "open"); 
         },
 
         addLargeControls: function() {
             var map = this.maps[this.api];
-            showControl("Zoom", args.zoom);
-            showControl("Layers", args.layers);
-            showControl("Legend", args.legend, "open"); 
+            this.addControls({
+                zoom:   'large',
+                layers: true,
+                legend: "open"
+            });
         },
 
         addMapTypeControls: function() {
@@ -189,13 +190,23 @@ mxn.register('geocommons', {
 
             // TODO: Add provider code
         },
-
+        
+        // URL in this case is either a Maker map ID or the full URL to the Maker Map
         addOverlay: function(url, autoCenterAndZoom) {
             var map = this.maps[this.api];
-            var me = this;
-            new F1.Maker.Map({map_id:url, dom_id:this.element.id,
-                onload: function(map){ me.maps[me.api] = map }});
-            // setTimeout(function() { me.maps[me.api] = swfobject.getObjectById(FlashMap.dom_id);}, 500);
+            var match;
+
+            if(typeof(url) === "number") {
+                map.loadMap(url);
+                return;
+            }
+            // Try if we've been given either a string of the ID or a URL
+            match = url.match(/^(\d+)$/)
+            if(match != null){
+                match = url.match(/^.*?maps\/(\d+)(\?\(\[?(.*?)\]?\))?$/);
+            }
+
+            map.loadMap(match[1]);
         },
 
         addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
@@ -220,13 +231,52 @@ mxn.register('geocommons', {
             var map = this.maps[this.api];
 
             // TODO: Add provider code	
+        },
+        addMarker: function(marker, old) {
+            var map = this.maps[this.api];
+            var pin = marker.toProprietary(this.api);
+            // TODO: Add provider code
+            // map.addOverlay(pin);
+            return pin;
+        },
+
+        removeMarker: function(marker) {
+            var map = this.maps[this.api];
+            // TODO: Add provider code
+
+        },
+
+        removeAllMarkers: function() {
+	    // Done in mxn.core.js
+        },
+
+        declutterMarkers: function(opts) {
+            var map = this.maps[this.api];
+
+            // TODO: Add provider code
+        },
+
+        addPolyline: function(polyline, old) {
+            var map = this.maps[this.api];
+            var pl = polyline.toProprietary(this.api);
+            // TODO: Add provider code            
+            // map.addOverlay(pl);
+            return pl;
+        },
+
+        removePolyline: function(polyline) {
+            var map = this.maps[this.api];
+            // TODO: Add provider code
         }
+
+        
     },
 
     LatLonPoint: {
 
         toProprietary: function() {
             // TODO: Add provider code
+            return {};
         },
 
         fromProprietary: function(googlePoint) {
@@ -239,6 +289,7 @@ mxn.register('geocommons', {
 
         toProprietary: function() {
             // TODO: Add provider code
+            return {};
         },
 
         openBubble: function() {		
@@ -262,6 +313,7 @@ mxn.register('geocommons', {
     Polyline: {
 
         toProprietary: function() {
+            return {};
             // TODO: Add provider code
         },
 
