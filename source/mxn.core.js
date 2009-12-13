@@ -1701,4 +1701,57 @@ Polyline.prototype.simplify = function(tolerance) {
 	this.points = reduced;
 };
 
+///////////////
+// Radius    //
+///////////////
+
+/**
+ * Creates a new radius object for drawing circles around a point, does a lot of initial calculation to increase load time
+ * @returns a new Radius
+ * @type Radius
+ * @constructor
+ * @classDescription Radius
+ * @param {Object} Center LatLonPoint of the radius
+ * @param {quality} Number of points that comprise the approximated circle (20 is a good starting point)
+ */
+var Radius = mxn.Radius = function(center, quality) {
+	this.center = center;
+	var latConv = center.latConv();
+	var lonConv = center.lonConv();
+
+	// Create Radian conversion constant
+	var rad = Math.PI / 180;
+	this.calcs = new Array();
+
+	for(var i = 0; i < 360; i += quality)
+		this.calcs.push([Math.cos(i * rad) / latConv, Math.sin(i * rad) / lonConv]);
+}
+
+/**
+ * Returns polyline of a circle around the point based on new radius
+ * @param {Radius} radius
+ * @param {Colour} colour
+ * @returns {Polyline} Polyline
+ */
+Radius.prototype.getPolyline = function(radius, colour) {
+	var points = Array();
+
+	for(var i = 0; i < this.calcs.length; i++){
+		var point = new LatLonPoint(
+			this.center.lat + (radius * this.calcs[i][0]),
+			this.center.lon + (radius * this.calcs[i][1])
+		);
+		points.push(point);
+	}
+
+	// Add first point
+	points.push(points[0]);
+
+	var line = new Polyline(points);
+	line.setColor(colour);
+
+	return line;
+};
+
+
 })();
