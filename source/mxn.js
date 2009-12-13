@@ -122,7 +122,6 @@ var mxn = window.mxn = /** @lends mxn */ {
 		}
 	},
 	
-	/*
 	checkLoad: function(funcDetails){
 		if(this.loaded[this.api] === false) {
 			var scope = this;
@@ -131,7 +130,6 @@ var mxn = window.mxn = /** @lends mxn */ {
 		}
 		return false;
 	},
-	*/
 			
 	/**
 	 * Bulk add some named events to an object.

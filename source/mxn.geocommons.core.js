@@ -5,9 +5,26 @@ mxn.register('geocommons', {
         init: function(element, api) {		
             var me = this;
             this.element = element;
-            Maker.maker_host='http://maker.geocommons.com';
-            Maker.finder_host='http://finder.geocommons.com';
-            Maker.core_host='http://geocommons.com';
+            // Maker.maker_host='http://maker.geocommons.com';
+            // Maker.finder_host='http://finder.geocommons.com';
+            // Maker.core_host='http://geocommons.com';            
+            F1.Maker.maker_host='http://localhost:4002';
+            F1.Maker.finder_host='http://localhost:4001';
+            F1.Maker.core_host='http://localhost:4000';
+            url = 7566;
+            this.loaded[this.api] = false; // Loading will take a little bit.
+            new F1.Maker.Map({map_id:url, dom_id:this.element.id,
+                onload: function(map){ 
+                    me.maps[me.api] = map;
+                    me.loaded[me.api] = true; 
+                        console.log("Map loaded, calling methods for " + me.api);
+                    
+                    for (var i = 0; i < me.onload[me.api].length; i++) {
+                        console.log("calling method: " + i);
+                        me.onload[me.api][i]();
+                    }
+                 }});
+            
           },
 
         applyOptions: function(){
@@ -149,8 +166,9 @@ mxn.register('geocommons', {
         addOverlay: function(url, autoCenterAndZoom) {
             var map = this.maps[this.api];
             var me = this;
-            Maker.load_map(this.element.id, url);
-            setTimeout(function() { me.maps[me.api] = swfobject.getObjectById(FlashMap.dom_id);}, 500);
+            new F1.Maker.Map({map_id:url, dom_id:this.element.id,
+                onload: function(map){ me.maps[me.api] = map }});
+            // setTimeout(function() { me.maps[me.api] = swfobject.getObjectById(FlashMap.dom_id);}, 500);
         },
 
         addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
