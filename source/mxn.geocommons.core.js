@@ -160,8 +160,7 @@ mxn.register('geocommons', {
             var map = this.maps[this.api];
             switch(map.getMapProvider) {
                 case "OpenStreetMap (Road)":
-                    retu
-                    
+                break;
             }
             // TODO: Add provider code
 
