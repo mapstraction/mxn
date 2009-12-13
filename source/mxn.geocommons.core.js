@@ -268,7 +268,6 @@ mxn.register('geocommons', {
 			var map = this.maps[this.api];
 			// TODO: Add provider code
 		}
-
 		
 	},
 
