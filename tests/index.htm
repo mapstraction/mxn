@@ -31,13 +31,15 @@
 		}
 	}
 	
+	//WhenDomReady(function(){
+	  var m;
 	window.onload = function() {
 		var actionElm = document.getElementById('actions');
 		var infoElm = document.getElementById('info');		
 		var eventsElm = document.getElementById('events');
 		
-		var m = new mxn.Mapstraction('map', 'google');
-		
+		m = new mxn.Mapstraction('map', 'google');
+
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var center = oEvtSource.getCenter();
 			eventsElm.innerHTML += 'Map pan: (' + center.lat.toFixed(5) + ','+ center.lon.toFixed(5) +')<br/>';

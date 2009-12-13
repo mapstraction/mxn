@@ -36,7 +36,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	this.layers = [];
 	this.polylines = [];
 	this.images = [];
-        this.controls = [];	
+    this.controls = [];	
 	this.loaded = {};
 	this.onload = {};
 	this.element = element;
@@ -961,7 +961,7 @@ Mapstraction.prototype.addJSON = function(json) {
  * @param {copyright_text} copyright text to use for the tile layer. (default=Mapstraction)
  * @param {min_zoom} Minimum (furtherest out) zoom level that tiles are available (default=1)
  * @param {max_zoom} Maximum (closest) zoom level that the tiles are available (default=18)
- * @param {map_type} Should the tile layer be a selectable map type in the layers palette (default=false)
+ * @param {map_type} Should the tile layer be a selectable map type in the layers palette (default=true)
  */
 Mapstraction.prototype.addTileLayer = function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 	if(!tile_url) {
@@ -973,7 +973,7 @@ Mapstraction.prototype.addTileLayer = function(tile_url, opacity, copyright_text
 	copyright_text = copyright_text || "Mapstraction";
 	min_zoom = min_zoom || 1;
 	max_zoom = max_zoom || 18;
-	map_type = map_type || false;
+	map_type = map_type || true;
 
 	return this.invoker.go('addTileLayer', [ tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type] );
 };
@@ -1700,59 +1700,5 @@ Polyline.prototype.simplify = function(tolerance) {
 	// Revert
 	this.points = reduced;
 };
-
-///////////////
-// Radius    //
-///////////////
-
-/**
- * Creates a new radius object for drawing circles around a point, does a lot of initial calculation to increase load time
- * @returns a new Radius
- * @type Radius
- * @constructor
- * @classDescription Radius
- * @param {Object} Center LatLonPoint of the radius
- * @param {quality} Number of points that comprise the approximated circle (20 is a good starting point)
- */
-var Radius = mxn.Radius = function(center, quality) {
-	this.center = center;
-	var latConv = center.latConv();
-	var lonConv = center.lonConv();
-
-	// Create Radian conversion constant
-	var rad = Math.PI / 180;
-	this.calcs = [];
-
-	for(var i = 0; i < 360; i += quality){
-	    this.calcs.push([Math.cos(i * rad) / latConv, Math.sin(i * rad) / lonConv]);
-        }
-};
-
-/**
- * Returns polyline of a circle around the point based on new radius
- * @param {Radius} radius
- * @param {Colour} colour
- * @returns {Polyline} Polyline
- */
-Radius.prototype.getPolyline = function(radius, colour) {
-        var points = [];
-
-	for(var i = 0; i < this.calcs.length; i++){
-		var point = new LatLonPoint(
-			this.center.lat + (radius * this.calcs[i][0]),
-			this.center.lon + (radius * this.calcs[i][1])
-		);
-		points.push(point);
-	}
-
-	// Add first point
-	points.push(points[0]);
-
-	var line = new Polyline(points);
-	line.setColor(colour);
-
-	return line;
-};
-
 
 })();
