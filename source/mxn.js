@@ -69,7 +69,7 @@ var invoke = function(sApiId, sObjName, sFnName, oScope, args){
 		throw 'Method ' + sFnName + ' of object ' + sObjName + ' is not supported by API ' + sApiId + '. Are you missing a script tag?';
 	}
     if(typeof(apis[sApiId][sObjName].deferrable) != 'undefined' && apis[sApiId][sObjName].deferrable[sFnName] === true) {
-        return mxn.deferUntilLoaded.call(oScope, function(){return apis[sApiId][sObjName][sFnName].apply(oScope, args);} )
+        return mxn.deferUntilLoaded.call(oScope, function() {return apis[sApiId][sObjName][sFnName].apply(oScope, args);} );
     } 
     else {
         return apis[sApiId][sObjName][sFnName].apply(oScope, args);
@@ -141,9 +141,9 @@ var mxn = window.mxn = /** @lends mxn */ {
     deferUntilLoaded: function(fnCall) {
         if(this.loaded[this.api] === false) {
             var scope = this;
-            this.onload[this.api].push( fnCall )
+            this.onload[this.api].push( fnCall );
         } else {
-            return fnCall.call(this)
+            return fnCall.call(this);
         }
     },
 	/**

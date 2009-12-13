@@ -407,8 +407,8 @@ Mapstraction.prototype.setDebug = function(debug){
  * @param {Boolean} set deferred to true to turn on deferment
  */
 Mapstraction.prototype.setDefer = function(deferred){
-    this.loaded[this.api] = !deferred
-}
+    this.loaded[this.api] = !deferred;
+};
 
 /**
  * Run any queued provider API calls for the methods defined in the provider's implementation.
@@ -418,9 +418,9 @@ Mapstraction.prototype.setDefer = function(deferred){
  */
 Mapstraction.prototype.runDeferred = function(){
     while(this.onload[this.api].length > 0) {  
-        this.onload[this.api].shift().apply(this) //run deferred calls
+        this.onload[this.api].shift().apply(this); //run deferred calls
     }
-}, 
+};
 
 /////////////////////////
 //
@@ -1744,11 +1744,12 @@ var Radius = mxn.Radius = function(center, quality) {
 
 	// Create Radian conversion constant
 	var rad = Math.PI / 180;
-	this.calcs = new Array();
+	this.calcs = [];
 
-	for(var i = 0; i < 360; i += quality)
+	for(var i = 0; i < 360; i += quality) {
 		this.calcs.push([Math.cos(i * rad) / latConv, Math.sin(i * rad) / lonConv]);
-}
+	}
+};
 
 /**
  * Returns polyline of a circle around the point based on new radius
