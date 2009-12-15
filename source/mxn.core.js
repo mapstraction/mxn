@@ -25,26 +25,65 @@ var init = function() {
  * @exports Mapstraction as mxn.Mapstraction
  */
 var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
-    if (!api){
+	if (!api){
 		api = mxn.util.getAvailableProviders()[0];
 	}
+	
+	/**
+	 * The name of the active API.
+	 * @name mxn.Mapstraction#api
+	 * @type {String}
+	 */
 	this.api = api;
+		
 	this.maps = {};
+	
+	/**
+	 * The DOM element containing the map.
+	 * @name mxn.Mapstraction#currentElement
+	 * @property
+	 * @type {DOMElement}
+	 */
 	this.currentElement = $m(element);
+	
 	this.eventListeners = [];
+	
+	/**
+	 * The markers currently loaded.
+	 * @name mxn.Mapstraction#markers
+	 * @property
+	 * @type {Array}
+	 */
 	this.markers = [];
 	this.layers = [];
+	
+	/**
+	 * The polylines currently loaded.
+	 * @name mxn.Mapstraction#polylines
+	 * @property
+	 * @type {Array}
+	 */
 	this.polylines = [];
+	
 	this.images = [];
-    this.controls = [];	
+	this.controls = [];	
 	this.loaded = {};
 	this.onload = {};
-    this.loaded[api] = true;
-    this.onload[api] = []; 
+	this.onload[api] = [];
 	
+	/**
+	 * The original element value passed to the constructor.
+	 * @name mxn.Mapstraction#element
+	 * @property
+	 * @type {String|DOMElement}
+	 */
 	this.element = element;
 	
-	// option defaults
+	/**
+	 * Options defaults.
+	 * @name mxn.Mapstraction#options
+	 * @property {Object}
+	 */
 	this.options = {
 		enableScrollWheelZoom: false,
 		enableDragging: true
@@ -352,8 +391,9 @@ Mapstraction.prototype.swap = function(element,api) {
 	this.currentElement.style.display = 'block';
 
 	this.api = api;
-
-	if (this.maps[this.api] === undefined) {
+	this.onload[api] = [];
+	
+	if (this.maps[this.api] === undefined) {	
 		init.apply(this);
 
 		this.setCenterAndZoom(center,zoom);
@@ -407,7 +447,7 @@ Mapstraction.prototype.setDebug = function(debug){
  * @param {Boolean} set deferred to true to turn on deferment
  */
 Mapstraction.prototype.setDefer = function(deferred){
-    this.loaded[this.api] = !deferred;
+	this.loaded[this.api] = !deferred;
 };
 
 /**
@@ -417,9 +457,9 @@ Mapstraction.prototype.setDefer = function(deferred){
  * implementation loads the map, it calls this.runDeferred and any queued calls will be run.
  */
 Mapstraction.prototype.runDeferred = function(){
-    while(this.onload[this.api].length > 0) {  
-        this.onload[this.api].shift().apply(this); //run deferred calls
-    }
+	while(this.onload[this.api].length > 0) {  
+		this.onload[this.api].shift().apply(this); //run deferred calls
+	}
 };
 
 /////////////////////////
@@ -1725,7 +1765,7 @@ Polyline.prototype.simplify = function(tolerance) {
 };
 
 ///////////////
-// Radius    //
+// Radius	//
 ///////////////
 
 /**
@@ -1746,7 +1786,7 @@ var Radius = mxn.Radius = function(center, quality) {
 	var rad = Math.PI / 180;
 	this.calcs = [];
 
-	for(var i = 0; i < 360; i += quality) {
+	for(var i = 0; i < 360; i += quality){
 		this.calcs.push([Math.cos(i * rad) / latConv, Math.sin(i * rad) / lonConv]);
 	}
 };
@@ -1758,7 +1798,7 @@ var Radius = mxn.Radius = function(center, quality) {
  * @returns {Polyline} Polyline
  */
 Radius.prototype.getPolyline = function(radius, colour) {
-	var points = Array();
+	var points = [];
 
 	for(var i = 0; i < this.calcs.length; i++){
 		var point = new LatLonPoint(

@@ -24,7 +24,7 @@
  * @constructor
  */
 function MapstractionGeocoder(callback, api, error_callback) {
-  this.api = api;
+	this.api = api;
 	this.callback = callback;
 	this.geocoders = new Object();
 	if(error_callback == null) {
@@ -33,11 +33,11 @@ function MapstractionGeocoder(callback, api, error_callback) {
 		this.error_callback = error_callback;
 	}
 
-  // This is so that it is easy to tell which revision of this file 
-  // has been copied into other projects.
-  this.svn_revision_string = '$Revision: 107 $';
+	// This is so that it is easy to tell which revision of this file 
+	// has been copied into other projects.
+	this.svn_revision_string = '$Revision: 107 $';
 
-  this.addAPI(api);
+	this.addAPI(api);
 
 }
 
@@ -47,12 +47,12 @@ function MapstractionGeocoder(callback, api, error_callback) {
  */
 MapstractionGeocoder.prototype.addAPI = function(api) { 
 
-  me = this;
-  switch (api) {
+	me = this;
+	switch (api) {
 		case 'google':
 			this.geocoders[api] = new GClientGeocoder();
 			break;
-    case 'mapquest':
+		case 'mapquest':
 			//set up the connection to the geocode server
 			var proxyServerName = "";
 			var proxyServerPort = "";
@@ -61,25 +61,24 @@ MapstractionGeocoder.prototype.addAPI = function(api) {
 			var serverName = "geocode.access.mapquest.com";
 			var serverPort = "80";
 			var serverPath = "mq";
-			this.geocoders[api] = new MQExec(serverName, serverPath, serverPort, proxyServerName,
-				ProxyServerPath, proxyServerPort );
+			this.geocoders[api] = new MQExec(serverName, serverPath, serverPort, proxyServerName, ProxyServerPath, proxyServerPort );
 				
-      break;
-    default:
-      alert(api + ' not supported by mapstraction-geocoder');
-  }
+			break;
+		default:
+			alert(api + ' not supported by mapstraction-geocoder');
+	}
 }
 /**
  * Change the Routing API to use
  * @param {String} api The API to swap to
  */
 MapstractionGeocoder.prototype.swap = function(api) {
-  if (this.api == api) { return; }
+	if (this.api == api) { return; }
 
-  this.api = api;
-  if (this.geocoders[this.api] == undefined) {
-    this.addAPI($(element),api);
-  }
+	this.api = api;
+	if (this.geocoders[this.api] == undefined) {
+		this.addAPI($(element),api);
+	}
 }
 
 /**
@@ -93,14 +92,14 @@ MapstractionGeocoder.prototype.geocode_error = function(response) {
  * Default handler for geocode request completion
  */
 MapstractionGeocoder.prototype.geocode_callback = function(response, mapstraction_geocoder) { 
-  var return_location = new Object();
+	var return_location = {};
 	
 	// TODO: what if the api is switched during a geocode request?
 	// TODO: provide an option error callback
 	switch (mapstraction_geocoder.api) {
 		case 'google':
-  		if (!response || response.Status.code != 200) {
-    		mapstraction_geocoder.error_callback(response);
+	  		if (!response || response.Status.code != 200) {
+				mapstraction_geocoder.error_callback(response);
 			} else {
 				return_location.street = "";
 				return_location.locality = "";
@@ -110,25 +109,25 @@ MapstractionGeocoder.prototype.geocode_callback = function(response, mapstractio
 				var place = response.Placemark[0];
 				if(place.AddressDetails.Country.AdministrativeArea != null) {
 					return_location.region = place.AddressDetails.Country.AdministrativeArea.AdministrativeAreaName;
-					
+						
 					if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea != null) {
 						if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality != null) {
 							return_location.locality = place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName;
 
-							if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare != null)
+							if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare != null) {
 								return_location.street = place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.ThoroughfareName;
+							}
 						}
-						
+							
 					}
-					
+						
 				}
 				return_location.country = place.AddressDetails.Country.CountryNameCode;
-			 return_location.address = place.address;	
+				return_location.address = place.address;	
 
-                return_location.point = new mxn.LatLonPoint(place.Point.coordinates[1],
-                    place.Point.coordinates[0]);
-                    mapstraction_geocoder.callback(return_location);
-                }
+				return_location.point = new mxn.LatLonPoint(place.Point.coordinates[1], place.Point.coordinates[0]);
+				mapstraction_geocoder.callback(return_location);
+			}
 			break;
 		case 'mapquest':
 			break;
@@ -141,39 +140,40 @@ MapstractionGeocoder.prototype.geocode_callback = function(response, mapstractio
  * @param {Object} address The address object to geocode
  */
  MapstractionGeocoder.prototype.geocode = function(address) { 
-     var return_location = new Object();
+	 var return_location = {};
 
-     // temporary variable for later using in function closure
-     var mapstraction_geocoder = this;
+	 // temporary variable for later using in function closure
+	 var mapstraction_geocoder = this;
 
-     switch (this.api) {
-         case 'google':
-         if (address.address == null || address.address == "")
-         address.address = address.street + ", " + address.locality + ", " + address.region + ", " + address.country
-         this.geocoders[this.api].getLocations(address.address, function(response) { mapstraction_geocoder.geocode_callback(response, mapstraction_geocoder); });
-         break;
-         case 'mapquest':
-         var mqaddress = new MQAddress();
-         var gaCollection = new MQLocationCollection("MQGeoAddress");
-         //populate the address object with the information from the form
-         mqaddress.setStreet(address.street);
-         mqaddress.setCity(address.locality);
-         mqaddress.setState(address.region);
-         mqaddress.setPostalCode(address.postalcode);
-         mqaddress.setCountry(address.country);
+	 switch (this.api) {
+		 case 'google':
+			if (address.address == null || address.address == "") {
+				address.address = address.street + ", " + address.locality + ", " + address.region + ", " + address.country;
+			}
+			this.geocoders[this.api].getLocations(address.address, function(response) { mapstraction_geocoder.geocode_callback(response, mapstraction_geocoder); });
+			break;
+		case 'mapquest':
+			var mqaddress = new MQAddress();
+			var gaCollection = new MQLocationCollection("MQGeoAddress");
+			 //populate the address object with the information from the form
+			mqaddress.setStreet(address.street);
+			mqaddress.setCity(address.locality);
+			mqaddress.setState(address.region);
+			mqaddress.setPostalCode(address.postalcode);
+			mqaddress.setCountry(address.country);
 
-         this.geocoders[this.api].geocode(mqaddress, gaCollection);
-         var geoAddr = gaCollection.get(0);
-         var mqpoint = geoAddr.getMQLatLng();
-         return_location.street = geoAddr.getStreet();
-         return_location.locality = geoAddr.getCity();
-         return_location.region = geoAddr.getState();
-         return_location.country = geoAddr.getCountry();
-         return_location.point = new mxn.LatLonPoint(mqpoint.getLatitude(), mqpoint.getLongitude());
-         this.callback(return_location, this);
-         break;
-         default:
-         alert(api + ' not supported by mapstraction-geocoder');
-         break;
-     }
+			this.geocoders[this.api].geocode(mqaddress, gaCollection);
+			var geoAddr = gaCollection.get(0);
+			var mqpoint = geoAddr.getMQLatLng();
+			return_location.street = geoAddr.getStreet();
+			return_location.locality = geoAddr.getCity();
+			return_location.region = geoAddr.getState();
+			return_location.country = geoAddr.getCountry();
+			return_location.point = new mxn.LatLonPoint(mqpoint.getLatitude(), mqpoint.getLongitude());
+			this.callback(return_location, this);
+			break;
+		 default:
+			alert(api + ' not supported by mapstraction-geocoder');
+			break;
+	 }
  }

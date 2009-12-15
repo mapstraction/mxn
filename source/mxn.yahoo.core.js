@@ -38,7 +38,8 @@ Mapstraction: {
 			map.enableDragMap();
 		} else {
 			map.disableDragMap();
-		}*/
+		}
+		*/
 		
 	},
 
@@ -105,7 +106,7 @@ Mapstraction: {
 		var pt = point.toProprietary(this.api);
 		
 		var yzoom = 18 - zoom; // maybe?
-        map.drawZoomAndCenter(pt,yzoom);
+		map.drawZoomAndCenter(pt,yzoom);
 	},
 	
 	addMarker: function(marker, old) {
@@ -153,7 +154,7 @@ Mapstraction: {
 	getCenter: function() {
 		var map = this.maps[this.api];
 		var pt = map.getCenterLatLon();
-        var point = new mxn.LatLonPoint(pt.Lat, pt.Lon);
+		var point = new mxn.LatLonPoint(pt.Lat, pt.Lon);
 		return point;
 	},
 
@@ -214,7 +215,7 @@ Mapstraction: {
 	getBounds: function () {
 		var map = this.maps[this.api];
 		var ybox = map.getBoundsLatLon();
-        return new mxn.BoundingBox(ybox.LatMin, ybox.LonMin, ybox.LatMax, ybox.LonMax);
+		return new mxn.BoundingBox(ybox.LatMin, ybox.LonMin, ybox.LatMax, ybox.LonMax);
 	},
 
 	setBounds: function(bounds){
@@ -292,64 +293,64 @@ Marker: {
 		var ymarker, size;
 		var infoBubble, event_action, infoDiv, div;
 		
-	    if(this.iconSize) {
-	        size = new YSize(this.iconSize[0], this.iconSize[1]);
-	    }
-	    if(this.iconUrl) {
-	        if(this.iconSize){
-	            ymarker = new YMarker(this.location.toProprietary('yahoo'), new YImage(this.iconUrl, size));
+		if(this.iconSize) {
+			size = new YSize(this.iconSize[0], this.iconSize[1]);
+		}
+		if(this.iconUrl) {
+			if(this.iconSize){
+				ymarker = new YMarker(this.location.toProprietary('yahoo'), new YImage(this.iconUrl, size));
 			}
-	        else {
-	            ymarker = new YMarker(this.location.toProprietary('yahoo'), new YImage(this.iconUrl));
+			else {
+				ymarker = new YMarker(this.location.toProprietary('yahoo'), new YImage(this.iconUrl));
 			}
-	    }
-	    else {
-	        if(this.iconSize) {
-	            ymarker = new YMarker(this.location.toProprietary('yahoo'), null, size);
+		}
+		else {
+			if(this.iconSize) {
+				ymarker = new YMarker(this.location.toProprietary('yahoo'), null, size);
 			}
-	        else {
-	            ymarker = new YMarker(this.location.toProprietary('yahoo'));
+			else {
+				ymarker = new YMarker(this.location.toProprietary('yahoo'));
 			}
-	    }
+		}
 
-	    if(this.labelText) {
-	        ymarker.addLabel(this.labelText);
-	    }
+		if(this.labelText) {
+			ymarker.addLabel(this.labelText);
+		}
 
-	    if(this.infoBubble) {
-	        infoBubble = this.infoBubble;
-	        if(this.hover) {
-	            event_action = EventsList.MouseOver;
-	        }
-	        else {
-	            event_action = EventsList.MouseClick;
-	        }
-	        YEvent.Capture(ymarker, event_action, function() {
-	            ymarker.openSmartWindow(infoBubble);
-	        });
+		if(this.infoBubble) {
+			infoBubble = this.infoBubble;
+			if(this.hover) {
+				event_action = EventsList.MouseOver;
+			}
+			else {
+				event_action = EventsList.MouseClick;
+			}
+			YEvent.Capture(ymarker, event_action, function() {
+				ymarker.openSmartWindow(infoBubble);
+			});
 
-	    }
+		}
 
-	    if(this.infoDiv) {
-	        infoDiv = this.infoDiv;
-	        div = this.div;
-	        if(this.hover) {
-	            event_action = EventsList.MouseOver;
-	        }
-	        else {
-	            event_action = EventsList.MouseClick;
-	        }
-	        YEvent.Capture(ymarker, event_action, function() {
-	            document.getElementById(div).innerHTML = infoDiv;
-	        });
-	    }
+		if(this.infoDiv) {
+			infoDiv = this.infoDiv;
+			div = this.div;
+			if(this.hover) {
+				event_action = EventsList.MouseOver;
+			}
+			else {
+				event_action = EventsList.MouseClick;
+			}
+			YEvent.Capture(ymarker, event_action, function() {
+				document.getElementById(div).innerHTML = infoDiv;
+			});
+		}
 
-	    return ymarker;
+		return ymarker;
 	},
 
 	openBubble: function() {
 		var ypin = this.proprietary_marker;
-        ypin.openSmartWindow(this.infoBubble);
+		ypin.openSmartWindow(this.infoBubble);
 	},
 
 	hide: function() {
@@ -370,12 +371,12 @@ Polyline: {
 
 	toProprietary: function() {		
 		var ypolyline;
-	    var ypoints = [];
-	    for (var i = 0, length = this.points.length ; i< length; i++){
-	        ypoints.push(this.points[i].toProprietary('yahoo'));
-	    }
-	    ypolyline = new YPolyline(ypoints,this.color,this.width,this.opacity);
-	    return ypolyline;
+		var ypoints = [];
+		for (var i = 0, length = this.points.length ; i< length; i++){
+			ypoints.push(this.points[i].toProprietary('yahoo'));
+		}
+		ypolyline = new YPolyline(ypoints,this.color,this.width,this.opacity);
+		return ypolyline;
 	},
 	
 	show: function() {

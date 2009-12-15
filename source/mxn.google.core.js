@@ -73,50 +73,51 @@ Mapstraction: {
 		// remove old controls
 		if (this.controls) {
 			while ((ctl = this.controls.pop())) {
-			        // Google specific method
+				// Google specific method
 				map.removeControl(ctl);
 			}
-		} else {
-  		        this.controls = [];
-                }
-                c = this.controls;
+		} 
+		else {
+  			this.controls = [];
+		}
+		c = this.controls;
  
 		// Google has a combined zoom and pan control.
 		if (args.zoom || args.pan) {
-		    if (args.zoom == 'large'){ 
-                        this.addLargeControls();
-                    } else {
-                        this.addSmallControls();
-                    }
+			if (args.zoom == 'large'){ 
+				this.addLargeControls();
+			} else {
+				this.addSmallControls();
+			}
 		}
 
 		if (args.scale) {
-                    this.controls.unshift(new GScaleControl());
-	    	    map.addControl(this.controls[0]);
-		    this.addControlsArgs.scale = true;
+			this.controls.unshift(new GScaleControl());
+			map.addControl(this.controls[0]);
+			this.addControlsArgs.scale = true;
 		}
 		
 		if (args.overview) {
-                        c.unshift(new GOverviewMapControl()); 
-                        map.addControl(c[0]);
-    		        this.addControlsArgs.overview = true;
+			c.unshift(new GOverviewMapControl()); 
+			map.addControl(c[0]);
+			this.addControlsArgs.overview = true;
 		}
 		if (args.map_type) {
- 		        this.addMapTypeControls();
+ 			this.addMapTypeControls();
 		} 
 	},
 
 	addSmallControls: function() {
 		var map = this.maps[this.api];
-                this.controls.unshift(new GSmallMapControl());
+		this.controls.unshift(new GSmallMapControl());
 		map.addControl(this.controls[0]);
 		this.addControlsArgs.zoom = 'small';
 		this.addControlsArgs.pan = true;
 	},
 
 	addLargeControls: function() {
-		var map = this.maps[this.api];                
-                this.controls.unshift(new GLargeMapControl());
+		var map = this.maps[this.api];				
+		this.controls.unshift(new GLargeMapControl());
 		map.addControl(this.controls[0]);
 		this.addControlsArgs.zoom = 'large';
 		this.addControlsArgs.pan = true;
@@ -124,7 +125,7 @@ Mapstraction: {
 
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
-                this.controls.unshift(new GMapTypeControl());
+		this.controls.unshift(new GMapTypeControl());
 		map.addControl(this.controls[0]);
 		this.addControlsArgs.map_type = true;
 	},
@@ -319,14 +320,14 @@ Mapstraction: {
 			return url;
 		};
 		if(map_type) {
-            var tileLayerOverlay = new GMapType(tilelayers, new GMercatorProjection(19), copyright_text, {
-                errorMessage:"More "+copyright_text+" tiles coming soon"
-            });        
-            this.maps[this.api].addMapType(tileLayerOverlay);
-        } else {
-            tileLayerOverlay = new GTileLayerOverlay(tilelayers[0]);
-            this.maps[this.api].addOverlay(tileLayerOverlay);
-        }		
+			var tileLayerOverlay = new GMapType(tilelayers, new GMercatorProjection(19), copyright_text, {
+				errorMessage:"More "+copyright_text+" tiles coming soon"
+			});		
+			this.maps[this.api].addMapType(tileLayerOverlay);
+		} else {
+			tileLayerOverlay = new GTileLayerOverlay(tilelayers[0]);
+			this.maps[this.api].addOverlay(tileLayerOverlay);
+		}		
 		this.tileLayers.push( [tile_url, tileLayerOverlay, true] );
 		return tileLayerOverlay;
 	},
@@ -415,15 +416,15 @@ Marker: {
 					icon.shadowSize = new GSize(this.iconShadowSize[0], this.iconShadowSize[1]);
 				}
 			} else {  // turn off shadow
-  			        icon.shadow = '';
-                                icon.shadowSize = '';
-                        }
+  					icon.shadow = '';
+								icon.shadowSize = '';
+						}
 			if(this.transparent) {
-  			        icon.transparent = this.transparent;
-                        }
+  					icon.transparent = this.transparent;
+						}
 			if(this.imageMap) {
-  			        icon.imageMap = this.imageMap;
-                        }
+  					icon.imageMap = this.imageMap;
+						}
 			options.icon = icon;
 		}
 		if(this.draggable){

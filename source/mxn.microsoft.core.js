@@ -6,34 +6,23 @@ Mapstraction: {
 		var me = this;
 		if (VEMap){
 			this.maps[api] = new VEMap(element.id);
-	 
-			
-			
 			this.maps[api].AttachEvent('onclick', function(event){
 				me.clickHandler();
 				var x = event.mapX;
 				var y = event.mapY;
-			    var pixel = new VEPixel(x,y);
+				var pixel = new VEPixel(x,y);
 				me.click.fire({'location': new mxn.LatLonPoint(pixel.Latitude, pixel.Longitude)});
-			
-				
 			});
 			this.maps[api].AttachEvent('onendzoom', function(event){
 				me.moveendHandler(me);
-				me.changeZoom.fire();
-				
-				
+				me.changeZoom.fire();				
 			});
 			this.maps[api].AttachEvent('onendpan', function(event){
 				me.moveendHandler(me);
 				me.endPan.fire();
-				
-				
 			});
 			this.maps[api].AttachEvent('onchangeview', function(event){
-				me.endPan.fire();
-				
-				
+				me.endPan.fire();				
 			});
 			this.maps[api].LoadMap();
 			document.getElementById("MSVE_obliqueNotification").style.visibility = "hidden"; 
@@ -44,7 +33,6 @@ Mapstraction: {
 		}
 		else{
 			alert(api + ' map script not imported')
-			
 		}
 	
 	},
@@ -53,10 +41,8 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		if(this.options.enableScrollWheelZoom){
 			map.enableContinuousZoom();
-			map.enableScrollWheelZoom();	
-		
-		}
-		
+			map.enableScrollWheelZoom();
+		}		
 	},
 
 	resizeTo: function(width, height){	
@@ -65,15 +51,15 @@ Mapstraction: {
 
 	addControls: function( args ) {
 		var map = this.maps[this.api];
-        
-	if (args.pan) {
+		
+		if (args.pan) {
 			map.SetDashboardSize(VEDashboardSize.Normal);
 		}
 		else {
 			map.SetDashboardSize(VEDashboardSize.Tiny)
 		}
 
-  	if (args.zoom == 'large') {
+	  	if (args.zoom == 'large') {
 			map.SetDashboardSize(VEDashboardSize.Small)
 		}
 		else if ( args.zoom == 'small' ) {
@@ -83,14 +69,11 @@ Mapstraction: {
 			map.HideDashboard();
 			map.HideScalebar();
 		}
-        	
-		
 	},
 
 	addSmallControls: function() {
 		var map = this.maps[this.api];
 		map.SetDashboardSize(VEDashboardSize.Tiny);
-		
 	},
 
 	addLargeControls: function() {
@@ -113,7 +96,6 @@ Mapstraction: {
 		}
 		else{
 			map.disableDragMap();
-			
 		}
 	},
 
@@ -121,21 +103,19 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 		var vzoom =  zoom;
-		map.SetCenterAndZoom(new VELatLong(point.lat,point.lon), vzoom)
-		
+		map.SetCenterAndZoom(new VELatLong(point.lat,point.lon), vzoom);
 	},
 	
 	addMarker: function(marker, old) {
 		var map = this.maps[this.api];
-                marker.pinID = "mspin-"+new Date().getTime()+'-'+(Math.floor(Math.random()*Math.pow(2,16)));
+		marker.pinID = "mspin-"+new Date().getTime()+'-'+(Math.floor(Math.random()*Math.pow(2,16)));
 		var pin = marker.toProprietary(this.api);
-	        map.AddShape(pin);
+		map.AddShape(pin);
 		//give onclick event
 		//give on double click event
 		//give on close window
 		//return the marker
-		
-		
+				
 		return pin;
 	},
 
@@ -186,21 +166,16 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 		map.SetCenter(new VELatLong(point.lat, point.lon));
-		
-		
 	},
 
 	setZoom: function(zoom) {
 		var map = this.maps[this.api];
 		map.SetZoomLevel(zoom);
-		
-		
 	},
 	
 	getZoom: function() {
 		var map = this.maps[this.api];
 		var zoom = map.GetZoomLevel();
-		
 		return zoom;
 	},
 
@@ -267,9 +242,6 @@ Mapstraction: {
 		
 		var rec = new VELatLongRectangle(new VELatLong(ne.lat, ne.lon), new VELatLong(sw.lat, sw.lon));
 		map.SetMapView(rec);
-		
-		
-		
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
@@ -284,20 +256,17 @@ Mapstraction: {
 
 		// TODO: Add provider code
 
-	//	oContext.pixels.top = ...;
-	//	oContext.pixels.left = ...;
-	//	oContext.pixels.bottom = ...;
-	//	oContext.pixels.right = ...;
+		//	oContext.pixels.top = ...;
+		//	oContext.pixels.left = ...;
+		//	oContext.pixels.bottom = ...;
+		//	oContext.pixels.right = ...;
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
 		var map = this.maps[this.api];
-	    var layer = new VEShapeLayer(); 
-	    var mlayerspec = new VEShapeSourceSpecification(VEDataType.GeoRSS, url, layer);
+		var layer = new VEShapeLayer(); 
+		var mlayerspec = new VEShapeSourceSpecification(VEDataType.GeoRSS, url, layer);
 	 	map.AddShapeLayer(layer);
-	  
-	
-		
 	},
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
@@ -320,7 +289,6 @@ Mapstraction: {
 				var latlon = map.PixelToLatLong(new VEPixel(veEvent.mapX, veEvent.mapY));
 				var loc = latlon.Latitude.toFixed(4) + " / " + latlon.Longitude.toFixed(4);
 				locDisp.innerHTML = loc;
-
 			});
 			locDisp.innerHTML = "0.0000 / 0.0000";
 		}
@@ -344,10 +312,7 @@ Marker: {
 	
 	toProprietary: function() {
 		var mmarker = new VEShape(VEShapeType.Pushpin, this.location.toProprietary('microsoft'));
-	
-	
 		return mmarker;
-		
 	},
 
 	openBubble: function() {		
@@ -374,8 +339,7 @@ Polyline: {
 
 	toProprietary: function() {
 		var mpoints =[];
-		for(var i =0, length = this.points.length; i < length; i++)
-		{
+		for(var i =0, length = this.points.length; i < length; i++) {
 			mpoints.push(this.points[i].toProprietary('microsoft'));
 		}
 		var mpolyline = new VEShape(VEShapeType.Polyline, mpoints);
@@ -390,11 +354,11 @@ Polyline: {
 	},
 		
 	show: function() {
-			this.proprietary_polyline.Show();
+		this.proprietary_polyline.Show();
 	},
 
 	hide: function() {
-			this.proprietary_polyline.Hide();
+		this.proprietary_polyline.Hide();
 	}
 	
 }

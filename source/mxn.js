@@ -32,7 +32,7 @@
 	   }
 	}
 	
-    if (providers === null || providers == 'none') {
+	if (providers === null || providers == 'none') {
 		return; // Bail out if no auto-load has been found
 	}
 	providers = providers.replace(/ /g, '').split(',');
@@ -44,7 +44,7 @@
 	var scriptsAry = [];
 	for (i = 0; i < modules.length; i++) {
 		scriptsAry.push(scriptTagStart + modules[i] + scriptTagEnd);
-	    for (var j = 0; j < providers.length; j++) {
+		for (var j = 0; j < providers.length; j++) {
 			scriptsAry.push(scriptTagStart + providers[j] + '.' + modules[i] + scriptTagEnd);
 		}
 	}
@@ -68,12 +68,12 @@ var invoke = function(sApiId, sObjName, sFnName, oScope, args){
 	if(!hasImplementation(sApiId, sObjName, sFnName)) {
 		throw 'Method ' + sFnName + ' of object ' + sObjName + ' is not supported by API ' + sApiId + '. Are you missing a script tag?';
 	}
-    if(typeof(apis[sApiId][sObjName].deferrable) != 'undefined' && apis[sApiId][sObjName].deferrable[sFnName] === true) {
-        return mxn.deferUntilLoaded.call(oScope, function() {return apis[sApiId][sObjName][sFnName].apply(oScope, args);} );
-    } 
-    else {
-        return apis[sApiId][sObjName][sFnName].apply(oScope, args);
-    } 
+	if(typeof(apis[sApiId][sObjName].deferrable) != 'undefined' && apis[sApiId][sObjName].deferrable[sFnName] === true) {
+		mxn.deferUntilLoaded.call(oScope, function() {return apis[sApiId][sObjName][sFnName].apply(oScope, args);} );
+	} 
+	else {
+		return apis[sApiId][sObjName][sFnName].apply(oScope, args);
+	} 
 };
 	
 /**
@@ -138,14 +138,16 @@ var mxn = window.mxn = /** @lends mxn */ {
 		}
 		return false;
 	},
-    deferUntilLoaded: function(fnCall) {
-        if(this.loaded[this.api] === false) {
-            var scope = this;
-            this.onload[this.api].push( fnCall );
-        } else {
-            return fnCall.call(this);
-        }
-    },
+	
+	deferUntilLoaded: function(fnCall) {
+		if(this.loaded[this.api] === false) {
+			var scope = this;
+			this.onload[this.api].push( fnCall );
+		} else {
+			fnCall.call(this);
+		}
+	},
+	
 	/**
 	 * Bulk add some named events to an object.
 	 * @function
