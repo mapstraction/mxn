@@ -244,19 +244,26 @@ mxn.Invoker = function(aobj, asClassName, afnApiIdGetter){
 	 */
 	this.go = function(sMethodName, args, oOptions){
 		
+		// make sure args is an array
+		args = Array.prototype.slice.apply(args);
+		
 		if(typeof(oOptions) == 'undefined'){
 			oOptions = defOpts;
 		}
 						
-		var sApiId = oOptions.overrideApi ? args[0] : fnApiIdGetter.apply(obj);
+		var sApiId;
+		if(oOptions.overrideApi){
+			sApiId = args.shift();
+		}
+		else {
+			sApiId = fnApiIdGetter.apply(obj);
+		}
 		
 		if(typeof(sApiId) != 'string'){
 			throw 'API ID not available.';
 		}
 		
 		if(typeof(oOptions.context) != 'undefined' && oOptions.context !== null){
-			// make sure args is an array
-			args = Array.prototype.slice.apply(args);
 			args.push(oOptions.context);
 		}
 		

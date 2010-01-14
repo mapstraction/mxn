@@ -221,8 +221,10 @@ mxn.register('openlayers', {
 
 		getCenter: function() {
 			var map = this.maps[this.api];
-			pt = map.getCenter();
-			return new mxn.LatLonPoint(pt.lat, pt.lon);
+			var pt = map.getCenter();
+			var mxnPt = new mxn.LatLonPoint();
+			mxnPt.fromProprietary(this.api, pt);
+			return mxnPt;
 		},
 
 		setCenter: function(point, options) {

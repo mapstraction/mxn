@@ -143,7 +143,6 @@ Mapstraction: {
 		var pl = polyline.toProprietary(this.api);
 		pl.HideIcon();//hide the icon VE automatically displays
 		map.AddShape(pl);
-		
 		return pl;
 	},
 
@@ -159,7 +158,6 @@ Mapstraction: {
 		var LL = map.GetCenter();
 		var point = new mxn.LatLonPoint(LL.Latitude, LL.Longitude);
 		return point;
-		
 	},
  
 	setCenter: function(point, options) {
@@ -302,8 +300,8 @@ LatLonPoint: {
 	},
 
 	fromProprietary: function(mpoint) {
-		this.lat =mpoint.Latitude;
-		this.lon =mpoint.Longitude;
+		this.lat = mpoint.Latitude;
+		this.lon = mpoint.Longitude;
 	}
 	
 },

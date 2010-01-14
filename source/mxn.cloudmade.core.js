@@ -264,7 +264,8 @@ mxn.register('cloudmade', {
 		},
 
 		fromProprietary: function(point) {
-			return new mxn.LatLonPoint(point.lat(),point.lng());
+			this.lat = point.lat();
+			this.lon = point.lng();
 		}
 
 	},
