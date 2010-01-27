@@ -488,7 +488,7 @@ Marker: {
 
 	update: function() {
 		point = new mxn.LatLonPoint();
-		point.fromGoogle(this.proprietary_marker.getPoint());
+		point.fromProprietary('google', this.proprietary_marker.getPoint());
 		this.location = point;
 	}
 	
