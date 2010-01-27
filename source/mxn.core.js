@@ -1253,7 +1253,23 @@ var LatLonPoint = mxn.LatLonPoint = function(lat, lon) {
 };
 
 mxn.addProxyMethods(LatLonPoint, [ 
-	'fromProprietary', 'toProprietary'
+	/**
+	 * Retrieve the lat and lon values from a proprietary point.
+	 * @name mxn.LatLonPoint#fromProprietary
+	 * @function
+	 * @param {String} apiId The API ID of the proprietary point.
+	 * @param {Object} point The proprietary point.
+	 */
+	'fromProprietary',
+	
+	/**
+	 * Converts the current LatLonPoint to a proprietary one for the API specified by apiId.
+	 * @name mxn.LatLonPoint#toProprietary
+	 * @function
+	 * @param {String} apiId The API ID of the proprietary point.
+	 * @returns A proprietary point.
+	 */
+	'toProprietary'
 ], true);
 
 /**
@@ -1425,11 +1441,50 @@ var Marker = mxn.Marker = function(point) {
 };
 
 mxn.addProxyMethods(Marker, [ 
+	/**
+	 * Retrieve the settings from a proprietary marker.
+	 * @name mxn.Marker#fromProprietary
+	 * @function
+	 * @param {String} apiId The API ID of the proprietary point.
+	 * @param {Object} marker The proprietary marker.
+	 */
 	'fromProprietary',
+	
+	/**
+	 * Hide the marker.
+	 * @name mxn.Marker#hide
+	 * @function
+	 */
 	'hide',
+	
+	/**
+	 * Open the marker's info bubble.
+	 * @name mxn.Marker#openBubble
+	 * @function
+	 */
 	'openBubble',
+	
+	/**
+	 * Show the marker.
+	 * @name mxn.Marker#show
+	 * @function
+	 */
 	'show',
+	
+	/**
+	 * Converts the current Marker to a proprietary one for the API specified by apiId.
+	 * @name mxn.Marker#toProprietary
+	 * @function
+	 * @param {String} apiId The API ID of the proprietary marker.
+	 * @returns A proprietary marker.
+	 */
 	'toProprietary',
+	
+	/**
+	 * Updates the Marker with the location of the attached proprietary marker on the map.
+	 * @name mxn.Marker#update
+	 * @function
+	 */
 	'update'
 ]);
 
@@ -1445,6 +1500,7 @@ Marker.prototype.setLabel = function(labelText) {
 
 /**
  * addData conviniently set a hash of options on a marker
+ * @param {Object} options An object literal hash of key value pairs. Keys are: label, infoBubble, icon, iconShadow, infoDiv, draggable, hover, hoverIcon, openBubble, groupName.
  */
 Marker.prototype.addData = function(options){
 	for(var sOptKey in options) {
@@ -1505,7 +1561,7 @@ Marker.prototype.addData = function(options){
 };
 
 /**
- * setInfoBubble sets the html/text content for a bubble popup for a marker
+ * Sets the html/text content for a bubble popup for a marker
  * @param {String} infoBubble the html/text you want displayed
  */
 Marker.prototype.setInfoBubble = function(infoBubble) {
@@ -1513,8 +1569,8 @@ Marker.prototype.setInfoBubble = function(infoBubble) {
 };
 
 /**
- * setInfoDiv sets the text and the id of the div element where to the information
- *  useful for putting information in a div outside of the map
+ * Sets the text and the id of the div element where to the information
+ * useful for putting information in a div outside of the map
  * @param {String} infoDiv the html/text you want displayed
  * @param {String} div the element id to use for displaying the text/html
  */
@@ -1524,7 +1580,7 @@ Marker.prototype.setInfoDiv = function(infoDiv,div){
 };
 
 /**
- * setIcon sets the icon for a marker
+ * Sets the icon for a marker
  * @param {String} iconUrl The URL of the image you want to be the icon
  */
 Marker.prototype.setIcon = function(iconUrl, iconSize, iconAnchor) {
@@ -1538,7 +1594,7 @@ Marker.prototype.setIcon = function(iconUrl, iconSize, iconAnchor) {
 };
 
 /**
- * setIconSize sets the size of the icon for a marker
+ * Sets the size of the icon for a marker
  * @param {String} iconSize The array size in pixels of the marker image
  */
 Marker.prototype.setIconSize = function(iconSize){
@@ -1548,7 +1604,7 @@ Marker.prototype.setIconSize = function(iconSize){
 };
 
 /**
- * setIconAnchor sets the anchor point for a marker
+ * Sets the anchor point for a marker
  * @param {String} iconAnchor The array offset of the anchor point
  */
 Marker.prototype.setIconAnchor = function(iconAnchor){
@@ -1558,7 +1614,7 @@ Marker.prototype.setIconAnchor = function(iconAnchor){
 };
 
 /**
- * setShadowIcon sets the icon for a marker
+ * Sets the icon for a marker
  * @param {String} iconUrl The URL of the image you want to be the icon
  */
 Marker.prototype.setShadowIcon = function(iconShadowUrl, iconShadowSize){
@@ -1573,7 +1629,7 @@ Marker.prototype.setHoverIcon = function(hoverIconUrl){
 };
 
 /**
- * setDraggable sets the draggable state of the marker
+ * Sets the draggable state of the marker
  * @param {Bool} draggable set to true if marker should be draggable by the user
  */
 Marker.prototype.setDraggable = function(draggable) {
@@ -1581,8 +1637,8 @@ Marker.prototype.setDraggable = function(draggable) {
 };
 
 /**
- * setHover sets that the marker info is displayed on hover
- * @param {Bool} hover set to true if marker should display info on hover
+ * Sets that the marker info is displayed on hover
+ * @param {Boolean} hover set to true if marker should display info on hover
  */
 Marker.prototype.setHover = function(hover) {
 	this.hover = hover;
@@ -1596,9 +1652,9 @@ Marker.prototype.setGroupName = function(sGrpName) {
 };
 
 /**
- * setAttribute: set an arbitrary key/value pair on a marker
- * @arg(String) key
- * @arg value
+ * Set an arbitrary key/value pair on a marker
+ * @param {String} key
+ * @param value
  */
 Marker.prototype.setAttribute = function(key,value) {
 	this.attributes[key] = value;
@@ -1606,7 +1662,7 @@ Marker.prototype.setAttribute = function(key,value) {
 
 /**
  * getAttribute: gets the value of "key"
- * @arg(String) key
+ * @param {String} key
  * @returns value
  */
 Marker.prototype.getAttribute = function(key) {
@@ -1636,15 +1692,50 @@ var Polyline = mxn.Polyline = function(points) {
 };
 
 mxn.addProxyMethods(Polyline, [ 
+
+	/**
+	 * Retrieve the settings from a proprietary polyline.
+	 * @name mxn.Polyline#fromProprietary
+	 * @function
+	 * @param {String} apiId The API ID of the proprietary polyline.
+	 * @param {Object} polyline The proprietary polyline.
+	 */
 	'fromProprietary', 
+	
+	/**
+	 * Hide the polyline.
+	 * @name mxn.Polyline#hide
+	 * @function
+	 */
 	'hide',
+	
+	/**
+	 * Show the polyline.
+	 * @name mxn.Polyline#show
+	 * @function
+	 */
 	'show',
+	
+	/**
+	 * Converts the current Polyline to a proprietary one for the API specified by apiId.
+	 * @name mxn.Polyline#toProprietary
+	 * @function
+	 * @param {String} apiId The API ID of the proprietary polyline.
+	 * @returns A proprietary polyline.
+	 */
 	'toProprietary',
+	
+	/**
+	 * Updates the Polyline with the path of the attached proprietary polyline on the map.
+	 * @name mxn.Polyline#update
+	 * @function
+	 */
 	'update'
 ]);
 
 /**
  * addData conviniently set a hash of options on a polyline
+ * @param {Object} options An object literal hash of key value pairs. Keys are: color, width, opacity, closed, fillColor.
  */
 Polyline.prototype.addData = function(options){
 	for(var sOpt in options) {
@@ -1720,17 +1811,17 @@ Polyline.prototype.setFillColor = function(sFillColor) {
 
 
 /**
- * setAttribute: set an arbitrary key/value pair on a polyline
- * @arg(String) key
- * @arg value
+ * Set an arbitrary key/value pair on a polyline
+ * @param {String} key
+ * @param value
  */
 Polyline.prototype.setAttribute = function(key,value) {
 	this.attributes[key] = value;
 };
 
 /**
- * getAttribute: gets the value of "key"
- * @arg(String) key
+ * Gets the value of "key"
+ * @param {String} key
  * @returns value
  */
 Polyline.prototype.getAttribute = function(key) {
@@ -1739,7 +1830,7 @@ Polyline.prototype.getAttribute = function(key) {
 
 /**
  * Simplifies a polyline, averaging and reducing the points
- * @param {Integer} tolerance (1.0 is a good starting point)
+ * @param {Number} tolerance (1.0 is a good starting point)
  */
 Polyline.prototype.simplify = function(tolerance) {
 	var reduced = [];
@@ -1770,12 +1861,11 @@ Polyline.prototype.simplify = function(tolerance) {
 
 /**
  * Creates a new radius object for drawing circles around a point, does a lot of initial calculation to increase load time
- * @returns a new Radius
- * @type Radius
+ * @name mxn.Radius
  * @constructor
- * @classDescription Radius
- * @param {Object} Center LatLonPoint of the radius
- * @param {quality} Number of points that comprise the approximated circle (20 is a good starting point)
+ * @param {LatLonPoint} center LatLonPoint of the radius
+ * @param {Number} quality Number of points that comprise the approximated circle (20 is a good starting point)
+ * @exports Radius as mxn.Radius
  */
 var Radius = mxn.Radius = function(center, quality) {
 	this.center = center;
@@ -1794,10 +1884,10 @@ var Radius = mxn.Radius = function(center, quality) {
 /**
  * Returns polyline of a circle around the point based on new radius
  * @param {Radius} radius
- * @param {Colour} colour
+ * @param {Color} color
  * @returns {Polyline} Polyline
  */
-Radius.prototype.getPolyline = function(radius, colour) {
+Radius.prototype.getPolyline = function(radius, color) {
 	var points = [];
 
 	for(var i = 0; i < this.calcs.length; i++){
@@ -1807,12 +1897,12 @@ Radius.prototype.getPolyline = function(radius, colour) {
 		);
 		points.push(point);
 	}
-
+	
 	// Add first point
 	points.push(points[0]);
 
 	var line = new Polyline(points);
-	line.setColor(colour);
+	line.setColor(color);
 
 	return line;
 };
