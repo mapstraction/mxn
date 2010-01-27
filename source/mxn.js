@@ -502,7 +502,7 @@ mxn.util = {
  * Accepts either a HTML color string argument or three integers for R, G and B.
  * @constructor
  */
-mxn.util.Color = function() {	
+mxn.util.Color = function() {
 	if(arguments.length == 3) {
 		this.red = arguments[0];
 		this.green = arguments[1];
@@ -522,11 +522,13 @@ mxn.util.Color.prototype.reHex = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 mxn.util.Color.prototype.setHexColor = function(strHexColor) {
 	var match = strHexColor.match(this.reHex);
 	if(match) {
+		// grab the code - strips off the preceding # if there is one
 		strHexColor = match[1];
 	}
 	else {
 		throw 'Invalid HEX color format, expected #000, 000, #000000 or 000000';
 	}
+	// if a three character hex code was provided, double up the values
 	if(strHexColor.length == 3) {
 		strHexColor = strHexColor.replace(/\w/g, function(str){return str.concat(str);});
 	}
@@ -537,15 +539,15 @@ mxn.util.Color.prototype.setHexColor = function(strHexColor) {
 
 /**
  * Retrieve the color value as an HTML hex string.
- * @returns {String} Format '00FF88' - note no preceding #.
+ * @returns {String} Format '#00FF88'.
  */
 mxn.util.Color.prototype.getHexColor = function() {
-	var vals = [this.red.toString(16), this.green.toString(16), this.blue.toString(16)];
-	for(var i = 0; i < vals.length; i++) {
-		vals[i] = (vals[i].length == 1) ? '0' + vals[i] : vals[i];
-		vals[i] = vals[i].toUpperCase();
+	var rgb = this.blue | (this.green << 8) | (this.red << 16);
+	var hexString = rgb.toString(16).toUpperCase();
+	if(hexString.length <  6){
+		hexString = '0' + hexString;
 	}
-	return vals.join('');
+	return '#' + hexString;
 };
-
+	
 })();
