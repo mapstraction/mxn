@@ -2,7 +2,7 @@ mxn.register('cloudmade', {
 
 	Mapstraction: {
 
-		init: function(element, api) {		
+		init: function(element, api) {
 			var me = this;		
 			var cloudmade = new CM.Tiles.CloudMade.Web({key: cloudmade_key});
 			this.maps[api] = new CM.Map(element, cloudmade);
@@ -21,6 +21,12 @@ mxn.register('cloudmade', {
 				if ( location ) {
 					me.clickHandler(location.lat(),location.lng(),location,me);
 				}
+			});
+			CM.Event.addListener(this.maps[api], 'dragend', function() {
+				me.endPan.fire();
+			});
+			CM.Event.addListener(this.maps[api], 'zoomend', function() {
+				me.changeZoom.fire();
 			});
 		},
 

@@ -396,8 +396,6 @@ Mapstraction.prototype.swap = function(element,api) {
 	if (this.maps[this.api] === undefined) {	
 		init.apply(this);
 
-		this.setCenterAndZoom(center,zoom);
-
 		for (var i = 0; i < this.markers.length; i++) {
 			this.addMarker(this.markers[i], true);
 		}
@@ -405,6 +403,8 @@ Mapstraction.prototype.swap = function(element,api) {
 		for (var j = 0; j < this.polylines.length; j++) {
 			this.addPolyline( this.polylines[j], true);
 		}
+
+		this.setCenterAndZoom(center,zoom);		
 	}
 	else {
 

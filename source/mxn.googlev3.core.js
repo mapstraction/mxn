@@ -3,13 +3,38 @@ mxn.register('googlev3', {
 Mapstraction: {
 	
 	init: function(element, api){		
-		var me = this;		 
+		var me = this;
 		if ( google && google.maps ){
-			// by default no controls and road map
+			// by default add road map and no controls
 			var myOptions = {
 				disableDefaultUI: true,
-				mapTypeId: google.maps.MapTypeId.ROADMAP
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				mapTypeControl: false,
+				mapTypeControlOptions: null,
+				navigationControl: false,
+				navigationControlOptions: null
 			};
+
+		    // find controls
+		    if (!this.addControlsArgs && loadoptions.addControlsArgs) {
+		    	this.addControlsArgs = loadoptions.addControlsArgs;
+		    }
+		    if (this.addControlsArgs) {
+			    if (this.addControlsArgs.zoom) {
+			    	myOptions.navigationControl = true;
+			    	if (this.addControlsArgs.zoom == 'small') {
+			    		myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.SMALL};
+			    	}
+			    	if (this.addControlsArgs.zoom == 'large') {
+			    		myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.ZOOM_PAN};
+			    	}
+			    }
+			    if (this.addControlsArgs.map_type) {
+					myOptions.mapTypeControl = true;
+					myOptions.mapTypeControlOptions = {style: google.maps.MapTypeControlStyle.DEFAULT};
+			    }
+		    }
+		
 			var map = new google.maps.Map(element, myOptions);
 				
 			// deal with click
@@ -218,7 +243,7 @@ Mapstraction: {
 
 	getBounds: function () {
 		var map = this.maps[this.api];
-		var gLatLngBounds = map.getBounds();	
+		var gLatLngBounds = map.getBounds();
 		var sw = gLatLngBounds.getSouthWest();
 		var ne = gLatLngBounds.getNorthEast();
 		return new mxn.BoundingBox(sw.lat(), sw.lng(), ne.lat(), ne.lng());
