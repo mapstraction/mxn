@@ -12,7 +12,8 @@ Mapstraction: {
 				mapTypeControl: false,
 				mapTypeControlOptions: null,
 				navigationControl: false,
-				navigationControlOptions: null
+			        navigationControlOptions: null,
+				scrollwheel: false
 			};
 
 		    // find controls
