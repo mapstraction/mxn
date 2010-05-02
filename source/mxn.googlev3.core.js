@@ -100,6 +100,9 @@ Mapstraction: {
 			map.setOptions(myOptions);
 			this.addControlsArgs.scale = true;
 		}
+		if (args.map_type){
+		    this.addMapTypeControls();
+		}
 	},
 
 	addSmallControls: function() {
