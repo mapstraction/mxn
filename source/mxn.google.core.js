@@ -227,6 +227,9 @@ Mapstraction: {
 			case mxn.Mapstraction.HYBRID:
 				map.setMapType(G_HYBRID_MAP);
 				break;
+			case mxn.Mapstraction.PHYSICAL:
+				map.setMapType(G_PHYSICAL_MAP);
+				break;
 			default:
 				map.setMapType(type || G_NORMAL_MAP);
 		}	 
@@ -242,6 +245,8 @@ Mapstraction: {
 				return mxn.Mapstraction.SATELLITE;
 			case G_HYBRID_MAP:
 				return mxn.Mapstraction.HYBRID;
+			case G_PHYSICAL_MAP:
+				return mxn.Mapstraction.PHYSICAL;
 			default:
 				return null;
 		}

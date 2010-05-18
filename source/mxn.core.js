@@ -162,6 +162,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 Mapstraction.ROAD = 1;
 Mapstraction.SATELLITE = 2;
 Mapstraction.HYBRID = 3;
+Mapstraction.PHYSICAL = 4;
 
 // methods that have no implementation in mapstraction core
 mxn.addProxyMethods(Mapstraction, [ 

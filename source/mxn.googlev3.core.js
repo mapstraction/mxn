@@ -223,6 +223,9 @@ Mapstraction: {
 			case mxn.Mapstraction.HYBRID:
 				map.setMapTypeId(google.maps.MapTypeId.HYBRID);
 				break;
+			case mxn.Mapstraction.PHYSICAL:
+				map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
+				break;
 			default:
 				map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 		}	 
@@ -238,8 +241,8 @@ Mapstraction: {
 				return mxn.Mapstraction.SATELLITE;
 			case google.maps.MapTypeId.HYBRID:
 				return mxn.Mapstraction.HYBRID;
-			//case google.maps.MapTypeId.TERRAIN:
-			//		return something;
+			case google.maps.MapTypeId.TERRAIN:
+				return mxn.Mapstraction.PHYSICAL;
 			default:
 				return null;
 		}
