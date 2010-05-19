@@ -235,8 +235,8 @@ Mapstraction: {
 			if(sw_pix.x > ne_pix.x) {
 				sw_pix.x -= (1 << (26 - zoom)); //earth circumference in pixel
 			}
-			if(Math.abs(ne_pix.x - sw_pix.x) <= container.width
-				&& Math.abs(ne_pix.y - sw_pix.y) <= container.height){
+			if(Math.abs(ne_pix.x - sw_pix.x) <= container.width &&
+				Math.abs(ne_pix.y - sw_pix.y) <= container.height){
 				map.drawZoomAndCenter(center, zoom); //Call drawZoomAndCenter here: OK if called multiple times anyway
 				break;
 			}

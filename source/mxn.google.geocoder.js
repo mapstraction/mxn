@@ -26,8 +26,8 @@
 function MapstractionGeocoder(callback, api, error_callback) {
 	this.api = api;
 	this.callback = callback;
-	this.geocoders = new Object();
-	if(error_callback == null) {
+	this.geocoders = {};
+	if(error_callback === null) {
 		this.error_callback = this.geocode_error
 	} else {
 		this.error_callback = error_callback;

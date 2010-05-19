@@ -26,54 +26,28 @@
 		
 		<!-- copy our sources in -->
 		<echo>--- COPY SOURCES ---</echo>
-		<copy todir="${build.dir}" overwrite="true" flatten="true">
-			<resources>
-				<file file="${source}/mxn.js"/>
-				<file file="${source}/mxn.core.js"/>
-				<file file="${source}/mxn.(provider).core.js"/>
-				<file file="${source}/mxn.cloudmade.core.js"/>
-				<file file="${source}/mxn.google.core.js"/>
-				<file file="${source}/mxn.googlev3.core.js"/>
-				<file file="${source}/mxn.microsoft.core.js"/>
-				<file file="${source}/mxn.openlayers.core.js"/>
-				<file file="${source}/mxn.yahoo.core.js"/>
-			</resources>
+		<copy todir="${build.dir}">
+			<fileset dir="${source}">
+				<exclude name="*(provider)*"/>
+			</fileset>
 		</copy>
 		
 		<!-- lint our sources -->
 		<echo>--- LINT ---</echo>
 		
-		<!-- Hopefully get the whole lot linting eventually
-		<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
-			<arg value="tools/jslint/jslint.js"/>
-			<arg value="${build.dir}/*.js"/>
-		</java>
-		-->
-		
-		<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
-			<arg value="tools/jslint/jslint.js"/>
-			<arg value="${build.dir}/mxn.js"/>
-		</java>
-		<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
-			<arg value="tools/jslint/jslint.js"/>
-			<arg value="${build.dir}/mxn.core.js"/>
-		</java>
-		<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
-			<arg value="tools/jslint/jslint.js"/>
-			<arg value="${build.dir}/mxn.(provider).core.js"/>
-		</java>
-		<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
-			<arg value="tools/jslint/jslint.js"/>
-			<arg value="${build.dir}/mxn.cloudmade.core.js"/>
-		</java>
-		<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
-			<arg value="tools/jslint/jslint.js"/>
-			<arg value="${build.dir}/mxn.google.core.js"/>
-		</java>
-		<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
-			<arg value="tools/jslint/jslint.js"/>
-			<arg value="${build.dir}/mxn.googlev3.core.js"/>
-		</java>
+		<for param="file">
+			<path>
+				<fileset dir="${build.dir}" includes="*.js"/>
+			</path>
+			<sequential>
+				<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
+					<arg value="tools/jslint/jslint.js"/>
+					<arg value="@{file}"/>
+				</java>
+			</sequential>
+		</for>
+
+
 				
 		<!-- document our sources -->
 		<echo>--- DOC ---</echo>

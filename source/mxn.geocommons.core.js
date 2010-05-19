@@ -36,7 +36,8 @@ mxn.register('geocommons', {
 			F1.Maker.finder_host = f1_finder_host;
 			F1.Maker.maker_host = f1_maker_host;
 
-			new F1.Maker.Map({
+			// we don't use this object but assign it to dummy for JSLint
+			var dummy = new F1.Maker.Map({
 				dom_id: this.element.id,
 				flashvars: {},				
 				onload: function(map){
@@ -159,15 +160,18 @@ mxn.register('geocommons', {
 
 		getMapType: function() {
 			var map = this.maps[this.api];
-			switch(map.getMapProvider) {
-				case "OpenStreetMap (Road)":
-				break;
-			}
-			// TODO: Add provider code
-
-			//return mxn.Mapstraction.ROAD;
-			//return mxn.Mapstraction.SATELLITE;
-			//return mxn.Mapstraction.HYBRID;
+			
+			// TODO: I don't thick this is correct -Derek
+			switch(map.getMapProvider()) {
+				case "OpenStreetMap (road)":
+					return mxn.Mapstraction.ROAD;
+				case "BlueMarble":
+					return mxn.Mapstraction.SATELLITE;
+				case "Google Hybrid":
+					return mxn.Mapstraction.HYBRID;
+				default:
+					return null;
+			}	
 
 		},
 
@@ -201,8 +205,8 @@ mxn.register('geocommons', {
 				return;
 			}
 			// Try if we've been given either a string of the ID or a URL
-			match = url.match(/^(\d+)$/)
-			if(match != null){
+			match = url.match(/^(\d+)$/);
+			if(match !== null){
 				match = url.match(/^.*?maps\/(\d+)(\?\(\[?(.*?)\]?\))?$/);
 			}
 

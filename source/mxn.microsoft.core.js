@@ -32,7 +32,7 @@ Mapstraction: {
 			me.load.fire();	
 		}
 		else{
-			alert(api + ' map script not imported')
+			throw api + ' map script not imported';
 		}
 	
 	},
@@ -56,14 +56,14 @@ Mapstraction: {
 			map.SetDashboardSize(VEDashboardSize.Normal);
 		}
 		else {
-			map.SetDashboardSize(VEDashboardSize.Tiny)
+			map.SetDashboardSize(VEDashboardSize.Tiny);
 		}
 
 	  	if (args.zoom == 'large') {
-			map.SetDashboardSize(VEDashboardSize.Small)
+			map.SetDashboardSize(VEDashboardSize.Small);
 		}
 		else if ( args.zoom == 'small' ) {
-			map.SetDashboardSize(VEDashboardSize.Tiny)
+			map.SetDashboardSize(VEDashboardSize.Tiny);
 		}
 		else {
 			map.HideDashboard();
@@ -79,7 +79,7 @@ Mapstraction: {
 	addLargeControls: function() {
 		var map = this.maps[this.api];
 		map.SetDashboardSize(VEDashboardSize.Normal);
-		this.addControlsArgs.pan=true;
+		this.addControlsArgs.pan = true;
 		this.addControlsArgs.zoom = 'large';
 	},
 
@@ -91,10 +91,10 @@ Mapstraction: {
 
 	dragging: function(on) {
 		var map = this.maps[this.api];
-		if(on){
+		if (on) {
 			map.enableDragMap();
 		}
-		else{
+		else {
 			map.disableDragMap();
 		}
 	},
@@ -218,10 +218,7 @@ Mapstraction: {
 				return mxn.Mapstraction.HYBRID;
 			default:
 				return null;
-			
 		}
-	
-
 	},
 
 	getBounds: function () {
@@ -281,7 +278,7 @@ Mapstraction: {
 	
 	mousePosition: function(element) {
 		var locDisp = document.getElementById(element);
-		if (locDisp != null) {
+		if (locDisp !== null) {
 			var map = this.maps[this.api];
 			map.AttachEvent("onmousemove", function(veEvent){
 				var latlon = map.PixelToLatLong(new VEPixel(veEvent.mapX, veEvent.mapY));
