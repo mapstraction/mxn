@@ -1,4 +1,4 @@
-mxn.register('google', {	
+mxn.register('cartociudad', {	
 
 MapstractionGeocoder: {
 	
