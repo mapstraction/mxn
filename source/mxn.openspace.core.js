@@ -120,12 +120,6 @@ Mapstraction: {
 		// TODO: Add provider code
 	},
 	
-	removeAllMarkers: function() {
-		var map = this.maps[this.api];
-	
-		// TODO: Add provider code
-	},
-	
 	declutterMarkers: function(opts) {
 		var map = this.maps[this.api];
 	

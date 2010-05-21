@@ -129,14 +129,9 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		map.removeOverlay(marker.proprietary_marker);
 	},
-
-	removeAllMarkers: function() {
-		var map = this.maps[this.api];
-		map.removeMarkersAll();
-	},
 	
 	declutterMarkers: function(opts) {
-		throw 'Not implemented';
+		throw 'Not supported';
 	},
 
 	addPolyline: function(polyline, old) {

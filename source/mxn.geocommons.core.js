@@ -250,10 +250,6 @@ mxn.register('geocommons', {
 
 		},
 
-		removeAllMarkers: function() {
-			// Done in mxn.core.js
-		},
-
 		declutterMarkers: function(opts) {
 			var map = this.maps[this.api];
 

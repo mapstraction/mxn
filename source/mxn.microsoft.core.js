@@ -125,12 +125,6 @@ Mapstraction: {
 		var microsoftShape = map.GetShapeByID(id);
 		map.DeleteShape(microsoftShape);
 	},
-
-	removeAllMarkers: function() {
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-	},
 	
 	declutterMarkers: function(opts) {
 		var map = this.maps[this.api];

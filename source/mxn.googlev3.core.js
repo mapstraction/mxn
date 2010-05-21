@@ -154,11 +154,6 @@ Mapstraction: {
 		// doesn't really remove them, just hides them
 		marker.hide();
 	},
-
-	removeAllMarkers: function() {
-		var map = this.maps[this.api];		
-		// TODO: Add provider code
-	},
 	
 	declutterMarkers: function(opts) {
 		var map = this.maps[this.api];

@@ -181,16 +181,8 @@ mxn.register('openlayers', {
 
 		},
 
-		removeAllMarkers: function() {
-			var map = this.maps[this.api];
-
-			// TODO: Add provider code
-		},
-
 		declutterMarkers: function(opts) {
-			var map = this.maps[this.api];
-
-			// TODO: Add provider code
+			throw 'Not supported';
 		},
 
 		addPolyline: function(polyline, old) {

@@ -110,11 +110,7 @@ mxn.register('cloudmade', {
 			marker.proprietary_marker.closeInfoWindow();
 			map.removeOverlay(marker.proprietary_marker);
 		},
-
-		removeAllMarkers: function() {
-			// Done in mxn.core.js
-		},
-
+		
 		declutterMarkers: function(opts) {
 			var map = this.maps[this.api];
 
