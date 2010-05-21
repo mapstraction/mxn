@@ -28,7 +28,7 @@ function MapstractionGeocoder(callback, api, error_callback) {
 	this.callback = callback;
 	this.geocoders = {};
 	if(error_callback === null) {
-		this.error_callback = this.geocode_error
+		this.error_callback = this.geocode_error;
 	} else {
 		this.error_callback = error_callback;
 	}
@@ -67,7 +67,7 @@ MapstractionGeocoder.prototype.addAPI = function(api) {
 		default:
 			alert(api + ' not supported by mapstraction-geocoder');
 	}
-}
+};
 /**
  * Change the Routing API to use
  * @param {String} api The API to swap to
@@ -76,17 +76,17 @@ MapstractionGeocoder.prototype.swap = function(api) {
 	if (this.api == api) { return; }
 
 	this.api = api;
-	if (this.geocoders[this.api] == undefined) {
+	if (!this.geocoders.hasOwnProperty(this.api)) {
 		this.addAPI($(element),api);
 	}
-}
+};
 
 /**
  * Default Geocode error function
  */
 MapstractionGeocoder.prototype.geocode_error = function(response) { 
 	alert("Sorry, we were unable to geocode that address");
-}
+};
 
 /**
  * Default handler for geocode request completion
@@ -107,14 +107,14 @@ MapstractionGeocoder.prototype.geocode_callback = function(response, mapstractio
 				return_location.country = "";
 
 				var place = response.Placemark[0];
-				if(place.AddressDetails.Country.AdministrativeArea != null) {
+				if(place.AddressDetails.Country.AdministrativeArea !== null) {
 					return_location.region = place.AddressDetails.Country.AdministrativeArea.AdministrativeAreaName;
 						
-					if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea != null) {
-						if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality != null) {
+					if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea !== null) {
+						if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality !== null) {
 							return_location.locality = place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName;
 
-							if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare != null) {
+							if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare !== null) {
 								return_location.street = place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.ThoroughfareName;
 							}
 						}
@@ -132,7 +132,7 @@ MapstractionGeocoder.prototype.geocode_callback = function(response, mapstractio
 		case 'mapquest':
 			break;
 	}
-}
+};
 
 
 /**
@@ -147,7 +147,7 @@ MapstractionGeocoder.prototype.geocode_callback = function(response, mapstractio
 
 	 switch (this.api) {
 		 case 'google':
-			if (address.address == null || address.address == "") {
+			if (address.address === null || address.address === "") {
 				address.address = address.street + ", " + address.locality + ", " + address.region + ", " + address.country;
 			}
 			this.geocoders[this.api].getLocations(address.address, function(response) { mapstraction_geocoder.geocode_callback(response, mapstraction_geocoder); });
@@ -176,4 +176,4 @@ MapstractionGeocoder.prototype.geocode_callback = function(response, mapstractio
 			alert(api + ' not supported by mapstraction-geocoder');
 			break;
 	 }
- }
+ };
