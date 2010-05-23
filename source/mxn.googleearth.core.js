@@ -15,7 +15,7 @@ Mapstraction: {
 				initMap();
 			}, 
 			function failureCallback(object) {
-				throw 'Failed to create Google Earth map');
+				throw 'Failed to create Google Earth map';
 			}
 		);
 				
