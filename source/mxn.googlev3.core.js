@@ -162,7 +162,9 @@ Mapstraction: {
 
 	addPolyline: function(polyline, old) {
 		var map = this.maps[this.api];
-		return polyline.toProprietary(this.api);
+		var polyline = polyline.toProprietary(this.api);
+		polyline.setMap(map);
+		return polyline;
 	},
 
 	removePolyline: function(polyline) {
@@ -452,7 +454,21 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-			throw 'Not implemented';
+		var points =[];
+		for(var i =0, length = this.points.length; i < length; i++) {
+			points.push(this.points[i].toProprietary('googlev3'));
+		}
+
+		var polyOptions = {
+			path: points,
+			strokeColor: this.color || '#000000',
+			strokeOpacity: 1.0,
+			strokeWeight: 3
+	    }
+
+		var polyline = new google.maps.Polyline(polyOptions);
+
+		return polyline;
 	},
 	
 	show: function() {
