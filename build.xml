@@ -87,7 +87,9 @@
 				</concat>
 				<move file="${build.dir}/temp.t" tofile="@{file}" overwrite="true"/>
 			</sequential>
-		</for>	
+		</for>
+		
+		<zip destfile="${build.base}/mxn-${build.ver}.zip" basedir="${build.dir}"/>
 		
 	</target>
 </project>

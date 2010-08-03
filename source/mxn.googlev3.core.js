@@ -162,9 +162,9 @@ Mapstraction: {
 
 	addPolyline: function(polyline, old) {
 		var map = this.maps[this.api];
-		var polyline = polyline.toProprietary(this.api);
-		polyline.setMap(map);
-		return polyline;
+		var propPolyline = polyline.toProprietary(this.api);
+		propPolyline.setMap(map);
+		return propPolyline;
 	},
 
 	removePolyline: function(polyline) {
@@ -464,7 +464,7 @@ Polyline: {
 			strokeColor: this.color || '#000000',
 			strokeOpacity: 1.0,
 			strokeWeight: 3
-	    }
+	    };
 
 		var polyline = new google.maps.Polyline(polyOptions);
 
