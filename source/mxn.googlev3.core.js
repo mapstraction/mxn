@@ -283,9 +283,10 @@ Mapstraction: {
 	
 	addOverlay: function(url, autoCenterAndZoom) {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-		
+
+		var opt = {preserveViewport: (!autoCenterAndZoom)};
+		var layer = new google.maps.KmlLayer(url, opt);
+		layer.setMap(map);
 	},
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
