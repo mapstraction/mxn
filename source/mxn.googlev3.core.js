@@ -385,15 +385,13 @@ Marker: {
 		var marker = new google.maps.Marker(options);
 
 		if (this.infoBubble){
-			var infowindow = new google.maps.InfoWindow({
-				content: this.infoBubble
-			});
-
 			var event_action = "click";
 			if (this.hover) {
 				event_action = "mouseover";
 			}
-			google.maps.event.addListener(marker, event_action, function() { infowindow.open(this.map,marker); });
+			google.maps.event.addListener(marker, event_action, function() {
+				marker.mapstraction_marker.openBubble();
+			});
 		}
 
 		if (this.hoverIconUrl){
@@ -436,7 +434,16 @@ Marker: {
 		var infowindow = new google.maps.InfoWindow({
 	   		content: this.infoBubble
 		});
+		google.maps.event.addListener(infowindow, 'closeclick', function(closedWindow) {
+			// TODO: set proprietary_infowindow to null, fire closeInfoBubble
+		});
+		this.openInfoBubble.fire({'marker': this});
 		infowindow.open(this.map,this.proprietary_marker);
+		this.proprietary_infowindow = infowindow; // Save so we can close it later
+	},
+	closeBubble: function() {
+		this.proprietary_infowindow.close();
+		this.closeInfoBubble.fire({'marker': this});
 	},
 
 	hide: function() {

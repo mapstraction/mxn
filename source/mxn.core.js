@@ -1467,6 +1467,13 @@ mxn.addProxyMethods(Marker, [
 	'openBubble',
 	
 	/**
+	 * Closes the marker's info bubble.
+	 * @name mxn.Marker#closeBubble
+	 * @function
+	 */
+	'closeBubble',
+	
+	/**
 	 * Show the marker.
 	 * @name mxn.Marker#show
 	 * @function
@@ -1548,6 +1555,9 @@ Marker.prototype.addData = function(options){
 					break;
 				case 'openBubble':
 					this.openBubble();
+					break;
+				case 'closeBubble':
+					this.closeBubble();
 					break;
 				case 'groupName':
 					this.setGroupName(options.groupName);
