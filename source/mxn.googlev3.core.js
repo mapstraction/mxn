@@ -170,8 +170,8 @@ Mapstraction: {
 	},
 
 	removePolyline: function(polyline) {
-		var map = this.maps[this.api];		
-		// TODO: Add provider code
+		var map = this.maps[this.api];
+		polyline.proprietary_polyline.setMap(null);
 	},
 	   
 	getCenter: function() {
