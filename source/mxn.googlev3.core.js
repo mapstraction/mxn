@@ -40,7 +40,9 @@ Mapstraction: {
 				
 			// deal with click
 			google.maps.event.addListener(map, 'click', function(location){
-				me.clickHandler(location.latLng.lat(),location.latLng.lng(),location,me);
+				me.click.fire({'location': 
+					new mxn.LatLonPoint(location.latLng.lat(),location.latLng.lng())
+				});
 			});
 
 			// deal with zoom change
