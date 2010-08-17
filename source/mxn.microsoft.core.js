@@ -301,6 +301,7 @@ Marker: {
 	
 	toProprietary: function() {
 		var mmarker = new VEShape(VEShapeType.Pushpin, this.location.toProprietary('microsoft'));
+		mmarker.SetTitle(this.infoBubble);
 		return mmarker;
 	},
 
