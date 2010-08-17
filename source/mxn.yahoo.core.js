@@ -347,6 +347,11 @@ Marker: {
 		var ypin = this.proprietary_marker;
 		ypin.openSmartWindow(this.infoBubble);
 	},
+	
+	closeBubble: function() {
+		var ypin = this.proprietary_marker;
+		ypin.closeSmartWindow();
+	},
 
 	hide: function() {
 		this.proprietary_marker.hide();

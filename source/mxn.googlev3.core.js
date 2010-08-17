@@ -442,6 +442,7 @@ Marker: {
 		infowindow.open(this.map,this.proprietary_marker);
 		this.proprietary_infowindow = infowindow; // Save so we can close it later
 	},
+	
 	closeBubble: function() {
 		this.proprietary_infowindow.close();
 		this.closeInfoBubble.fire({'marker': this});

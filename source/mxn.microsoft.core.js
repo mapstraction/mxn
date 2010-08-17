@@ -301,22 +301,31 @@ Marker: {
 	
 	toProprietary: function() {
 		var mmarker = new VEShape(VEShapeType.Pushpin, this.location.toProprietary('microsoft'));
-		mmarker.SetTitle(this.infoBubble);
+		mmarker.SetTitle(this.labelText);
+		mmarker.SetDescription(this.infoBubble);
 		return mmarker;
 	},
 
-	openBubble: function() {		
-		var mmarker = this.proprietary_marker;
-		map.ClearInfoBoxStyles();
-		mmarker.SetTitle(this.infoBubble);
+	openBubble: function() {
+		if (!this.map) {
+			throw 'Marker must be added to map in order to display infobox';
+		}
+		this.map.ShowInfoBox(this.proprietary_marker);
+	},
+	
+	closeBubble: function() {
+		if (!this.map) {
+			throw 'Marker must be added to map in order to display infobox';
+		}
+		this.map.HideInfoBox();
 	},
 
 	hide: function() {
-		this.proprietary_marker.hide();
+		this.proprietary_marker.Hide();
 	},
 
 	show: function() {
-		this.proprietary_marker_unhide();
+		this.proprietary_marker.Show();
 	},
 
 	update: function() {

@@ -476,6 +476,11 @@ Marker: {
 		var gpin = this.proprietary_marker;
 		gpin.openInfoWindowHtml(this.infoBubble);
 	},
+	
+	closeBubble: function() {
+		var gpin = this.proprietary_marker;
+		gpin.closeInfoWindow();
+	},
 
 	hide: function() {
 		this.proprietary_marker.hide();
