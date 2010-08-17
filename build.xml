@@ -55,6 +55,7 @@
 			<arg value="tools/jsdoc-toolkit/app/run.js"/>
 			<arg value="${build.dir}/mxn.js"/>
 			<arg value="${build.dir}/mxn.core.js"/>
+			<arg value="${build.dir}/mxn.geocoder.js"/>
 			<arg value="-c=tools/jsdoc-toolkit/mxn.conf"/>
 			<arg value="-d=${build.dir}/docs"/>
 		</java>

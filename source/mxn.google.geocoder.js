@@ -1,49 +1,56 @@
 mxn.register('google', {	
 
-MapstractionGeocoder: {
+Geocoder: {
 	
 	init: function(element, api) {		
-	  var me = this;
-	  me.geocoders[api] = new GClientGeocoder();
+		this.geocoders[api] = new GClientGeocoder();
 	},
-	geocode: function(address){
-	  var return_location = {};
-	  var mapstraction_geocoder = this;
 	
-	  if (address.address == null || address.address == "")
-	  address.address = address.street + ", " + address.locality + ", " + address.region + ", " + address.country
-	  this.geocoders[this.api].getLocations(address.address, function(response) { mapstraction_geocoder.geocode_callback(response, mapstraction_geocoder); });
-	},
-	geocode_callback: function(response, mapstraction_geocoder){
-	  var return_location = {};
-		
-	  if (!response || response.Status.code != 200) {
-		mapstraction_geocoder.error_callback(response);
-	  } else {
-	    return_location.street = "";
-		return_location.locality = "";
-		return_location.region = "";
-		return_location.country = "";
+	geocode: function(address){
+		var me = this;
 
-		var place = response.Placemark[0];
-		if(place.AddressDetails.Country.AdministrativeArea != null) {
-		  return_location.region = place.AddressDetails.Country.AdministrativeArea.AdministrativeAreaName;
-				
-		  if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea != null) {
-			if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality != null) {
-			  return_location.locality = place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName;
-              if(place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare != null)
-			    return_location.street = place.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.Thoroughfare.ThoroughfareName;
-		    }
-					
-		  }
-				
-	  	}
-		return_location.country = place.AddressDetails.Country.CountryNameCode;
-		return_location.point = new mxn.LatLonPoint(place.Point.coordinates[1],
-		place.Point.coordinates[0]);
-		mapstraction_geocoder.callback(return_location);
-	  }
+		if (!address.hasOwnProperty('address') || address.address === null || address.address === '') {
+			address.address = [ address.street, address.locality, address.region, address.country ].join(', ');
+		}
+		
+		this.geocoders[this.api].getLocations(address.address, function(response) {
+			me.geocode_callback(response);
+		});
+	},
+	
+	geocode_callback: function(response){
+		var return_location = {};
+
+		if (typeof(response) === 'undefined' || !response.hasOwnProperty('Status') || response.Status.code != 200) {
+			this.error_callback(response);
+		} 
+		else {
+			return_location.street = '';
+			return_location.locality = '';
+			return_location.region = '';
+			return_location.country = '';
+
+			var place = response.Placemark[0];
+			var working = place.AddressDetails.Country.AdministrativeArea;
+			if(working !== null) {
+				return_location.region = working.AdministrativeAreaName;
+				if(working.SubAdministrativeArea !== null) {
+					working = working.SubAdministrativeArea;
+					if(working.Locality !== null) {
+						working = working.Locality;
+						return_location.locality = working.LocalityName;
+						if(working.Thoroughfare !== null) {
+							return_location.street = working.Thoroughfare.ThoroughfareName;
+						}
+					}
+				}
+			}
+			
+			return_location.country = place.AddressDetails.Country.CountryNameCode;
+			return_location.point = new mxn.LatLonPoint(place.Point.coordinates[1],	place.Point.coordinates[0]);
+			
+			this.callback(return_location);
+		}
 	}
 }
-})
+});
