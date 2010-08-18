@@ -110,6 +110,9 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		marker.pinID = "mspin-"+new Date().getTime()+'-'+(Math.floor(Math.random()*Math.pow(2,16)));
 		var pin = marker.toProprietary(this.api);
+		if (marker.iconUrl){
+		     pin.SetCustomIcon(marker.iconUrl);
+		}
 		map.AddShape(pin);
 		//give onclick event
 		//give on double click event
