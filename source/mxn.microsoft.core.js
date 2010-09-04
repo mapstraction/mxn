@@ -8,10 +8,16 @@ Mapstraction: {
 			this.maps[api] = new VEMap(element.id);
 			this.maps[api].AttachEvent('onclick', function(event){
 				me.clickHandler();
-				var x = event.mapX;
-				var y = event.mapY;
-				var pixel = new VEPixel(x,y);
-				me.click.fire({'location': new mxn.LatLonPoint(pixel.Latitude, pixel.Longitude)});
+                                var map = me.maps[me.api];
+		                var shape = map.GetShapeByID(event.elementID);
+                                if (shape && shape.mapstraction_marker) {
+                                    shape.mapstraction_marker.click.fire();   
+                                } else {
+				    var x = event.mapX;
+				    var y = event.mapY;
+				    var pixel = new VEPixel(x,y);
+				    me.click.fire({'location': new mxn.LatLonPoint(pixel.Latitude, pixel.Longitude)});
+                                }
 			});
 			this.maps[api].AttachEvent('onendzoom', function(event){
 				me.moveendHandler(me);
