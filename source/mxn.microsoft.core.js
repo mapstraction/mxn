@@ -110,9 +110,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		marker.pinID = "mspin-"+new Date().getTime()+'-'+(Math.floor(Math.random()*Math.pow(2,16)));
 		var pin = marker.toProprietary(this.api);
-		if (marker.iconUrl){
-		     pin.SetCustomIcon(marker.iconUrl);
-		}
+		
 		map.AddShape(pin);
 		//give onclick event
 		//give on double click event
@@ -306,6 +304,11 @@ Marker: {
 		var mmarker = new VEShape(VEShapeType.Pushpin, this.location.toProprietary('microsoft'));
 		mmarker.SetTitle(this.labelText);
 		mmarker.SetDescription(this.infoBubble);
+		
+		if (this.iconUrl){
+			mmarker.SetCustomIcon(this.iconUrl);
+		}
+		
 		return mmarker;
 	},
 
