@@ -4,43 +4,43 @@ Mapstraction: {
 	
 	init: function(element, api) {		
 		var me = this;
-		if (VEMap){
-			this.maps[api] = new VEMap(element.id);
-			this.maps[api].AttachEvent('onclick', function(event){
-				me.clickHandler();
-                                var map = me.maps[me.api];
-		                var shape = map.GetShapeByID(event.elementID);
-                                if (shape && shape.mapstraction_marker) {
-                                    shape.mapstraction_marker.click.fire();   
-                                } else {
-				    var x = event.mapX;
-				    var y = event.mapY;
-				    var pixel = new VEPixel(x,y);
-				    me.click.fire({'location': new mxn.LatLonPoint(pixel.Latitude, pixel.Longitude)});
-                                }
-			});
-			this.maps[api].AttachEvent('onendzoom', function(event){
-				me.moveendHandler(me);
-				me.changeZoom.fire();				
-			});
-			this.maps[api].AttachEvent('onendpan', function(event){
-				me.moveendHandler(me);
-				me.endPan.fire();
-			});
-			this.maps[api].AttachEvent('onchangeview', function(event){
-				me.endPan.fire();				
-			});
-			this.maps[api].LoadMap();
-			document.getElementById("MSVE_obliqueNotification").style.visibility = "hidden"; 
-		
-			//removes the bird's eye pop-up
-			this.loaded[api] = true;
-			me.load.fire();	
-		}
-		else{
+		if (!VEMap) {
 			throw api + ' map script not imported';
 		}
+		
+		this.maps[api] = new VEMap(element.id);
+		this.maps[api].AttachEvent('onclick', function(event){
+			me.clickHandler();
+			var map = me.maps[me.api];
+			var shape = map.GetShapeByID(event.elementID);
+			if (shape && shape.mapstraction_marker) {
+				shape.mapstraction_marker.click.fire();   
+			} 
+			else {
+				var x = event.mapX;
+				var y = event.mapY;
+				var pixel = new VEPixel(x, y);
+				var ll = map.PixelToLatLong(pixel);
+				me.click.fire({'location': new mxn.LatLonPoint(ll.Latitude, ll.Longitude)});
+			}
+		});
+		this.maps[api].AttachEvent('onendzoom', function(event){
+			me.moveendHandler(me);
+			me.changeZoom.fire();				
+		});
+		this.maps[api].AttachEvent('onendpan', function(event){
+			me.moveendHandler(me);
+			me.endPan.fire();
+		});
+		this.maps[api].AttachEvent('onchangeview', function(event){
+			me.endPan.fire();				
+		});
+		this.maps[api].LoadMap();
+		document.getElementById("MSVE_obliqueNotification").style.visibility = "hidden"; 
 	
+		//removes the bird's eye pop-up
+		this.loaded[api] = true;
+		me.load.fire();	
 	},
 	
 	applyOptions: function(){
