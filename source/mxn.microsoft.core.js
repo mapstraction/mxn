@@ -311,8 +311,18 @@ Marker: {
 		mmarker.SetTitle(this.labelText);
 		mmarker.SetDescription(this.infoBubble);
 		
-		if (this.iconUrl){
-			mmarker.SetCustomIcon(this.iconUrl);
+		if (this.iconUrl) {
+			var customIcon = new VECustomIconSpecification();
+			customIcon.Image = this.iconUrl;
+			// See this article on how to patch 6.2 to correctly render offsets.
+			// http://social.msdn.microsoft.com/Forums/en-US/vemapcontroldev/thread/5ee2f15d-09bf-4158-955e-e3fa92f33cda?prof=required&ppud=4
+			if (this.iconAnchor) {
+			   customIcon.ImageOffset = new VEPixel(-this.iconAnchor[0], -this.iconAnchor[1]);
+			} 
+			else if (this.iconSize) {
+			   customIcon.ImageOffset = new VEPixel(-this.iconSize[0]/2, -this.iconSize[1]/2);
+			}
+			mmarker.SetCustomIcon(customIcon);	
 		}
 		
 		return mmarker;
