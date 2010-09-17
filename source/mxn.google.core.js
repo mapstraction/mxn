@@ -292,11 +292,10 @@ Mapstraction: {
 	addOverlay: function(url, autoCenterAndZoom) {
 		var map = this.maps[this.api];
 		var geoXML = new GGeoXml(url);
-		map.addOverlay(geoXML, function() {
-			if(autoCenterAndZoom) {
-				geoXML.gotoDefaultViewport(map);
-			}
-		});
+		if(autoCenterAndZoom) {
+			GEvent.addListener( geoXML, 'load', function() { geoXML.gotoDefaultViewport(map); } );
+		}
+		map.addOverlay(geoXML);
 	},
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
