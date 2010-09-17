@@ -54,9 +54,12 @@ Mapstraction: {
 				me.moveendHandler(me);
 				me.endPan.fire();
 			});
+			// deal with tile loading
+			google.maps.event.addListener(map, 'tilesloaded', function(){
+				me.load.fire();
+			});
 			this.maps[api] = map;
 			this.loaded[api] = true;
-			me.load.fire();
 		}
 		else {
 			alert(api + ' map script not imported');
@@ -250,6 +253,10 @@ Mapstraction: {
 	getBounds: function () {
 		var map = this.maps[this.api];
 		var gLatLngBounds = map.getBounds();
+		if ( ! gLatLngBounds ) {
+			// The map bounds are not available yet - probably called too soon
+			return null;
+		}
 		var sw = gLatLngBounds.getSouthWest();
 		var ne = gLatLngBounds.getNorthEast();
 		return new mxn.BoundingBox(sw.lat(), sw.lng(), ne.lat(), ne.lng());
