@@ -54,9 +54,10 @@ Mapstraction: {
 				me.moveendHandler(me);
 				me.endPan.fire();
 			});
-			// deal with tile loading
-			google.maps.event.addListener(map, 'tilesloaded', function(){
+			// deal with initial tile loading
+			var loadListener = google.maps.event.addListener(map, 'tilesloaded', function(){
 				me.load.fire();
+				google.maps.event.removeListener( loadListener );
 			});
 			this.maps[api] = map;
 			this.loaded[api] = true;
