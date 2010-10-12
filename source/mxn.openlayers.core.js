@@ -437,7 +437,14 @@ mxn.register('openlayers', {
 			}
 
 			if(this.hoverIconUrl) {
-				// TODO
+				icon = (this.iconUrl) ? this.iconUrl : 'http://openlayers.org/dev/img/marker-gold.png';
+				hovericon = this.hoverIconUrl;
+				marker.events.register("mouseover", marker, function(event) {
+					marker.setUrl(hovericon);
+				});
+				marker.events.register("mouseout", marker, function(event) {
+					marker.setUrl(icon);
+				});
 			}
 
 			if(this.infoDiv){
