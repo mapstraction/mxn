@@ -324,6 +324,9 @@ Marker: {
 			}
 			mmarker.SetCustomIcon(customIcon);	
 		}
+		if (this.draggable){
+			mmarker.Draggable = true;
+		}
 		
 		return mmarker;
 	},
