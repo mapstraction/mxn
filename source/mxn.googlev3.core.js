@@ -316,8 +316,14 @@ Mapstraction: {
 	
 	mousePosition: function(element) {
 		var map = this.maps[this.api];
-
-		// TODO: Add provider code	
+		var locDisp = document.getElementById(element);
+		if (locDisp !== null) {
+			google.maps.event.addListener(map, 'mousemove', function (point) {
+				var loc = point.latLng.lat().toFixed(4) + ' / ' + point.latLng.lng().toFixed(4);
+				locDisp.innerHTML = loc;
+			});
+			locDisp.innerHTML = '0.0000 / 0.0000';
+		}
 	}
 },
 
