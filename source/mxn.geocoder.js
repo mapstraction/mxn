@@ -6,7 +6,7 @@
  * @private
  */
 var init = function() {
-	this.invoker.go('init', [ this.api, this.callback, this.error_callback ]);
+	this.invoker.go('init');
 };
 
 /**

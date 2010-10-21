@@ -2,8 +2,8 @@ mxn.register('googlev3', {
 
 Geocoder: {
 	
-	init: function(api, callback) {
-		this.geocoders[api] = new google.maps.Geocoder();
+	init: function() {
+		this.geocoders[this.api] = new google.maps.Geocoder();
 	},
 	
 	geocode: function(address){

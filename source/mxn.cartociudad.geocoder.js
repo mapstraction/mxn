@@ -2,8 +2,8 @@ mxn.register('cartociudad', {
 
 Geocoder: {
 	
-	init: function(element, api) {		
-		this.geocoders[api] = new metodosCartociudad();
+	init: function() {		
+		this.geocoders[this.api] = new metodosCartociudad();
 	},
 	
 	geocode: function(address){

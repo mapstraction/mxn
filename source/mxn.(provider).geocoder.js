@@ -2,7 +2,7 @@ mxn.register('{{api_id}}', {
 
 Geocoder: {
 	
-	init: function(element, api) {		
+	init: function() {		
 		var me = this;
 		
 		// TODO: Add provider code

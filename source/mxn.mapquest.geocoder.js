@@ -2,7 +2,7 @@ mxn.register('mapquest', {
 
 Geocoder: {
 	
-	init: function(element, api) {		
+	init: function() {		
 		//set up the connection to the geocode server
 		var proxyServerName = "";
 		var proxyServerPort = "";
@@ -11,7 +11,7 @@ Geocoder: {
 		var serverPort = "80";
 		var serverPath = "mq";
 		
-		this.geocoders[api] = new MQExec(serverName, serverPath, serverPort, proxyServerName,
+		this.geocoders[this.api] = new MQExec(serverName, serverPath, serverPort, proxyServerName,
 			proxyServerPath, proxyServerPort );
 	},
 	
