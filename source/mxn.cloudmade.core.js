@@ -8,7 +8,7 @@ mxn.register('cloudmade', {
 				key: cloudmade_key
 			};
 			if (typeof cloudmade_styleId != "undefined"){
-				opts['styleId'] = cloudmade_styleId;
+				opts.styleId = cloudmade_styleId;
 			}
 			var cloudmade = new CM.Tiles.CloudMade.Web(opts);
 			this.maps[api] = new CM.Map(element, cloudmade);
