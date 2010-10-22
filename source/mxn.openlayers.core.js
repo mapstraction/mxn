@@ -437,7 +437,7 @@ mxn.register('openlayers', {
 			}
 
 			if(this.hoverIconUrl) {
-				icon = (this.iconUrl) ? this.iconUrl : 'http://openlayers.org/dev/img/marker-gold.png';
+				icon = this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
 				hovericon = this.hoverIconUrl;
 				marker.events.register("mouseover", marker, function(event) {
 					marker.setUrl(hovericon);
