@@ -32,19 +32,24 @@ Geocoder: {
 
 			var place = results[0];
 			
-			for (i=0;i<place.address_components.length;i++){
-				for (j=0;j<place.address_components[i].types.length;j++){
-					if(place.address_components[i].types[j]=="country")
-						return_location.country = place.address_components[i].long_name;
-
-					if(place.address_components[i].types[j]=="administrative_area_level_1")
-						return_location.region = place.address_components[i].long_name;
-					
-					if(place.address_components[i].types[j]=="locality")
-						return_location.locality = place.address_components[i].long_name;
-						
-					if(place.address_components[i].types[j]=="street_address")
-						return_location.street = place.address_components[i].long_name;
+			for (var i = 0; i < place.address_components.length; i++) {
+				var addressComponent = place.address_components[i];
+				for (var j = 0; j < addressComponent.types.length; j++) {
+					var componentType = addressComponent.types[j];
+					switch (componentType) {
+						case 'country':
+							return_location.country = addressComponent.long_name;
+							break;
+						case 'administrative_area_level_1':
+							return_location.region = addressComponent.long_name;
+							break;
+						case 'locality':
+							return_location.locality = addressComponent.long_name;
+							break;
+						case 'street_address':
+							return_location.street = addressComponent.long_name;
+							break;
+					}
 				}
 			}
 			
