@@ -9,7 +9,7 @@
 		height: 400px;
 	}
 
-	</style> 
+</style> 
 
 <script type="text/javascript">
 //<![CDATA[
@@ -46,13 +46,16 @@
 			map_type: true
 		});
 
-		var latlon = new mxn.LatLonPoint(51.53468413093941, -0.09026169776916504);
+		var latlon = new mxn.LatLonPoint(18.47, -69.9);
 
-		mapstraction.setCenterAndZoom(latlon, 16);
+		mapstraction.setMapType(mxn.Mapstraction.SATELLITE);
+		mapstraction.setCenterAndZoom(latlon, 10);
+		mapstraction.mousePosition('position');
 		
 		geocoder = new mxn.Geocoder('googlev3',geocode_return);
 		
-		//console.log(geocoder);
+		// add image overlay
+		mapstraction.addImageOverlay("over", "http://mapstraction.com/images/santodomingo.png", 50, -70.01544, 18.39777, -69.80567, 18.563517);
 
 		// add a marker
 		var marker = new mxn.Marker(latlon);
@@ -93,6 +96,7 @@
 			</tr>
 		</table>
 		<a href='#' onclick='changetohybrid();'>change to hybrid</a>
+		<div id="position"></div>	
 	</center>
 </body> 
 </html>

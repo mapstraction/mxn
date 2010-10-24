@@ -273,19 +273,16 @@ Mapstraction: {
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
 		var map = this.maps[this.api];
 		
-		// TODO: Add provider code
+		var imageBounds = new google.maps.LatLngBounds(
+			new google.maps.LatLng(south,west),
+			new google.maps.LatLng(north,east));
+		
+		var groundOverlay = new google.maps.GroundOverlay(src, imageBounds);
+		groundOverlay.setMap(map);
 	},
 
 	setImagePosition: function(id, oContext) {
-		var map = this.maps[this.api];
-		var topLeftPoint; var bottomRightPoint;
-
-		// TODO: Add provider code
-
-		//oContext.pixels.top = ...;
-		//oContext.pixels.left = ...;
-		//oContext.pixels.bottom = ...;
-		//oContext.pixels.right = ...;
+		// do nothing
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
