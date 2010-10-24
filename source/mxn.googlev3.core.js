@@ -254,9 +254,8 @@ Mapstraction: {
 	getBounds: function () {
 		var map = this.maps[this.api];
 		var gLatLngBounds = map.getBounds();
-		if ( ! gLatLngBounds ) {
-			// The map bounds are not available yet - probably called too soon
-			return null;
+		if (!gLatLngBounds) {
+			throw 'Bounds not available, map must be initialized';
 		}
 		var sw = gLatLngBounds.getSouthWest();
 		var ne = gLatLngBounds.getNorthEast();
