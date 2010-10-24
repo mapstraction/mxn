@@ -464,7 +464,7 @@ Marker: {
 	},
 
 	update: function() {
-		point = new mxn.LatLonPoint();
+		var point = new mxn.LatLonPoint();
 		point.fromProprietary('googlev3', this.proprietary_marker.getPosition());
 		this.location = point;
 	}
