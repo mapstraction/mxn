@@ -11,7 +11,7 @@ mxn.register('openlayers', {
 					maxResolution:156543,
 					numZoomLevels:18,
 					units:'meters',
-					projection: "EPSG:41001"
+					projection: "EPSG:900913"
 				}
 			);
 
@@ -325,9 +325,22 @@ mxn.register('openlayers', {
 
 		addOverlay: function(url, autoCenterAndZoom) {
 			var map = this.maps[this.api];
-
-			// TODO: Add provider code
-
+			var kml = new OpenLayers.Layer.GML("kml", url,{
+				'format': OpenLayers.Format.KML,
+				'formatOptions': new OpenLayers.Format.KML({
+					'extractStyles': true,
+					'extractAttributes': true
+				}),
+				'projection': new OpenLayers.Projection('EPSG:4326')
+			});
+			if(autoCenterAndZoom) {
+				var setExtent = function() {
+					dataExtent = this.getDataExtent();
+					map.zoomToExtent(dataExtent);
+				};
+				kml.events.register('loadend', kml, setExtent); 
+			}
+			map.addLayer(kml);
 		},
 
 		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
