@@ -330,10 +330,19 @@ mxn.register('openlayers', {
 
 		},
 
-		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
+		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 			var map = this.maps[this.api];
-
-			// TODO: Add provider code
+			tile_url = tile_url.replace(/\{Z\}/g,'${z}');
+			tile_url = tile_url.replace(/\{X\}/g,'${x}');
+			tile_url = tile_url.replace(/\{Y\}/g,'${y}');
+			var overlay = new OpenLayers.Layer.XYZ(copyright_text,
+				tile_url,
+				{sphericalMercator: false, opacity: opacity}
+			);
+			if(!map_type) {
+				overlay.addOptions({displayInLayerSwitcher: false, isBaseLayer: false});
+			}
+			map.addLayer(overlay);
 		},
 
 		toggleTileLayer: function(tile_url) {
