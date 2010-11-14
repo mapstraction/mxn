@@ -94,6 +94,16 @@ mxn.register('openlayers', {
 				me.moveendHandler(me);
 				me.endPan.fire();
 			});
+			// deal with initial tile loading
+			var loadfire = function(e) {
+				me.load.fire();
+				this.events.unregister("loadend", this, loadfire);
+			};
+			for (i in this.layers) {
+				if (this.layers[i].visibility == true) {
+					this.layers[i].events.register("loadend", this.layers[i], loadfire);
+				}
+			}
 			
 			map.addLayer(this.layers.osmmapnik);
 			map.addLayer(this.layers.osm);
