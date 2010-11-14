@@ -4,7 +4,7 @@ mxn.register('openlayers', {
 
 		init: function(element, api){
 			var me = this;
-			this.maps[api] = new OpenLayers.Map(
+			var map = new OpenLayers.Map(
 				element.id,
 				{
 					maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
@@ -76,9 +76,28 @@ mxn.register('openlayers', {
 					displayOutsideMaxExtent: true
 				}
 			);
+			
+			// deal with click
+			map.events.register('click', map, function(evt){
+				var lonlat = map.getLonLatFromViewPortPx(evt.xy);
+				var point = new mxn.LatLonPoint();
+				point.fromProprietary(api, lonlat);
+				me.click.fire({'location': point });
+			});
 
-			this.maps[api].addLayer(this.layers.osmmapnik);
-			this.maps[api].addLayer(this.layers.osm);
+			// deal with zoom change
+			map.events.register('zoomend', map, function(evt){
+				me.changeZoom.fire();
+			});
+			// deal with map movement
+			map.events.register('moveend', map, function(evt){
+				me.moveendHandler(me);
+				me.endPan.fire();
+			});
+			
+			map.addLayer(this.layers.osmmapnik);
+			map.addLayer(this.layers.osm);
+			this.maps[api] = map;
 			this.loaded[api] = true;
 		},
 
