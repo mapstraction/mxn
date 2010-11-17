@@ -46,9 +46,13 @@ Mapstraction: {
 			});
 
 			// deal with zoom change
-			google.maps.event.addListener(map, 'zoom_changed', function(){
-				me.changeZoom.fire();
+			google.maps.event.addlistener(map, 'zoom_changed', function(){
+				var idlelistener = google.maps.event.addlistener(map, 'idle', function() {
+					me.changezoom.fire();
+					google.maps.event.removelistener( idlelistener );
+				});
 			});
+
 			// deal with map movement
 			google.maps.event.addListener(map, 'dragend', function(){
 				me.moveendHandler(me);
