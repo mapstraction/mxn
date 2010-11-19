@@ -4,16 +4,20 @@ mxn.register('openlayers', {
 
 		init: function(element, api){
 			var me = this;
+			
 			var map = new OpenLayers.Map(
 				element.id,
 				{
 					maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
-					maxResolution:156543,
-					numZoomLevels:18,
-					units:'meters',
-					projection: "EPSG:41001"
+					maxResolution: 156543,
+					numZoomLevels: 18,
+					units: 'meters',
+					projection: 'EPSG:41001'
 				}
 			);
+			
+			// initialize layers map (this was previously in mxn.core.js)
+			this.layers = {};
 
 			this.layers.osmmapnik = new OpenLayers.Layer.TMS(
 				'OSM Mapnik',
@@ -89,19 +93,24 @@ mxn.register('openlayers', {
 			map.events.register('zoomend', map, function(evt){
 				me.changeZoom.fire();
 			});
+			
 			// deal with map movement
 			map.events.register('moveend', map, function(evt){
 				me.moveendHandler(me);
 				me.endPan.fire();
 			});
+			
 			// deal with initial tile loading
 			var loadfire = function(e) {
 				me.load.fire();
-				this.events.unregister("loadend", this, loadfire);
+				this.events.unregister('loadend', this, loadfire);
 			};
-			for (i in this.layers) {
-				if (this.layers[i].visibility == true) {
-					this.layers[i].events.register("loadend", this.layers[i], loadfire);
+			
+			for (var layerName in this.layers) {
+				if (this.layers.hasOwnProperty(layerName)) {
+					if (this.layers[layerName].visibility === true) {
+						this.layers[layerName].events.register('loadend', this.layers[layerName], loadfire);
+					}
 				}
 			}
 			
@@ -198,16 +207,14 @@ mxn.register('openlayers', {
 				map.addLayer(this.layers.markers);
 			}
 			this.layers.markers.addMarker(pin);
-
 			return pin;
 		},
 
 		removeMarker: function(marker) {
 			var map = this.maps[this.api];
-			var pin = marker.toProprietary(this.api);
+			var pin = marker.proprietary_marker;
 			this.layers.markers.removeMarker(pin);
 			pin.destroy();
-
 		},
 
 		declutterMarkers: function(opts) {
@@ -217,25 +224,24 @@ mxn.register('openlayers', {
 		addPolyline: function(polyline, old) {
 			var map = this.maps[this.api];
 			var pl = polyline.toProprietary(this.api);
-
 			if (!this.layers.polylines) {
 				this.layers.polylines = new OpenLayers.Layer.Vector('polylines');
 				map.addLayer(this.layers.polylines);
 			}
-			polyline.setChild(pl);
 			this.layers.polylines.addFeatures([pl]);
 			return pl;
 		},
 
 		removePolyline: function(polyline) {
 			var map = this.maps[this.api];
-			var pl = polyline.toProprietary(this.api);
+			var pl = polyline.proprietary_polyline;
 			this.layers.polylines.removeFeatures([pl]);
 		},
+		
 		removeAllPolylines: function() {
 			var olpolylines = [];
-			for(var i = 0, length = this.polylines.length; i < length; i++){
-				olpolylines.push(this.polylines[i].toProprietary(this.api));
+			for (var i = 0, length = this.polylines.length; i < length; i++) {
+				olpolylines.push(this.polylines[i].proprietary_polyline);
 			}
 			if (this.layers.polylines) {
 				this.layers.polylines.removeFeatures(olpolylines);
@@ -254,7 +260,6 @@ mxn.register('openlayers', {
 			var map = this.maps[this.api];
 			var pt = point.toProprietary(this.api);
 			map.setCenter(pt);
-			
 		},
 
 		setZoom: function(zoom) {

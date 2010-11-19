@@ -55,8 +55,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	 * @type {Array}
 	 */
 	this.markers = [];
-	this.layers = [];
-	
+		
 	/**
 	 * The polylines currently loaded.
 	 * @name mxn.Mapstraction#polylines
