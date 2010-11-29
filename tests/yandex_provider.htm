@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title>Mapstraction V2 demo</title>
+		
+	<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAY70wuSo0zF3ZtJVp5bDm1BS1Y2ErAqCHV5rDhHSzgjy23KqwdRRaoSBuZk72oDzzAYxVBjtsLqSmTw"></script>
+	<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=5wTxDW_V34GQjK.7glLG6OnJSRxCvfLj7ktMsuOoR42Gkm16vDVEjjw6FGWJ1Gky"></script> 
+	<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3&mkt=en-us"></script>
+    <script src="http://api-maps.yandex.ru/1.1/index.xml?key=AHnI2UsBAAAAE7iFMgQAuOr58ZpTkCOpR4hl6vZj4z6zlDwAAAAAAAAAAAA0y08vLMbu-4nqqPip1Ezras8J3Q=="
+ type="text/javascript"></script>
+	<script src="../source/mxn.js?(google,yandex)" type="text/javascript"></script>
+	
+	<!--<script src="domReady.js" type="text/javascript"></script>-->
+
+	<script type="text/javascript">
+	//<![CDATA[
+	
+	if(typeof(Enumerator) == 'undefined'){
+		function Enumerator(ary){
+			var len = ary.length;
+			var current = 0;
+			this.atEnd = function(){
+				return (current === len);
+			};
+			this.moveNext = function(){
+				if(this.atEnd()) throw 'At end of collection';
+				current++;
+			};
+			this.item = function(){
+				return ary[current];
+			};
+		}
+	}
+	
+	//WhenDomReady(function(){
+	var m;
+	window.onload = function() {
+		var actionElm = document.getElementById('actions');
+		var infoElm = document.getElementById('info');		
+		var eventsElm = document.getElementById('events');
+		
+		m = new mxn.Mapstraction('map', 'yandex');
+
+		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
+			var center = oEvtSource.getCenter();
+			eventsElm.innerHTML += 'Map pan: (' + center.lat.toFixed(5) + ','+ center.lon.toFixed(5) +')<br/>';
+		});
+		
+		m.changeZoom.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
+			var zoom = oEvtSource.getZoom();
+			eventsElm.innerHTML += 'Change zoom: ' + zoom.toString() + '<br/>';
+		});
+		
+		m.markerAdded.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
+			eventsElm.innerHTML += 'Marker added: ' + oEvtArgs.marker.labelText + '<br/>';
+		});
+		
+		m.click.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
+			eventsElm.innerHTML += 'Map clicked: (' + oEvtArgs.location.lat.toFixed(5) + ','+ oEvtArgs.location.lon.toFixed(5) +')<br/>';
+		});
+		
+		var markerEventHandler = function(sEvtName, oEvtSource, oEvtArgs){
+			eventsElm.innerHTML += 'Marker event: ' + sEvtName + ' - ' + oEvtSource.labelText + '<br/>';
+		};
+		
+		var ops = [
+			{ 
+				desc: 'Center map', 
+				action: function(){
+					m.setCenterAndZoom(new mxn.LatLonPoint(53.29, 50.28), 8);
+				} 
+			},		 
+			{
+				desc: 'Pan map',
+				action: function(){
+					m.setCenter(new mxn.LatLonPoint(53.29, 50.28), {pan: true});
+				}
+			},
+			{
+				desc: 'Get info',
+				action: function(){
+					infoElm.innerHTML = 'Info<br/>';
+					var bb = m.getBounds();
+					infoElm.innerHTML += 'Bounds:<br/>SW(' + bb.sw.lat.toFixed(5) + ','+ bb.sw.lon.toFixed(5) +')<br/>NE(' + bb.ne.lat.toFixed(5) + ','+ bb.ne.lon.toFixed(5) +')<br/>';
+					var ll = m.getCenter();
+					infoElm.innerHTML += 'Center: (' + ll.lat.toFixed(5) + ','+ ll.lon.toFixed(5) +')<br/>';
+					infoElm.innerHTML += 'Map type: ' + m.getMapType() + '<br/>';
+					infoElm.innerHTML += 'Zoom: ' + m.getZoom() + '<br/>';
+				}
+			},
+			{
+				desc: 'Set zoom',
+				action: function(){
+					m.setZoom(8);
+				}
+			},
+			{
+				desc: 'Change type',
+				action: function(){
+					m.setMapType(mxn.Mapstraction.SATELLITE);
+				}
+			},
+			{
+				desc: 'Add marker',
+				action: function(){
+					var mkr = new mxn.Marker(new mxn.LatLonPoint(53.29, 50.28));
+					mkr.setLabel('Some random place');
+					mkr.setInfoBubble('Some information about the random place');
+					mkr.click.addHandler(markerEventHandler);
+					mkr.openInfoBubble.addHandler(markerEventHandler);
+					mkr.closeInfoBubble.addHandler(markerEventHandler);
+					m.addMarker(mkr);
+				}
+			},
+			{
+				desc: 'Show info bubble',
+				action: function(){
+					m.markers[0].openBubble();
+				}
+			},
+			{
+				desc: 'Hide info bubble',
+				action: function(){
+					m.markers[0].closeBubble();
+				}
+			},
+			{
+				desc: 'Add marker offscreen',
+				action: function(){
+					var mkr = new mxn.Marker(new mxn.LatLonPoint(53.27, 50.30));
+					mkr.setLabel('Some other place');
+					m.addMarker(mkr);
+				}
+			},
+			{
+				desc: 'Auto center',
+				action: function(){
+					m.autoCenterAndZoom();
+				}
+			},
+			{
+				desc: 'Add line',
+				action: function(){
+					var pl = new mxn.Polyline([
+						new mxn.LatLonPoint(53.94, 48.96),
+						new mxn.LatLonPoint(53.50, 49.03),
+						new mxn.LatLonPoint(53.41, 49.38),
+						new mxn.LatLonPoint(53.43, 50.02),
+						new mxn.LatLonPoint(53.33, 50.19),
+            new mxn.LatLonPoint(53.26, 50.21),
+						new mxn.LatLonPoint(53.13, 50.05),
+						new mxn.LatLonPoint(53.19, 49.83),
+						new mxn.LatLonPoint(53.11, 49.54),
+						new mxn.LatLonPoint(53.20, 49.20),
+						new mxn.LatLonPoint(53.10, 48.70),
+						new mxn.LatLonPoint(52.93, 48.56),
+						new mxn.LatLonPoint(52.54, 48.26)
+					]);
+					pl.width = 3;					
+					pl.color = '#00DD55';
+					pl.closed = true;
+					pl.fillColor = '#0077ff';
+					pl.opacity = 0.6;
+					m.addPolyline(pl);
+				}
+			},
+			{
+				desc: 'Add controls',
+				action: function() {
+					m.addLargeControls();
+					m.addControls({
+						pan:	 true,
+						zoom:	 'small',
+						overview: true,
+						scale: true,
+						map_type: true
+					});
+				}
+			},
+			{
+				desc: 'Add Base map type',
+				action: function() {
+					m.addTileLayer("http://tile.openstreetmap.org/{Z}/{X}/{Y}.png", 1.0, "OSM", 1, 19, true);
+				  m.setMapType("OSM");
+				}
+			},			
+			{
+				desc: 'Swap API (google)',
+				action: function(){
+					//m.swap('map', 'google');
+				}
+			},
+
+			
+			
+			{ desc: 'Done.', action: function(){} }
+		];
+		
+		for(var i=0; i < ops.length; i++){
+			var li = document.createElement('li');
+			var op = ops[i];
+			li.innerHTML = op.desc;
+			actionElm.appendChild(li);
+			op.elm = li;
+		}
+		
+		var e = new Enumerator(ops);
+		var intervalID;
+		
+		function doNextAction(){
+			if(e.atEnd()){
+				clearInterval(intervalID);
+			}
+			else {
+				var a = e.item();
+				try {
+					a.action();
+				}
+				catch(err){
+					infoElm.innerHTML = 'ERROR: ' + err;
+					infoElm.style.backgroundColor = '#FCC';
+					clearInterval(intervalID);
+					throw err;
+				}
+				a.elm.style.textDecoration = 'line-through';
+				a.elm.style.color = '#AAA';
+				e.moveNext();
+			}
+		}
+		intervalID = setInterval(doNextAction, 20);
+	}
+		
+	//]]>
+	</script>
+	<style type="text/css">
+		.box {
+			float: left; 
+			width:300px; 
+			margin-right: 20px;
+			border: 1px solid #AAA;
+		}
+		
+		.box h2 {
+			margin: 0;
+			padding: 5px;
+			font-family: Arial;
+			background-color: #DDD;
+		}
+		
+		.box div {
+			overflow-y: scroll;
+			height:300px; 
+		}
+	</style>
+</head>
+<body>
+	<div style="height: 400px; width: 1000px; margin: 20px;">
+			<div id="map" style="position: relative; width: 500px; height: 300px;"></div>
+		<div style="margin-top: 20px;">
+			
+			<div class="box">
+				<h2>Actions</h2>
+				<div>
+					<ol id="actions"></ol>
+				</div>
+			</div>
+			<div class="box">
+				<h2>Info</h2>
+				<div id="info"></div>
+			</div>
+			<div class="box">
+				<h2>Events</h2>
+				<div id="events"></div>
+			</div>
+			
+		</div>
+	</div>
+</body>
+</html>
+
