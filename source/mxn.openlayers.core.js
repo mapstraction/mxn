@@ -344,7 +344,9 @@ mxn.register('openlayers', {
 			var bounds = new OpenLayers.Bounds();
 			bounds.extend(new mxn.LatLonPoint(south,west).toProprietary(this.api));
 			bounds.extend(new mxn.LatLonPoint(north,east).toProprietary(this.api));
-			var overlay = new OpenLayers.Layer.Image(id, src,
+			var overlay = new OpenLayers.Layer.Image(
+				id, 
+				src,
 				bounds,
 				new OpenLayers.Size(oContext.imgElm.width, oContext.imgElm.height),
 				{'isBaseLayer': false, 'alwaysInRange': true}
