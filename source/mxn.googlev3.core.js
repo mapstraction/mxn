@@ -298,11 +298,11 @@ Mapstraction: {
 		var tilelayers = [];
 		var z_index = this.tileLayers.length || 0;
 		tilelayers[0] = {
-			getTileUrl : function (coord, zoom) {
+			getTileUrl: function (coord, zoom) {
 				url = tile_url;
-				url = url.replace(/\{Z\}/g,zoom);
-				url = url.replace(/\{X\}/g,coord.x);
-				url = url.replace(/\{Y\}/g,coord.y);
+				url = url.replace(/\{Z\}/g, zoom);
+				url = url.replace(/\{X\}/g, coord.x);
+				url = url.replace(/\{Y\}/g, coord.y);
 				return url;
 			},
 			tileSize: new google.maps.Size(256, 256),
@@ -314,15 +314,15 @@ Mapstraction: {
 		};
 		var tileLayerOverlay = new google.maps.ImageMapType(tilelayers[0]);
 		if(map_type) {
-			map.mapTypes.set('tile'+z_index, tileLayerOverlay);
+			map.mapTypes.set('tile' + z_index, tileLayerOverlay);
 			var mapTypeIds = [
 				google.maps.MapTypeId.ROADMAP,
 				google.maps.MapTypeId.HYBRID,
 				google.maps.MapTypeId.SATELLITE,
 				google.maps.MapTypeId.TERRAIN
-			]
-			for (var f=0; f<=this.tileLayers.length; f++) {
-				mapTypeIds.push('tile'+f);
+			];
+			for (var f = 0; f < this.tileLayers.length; f++) {
+				mapTypeIds.push('tile' + f);
 			}
 			var optionsUpdate = {mapTypeControlOptions: {mapTypeIds: mapTypeIds}};
 			map.setOptions(optionsUpdate);
@@ -335,15 +335,16 @@ Mapstraction: {
 
 	toggleTileLayer: function(tile_url) {
 		var map = this.maps[this.api];
-		for (var f=0; f<this.tileLayers.length; f++) {
-			if(this.tileLayers[f][0] == tile_url) {
-				if(this.tileLayers[f][2]) {
-					map.overlayMapTypes.removeAt(this.tileLayers[f][3]);
-					this.tileLayers[f][2] = false;
+		for (var f = 0; f < this.tileLayers.length; f++) {
+			var tileLayer = this.tileLayers[f];
+			if (tileLayer[0] == tile_url) {
+				if (tileLayer[2]) {
+					map.overlayMapTypes.removeAt(tileLayer[3]);
+					tileLayer[2] = false;
 				}
 				else {
-					map.overlayMapTypes.insertAt(this.tileLayers[f][3],this.tileLayers[f][1]);
-					this.tileLayers[f][2] = true;
+					map.overlayMapTypes.insertAt(tileLayer[3], tileLayer[1]);
+					tileLayer[2] = true;
 				}
 			}
 		}
