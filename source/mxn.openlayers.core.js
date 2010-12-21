@@ -341,20 +341,20 @@ mxn.register('openlayers', {
 
 		addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
 			var map = this.maps[this.api];
-
-			// TODO: Add provider code
+			var bounds = new OpenLayers.Bounds();
+			bounds.extend(new mxn.LatLonPoint(south,west).toProprietary(this.api));
+			bounds.extend(new mxn.LatLonPoint(north,east).toProprietary(this.api));
+			var overlay = new OpenLayers.Layer.Image(id, src,
+				bounds,
+				new OpenLayers.Size(oContext.imgElm.width, oContext.imgElm.height),
+				{'isBaseLayer': false, 'alwaysInRange': true}
+			);
+			map.addLayer(overlay);
+			this.setImageOpacity(overlay.div.id, opacity);
 		},
 
 		setImagePosition: function(id, oContext) {
-			var map = this.maps[this.api];
-			var topLeftPoint; var bottomRightPoint;
-
-			// TODO: Add provider code
-
-			//oContext.pixels.top = ...;
-			//oContext.pixels.left = ...;
-			//oContext.pixels.bottom = ...;
-			//oContext.pixels.right = ...;
+			// do nothing
 		},
 
 		addOverlay: function(url, autoCenterAndZoom) {
