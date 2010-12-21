@@ -203,7 +203,7 @@ Mapstraction: {
 		
 	},
 
-	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
+	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 		var map = this.maps[this.api];
 		
 		// TODO: Add provider code
