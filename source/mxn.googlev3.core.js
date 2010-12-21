@@ -295,14 +295,58 @@ Mapstraction: {
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		var tilelayers = [];
+		var z_index = this.tileLayers.length || 0;
+		tilelayers[0] = {
+			getTileUrl : function (coord, zoom) {
+				url = tile_url;
+				url = url.replace(/\{Z\}/g,zoom);
+				url = url.replace(/\{X\}/g,coord.x);
+				url = url.replace(/\{Y\}/g,coord.y);
+				return url;
+			},
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true,
+			minZoom: min_zoom,
+			maxZoom: max_zoom,
+			opacity: opacity,
+			name: copyright_text
+		};
+		var tileLayerOverlay = new google.maps.ImageMapType(tilelayers[0]);
+		if(map_type) {
+			map.mapTypes.set('tile'+z_index, tileLayerOverlay);
+			var mapTypeIds = [
+				google.maps.MapTypeId.ROADMAP,
+				google.maps.MapTypeId.HYBRID,
+				google.maps.MapTypeId.SATELLITE,
+				google.maps.MapTypeId.TERRAIN
+			]
+			for (var f=0; f<=this.tileLayers.length; f++) {
+				mapTypeIds.push('tile'+f);
+			}
+			var optionsUpdate = {mapTypeControlOptions: {mapTypeIds: mapTypeIds}};
+			map.setOptions(optionsUpdate);
+		} else {
+			map.overlayMapTypes.insertAt(z_index, tileLayerOverlay);
+		}
+		this.tileLayers.push( [tile_url, tileLayerOverlay, true, z_index] );
+		return tileLayerOverlay;
 	},
 
 	toggleTileLayer: function(tile_url) {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		for (var f=0; f<this.tileLayers.length; f++) {
+			if(this.tileLayers[f][0] == tile_url) {
+				if(this.tileLayers[f][2]) {
+					map.overlayMapTypes.removeAt(this.tileLayers[f][3]);
+					this.tileLayers[f][2] = false;
+				}
+				else {
+					map.overlayMapTypes.insertAt(this.tileLayers[f][3],this.tileLayers[f][1]);
+					this.tileLayers[f][2] = true;
+				}
+			}
+		}
 	},
 
 	getPixelRatio: function() {

@@ -59,11 +59,6 @@
 
 		// add a marker
 		var marker = new mxn.Marker(latlon);
-		marker.setDraggable(true);
-		marker.dragend.addHandler(function(n, s, a) {
-			console.log(n);
-			console.log(s);
-		});
 		mapstraction.addMarker(marker,true);
 		
 	}
