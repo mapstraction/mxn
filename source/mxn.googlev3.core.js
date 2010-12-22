@@ -499,8 +499,10 @@ Marker: {
 	},
 	
 	closeBubble: function() {
-		this.proprietary_infowindow.close();
-		this.closeInfoBubble.fire({'marker': this});
+		if (this.hasOwnProperty('proprietary_infowindow')) {
+			this.proprietary_infowindow.close();
+			this.closeInfoBubble.fire({'marker': this});
+		}
 	},
 
 	hide: function() {
