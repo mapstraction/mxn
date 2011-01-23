@@ -12,32 +12,45 @@ Mapstraction: {
 				mapTypeControl: false,
 				mapTypeControlOptions: null,
 				navigationControl: false,
-			        navigationControlOptions: null,
+				navigationControlOptions: null,
 				scrollwheel: false
 			};
 
-		    // find controls
-		    if (!this.addControlsArgs && loadoptions.addControlsArgs) {
-		    	this.addControlsArgs = loadoptions.addControlsArgs;
-		    }
-		    if (this.addControlsArgs) {
-			    if (this.addControlsArgs.zoom) {
-			    	myOptions.navigationControl = true;
-			    	if (this.addControlsArgs.zoom == 'small') {
-			    		myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.SMALL};
-			    	}
-			    	if (this.addControlsArgs.zoom == 'large') {
-			    		myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.ZOOM_PAN};
-			    	}
-			    }
-			    if (this.addControlsArgs.map_type) {
+			// find controls
+			if (!this.addControlsArgs && loadoptions.addControlsArgs) {
+				this.addControlsArgs = loadoptions.addControlsArgs;
+			}
+			if (this.addControlsArgs) {
+				if (this.addControlsArgs.zoom) {
+					myOptions.navigationControl = true;
+					if (this.addControlsArgs.zoom == 'small') {
+						myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.SMALL};
+					}
+					if (this.addControlsArgs.zoom == 'large') {
+						myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.ZOOM_PAN};
+					}
+				}
+				if (this.addControlsArgs.map_type) {
 					myOptions.mapTypeControl = true;
 					myOptions.mapTypeControlOptions = {style: google.maps.MapTypeControlStyle.DEFAULT};
-			    }
-		    }
+				}
+			}
 		
 			var map = new google.maps.Map(element, myOptions);
-				
+			
+			var fireOnNextIdle = [];
+			
+			google.maps.event.addListener(map, 'idle', function() {
+				var fireListCount = fireOnNextIdle.length;
+				if(fireListCount > 0) {
+					var fireList = fireOnNextIdle.splice(0, fireListCount);
+					var handler;
+					while((handler = fireList.shift())){
+						handler();
+					}
+				}
+			});
+			
 			// deal with click
 			google.maps.event.addListener(map, 'click', function(location){
 				me.click.fire({'location': 
@@ -46,23 +59,27 @@ Mapstraction: {
 			});
 
 			// deal with zoom change
-			google.maps.event.addlistener(map, 'zoom_changed', function(){
-				var idlelistener = google.maps.event.addlistener(map, 'idle', function() {
-					me.changezoom.fire();
-					google.maps.event.removelistener( idlelistener );
+			google.maps.event.addListener(map, 'zoom_changed', function(){
+				// zoom_changed fires before the zooming has finished so we 
+				// wait for the next idle event before firing our changezoom
+				// so that method calls report the correct values
+				fireOnNextIdle.push(function() {
+					me.changeZoom.fire();
 				});
 			});
 
 			// deal with map movement
-			google.maps.event.addListener(map, 'dragend', function(){
+			google.maps.event.addListener(map, 'center_changed', function(){
 				me.moveendHandler(me);
 				me.endPan.fire();
 			});
+			
 			// deal with initial tile loading
 			var loadListener = google.maps.event.addListener(map, 'tilesloaded', function(){
 				me.load.fire();
 				google.maps.event.removeListener( loadListener );
-			});
+			});			
+			
 			this.maps[api] = map;
 			this.loaded[api] = true;
 		}
@@ -111,7 +128,7 @@ Mapstraction: {
 			this.addControlsArgs.scale = true;
 		}
 		if (args.map_type){
-		    this.addMapTypeControls();
+			this.addMapTypeControls();
 		}
 	},
 
@@ -538,7 +555,7 @@ Polyline: {
 			strokeColor: this.color || '#000000',
 			strokeOpacity: 1.0,
 			strokeWeight: 3
-	    };
+		};
 
 		var polyline = new google.maps.Polyline(polyOptions);
 
