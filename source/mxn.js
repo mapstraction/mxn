@@ -245,7 +245,9 @@ mxn.Invoker = function(aobj, asClassName, afnApiIdGetter){
 	this.go = function(sMethodName, args, oOptions){
 		
 		// make sure args is an array
-		args = Array.prototype.slice.apply(args);
+		if(args){
+			args = Array.prototype.slice.apply(args);
+		}
 		
 		if(typeof(oOptions) == 'undefined'){
 			oOptions = defOpts;
