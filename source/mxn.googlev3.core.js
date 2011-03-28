@@ -549,12 +549,24 @@ Polyline: {
 		for(var i =0, length = this.points.length; i < length; i++) {
 			points.push(this.points[i].toProprietary('googlev3'));
 		}
-
+		
+		var opacity, width;
+		if (this.opacity !== null && this.opacity !== undefined) {
+			opacity = this.opacity;
+		} else {
+			opacity = 1.0;
+		}
+		if (this.width !== null && this.width !== undefined) {
+			width = this.width;
+		} else {
+			width = 3;
+		}
+		
 		var polyOptions = {
 			path: points,
 			strokeColor: this.color || '#000000',
-			strokeOpacity: 1.0,
-			strokeWeight: 3
+			strokeOpacity: opacity, 
+			strokeWeight: width
 		};
 
 		var polyline = new google.maps.Polyline(polyOptions);
