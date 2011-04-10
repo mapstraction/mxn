@@ -292,7 +292,7 @@ mxn.util = {
 	merge: function(oRecv, oGive){
 		for (var sPropName in oGive){
 			if (oGive.hasOwnProperty(sPropName)) {
-				if(!oRecv.hasOwnProperty(sPropName) || typeof oRecv[sPropName] !== 'object'){
+				if(!oRecv.hasOwnProperty(sPropName) || typeof(oRecv[sPropName]) !== 'object' || typeof(oGive[sPropName]) !== 'object'){
 					oRecv[sPropName] = oGive[sPropName];
 				}
 				else {

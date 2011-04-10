@@ -311,6 +311,7 @@ mxn.addProxyMethods(Mapstraction, [
 	 *  mxn.Mapstraction.ROAD
 	 *  mxn.Mapstraction.SATELLITE
 	 *  mxn.Mapstraction.HYBRID
+	 *  mxn.Mapstraction.PHYSICAL
 	 * @name mxn.Mapstraction#setMapType
 	 * @function
 	 * @param {Number} type 
