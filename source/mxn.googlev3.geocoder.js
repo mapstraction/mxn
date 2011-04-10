@@ -27,6 +27,7 @@ Geocoder: {
 		else {
 			return_location.street = '';
 			return_location.locality = '';
+			return_location.postal_code = '';
 			return_location.region = '';
 			return_location.country = '';
 
@@ -46,8 +47,14 @@ Geocoder: {
 						case 'locality':
 							return_location.locality = addressComponent.long_name;
 							break;
-						case 'street_address':
+						case 'postal_code':
+							return_location.postal_code = addressComponent.long_name;
+							break;
+						case 'street_number':
 							return_location.street = addressComponent.long_name;
+							break
+						case 'route':
+							return_location.street += ' ' + addressComponent.long_name;
 							break;
 					}
 				}
