@@ -2,39 +2,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-	<title>Mapstraction V2 demo</title>
+	<title>Mapstraction V2 core tests</title>
+		
+	<script type="text/javascript" src="mxn-harness.js"></script>
 		
 	<!-- script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAY70wuSo0zF3ZtJVp5bDm1BS1Y2ErAqCHV5rDhHSzgjy23KqwdRRaoSBuZk72oDzzAYxVBjtsLqSmTw"></script -->
 	<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=5wTxDW_V34GQjK.7glLG6OnJSRxCvfLj7ktMsuOoR42Gkm16vDVEjjw6FGWJ1Gky"></script> 
 	<!-- script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3&mkt=en-us"></script -->
-	
 	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 	
 	<script src="../source/mxn.js?(googlev3,yahoo)" type="text/javascript"></script>
-	
-	<!--<script src="domReady.js" type="text/javascript"></script>-->
 
 	<script type="text/javascript">
 	//<![CDATA[
 	
-	if(typeof(Enumerator) == 'undefined'){
-		function Enumerator(ary){
-			var len = ary.length;
-			var current = 0;
-			this.atEnd = function(){
-				return (current === len);
-			};
-			this.moveNext = function(){
-				if(this.atEnd()) throw 'At end of collection';
-				current++;
-			};
-			this.item = function(){
-				return ary[current];
-			};
-		}
-	}
-	
-	//WhenDomReady(function(){
 	var m;
 	window.onload = function() {
 		var actionElm = document.getElementById('actions');
@@ -45,7 +26,7 @@
 
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var center = oEvtSource.getCenter();
-			eventsElm.innerHTML += 'Map pan: (' + center.lat.toFixed(5) + ','+ center.lon.toFixed(5) +')<br/>';
+			eventsElm.innerHTML += 'Map pan: ' + Dump(center) + '<br/>';
 		});
 		
 		m.changeZoom.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
@@ -58,7 +39,7 @@
 		});
 		
 		m.click.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-			eventsElm.innerHTML += 'Map clicked: (' + oEvtArgs.location.lat.toFixed(5) + ','+ oEvtArgs.location.lon.toFixed(5) +')<br/>';
+			eventsElm.innerHTML += 'Map clicked: ' + Dump(oEvtArgs.location) + '<br/>';
 		});
 		
 		var markerEventHandler = function(sEvtName, oEvtSource, oEvtArgs){
@@ -83,9 +64,9 @@
 				action: function(){
 					infoElm.innerHTML = 'Info<br/>';
 					var bb = m.getBounds();
-					infoElm.innerHTML += 'Bounds:<br/>SW(' + bb.sw.lat.toFixed(5) + ','+ bb.sw.lon.toFixed(5) +')<br/>NE(' + bb.ne.lat.toFixed(5) + ','+ bb.ne.lon.toFixed(5) +')<br/>';
+					infoElm.innerHTML += 'Bounds:<br/>' + Dump(bb) + '<br/>';
 					var ll = m.getCenter();
-					infoElm.innerHTML += 'Center: (' + ll.lat.toFixed(5) + ','+ ll.lon.toFixed(5) +')<br/>';
+					infoElm.innerHTML += 'Center: ' + Dump(ll) + '<br/>';
 					infoElm.innerHTML += 'Map type: ' + m.getMapType() + '<br/>';
 					infoElm.innerHTML += 'Zoom: ' + m.getZoom() + '<br/>';
 				}
@@ -187,39 +168,8 @@
 			{ desc: 'Done.', action: function(){} }
 		];
 		
-		for(var i=0; i < ops.length; i++){
-			var li = document.createElement('li');
-			var op = ops[i];
-			li.innerHTML = op.desc;
-			actionElm.appendChild(li);
-			op.elm = li;
-		}
-		
-		var e = new Enumerator(ops);
-		var intervalID;
-		
-		function doNextAction(){
-			if(e.atEnd()){
-				clearInterval(intervalID);
-			}
-			else {
-				var a = e.item();
-				try {
-					a.action();
-				}
-				catch(err){
-					infoElm.innerHTML = 'ERROR: ' + err;
-					infoElm.style.backgroundColor = '#FCC';
-					clearInterval(intervalID);
-					throw err;
-				}
-				a.elm.style.textDecoration = 'line-through';
-				a.elm.style.color = '#AAA';
-				e.moveNext();
-			}
-		}
-		intervalID = setInterval(doNextAction, 2000);
-	}
+		RunTests(ops, actionElm, infoElm);
+	};
 		
 	//]]>
 	</script>
