@@ -320,7 +320,13 @@ mxn.register('openlayers', {
 		getBounds: function () {
 			var map = this.maps[this.api];
 			var olbox = map.calculateBounds();
-			return new mxn.BoundingBox(olbox.bottom, olbox.left, olbox.top, olbox.right);			
+			var ol_sw = new OpenLayers.LonLat( olbox.left, olbox.bottom );
+			var mxn_sw = new mxn.LatLonPoint(0,0);
+			mxn_sw.fromProprietary( this.api, ol_sw );
+			var ol_ne = new OpenLayers.LonLat( olbox.right, olbox.top );
+			var mxn_ne = new mxn.LatLonPoint(0,0);
+			mxn_ne.fromProprietary( this.api, ol_ne );
+			return new mxn.BoundingBox(mxn_sw.lat, mxn_sw.lon, mxn_ne.lat, mxn_ne.lon);
 		},
 
 		setBounds: function(bounds){
