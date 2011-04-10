@@ -6,9 +6,9 @@
 		
 	<script type="text/javascript" src="mxn-harness.js"></script>
 		
-	<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAY70wuSo0zF3ZtJVp5bDm1BS1Y2ErAqCHV5rDhHSzgjy23KqwdRRaoSBuZk72oDzzAYxVBjtsLqSmTw"></script>
+	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 	
-	<script src="../source/mxn.js?(google,[core,geocoder])" type="text/javascript"></script>
+	<script src="../source/mxn.js?(googlev3,[geocoder])" type="text/javascript"></script>
 
 	<script type="text/javascript">
 	//<![CDATA[
@@ -31,7 +31,7 @@
 			infoElm.innerHTML += 'Error: ' + Dump(response.point);
 		}
 		
-		var geo = new mxn.Geocoder('google', successCallback, errorCallback);
+		var geo = new mxn.Geocoder('googlev3', successCallback, errorCallback);
 		
 		var ops = [
 			{ 

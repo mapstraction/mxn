@@ -27,11 +27,12 @@ Geocoder: {
 		else {
 			return_location.street = '';
 			return_location.locality = '';
-			return_location.postal_code = '';
+			return_location.postcode = '';
 			return_location.region = '';
 			return_location.country = '';
 
 			var place = results[0];
+			var streetparts = [];
 			
 			for (var i = 0; i < place.address_components.length; i++) {
 				var addressComponent = place.address_components[i];
@@ -47,18 +48,25 @@ Geocoder: {
 						case 'locality':
 							return_location.locality = addressComponent.long_name;
 							break;
+						case 'street_address':
+							return_location.street = addressComponent.long_name;
+							break;
 						case 'postal_code':
-							return_location.postal_code = addressComponent.long_name;
+							return_location.postcode = addressComponent.long_name;
 							break;
 						case 'street_number':
-							return_location.street = addressComponent.long_name;
-							break
+							streetparts.unshift(addressComponent.long_name);
+							break;
 						case 'route':
-							return_location.street += ' ' + addressComponent.long_name;
+							streetparts.push(addressComponent.long_name);
 							break;
 					}
 				}
 			}
+			
+			if (return_location.street === '' && streetparts.length > 0) {
+				return_location.street = streetparts.join(' ');
+			}		
 			
 			return_location.point = new mxn.LatLonPoint(place.geometry.location.lat(), place.geometry.location.lng());
 			
