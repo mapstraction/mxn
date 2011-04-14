@@ -13,9 +13,16 @@ Geocoder: {
 			address.address = [ address.street, address.locality, address.region, address.country ].join(', ');
 		}
 		
-		this.geocoders[this.api].getLocations(address.address, function(response) {
-			me.geocode_callback(response);
-		});
+		if (address.hasOwnProperty('lat') && address.hasOwnProperty('lon')) {
+			var latlon = address.toProprietary(this.api);
+			this.geocoders[this.api].getLocations(latlon, function(response) {
+				me.geocode_callback(response);
+			});
+		} else {
+			this.geocoders[this.api].getLocations(address.address, function(response) {
+				me.geocode_callback(response);
+			});
+		}
 	},
 	
 	geocode_callback: function(response){
@@ -36,7 +43,7 @@ Geocoder: {
 				function(o){ return o.AddressDetails; },
 				function(o){ return o.Country; },
 				function(o){ 
-					return_location.country = o.CountryNameCode;
+					return_location.country = o.CountryName;
 					return o.AdministrativeArea; 
 				},
 				function(o){ 
