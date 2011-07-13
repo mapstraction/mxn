@@ -1,4 +1,6 @@
 /*
+MAPSTRACTION   v${build.ver}   http://www.mapstraction.com
+
 Copyright (c) ${YEAR} Tom Carden, Steve Coast, Mikel Maron, Andrew Turner, Henri Bergius, Rob Moran, Derek Fowler, Gary Gale
 All rights reserved.
 
