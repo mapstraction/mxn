@@ -1608,7 +1608,7 @@ Marker.prototype.setIcon = function(iconUrl, iconSize, iconAnchor) {
 
 /**
  * Sets the size of the icon for a marker
- * @param {String} iconSize The array size in pixels of the marker image
+ * @param {Array} iconSize The array size in pixels of the marker image: [ width, height ]
  */
 Marker.prototype.setIconSize = function(iconSize){
 	if(iconSize) {
@@ -1618,7 +1618,7 @@ Marker.prototype.setIconSize = function(iconSize){
 
 /**
  * Sets the anchor point for a marker
- * @param {String} iconAnchor The array offset of the anchor point
+ * @param {Array} iconAnchor The array offset in pixels of the anchor point from top left: [ right, down ]
  */
 Marker.prototype.setIconAnchor = function(iconAnchor){
 	if(iconAnchor) {
