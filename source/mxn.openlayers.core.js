@@ -441,7 +441,7 @@ mxn.register('openlayers', {
 	Marker: {
 
 		toProprietary: function() {
-			var size, anchor, icon;
+			var size, anchor, popup;
 			if(this.iconSize) {
 				size = new OpenLayers.Size(this.iconSize[0], this.iconSize[1]);
 			}
@@ -458,21 +458,21 @@ mxn.register('openlayers', {
 			}
 
 			if(this.iconUrl) {
-				icon = new OpenLayers.Icon(this.iconUrl, size, anchor);
+				this.icon = new OpenLayers.Icon(this.iconUrl, size, anchor);
 			}
 			else {
-				icon = new OpenLayers.Icon('http://openlayers.org/dev/img/marker-gold.png', size, anchor);
+				this.icon = new OpenLayers.Icon('http://openlayers.org/dev/img/marker-gold.png', size, anchor);
 			}
-			var marker = new OpenLayers.Marker(this.location.toProprietary("openlayers"), icon);
+			var marker = new OpenLayers.Marker(this.location.toProprietary("openlayers"), this.icon);
 
 			if(this.infoBubble) {
-				var popup = new OpenLayers.Popup(null,
+				popup = new OpenLayers.Popup.FramedCloud(null,
 					this.location.toProprietary("openlayers"),
 					new OpenLayers.Size(100,100),
 					this.infoBubble,
+					this.icon,
 					true
 				);
-				popup.autoSize = true;
 				var theMap = this.map;
 				if(this.hover) {
 					marker.events.register("mouseover", marker, function(event) {
@@ -498,6 +498,7 @@ mxn.register('openlayers', {
 						}
 					});
 				}
+				this.popup = popup;
 			}
 
 			if(this.hoverIconUrl) {
@@ -518,7 +519,27 @@ mxn.register('openlayers', {
 		},
 
 		openBubble: function() {		
-			// TODO: Add provider code
+			if ( this.infoBubble ) {
+				// Need to create a new popup in case setInfoBubble has been called
+				this.popup = new OpenLayers.Popup.FramedCloud(null,
+					this.location.toProprietary("openlayers"),
+					new OpenLayers.Size(100,100),
+					this.infoBubble,
+					this.icon,
+					true
+				);
+			}
+
+			if ( this.popup ) {
+				this.map.addPopup( this.popup, true );
+			}
+		},
+
+		closeBubble: function() {
+			if ( this.popup ) {
+				this.popup.hide();
+				this.map.removePopup( this.popup );
+			}
 		},
 
 		hide: function() {
