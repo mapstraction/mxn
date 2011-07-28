@@ -508,20 +508,28 @@ Marker: {
 	},
 
 	openBubble: function() {
-		var infowindow = new google.maps.InfoWindow({
-	   		content: this.infoBubble
-		});
-		google.maps.event.addListener(infowindow, 'closeclick', function(closedWindow) {
-			// TODO: set proprietary_infowindow to null, fire closeInfoBubble
-		});
+		var infowindow,
+			marker = this;
+		if (!this.hasOwnProperty('proprietary_infowindow') || this.proprietary_infowindow === null) {
+			infowindow = new google.maps.InfoWindow({
+				content: this.infoBubble
+			});
+			google.maps.event.addListener(infowindow, 'closeclick', function(closedWindow) {
+				marker.closeBubble();
+			});
+		}
+		else{
+			infowindow = this.proprietary_infowindow;
+		}
 		this.openInfoBubble.fire({'marker': this});
 		infowindow.open(this.map,this.proprietary_marker);
 		this.proprietary_infowindow = infowindow; // Save so we can close it later
 	},
-	
+
 	closeBubble: function() {
-		if (this.hasOwnProperty('proprietary_infowindow')) {
+		if (this.hasOwnProperty('proprietary_infowindow') && this.proprietary_infowindow !== null) {
 			this.proprietary_infowindow.close();
+			this.proprietary_infowindow = null;
 			this.closeInfoBubble.fire({'marker': this});
 		}
 	},
