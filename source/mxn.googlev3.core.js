@@ -34,6 +34,10 @@ Mapstraction: {
 					myOptions.mapTypeControl = true;
 					myOptions.mapTypeControlOptions = {style: google.maps.MapTypeControlStyle.DEFAULT};
 				}
+				if (this.addControlsArgs.overview) {
+					myOptions.overviewMapControl = true;
+					myOptions.overviewMapControlOptions = {opened: true};
+				}
 			}
 		
 			var map = new google.maps.Map(element, myOptions);
@@ -108,7 +112,8 @@ Mapstraction: {
   	},
 
 	addControls: function( args ) {
-		var map = this.maps[this.api];	
+		var map = this.maps[this.api];
+		var myOptions;
 		// remove old controls
 
 		// Google has a combined zoom and pan control.
@@ -120,7 +125,7 @@ Mapstraction: {
 			}
 		}
 		if (args.scale){
-			var myOptions = {
+			myOptions = {
 				scaleControl:true,
 				scaleControlOptions: {style:google.maps.ScaleControlStyle.DEFAULT}				
 			};
@@ -129,6 +134,14 @@ Mapstraction: {
 		}
 		if (args.map_type){
 			this.addMapTypeControls();
+		}
+		if (args.overview) {
+			myOptions = {
+				overviewMapControl: true,
+				overviewMapControlOptions: {opened: true}
+			};
+			map.setOptions(myOptions);
+			this.addControlsArgs.overview = true;
 		}
 	},
 
