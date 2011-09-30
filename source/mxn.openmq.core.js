@@ -1,82 +1,114 @@
-mxn.register('{{api_id}}', {	
+mxn.register('openmq', {	
 
 Mapstraction: {
 	
-	init: function(element, api) {		
-		var me = this;
+	init: function(element, api) {
+			var me = this;
+			var map = new MQA.TileMap(element);
+			this.maps[api] = map;
+			this.loaded[api] = true;
+
+		MQA.withModule('shapes', function() {
+			// Loading all modules that can't be loaded on-demand
+			// [This space left intentionally blank]
+		});
 		
-		// TODO: Add provider code
+		MQA.EventManager.addListener(map, 'click', function(e) {
+			me.click.fire();
+		});
+		
+		MQA.EventManager.addListener(map, 'zoomend', function(e) {
+			me.changeZoom.fire();
+		});
+
+		MQA.EventManager.addListener(map, 'moveend', function(e) {
+			me.endPan.fire();
+		});
+		
 	},
 	
 	applyOptions: function(){
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		if (this.options.enableScrollWheelZoom) {
+			MQA.withModule('mousewheel', function() {
+				var map = this.maps[this.api];
+				map.enableMouseWheelZoom();
+			});
+		}
 	},
 
 	resizeTo: function(width, height){	
-		// TODO: Add provider code
+		this.currentElement.style.width = width;
+		this.currentElement.style.height = height;
 	},
 
 	addControls: function( args ) {
 		var map = this.maps[this.api];
-	
-		// TODO: Add provider code
+
+		if (args.zoom) {
+			if (args.zoom == 'large'){ 
+				this.addLargeControls();
+			} else { 
+				this.addSmallControls();
+			}
+		}
 	},
 
 	addSmallControls: function() {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		MQA.withModule('smallzoom', function() {
+			map.addControl(
+			    new MQA.SmallZoom(), 
+			    new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
+			  );
+		});
 	},
 
 	addLargeControls: function() {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		MQA.withModule('largezoom', function() {
+			map.addControl(
+			    new MQA.LargeZoom(), 
+			    new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
+			  );
+		});
 	},
 
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		// Open MapQuest only supports a single map type, so there is no map type control	
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
-		var map = this.maps[this.api];
-		var pt = point.toProprietary(this.api);
-		
-		// TODO: Add provider code
+		this.setCenter(point);
+		this.setZoom(zoom);
 	},
 	
 	addMarker: function(marker, old) {
 		var map = this.maps[this.api];
 		var pin = marker.toProprietary(this.api);
 		
-		// TODO: Add provider code
+		map.addShape(pin);
 		
 		return pin;
 	},
 
 	removeMarker: function(marker) {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		map.removeShape(marker.proprietary_marker);
 	},
 	
 	declutterMarkers: function(opts) {
 		var map = this.maps[this.api];
-		
 		// TODO: Add provider code
 	},
 
 	addPolyline: function(polyline, old) {
-		var map = this.maps[this.api];
-		var pl = polyline.toProprietary(this.api);
-		
-		// TODO: Add provider code
-		
-		return pl;
+		var thisapi = this.api;
+		var map = this.maps[thisapi];
+		MQA.withModule('shapes', function() {
+			var pl = polyline.toProprietary(thisapi);
+			map.addShape(pl);
+		});
 	},
 
 	removePolyline: function(polyline) {
@@ -86,37 +118,26 @@ Mapstraction: {
 	},
 	
 	getCenter: function() {
-		var point;
 		var map = this.maps[this.api];
+		var point = map.getCenter();
 		
-		// TODO: Add provider code
-		
-		return point;
+		return new mxn.LatLonPoint(point.lat, point.lng);
 	},
 
 	setCenter: function(point, options) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
-		if(options && options.pan) { 
-			// TODO: Add provider code
-		}
-		else { 
-			// TODO: Add provider code
-		}
+		map.setCenter(pt);
 	},
 
 	setZoom: function(zoom) {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-		
+		map.setZoomLevel(zoom);
 	},
 	
 	getZoom: function() {
 		var map = this.maps[this.api];
-		var zoom;
-		
-		// TODO: Add provider code
+		var zoom = map.getZoomLevel();
 		
 		return zoom;
 	},
@@ -136,37 +157,47 @@ Mapstraction: {
 	setMapType: function(type) {
 		var map = this.maps[this.api];
 		switch(type) {
-			case mxn.Mapstraction.ROAD:
-				// TODO: Add provider code
-				break;
+			// MapQuest has a function to set map type, but open MapQuest only supports road
+			/*
 			case mxn.Mapstraction.SATELLITE:
-				// TODO: Add provider code
-				break;
+				map.setMapType('sat');
+			break;
 			case mxn.Mapstraction.HYBRID:
-				// TODO: Add provider code
-				break;
+				map.setMapType('hyb');
+			break;
+			*/
+			case mxn.Mapstraction.ROAD:
 			default:
-				// TODO: Add provider code
+				map.setMapType('map');
+			break;
 		}	 
 	},
 
 	getMapType: function() {
 		var map = this.maps[this.api];
 		
-		// TODO: Add provider code
-
-		//return mxn.Mapstraction.ROAD;
-		//return mxn.Mapstraction.SATELLITE;
-		//return mxn.Mapstraction.HYBRID;
-
+		var type = map.getMapType();
+		switch(type) {
+			case 'sat':
+				return mxn.Mapstraction.SATELLITE;
+			break;
+			case 'hyb':
+				return mxn.Mapstraction.HYBRID;
+			break;
+			case 'map':
+			default:
+				return mxn.Mapstraction.ROAD
+			break;
+		}	 
 	},
 
 	getBounds: function () {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-		
-		//return new mxn.BoundingBox( ,  ,  ,  );
+		var rect = map.getBounds();
+		var se = rect.lr;
+		var nw = rect.ul;
+		// MapQuest uses SE and NW points to declare bounds
+		return new mxn.BoundingBox(se.lat, nw.lng, nw.lat, se.lng);
 	},
 
 	setBounds: function(bounds){
@@ -174,8 +205,9 @@ Mapstraction: {
 		var sw = bounds.getSouthWest();
 		var ne = bounds.getNorthEast();
 		
-		// TODO: Add provider code
-		
+		// MapQuest uses SE and NW points to declare bounds
+		var rect = new MQA.RectLL(new MQA.LatLng(sw.lat, ne.lon), new MQA.LatLng(ne.lat, sw.lon));
+		map.zoomToRect(rect);
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
@@ -231,19 +263,35 @@ Mapstraction: {
 LatLonPoint: {
 	
 	toProprietary: function() {
-		// TODO: Add provider code
+		return new MQA.LatLng(this.lat, this.lon);
 	},
 
-	fromProprietary: function(googlePoint) {
-		// TODO: Add provider code
+	fromProprietary: function(mqPoint) {
+		this.lat = mqPoint.lat;
+		this.lon = mqPoint.lng;
 	}
-	
 },
 
 Marker: {
 	
 	toProprietary: function() {
-		// TODO: Add provider code
+		var pt = this.location.toProprietary(this.api);
+		var mk = new MQA.Poi(pt);
+		
+		if (this.iconUrl) {
+			var icon = new MQA.Icon(this.iconUrl, this.iconSize[0], this.iconSize[1]);
+			mk.setIcon(icon);
+		}
+		
+		if (this.infoBubble) {
+			mk.setInfoContentHTML(this.infoBubble);
+		}
+		
+		MQA.EventManager.addListener(mk, 'click', function() {
+			mk.mapstraction_marker.click.fire();
+		});
+		
+		return mk;
 	},
 
 	openBubble: function() {		
@@ -267,7 +315,24 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		// TODO: Add provider code
+		var points = [];
+		var oldpoints = this.points;
+		
+		for(var i =0, length = this.points.length; i < length; i++) {
+			var thispt = this.points[i];
+			points.push(thispt.lat);
+			points.push(thispt.lon);
+		}
+
+		var line = new MQA.LineOverlay();
+		line.setShapePoints(points);
+
+		// Line options
+		line.color = this.color || '#000000';
+		line.colorAlpha = this.opacity || 1.0;
+		line.borderWidth = this.width || 3;
+
+		return line;
 	},
 	
 	show: function() {
