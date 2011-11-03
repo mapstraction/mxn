@@ -1362,7 +1362,7 @@ BoundingBox.prototype.getSouthWest = function() {
 };
 
 /**
- * getSouthWest returns a LatLonPoint of the south-west point of the bounding box
+ * getSouthEast returns a LatLonPoint of the south-east point of the bounding box
  * @returns the south-east point of the bounding box
  * @type LatLonPoint
  */
