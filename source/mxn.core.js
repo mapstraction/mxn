@@ -126,7 +126,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 		'changeZoom',
 		
 		/**
-		 * Marker is removed {marker: Marker}
+		 * Marker is added {marker: Marker}
 		 * @name mxn.Mapstraction#markerAdded
 		 * @event
 		 */
