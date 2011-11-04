@@ -11,7 +11,7 @@ var $m = mxn.util.$m;
  * @private
  */
 var init = function() {
-	this.invoker.go('init', [ this.currentElement, this.api ]);
+	this.invoker.go('init', [ this.currentElement, this.api,this,key ]);
 	this.applyOptions();
 };
 
@@ -22,9 +22,10 @@ var init = function() {
  * @param {String} element The HTML element to replace with a map
  * @param {String} api The API to use, one of 'google', 'googlev3', 'yahoo', 'microsoft', 'openstreetmap', 'multimap', 'map24', 'openlayers', 'mapquest'. If omitted, first loaded provider implementation is used.
  * @param {Bool} debug optional parameter to turn on debug support - this uses alert panels for unsupported actions
+ * @param {String} key optional api key value used for microsoft v7 map provider
  * @exports Mapstraction as mxn.Mapstraction
  */
-var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
+var Mapstraction = mxn.Mapstraction = function(element, api, debug, key) {
 	if (!api){
 		api = mxn.util.getAvailableProviders()[0];
 	}
@@ -35,7 +36,13 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	 * @type {String}
 	 */
 	this.api = api;
-		
+	/**
+     * The API Key Required.
+     * @name mxn.Mapstraction#key
+     * @type {String}
+     */
+    this.key = key
+    
 	this.maps = {};
 	
 	/**
