@@ -740,38 +740,26 @@ Mapstraction.prototype.removeAllPolylines = function() {
  * containing all markers
  */
 Mapstraction.prototype.autoCenterAndZoom = function() {
-	var lat_max = -90;
-	var lat_min = 90;
-	var lon_max = -180;
-	var lon_min = 180;
+	var mapBounds = new BoundingBox(null, null, null, null);
 	var lat, lon;
-	var checkMinMax = function(){
-		if (lat > lat_max) {
-			lat_max = lat;
-		}
-		if (lat < lat_min) {
-			lat_min = lat;
-		}
-		if (lon > lon_max) {
-			lon_max = lon;
-		}
-		if (lon < lon_min) {
-			lon_min = lon;
-		}
-	};
 	for (var i = 0; i < this.markers.length; i++) {
+		console.log(this.markers[i]);
 		lat = this.markers[i].location.lat;
 		lon = this.markers[i].location.lon;
-		checkMinMax();
+		mapBounds.extend(new LatLonPoint(lat,lon));
 	}
 	for(i = 0; i < this.polylines.length; i++) {
 		for (var j = 0; j < this.polylines[i].points.length; j++) {
 			lat = this.polylines[i].points[j].lat;
 			lon = this.polylines[i].points[j].lon;
-			checkMinMax();
+			mapBounds.extend(new LatLonPoint(lat,lon));
 		}
 	}
-	this.setBounds( new BoundingBox(lat_min, lon_min, lat_max, lon_max) );
+		console.log('min/max');
+		console.log(mapBounds);
+		this.addMarker( new Marker(mapBounds.getNorthEast()));
+		this.addMarker( new Marker(mapBounds.getSouthWest()));
+	this.setBounds(mapBounds);
 };
 
 /**
@@ -1401,17 +1389,30 @@ BoundingBox.prototype.toSpan = function() {
  * extend extends the bounding box to include the new point
  */
 BoundingBox.prototype.extend = function(point) {
-	if(this.sw.lat > point.lat) {
-		this.sw.lat = point.lat;
-	}
-	if(this.sw.lon > point.lon) {
-		this.sw.lon = point.lon;
-	}
-	if(this.ne.lat < point.lat) {
-		this.ne.lat = point.lat;
-	}
-	if(this.ne.lon < point.lon) {
-		this.ne.lon = point.lon;
+	console.log('* marker : '+point.lat +' '+point.lon);
+	var pointBounds = null;
+	if (point)
+		pointBounds = new BoundingBox(point.lat, point.lon, point.lat, point.lon);
+	if (pointBounds) {
+		console.log('extend');
+		console.log(this);
+		if ( (this.sw.lon == null) || (pointBounds.sw.lon < this.sw.lon) ) {
+			console.log('!! change sw.lon : '+this.sw.lon+' => '+point.lon);
+			this.sw.lon = pointBounds.sw.lon;
+		}
+		if ( (this.sw.lat == null) || (pointBounds.sw.lat < this.sw.lat) ) {
+			console.log('!! change sw.lat : '+this.sw.lat+' => '+point.lat);
+			this.sw.lat = pointBounds.sw.lat;
+		} 
+		if ( (this.ne.lon == null) || (pointBounds.ne.lon > this.ne.lon) ) {
+			console.log('!! change ne.lon : '+this.ne.lon+' => '+point.lon);
+			this.ne.lon = pointBounds.ne.lon;
+		}
+		if ( (this.ne.lat == null) || (pointBounds.ne.lat > this.ne.lat) ) { 
+			console.log('!! change ne.lat : '+this.ne.lat+' => '+point.lat);
+			this.ne.lat = pointBounds.ne.lat;
+		}
+		console.log(this);
 	}
 	return;
 };
