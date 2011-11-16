@@ -45,7 +45,7 @@ Geocoder: {
 		}
 
 		ypoint = response.getGeoPoint();
-		return_location.point = new mxn.LatLonPoint(ypoint.getX(), ypoint.getY());
+		return_location.point = new mxn.LatLonPoint(ypoint.getY(), ypoint.getX());
 		this.callback(return_location);
 	}
 }
