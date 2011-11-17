@@ -88,7 +88,14 @@ Mapstraction: {
 	},
 	
 	applyOptions: function() {
-		// TODO
+		var map = this.maps[this.api];
+		
+		if (this.options.enableScrollWheelZoom) {
+			map.addComponent(new ovi.mapsapi.map.component.zoom.MouseWheel());
+		} 
+		else {
+		  map.removeComponent(map.getComponentById("zoom.MouseWheel"));
+		}	
 	},
 	
 	resizeTo: function(width, height) {
