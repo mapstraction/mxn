@@ -126,7 +126,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 		'changeZoom',
 		
 		/**
-		 * Marker is removed {marker: Marker}
+		 * Marker is added {marker: Marker}
 		 * @name mxn.Mapstraction#markerAdded
 		 * @event
 		 */
@@ -1196,13 +1196,10 @@ Mapstraction.prototype.getMap = function() {
  * @param {double} lon is the longitude
  * @exports LatLonPoint as mxn.LatLonPoint
  */
-var LatLonPoint = mxn.LatLonPoint = function(lat, lon) {
-	// TODO error if undefined?
-	//  if (lat == undefined) alert('undefined lat');
-	//  if (lon == undefined) alert('undefined lon');
-	this.lat = lat;
-	this.lon = lon;
-	this.lng = lon; // lets be lon/lng agnostic
+var LatLonPoint = mxn.LatLonPoint = function(lat, lon) {	
+	this.lat = Number(lat); // force to be numeric
+	this.lon = Number(lon);
+	this.lng = this.lon; // lets be lon/lng agnostic
 	
 	this.invoker = new mxn.Invoker(this, 'LatLonPoint');		
 };
