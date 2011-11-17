@@ -66,11 +66,12 @@ Mapstraction: {
 						eventStates.mapsize = false;
 						me.load.fire();
 					}
-				}
-				if (eventStates.center) {
+				} else {
+				    if (eventStates.center) {
 					eventStates.center = false;
 					me.moveendHandler(me);
 					me.endPan.fire();
+				    }
 				}
 				if (eventStates.zoom) {
 					eventStates.zoom = false;
@@ -88,7 +89,12 @@ Mapstraction: {
 	},
 	
 	applyOptions: function() {
-		// TODO
+	    var map = this.maps[this.api];
+	    if(this.options.enableScrollWheelZoom){
+		map.addComponent(new ovi.mapsapi.map.component.zoom.MouseWheel());
+	    } else{
+		map.removeComponent(map.getComponentById("zoom.MouseWheel"));
+	    }  
 	},
 	
 	resizeTo: function(width, height) {
@@ -135,13 +141,11 @@ Mapstraction: {
 	// style of Zoom controls so, for now, make them functionally equivalent
 	addSmallControls: function() {
 		var map = this.maps[this.api];
-		
 		map.addComponent(new ovi.mapsapi.map.component.ZoomBar());
 	},
 	
 	addLargeControls: function() {
 		var map = this.maps[this.api];
-		
 		map.addComponent(new ovi.mapsapi.map.component.ZoomBar());
 	},
 	
@@ -265,19 +269,18 @@ Mapstraction: {
 	getBounds: function() {
 		var map = this.maps[this.api];
 		var bbox = map.getViewBounds();
-		var sw = bbox.topLeft;
-		var ne = bbox.bottomRight;
+		var nw = bbox.topLeft;
+		var se = bbox.bottomRight;
+	        return new mxn.BoundingBox(se.latitude,nw.longitude,nw.latitude,se.longitude);
 
-		return new mxn.BoundingBox(sw.latitude, sw.longitude, ne.latitude, ne.longitude);
 	},
 	
 	setBounds: function(bounds) {
 		var map = this.maps[this.api];
-		var sw = bounds.getSouthWest().toProprietary(this.api);
-		var ne = bounds.getNorthEast().toProprietary(this.api);
-		var ovi_bb = new ovi.mapsapi.geo.BoundingBox(sw, ne);
+		var nw = bounds.getNorthWest().toProprietary(this.api);
+		var se = bounds.getSouthEast().toProprietary(this.api);
+	        var ovi_bb = new ovi.mapsapi.geo.BoundingBox(nw,se);
 		var keepCentre = false;
-		
 		map.zoomTo(ovi_bb, keepCentre);
 	},
 	
