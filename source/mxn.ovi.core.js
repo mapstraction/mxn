@@ -66,13 +66,15 @@ Mapstraction: {
 						eventStates.mapsize = false;
 						me.load.fire();
 					}
-				} else {
+				} 
+				else {
 				    if (eventStates.center) {
-					eventStates.center = false;
-					me.moveendHandler(me);
-					me.endPan.fire();
+						eventStates.center = false;
+						me.moveendHandler(me);
+						me.endPan.fire();
 				    }
 				}
+				
 				if (eventStates.zoom) {
 					eventStates.zoom = false;
 					me.changeZoom.fire();
@@ -89,12 +91,14 @@ Mapstraction: {
 	},
 	
 	applyOptions: function() {
-	    var map = this.maps[this.api];
-	    if(this.options.enableScrollWheelZoom){
-		map.addComponent(new ovi.mapsapi.map.component.zoom.MouseWheel());
-	    } else{
-		map.removeComponent(map.getComponentById("zoom.MouseWheel"));
-	    }  
+		var map = this.maps[this.api];
+		
+		if (this.options.enableScrollWheelZoom) {
+			map.addComponent(new ovi.mapsapi.map.component.zoom.MouseWheel());
+		} 
+		else {
+		  map.removeComponent(map.getComponentById("zoom.MouseWheel"));
+		}	
 	},
 	
 	resizeTo: function(width, height) {
@@ -271,20 +275,24 @@ Mapstraction: {
 		var bbox = map.getViewBounds();
 		var nw = bbox.topLeft;
 		var se = bbox.bottomRight;
-	        return new mxn.BoundingBox(se.latitude,nw.longitude,nw.latitude,se.longitude);
-
+		
+		return new mxn.BoundingBox(se.latitude, nw.longitude, nw.latitude, se.longitude);
 	},
 	
 	setBounds: function(bounds) {
 		var map = this.maps[this.api];
-		var nw = bounds.getNorthWest().toProprietary(this.api);
-		var se = bounds.getSouthEast().toProprietary(this.api);
-	        var ovi_bb = new ovi.mapsapi.geo.BoundingBox(nw,se);
+
+		var sw = bounds.getSouthWest();
+		var ne = bounds.getNorthEast();
+
+		var nw = new mxn.LatLonPoint(ne.lat, sw.lon).toProprietary(this.api);
+		var se = new mxn.LatLonPoint(sw.lat, ne.lon).toProprietary(this.api);
+		var ovi_bb = new ovi.mapsapi.geo.BoundingBox(nw, se);
 		var keepCentre = false;
 		map.zoomTo(ovi_bb, keepCentre);
 	},
 	
-	addImageOverlay: function(id, src, poacity, west, south, east, north, oContext) {
+	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
 		throw 'Not implemented';
 	},
 	

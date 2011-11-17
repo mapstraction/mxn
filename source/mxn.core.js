@@ -1196,13 +1196,10 @@ Mapstraction.prototype.getMap = function() {
  * @param {double} lon is the longitude
  * @exports LatLonPoint as mxn.LatLonPoint
  */
-var LatLonPoint = mxn.LatLonPoint = function(lat, lon) {
-	// TODO error if undefined?
-	//  if (lat == undefined) alert('undefined lat');
-	//  if (lon == undefined) alert('undefined lon');
-	this.lat = lat*1; // force to be numeric
-	this.lon = lon*1;
-	this.lng = lon*1; // lets be lon/lng agnostic
+var LatLonPoint = mxn.LatLonPoint = function(lat, lon) {	
+	this.lat = Number(lat); // force to be numeric
+	this.lon = Number(lon);
+	this.lng = this.lon; // lets be lon/lng agnostic
 	
 	this.invoker = new mxn.Invoker(this, 'LatLonPoint');		
 };
@@ -1300,8 +1297,6 @@ var BoundingBox = mxn.BoundingBox = function(swlat, swlon, nelat, nelon) {
 	//FIXME throw error if box bigger than world
 	this.sw = new LatLonPoint(swlat, swlon);
 	this.ne = new LatLonPoint(nelat, nelon);
-	this.se = new LatLonPoint(swlat, nelon);
-	this.nw = new LatLonPoint(nelat, swlon);
 };
 
 /**
@@ -1314,15 +1309,6 @@ BoundingBox.prototype.getSouthWest = function() {
 };
 
 /**
- * getSouthEast returns a LatLonPoint of the south-east point of the bounding box
- * @returns the south-east point of the bounding box
- * @type LatLonPoint
- */
-BoundingBox.prototype.getSouthEast = function() {
-	return this.se;
-};
-
-/**
  * getNorthEast returns a LatLonPoint of the north-east point of the bounding box
  * @returns the north-east point of the bounding box
  * @type LatLonPoint
@@ -1330,16 +1316,6 @@ BoundingBox.prototype.getSouthEast = function() {
 BoundingBox.prototype.getNorthEast = function() {
 	return this.ne;
 };
-
-/**
- * getNorthWest returns a LatLonPoint of the north-west point of the bounding box
- * @returns the north-west point of the bounding box
- * @type LatLonPoint
- */
-BoundingBox.prototype.getNorthWest = function() {
-	return this.nw;
-};
-
 
 /**
  * isEmpty finds if this bounding box has zero area
