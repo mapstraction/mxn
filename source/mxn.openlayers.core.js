@@ -450,10 +450,9 @@ mxn.register('openlayers', {
 			}
 
 			if(this.iconAnchor) {
-				anchor = new OpenLayers.Pixel(this.iconAnchor[0], this.iconAnchor[1]);
+				anchor = new OpenLayers.Pixel(-this.iconAnchor[0], -this.iconAnchor[1]);
 			}
 			else {
-				// FIXME: hard-coding the anchor point
 				anchor = new OpenLayers.Pixel(-(size.w/2), -size.h);
 			}
 
