@@ -51,10 +51,12 @@ Geocoder: {
 			return_location.region = '';
 			return_location.country = '';
 			
+			var place;
+			
 			if (results.length > 0) {
-				var place = results[0];
+				place = results[0];
 			} else {
-				var place = results;
+				place = results;
 			}
 			var street_components = [];
 			
