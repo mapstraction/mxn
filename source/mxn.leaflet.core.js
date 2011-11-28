@@ -3,14 +3,17 @@ mxn.register('leaflet', {
 Mapstraction: {
     
     init: function(element, api) {
-        var me = this;
-        var map = new L.Map(element.id, {
-            zoomControl: false
-        });
-        this.layers = {};
-        this.features = [];
-        this.maps[api] = map;
-        this.loaded[api] = true;
+        if (typeof(L) != 'undefined') {
+            var map = new L.Map(element.id, {
+                zoomControl: false
+            });
+            this.layers = {};
+            this.features = [];
+            this.maps[api] = map;
+            this.loaded[api] = true;
+        } else {
+            alert(api + ' map script not imported');
+        }
     },
     
     applyOptions: function(){
