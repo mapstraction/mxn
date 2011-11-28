@@ -4,7 +4,6 @@
 <link href="http://leaflet.cloudmade.com/dist/leaflet.css" media="all" rel="stylesheet" type="text/css" />
 <!--[if lte IE 8]><link rel="stylesheet" href="http://leaflet.cloudmade.com/dist/leaflet.ie.css" /><![endif]-->
 <script src="http://leaflet.cloudmade.com/dist/leaflet.js" type="text/javascript"></script>
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script src="../source/mxn.js?(leaflet)" type="text/javascript"></script> 
 <style type="text/css">
 #mapdiv {
@@ -17,14 +16,14 @@
 
       // create mxn object
       map = new mxn.Mapstraction('mapdiv', 'leaflet');
-      map.addTileLayer("http://{s}.google.com/vt/?hl=en&x={x}&y={y}&z={z}&s={s}", {
-         name: "Street",
-         attribution: "Map data: Copyright Google, 2011",
-         subdomains: ['mt0','mt1','mt2','mt3']
+      map.setOption({defaultLayer: false})
+      map.addTileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
+         name: "Cloudmade",
+         attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade'
       });
 
       latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587)
-      latlon2 = new mxn.LatLonPoint(41.88756115424155,-91.20015573501587)
+      latlon2 = new mxn.LatLonPoint(41.88756115424155,-91.67015573501587)
 
       // put map on page
       map.setCenterAndZoom(latlon, 12);
