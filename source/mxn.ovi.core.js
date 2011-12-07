@@ -97,7 +97,10 @@ Mapstraction: {
 			map.addComponent(new ovi.mapsapi.map.component.zoom.MouseWheel());
 		} 
 		else {
-		  map.removeComponent(map.getComponentById("zoom.MouseWheel"));
+		    var mousewheel = map.getComponentById("zoom.MouseWheel");
+                    if (mousewheel){
+			map.removeComponent(mousewheel);
+		    }
 		}	
 	},
 	
