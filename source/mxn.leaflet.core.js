@@ -4,9 +4,13 @@ Mapstraction: {
     
     init: function(element, api) {
         if (typeof(L) != 'undefined') {
+            var me = this;
             var map = new L.Map(element.id, {
                 zoomControl: false
             });
+            map.addEventListener('moveend', function(){
+                me.endPan.fire();
+            }); 
             this.layers = {};
             this.features = [];
             this.maps[api] = map;
@@ -126,11 +130,15 @@ Mapstraction: {
 
     getBounds: function () {
         var map = this.maps[this.api];
-        var ne, sw, nw, se;
-        var box = map.getBounds();
-        sw = box.getSouthWest();
-        ne = box.getNorthEast();
-        return new mxn.BoundingBox(sw.lat, sw.lng, ne.lat, ne.lng);
+        try {
+            var box = map.getBounds();
+            var ne, sw, nw, se;
+            sw = box.getSouthWest();
+            ne = box.getNorthEast();
+            return new mxn.BoundingBox(sw.lat, sw.lng, ne.lat, ne.lng);
+	} catch(e){
+            return;
+	}
     },
 
     setBounds: function(bounds){
