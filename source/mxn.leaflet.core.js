@@ -21,7 +21,10 @@ Mapstraction: {
     },
     
     applyOptions: function(){
-        return false;
+        if (this.options.scrollWheelZoom == false) {
+            this.maps[this.api].scrollWheelZoom.disable();
+        } 
+        return;
     },
 
     resizeTo: function(width, height){
@@ -130,15 +133,10 @@ Mapstraction: {
 
     getBounds: function () {
         var map = this.maps[this.api];
-        try {
-            var box = map.getBounds();
-            var ne, sw, nw, se;
-            sw = box.getSouthWest();
-            ne = box.getNorthEast();
-            return new mxn.BoundingBox(sw.lat, sw.lng, ne.lat, ne.lng);
-	} catch(e){
-            return;
-	}
+        var box = map.getBounds();
+        var sw = box.getSouthWest();
+        var ne = box.getNorthEast();
+        return new mxn.BoundingBox(sw.lat, sw.lng, ne.lat, ne.lng);
     },
 
     setBounds: function(bounds){
