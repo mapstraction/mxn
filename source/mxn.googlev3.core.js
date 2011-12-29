@@ -564,10 +564,16 @@ Polyline: {
 			strokeOpacity: this.opacity || 1.0, 
 			strokeWeight: this.width || 3
 		};
-
-		var polyline = new google.maps.Polyline(polyOptions);
-
-		return polyline;
+		
+		if (this.closed) {
+			polyOptions.fillColor = this.fillColor || '#000000';
+			polyOptions.fillOpacity = polyOptions.strokeOpacity;
+			
+			return new google.maps.Polygon(polyOptions);
+		}
+		else {
+			return new google.maps.Polyline(polyOptions);
+		}
 	},
 	
 	show: function() {
