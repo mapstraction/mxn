@@ -49,6 +49,11 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	this.eventListeners = [];
 	
 	/**
+	 * The array of all layers that have been added to the map.
+	 */
+	this.tileLayers = [];	
+		
+	/**
 	 * The markers currently loaded.
 	 * @name mxn.Mapstraction#markers
 	 * @property
@@ -986,7 +991,6 @@ Mapstraction.prototype.addTileLayer = function(tile_url, opacity, copyright_text
 		return;
 	}
 	
-	this.tileLayers = this.tileLayers || [];	
 	opacity = opacity || 0.6;
 	copyright_text = copyright_text || "Mapstraction";
 	min_zoom = min_zoom || 1;
