@@ -11,6 +11,9 @@ Mapstraction: {
             map.addEventListener('moveend', function(){
                 me.endPan.fire();
             }); 
+            map.on("click", function(e) {
+                me.click.fire({'location': new mxn.LatLonPoint(e.latlng.lat, e.latlng.lng)});
+            });
             this.layers = {};
             this.features = [];
             this.maps[api] = map;
