@@ -11,6 +11,9 @@ Mapstraction: {
             map.addEventListener('moveend', function(){
                 me.endPan.fire();
             }); 
+            map.on("click", function(e) {
+                me.click.fire({'location': new mxn.LatLonPoint(e.latlng.lat, e.latlng.lng)});
+            });
             this.layers = {};
             this.features = [];
             this.maps[api] = map;
@@ -119,8 +122,12 @@ Mapstraction: {
         return map.getZoom();
     },
 
-    getZoomLevelForBoundingBox: function( bbox ) {
-        throw 'Not implemented';
+    getZoomLevelForBoundingBox: function(bbox) {
+        var map = this.maps[this.api];
+        var bounds = new L.LatLngBounds(
+            bbox.getSouthWest().toProprietary(this.api),
+            bbox.getNorthEast().toProprietary(this.api));
+        return map.getBoundsZoom(bounds);
     },
 
     setMapType: function(type) {
