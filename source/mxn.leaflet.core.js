@@ -14,6 +14,16 @@ Mapstraction: {
             map.on("click", function(e) {
                 me.click.fire({'location': new mxn.LatLonPoint(e.latlng.lat, e.latlng.lng)});
             });
+            map.on("popupopen", function(e) {
+                if (e.popup._source.mxnMarker) {
+                  e.popup._source.mxnMarker.openInfoBubble.fire({'bubbleContainer': e.popup._container});
+                }
+            });
+            map.on("popupclose", function(e) {
+                if (e.popup._source.mxnMarker) {
+                  e.popup._source.mxnMarker.closeInfoBubble.fire({'bubbleContainer': e.popup._container});
+                }
+            });
             this.layers = {};
             this.features = [];
             this.maps[api] = map;
@@ -265,6 +275,7 @@ Marker: {
     openBubble: function() {
         var pin = this.proprietary_marker;
         if (this.infoBubble) {
+            pin.mxnMarker = this;
             pin.bindPopup(this.infoBubble);
             pin.openPopup();
         }
