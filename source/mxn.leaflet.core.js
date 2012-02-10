@@ -28,6 +28,7 @@ Mapstraction: {
             this.features = [];
             this.maps[api] = map;
             this.setMapType();
+            this.currentMapType = mxn.Mapstraction.ROAD;
             this.loaded[api] = true;
         } else {
             alert(api + ' map script not imported');
@@ -149,6 +150,7 @@ Mapstraction: {
                     attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
                     subdomains: [1,2,3,4]
                 });
+                this.currentMapType = mxn.Mapstraction.ROAD;
                 break;
             case mxn.Mapstraction.SATELLITE:
                 this.addTileLayer('http://oatile{s}.mqcdn.com/naip/{z}/{x}/{y}.jpg', {
@@ -156,6 +158,7 @@ Mapstraction: {
                     attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
                     subdomains: [1,2,3,4]
                 });
+                this.currentMapType = mxn.Mapstraction.SATELLITE;
                 break;
             case mxn.Mapstraction.HYBRID:
                 throw 'Not implemented';
@@ -165,11 +168,12 @@ Mapstraction: {
                     attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
                     subdomains: [1,2,3,4]
                 });
+                this.currentMapType = mxn.Mapstraction.ROAD;
         }
     },
-//
+
     getMapType: function() {
-        throw 'Not implemented';
+        return this.currentMapType;
     },
 
     getBounds: function () {
