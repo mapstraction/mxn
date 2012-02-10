@@ -16,12 +16,7 @@
 
       // create mxn object
       map = new mxn.Mapstraction('mapdiv', 'leaflet');
-      map.setOption({defaultLayer: false})
-      map.addTileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
-         name: "Cloudmade",
-         attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade'
-      });
-
+      map.setMapType(mxn.Mapstraction.SATELLITE);
       latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587)
       latlon2 = new mxn.LatLonPoint(41.88756115424155,-91.67015573501587)
 

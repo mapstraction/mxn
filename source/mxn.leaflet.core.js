@@ -27,6 +27,7 @@ Mapstraction: {
             this.layers = {};
             this.features = [];
             this.maps[api] = map;
+            this.setMapType();
             this.loaded[api] = true;
         } else {
             alert(api + ' map script not imported');
@@ -34,7 +35,6 @@ Mapstraction: {
     },
     
     applyOptions: function(){
-        console.log(this.options);
         if (this.options.enableScrollWheelZoom == false) {
             this.maps[this.api].scrollWheelZoom.disable();
         } 
@@ -142,9 +142,32 @@ Mapstraction: {
     },
 
     setMapType: function(type) {
-        return false;
+        switch(type) {
+            case mxn.Mapstraction.ROAD:
+                this.addTileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+                    name: "Roads",
+                    attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
+                    subdomains: [1,2,3,4]
+                });
+                break;
+            case mxn.Mapstraction.SATELLITE:
+                this.addTileLayer('http://oatile{s}.mqcdn.com/naip/{z}/{x}/{y}.jpg', {
+                    name: "Satellite",
+                    attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
+                    subdomains: [1,2,3,4]
+                });
+                break;
+            case mxn.Mapstraction.HYBRID:
+                throw 'Not implemented';
+            default:
+                this.addTileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+                    name: "Roads",
+                    attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
+                    subdomains: [1,2,3,4]
+                });
+        }
     },
-
+//
     getMapType: function() {
         throw 'Not implemented';
     },
