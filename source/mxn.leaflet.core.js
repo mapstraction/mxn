@@ -34,7 +34,8 @@ Mapstraction: {
     },
     
     applyOptions: function(){
-        if (this.options.scrollWheelZoom == false) {
+        console.log(this.options);
+        if (this.options.enableScrollWheelZoom == false) {
             this.maps[this.api].scrollWheelZoom.disable();
         } 
         return;
