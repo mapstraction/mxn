@@ -16,12 +16,12 @@ Mapstraction: {
             });
             map.on("popupopen", function(e) {
                 if (e.popup._source.mxnMarker) {
-                  e.popup._source.mxnMarker.openInfoBubble.fire(e.popup._container);
+                  e.popup._source.mxnMarker.openInfoBubble.fire({'bubbleContainer': e.popup._container});
                 }
             });
             map.on("popupclose", function(e) {
                 if (e.popup._source.mxnMarker) {
-                  e.popup._source.mxnMarker.closeInfoBubble.fire(e.popup._container);
+                  e.popup._source.mxnMarker.closeInfoBubble.fire({'bubbleContainer': e.popup._container});
                 }
             });
             this.layers = {};
