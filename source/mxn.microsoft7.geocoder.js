@@ -24,7 +24,7 @@ mxn.register('microsoft7', {
         _address = query;
       }
       jsonp_callback_context = this;
-      var searchRequest = 'http://dev.virtualearth.net/REST/v1/Locations/' + _address + '?output=json&jsonp=jsonp_callback_context.geocode_callback&key=' + this.key;
+      var searchRequest = 'http://dev.virtualearth.net/REST/v1/Locations/' + _address + '?output=json&jsonp=jsonp_callback_context.geocode_callback&key=' + microsoft_key;
       var mapscript = document.createElement('script'); 
       mapscript.type = 'text/javascript'; 
       mapscript.src = searchRequest; 
