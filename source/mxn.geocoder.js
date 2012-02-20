@@ -19,12 +19,11 @@ var init = function() {
  * @param {String} key Optional api auth key. Currently only used for Microsoft v7.
  * @exports Geocoder as mxn.Geocoder
  */
-var Geocoder = mxn.Geocoder = function (api, callback, error_callback, key) { 
+var Geocoder = mxn.Geocoder = function (api, callback, error_callback) { 
   this.api = api;
   this.geocoders = {};
   this.callback = callback;
   this.error_callback = error_callback || function(){};
-  this.key = (typeof(key) == 'string') ? key : false
 
   // set up our invoker for calling API methods
   this.invoker = new mxn.Invoker(this, 'Geocoder', function(){ return this.api; });
