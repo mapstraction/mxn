@@ -1,0 +1,90 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Mapstraction Examples - OpenLayers Geocoder</title>
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="../source/mxn.js?(openlayers,[geocoder])" type="text/javascript"></script>
+<style type="text/css">
+
+	#mapdiv {
+		height: 400px;
+	}
+
+</style> 
+
+<script type="text/javascript">
+//<![CDATA[
+
+	var mapstraction;
+	var geocoder;
+
+	function geocode_return(geocoded_location) {
+		
+		// display the map centered on a latitude and longitude (Google zoom levels)
+		mapstraction.setCenterAndZoom(geocoded_location.point, 10);
+		
+		// create a marker positioned at a lat/lon
+		var geocode_marker = new mxn.Marker(geocoded_location.point);
+
+		var address = geocoded_location.locality + ", " + geocoded_location.region;
+		geocode_marker.setInfoBubble(address);
+		
+		// display marker
+		mapstraction.addMarker(geocode_marker);
+
+		// open the marker
+		geocode_marker.openBubble();
+	}
+
+	function initialize() {
+
+		// create mxn object
+		mapstraction = new mxn.Mapstraction('mapdiv','openlayers');
+
+		mapstraction.addControls({
+			pan: true,
+			zoom: 'small',
+			map_type: true
+		});
+
+		var latlon = new mxn.LatLonPoint(48.33, -4.77);
+
+		mapstraction.setCenterAndZoom(latlon, 10);
+		mapstraction.mousePosition('position');
+		
+		geocoder = new mxn.Geocoder('openlayers',geocode_return);
+		
+		// add a marker
+		var marker = new mxn.Marker(latlon);
+		mapstraction.addMarker(marker,true);
+		
+	}
+
+	function user_submit() {
+		var address = {};
+		address.address = document.getElementById('address').value;
+		geocoder.geocode(address);
+	}
+	
+	
+//]]>
+</script> 
+
+</head>
+<body onload="initialize();">
+	<center>
+		<table border='1' width='50%'>
+			<tr>
+				<td><div id="mapdiv"></div></td>
+			</tr>
+			<tr>
+				<td>
+					<input type="text" id="address" name="address" value="brest" size="35"/>
+					<a href="#" onclick="user_submit(); return false;">Geocode</a>
+				</td>
+			</tr>
+		</table>
+		<div id="position"></div>	
+	</center>
+</body> 
+</html>
+

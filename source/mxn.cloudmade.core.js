@@ -41,6 +41,9 @@ mxn.register('cloudmade', {
 			if(this.options.enableScrollWheelZoom){
 				map.enableScrollWheelZoom();
 			}
+			if(this.options.disableScrollWheelZoom){
+				map.disableScrollWheelZoom();
+			}
 		},
 
 		resizeTo: function(width, height){	

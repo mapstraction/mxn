@@ -51,6 +51,11 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	this.eventListeners = [];
 	
 	/**
+	 * The array of all layers that have been added to the map.
+	 */
+	this.tileLayers = [];	
+		
+	/**
 	 * The markers currently loaded.
 	 * @name mxn.Mapstraction#markers
 	 * @property
@@ -128,7 +133,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 		'changeZoom',
 		
 		/**
-		 * Marker is removed {marker: Marker}
+		 * Marker is added {marker: Marker}
 		 * @name mxn.Mapstraction#markerAdded
 		 * @event
 		 */
@@ -737,43 +742,40 @@ Mapstraction.prototype.removeAllPolylines = function() {
 	}
 };
 
+var collectPoints = function(bMarkers, bPolylines, predicate) {
+	var points = [];
+	
+	if (bMarkers) {	
+		for (var i = 0; i < this.markers.length; i++) {
+			var mark = this.markers[i];
+			if (!predicate || predicate(mark)) {
+				points.push(mark.location);
+			}
+		}
+	}
+	
+	if (bPolylines) {
+		for(i = 0; i < this.polylines.length; i++) {
+			var poly = this.polylines[i];
+			if (!predicate || predicate(poly)) {
+				for (var j = 0; j < poly.points.length; j++) {
+					points.push(poly.points[j]);
+				}
+			}
+		}
+	}
+	
+	return points;
+};
+
 /**
- * autoCenterAndZoom sets the center and zoom of the map to the smallest bounding box
- * containing all markers
+ * Sets the center and zoom of the map to the smallest bounding box
+ * containing all markers and polylines
  */
 Mapstraction.prototype.autoCenterAndZoom = function() {
-	var lat_max = -90;
-	var lat_min = 90;
-	var lon_max = -180;
-	var lon_min = 180;
-	var lat, lon;
-	var checkMinMax = function(){
-		if (lat > lat_max) {
-			lat_max = lat;
-		}
-		if (lat < lat_min) {
-			lat_min = lat;
-		}
-		if (lon > lon_max) {
-			lon_max = lon;
-		}
-		if (lon < lon_min) {
-			lon_min = lon;
-		}
-	};
-	for (var i = 0; i < this.markers.length; i++) {
-		lat = this.markers[i].location.lat;
-		lon = this.markers[i].location.lon;
-		checkMinMax();
-	}
-	for(i = 0; i < this.polylines.length; i++) {
-		for (var j = 0; j < this.polylines[i].points.length; j++) {
-			lat = this.polylines[i].points[j].lat;
-			lon = this.polylines[i].points[j].lon;
-			checkMinMax();
-		}
-	}
-	this.setBounds( new BoundingBox(lat_min, lon_min, lat_max, lon_max) );
+	var points = collectPoints.call(this, true, true);
+	
+	this.centerAndZoomOnPoints(points);
 };
 
 /**
@@ -782,9 +784,9 @@ Mapstraction.prototype.autoCenterAndZoom = function() {
  * This is useful if you don't want to have to add markers to the map
  */
 Mapstraction.prototype.centerAndZoomOnPoints = function(points) {
-	var bounds = new BoundingBox(points[0].lat,points[0].lon,points[0].lat,points[0].lon);
+	var bounds = new BoundingBox(90, 180, -90, -180);
 
-	for (var i=1, len = points.length ; i<len; i++) {
+	for (var i = 0, len = points.length; i < len; i++) {
 		bounds.extend(points[i]);
 	}
 
@@ -797,88 +799,43 @@ Mapstraction.prototype.centerAndZoomOnPoints = function(points) {
  * will only include markers and polylines with an attribute of "visible"
  */
 Mapstraction.prototype.visibleCenterAndZoom = function() {
-	var lat_max = -90;
-	var lat_min = 90;
-	var lon_max = -180;
-	var lon_min = 180;
-	var lat, lon;
-	var checkMinMax = function(){
-		if (lat > lat_max) {
-			lat_max = lat;
-		}
-		if (lat < lat_min) {
-			lat_min = lat;
-		}
-		if (lon > lon_max) {
-			lon_max = lon;
-		}
-		if (lon < lon_min) {
-			lon_min = lon;
-		}
+	var predicate = function(obj) {
+		return obj.getAttribute("visible");
 	};
-	for (var i=0; i<this.markers.length; i++) {
-		if (this.markers[i].getAttribute("visible")) {
-			lat = this.markers[i].location.lat;
-			lon = this.markers[i].location.lon;
-			checkMinMax();
-		}
-	}
-
-	for (i=0; i<this.polylines.length; i++){
-		if (this.polylines[i].getAttribute("visible")) {
-			for (j=0; j<this.polylines[i].points.length; j++) {
-				lat = this.polylines[i].points[j].lat;
-				lon = this.polylines[i].points[j].lon;
-				checkMinMax();
-			}
-		}
-	}
-
-	this.setBounds(new BoundingBox(lat_min, lon_min, lat_max, lon_max));
+	var points = collectPoints.call(this, true, true, predicate);
+	
+	this.centerAndZoomOnPoints(points);
 };
 
 /**
  * Automatically sets center and zoom level to show all polylines
- * Takes into account radious of polyline
- * @param {Int} radius
+ * @param {Number} padding Optional number of kilometers to pad around polyline
  */
-Mapstraction.prototype.polylineCenterAndZoom = function(radius) {
-	var lat_max = -90;
-	var lat_min = 90;
-	var lon_max = -180;
-	var lon_min = 180;
+Mapstraction.prototype.polylineCenterAndZoom = function(padding) {
+	padding = padding || 0;
+	
+	var points = collectPoints.call(this, false, true);
+	
+	if (padding > 0) {
+		var padPoints = [];
+		for (var i = 0; i < points.length; i++) {
+			var point = points[i];
+			
+			var kmInOneDegreeLat = point.latConv();
+			var kmInOneDegreeLon = point.lonConv();
+			
+			var latPad = padding / kmInOneDegreeLat;
+			var lonPad = padding / kmInOneDegreeLon;
 
-	for (var i=0; i < mapstraction.polylines.length; i++)
-	{
-		for (var j=0; j<mapstraction.polylines[i].points.length; j++)
-		{
-			lat = mapstraction.polylines[i].points[j].lat;
-			lon = mapstraction.polylines[i].points[j].lon;
-
-			latConv = lonConv = radius;
-
-			if (radius > 0)
-			{
-				latConv = (radius / mapstraction.polylines[i].points[j].latConv());
-				lonConv = (radius / mapstraction.polylines[i].points[j].lonConv());
-			}
-
-			if ((lat + latConv) > lat_max) {
-				lat_max = (lat + latConv);
-			}
-			if ((lat - latConv) < lat_min) {
-				lat_min = (lat - latConv);
-			}
-			if ((lon + lonConv) > lon_max) {
-				lon_max = (lon + lonConv);
-			}
-			if ((lon - lonConv) < lon_min) {
-				lon_min = (lon - lonConv);
-			}
+			var ne = new LatLonPoint(point.lat + latPad, point.lon + lonPad);
+			var sw = new LatLonPoint(point.lat - latPad, point.lon - lonPad);
+			
+			padPoints.push(ne, sw);			
 		}
+		points = points.concat(padPoints);
 	}
-
-	this.setBounds(new BoundingBox(lat_min, lon_min, lat_max, lon_max));
+	
+	this.centerAndZoomOnPoints(points);
 };
 
 /**
@@ -1036,7 +993,6 @@ Mapstraction.prototype.addTileLayer = function(tile_url, opacity, copyright_text
 		return;
 	}
 	
-	this.tileLayers = this.tileLayers || [];	
 	opacity = opacity || 0.6;
 	copyright_text = copyright_text || "Mapstraction";
 	min_zoom = min_zoom || 1;
@@ -1246,13 +1202,10 @@ Mapstraction.prototype.getMap = function() {
  * @param {double} lon is the longitude
  * @exports LatLonPoint as mxn.LatLonPoint
  */
-var LatLonPoint = mxn.LatLonPoint = function(lat, lon) {
-	// TODO error if undefined?
-	//  if (lat == undefined) alert('undefined lat');
-	//  if (lon == undefined) alert('undefined lon');
-	this.lat = lat;
-	this.lon = lon;
-	this.lng = lon; // lets be lon/lng agnostic
+var LatLonPoint = mxn.LatLonPoint = function(lat, lon) {	
+	this.lat = Number(lat); // force to be numeric
+	this.lon = Number(lon);
+	this.lng = this.lon; // lets be lon/lng agnostic
 	
 	this.invoker = new mxn.Invoker(this, 'LatLonPoint');		
 };
@@ -1348,7 +1301,6 @@ LatLonPoint.prototype.lonConv = function() {
  */
 var BoundingBox = mxn.BoundingBox = function(swlat, swlon, nelat, nelon) {
 	//FIXME throw error if box bigger than world
-	//alert('new bbox ' + swlat + ',' +  swlon + ',' +  nelat + ',' + nelon);
 	this.sw = new LatLonPoint(swlat, swlon);
 	this.ne = new LatLonPoint(nelat, nelon);
 };
@@ -1399,20 +1351,22 @@ BoundingBox.prototype.toSpan = function() {
 	return new LatLonPoint( Math.abs(this.sw.lat - this.ne.lat), Math.abs(this.sw.lon - this.ne.lon) );
 };
 
+
+
 /**
  * extend extends the bounding box to include the new point
  */
 BoundingBox.prototype.extend = function(point) {
-	if(this.sw.lat > point.lat) {
+	if (this.sw.lat > point.lat) {
 		this.sw.lat = point.lat;
 	}
-	if(this.sw.lon > point.lon) {
+	if (this.sw.lon > point.lon) {
 		this.sw.lon = point.lon;
 	}
-	if(this.ne.lat < point.lat) {
+	if (this.ne.lat < point.lat) {
 		this.ne.lat = point.lat;
 	}
-	if(this.ne.lon < point.lon) {
+	if (this.ne.lon < point.lon) {
 		this.ne.lon = point.lon;
 	}
 	return;

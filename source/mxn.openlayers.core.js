@@ -19,8 +19,8 @@ mxn.register('openlayers', {
 			// initialize layers map (this was previously in mxn.core.js)
 			this.layers = {};
 
-			this.layers.osmmapnik = new OpenLayers.Layer.TMS(
-				'OSM Mapnik',
+			this.layers.osm = new OpenLayers.Layer.TMS(
+				'OpenStreetMap',
 				[
 					"http://a.tile.openstreetmap.org/",
 					"http://b.tile.openstreetmap.org/",
@@ -49,38 +49,7 @@ mxn.register('openlayers', {
 					displayOutsideMaxExtent: true
 				}
 			);
-
-			this.layers.osm = new OpenLayers.Layer.TMS(
-				'OSM',
-				[
-					"http://a.tah.openstreetmap.org/Tiles/tile.php/",
-					"http://b.tah.openstreetmap.org/Tiles/tile.php/",
-					"http://c.tah.openstreetmap.org/Tiles/tile.php/"
-				],
-				{
-					type:'png',
-					getURL: function (bounds) {
-						var res = this.map.getResolution();
-						var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-						var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
-						var z = this.map.getZoom();
-						var limit = Math.pow(2, z);
-						if (y < 0 || y >= limit) {
-							return null;
-						} else {
-							x = ((x % limit) + limit) % limit;
-							var path = z + "/" + x + "/" + y + "." + this.type;
-							var url = this.url;
-							if (url instanceof Array) {
-								url = this.selectUrl(path, url);
-							}
-							return url + path;
-						}
-					},
-					displayOutsideMaxExtent: true
-				}
-			);
-			
+						
 			// deal with click
 			map.events.register('click', map, function(evt){
 				var lonlat = map.getLonLatFromViewPortPx(evt.xy);
@@ -114,22 +83,30 @@ mxn.register('openlayers', {
 				}
 			}
 			
-			map.addLayer(this.layers.osmmapnik);
 			map.addLayer(this.layers.osm);
+			this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true]);
 			this.maps[api] = map;
 			this.loaded[api] = true;
 		},
 
 		applyOptions: function(){
-			// var map = this.maps[this.api];
-			// var myOptions = [];
-			// if (this.options.enableDragging) {
-			//	 myOptions.draggable = true;
-			// } 
-			// if (this.options.enableScrollWheelZoom){
-			//	 myOptions.scrollwheel = true;
-			// } 
-			// map.setOptions(myOptions);
+			var map = this.maps[this.api],
+				navigators = map.getControlsByClass( 'OpenLayers.Control.Navigation' ),
+				navigator;
+
+			if ( navigators.length > 0 ) {
+				navigator = navigators[0];
+				if ( this.options.enableScrollWheelZoom ) {
+					navigator.enableZoomWheel();
+				} else {
+					navigator.disableZoomWheel();
+				}
+				if ( this.options.enableDragging ) {
+					navigator.activate();
+				} else {
+					navigator.deactivate();
+				}
+			}
 		},
 
 		resizeTo: function(width, height){	
@@ -274,7 +251,21 @@ mxn.register('openlayers', {
 
 		getZoomLevelForBoundingBox: function( bbox ) {
 			var map = this.maps[this.api];
-			// throw 'Not implemented';
+
+			var sw = bbox.getSouthWest();
+			var ne = bbox.getNorthEast();
+
+			if(sw.lon > ne.lon) {
+				sw.lon -= 360;
+			}
+
+			var obounds = new OpenLayers.Bounds();
+			
+			obounds.extend(new mxn.LatLonPoint(sw.lat,sw.lon).toProprietary(this.api));
+			obounds.extend(new mxn.LatLonPoint(ne.lat,ne.lon).toProprietary(this.api));
+			
+			var zoom = map.getZoomForExtent(obounds);
+			
 			return zoom;
 		},
 
@@ -387,22 +378,28 @@ mxn.register('openlayers', {
 
 		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 			var map = this.maps[this.api];
-			tile_url = tile_url.replace(/\{Z\}/g,'${z}');
-			tile_url = tile_url.replace(/\{X\}/g,'${x}');
-			tile_url = tile_url.replace(/\{Y\}/g,'${y}');
+			var new_tile_url = tile_url.replace(/\{Z\}/g,'${z}');
+			new_tile_url = new_tile_url.replace(/\{X\}/g,'${x}');
+			new_tile_url = new_tile_url.replace(/\{Y\}/g,'${y}');
 			var overlay = new OpenLayers.Layer.XYZ(copyright_text,
-				tile_url,
+				new_tile_url,
 				{sphericalMercator: false, opacity: opacity}
 			);
 			if(!map_type) {
 				overlay.addOptions({displayInLayerSwitcher: false, isBaseLayer: false});
 			}
 			map.addLayer(overlay);
+			this.tileLayers.push( [tile_url, overlay, false] );			
 		},
 
 		toggleTileLayer: function(tile_url) {
 			var map = this.maps[this.api];
-
+			for (var f=this.tileLayers.length-1; f>=0; f--) {
+				if(this.tileLayers[f][0] == tile_url) {
+					this.tileLayers[f][2] = !this.tileLayers[f][2];
+					this.tileLayers[f][1].setVisibility(this.tileLayers[f][2]);
+				}
+			}	   
 			// TODO: Add provider code
 		},
 
@@ -441,7 +438,7 @@ mxn.register('openlayers', {
 	Marker: {
 
 		toProprietary: function() {
-			var size, anchor, icon;
+			var size, anchor, popup;
 			if(this.iconSize) {
 				size = new OpenLayers.Size(this.iconSize[0], this.iconSize[1]);
 			}
@@ -450,29 +447,28 @@ mxn.register('openlayers', {
 			}
 
 			if(this.iconAnchor) {
-				anchor = new OpenLayers.Pixel(this.iconAnchor[0], this.iconAnchor[1]);
+				anchor = new OpenLayers.Pixel(-this.iconAnchor[0], -this.iconAnchor[1]);
 			}
 			else {
-				// FIXME: hard-coding the anchor point
 				anchor = new OpenLayers.Pixel(-(size.w/2), -size.h);
 			}
 
 			if(this.iconUrl) {
-				icon = new OpenLayers.Icon(this.iconUrl, size, anchor);
+				this.icon = new OpenLayers.Icon(this.iconUrl, size, anchor);
 			}
 			else {
-				icon = new OpenLayers.Icon('http://openlayers.org/dev/img/marker-gold.png', size, anchor);
+				this.icon = new OpenLayers.Icon('http://openlayers.org/dev/img/marker-gold.png', size, anchor);
 			}
-			var marker = new OpenLayers.Marker(this.location.toProprietary("openlayers"), icon);
+			var marker = new OpenLayers.Marker(this.location.toProprietary("openlayers"), this.icon);
 
 			if(this.infoBubble) {
-				var popup = new OpenLayers.Popup(null,
+				popup = new OpenLayers.Popup.FramedCloud(null,
 					this.location.toProprietary("openlayers"),
 					new OpenLayers.Size(100,100),
 					this.infoBubble,
+					this.icon,
 					true
 				);
-				popup.autoSize = true;
 				var theMap = this.map;
 				if(this.hover) {
 					marker.events.register("mouseover", marker, function(event) {
@@ -498,7 +494,13 @@ mxn.register('openlayers', {
 						}
 					});
 				}
+				this.popup = popup;
 			}
+			
+			//fire click event for marker
+			marker.events.register("click",marker,function(event) {
+				marker.mapstraction_marker.click.fire();
+			});
 
 			if(this.hoverIconUrl) {
 				icon = this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
@@ -518,7 +520,27 @@ mxn.register('openlayers', {
 		},
 
 		openBubble: function() {		
-			// TODO: Add provider code
+			if ( this.infoBubble ) {
+				// Need to create a new popup in case setInfoBubble has been called
+				this.popup = new OpenLayers.Popup.FramedCloud(null,
+					this.location.toProprietary("openlayers"),
+					new OpenLayers.Size(100,100),
+					this.infoBubble,
+					this.icon,
+					true
+				);
+			}
+
+			if ( this.popup ) {
+				this.map.addPopup( this.popup, true );
+			}
+		},
+
+		closeBubble: function() {
+			if ( this.popup ) {
+				this.popup.hide();
+				this.map.removePopup( this.popup );
+			}
 		},
 
 		hide: function() {
