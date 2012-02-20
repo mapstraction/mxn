@@ -11,7 +11,7 @@ var $m = mxn.util.$m;
  * @private
  */
 var init = function() {
-	this.invoker.go('init', [ this.currentElement, this.api,this,key ]);
+	this.invoker.go('init', [ this.currentElement, this.api ]);
 	this.applyOptions();
 };
 
@@ -25,7 +25,7 @@ var init = function() {
  * @param {String} key optional api key value used for microsoft v7 map provider
  * @exports Mapstraction as mxn.Mapstraction
  */
-var Mapstraction = mxn.Mapstraction = function(element, api, debug, key) {
+var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	if (!api){
 		api = mxn.util.getAvailableProviders()[0];
 	}
@@ -37,11 +37,6 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug, key) {
 	 */
 	this.api = api;
 	/**
-     * The API Key Required.
-     * @name mxn.Mapstraction#key
-     * @type {String}
-     */
-    this.key = key
     
 	this.maps = {};
 	
