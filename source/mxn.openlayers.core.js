@@ -90,15 +90,23 @@ mxn.register('openlayers', {
 		},
 
 		applyOptions: function(){
-			// var map = this.maps[this.api];
-			// var myOptions = [];
-			// if (this.options.enableDragging) {
-			//	 myOptions.draggable = true;
-			// } 
-			// if (this.options.enableScrollWheelZoom){
-			//	 myOptions.scrollwheel = true;
-			// } 
-			// map.setOptions(myOptions);
+			var map = this.maps[this.api],
+				navigators = map.getControlsByClass( 'OpenLayers.Control.Navigation' ),
+				navigator;
+
+			if ( navigators.length > 0 ) {
+				navigator = navigators[0];
+				if ( this.options.enableScrollWheelZoom ) {
+					navigator.enableZoomWheel();
+				} else {
+					navigator.disableZoomWheel();
+				}
+				if ( this.options.enableDragging ) {
+					navigator.activate();
+				} else {
+					navigator.deactivate();
+				}
+			}
 		},
 
 		resizeTo: function(width, height){	
