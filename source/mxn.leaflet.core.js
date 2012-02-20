@@ -36,9 +36,11 @@ Mapstraction: {
     },
     
     applyOptions: function(){
-        if (this.options.enableScrollWheelZoom == false) {
+        if (this.options.enableScrollWheelZoom) {
+            this.maps[this.api].scrollWheelZoom.enable();
+        } else {
             this.maps[this.api].scrollWheelZoom.disable();
-        } 
+        }
         return;
     },
 
