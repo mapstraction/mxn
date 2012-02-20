@@ -1,0 +1,55 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Mapstraction Examples - leaflet</title>
+<link href="http://leaflet.cloudmade.com/dist/leaflet.css" media="all" rel="stylesheet" type="text/css" />
+<!--[if lte IE 8]><link rel="stylesheet" href="http://leaflet.cloudmade.com/dist/leaflet.ie.css" /><![endif]-->
+<script src="http://leaflet.cloudmade.com/dist/leaflet.js" type="text/javascript"></script>
+<script src="../source/mxn.js?(leaflet)" type="text/javascript"></script> 
+<style type="text/css">
+#mapdiv {
+  height: 400px;
+}
+</style> 
+<script type="text/javascript">
+//<![CDATA[
+  function initialize() {
+
+      // create mxn object
+      map = new mxn.Mapstraction('mapdiv', 'leaflet');
+      map.setMapType(mxn.Mapstraction.SATELLITE);
+      latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587)
+      latlon2 = new mxn.LatLonPoint(41.88756115424155,-91.67015573501587)
+
+      // put map on page
+      map.setCenterAndZoom(latlon, 12);
+
+      // add a marker
+      marker = new mxn.Marker(latlon);
+      map.addMarker(marker);
+      marker.addData({'infoBubble': 'This is a popup'})
+      marker.openBubble();
+
+      // add a polyline
+      var pl = new mxn.Polyline([
+          latlon,
+          latlon2
+      ]);
+      pl.color = '#00DD55';
+      map.addPolyline(pl);
+
+      map.addSmallControls();
+  }
+//]]>
+</script> 
+</head>
+<body onload="initialize();">
+<center>
+<table border='1' width='50%'>
+<tr><td><div id="mapdiv"></div></td>
+</tr>
+</table>
+</center>
+</body>
+</html>
+
+
