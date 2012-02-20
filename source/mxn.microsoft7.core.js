@@ -1,13 +1,13 @@
 mxn.register('microsoft7', {  
 
 Mapstraction: {
-  init: function(element, api,key) {    
+  init: function(element, api) {    
     var me = this;
     
     if (!Microsoft || !Microsoft.Maps) {
       throw api + ' map script not imported';
     }
-    this.maps[api] = new Microsoft.Maps.Map(element,{credentials:key});
+    this.maps[api] = new Microsoft.Maps.Map(element,{credentials:microsoft_key});
     //Add Click Event
     element.addEventListener('contextmenu',function(evt) {evt.preventDefault()});
     Microsoft.Maps.Events.addHandler(this.maps[api],'rightclick', function(event) {
