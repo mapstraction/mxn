@@ -36,9 +36,11 @@ Mapstraction: {
     },
     
     applyOptions: function(){
-        if (this.options.enableScrollWheelZoom == false) {
+        if (this.options.enableScrollWheelZoom) {
+            this.maps[this.api].scrollWheelZoom.enable();
+        } else {
             this.maps[this.api].scrollWheelZoom.disable();
-        } 
+        }
         return;
     },
 
@@ -346,10 +348,18 @@ Polyline: {
         for (var i = 0,  length = this.points.length ; i< length; i++){
             points.push(this.points[i].toProprietary('leaflet'));
         }
+
+        var polyOptions = {
+            color: this.color || '#000000',
+            opacity: this.opacity || 1.0, 
+            weight: this.width || 3,
+            fillColor: this.fillColor || '#000000'
+        };
+
         if (this.closed) {
-            return new L.Polygon(points);
+            return new L.Polygon(points, polyOptions);
         } else {
-            return new L.Polyline(points);
+            return new L.Polyline(points, polyOptions);
         }
     },
     
