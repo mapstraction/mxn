@@ -84,7 +84,7 @@ mxn.register('openlayers', {
 			}
 			
 			map.addLayer(this.layers.osm);
-			this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true])
+			this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true]);
 			this.maps[api] = map;
 			this.loaded[api] = true;
 		},
@@ -375,7 +375,7 @@ mxn.register('openlayers', {
 			for (var f=this.tileLayers.length-1; f>=0; f--) {
 				if(this.tileLayers[f][0] == tile_url) {
 					this.tileLayers[f][2] = !this.tileLayers[f][2];
-					this.tileLayers[f][1].setVisibility(this.tileLayers[f][2])
+					this.tileLayers[f][1].setVisibility(this.tileLayers[f][2]);
 				}
 			}	   
 			// TODO: Add provider code
