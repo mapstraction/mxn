@@ -473,6 +473,11 @@ mxn.register('openlayers', {
 					});
 				}
 			}
+			
+			//fire click event for marker
+			marker.events.register("click",marker,function(event) {
+				marker.mapstraction_marker.click.fire();
+			});
 
 			if(this.hoverIconUrl) {
 				icon = this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
