@@ -20,7 +20,7 @@ Mapstraction: {
           'location': new mxn.LatLonPoint(ll.latitude, ll.longitude),
           'position': {x:_x, y:_y}
         };
-      me.events.rightClick.fire(_event);
+      me.rightClick.fire(_event);
     });
     Microsoft.Maps.Events.addHandler(this.maps[api], 'click', function(event){
       var map = me.maps[me.api];
@@ -40,35 +40,35 @@ Mapstraction: {
           'position': {x:_x, y:_y}
         };
         if(event.isSecondary){
-          me.events.rightClick.fire(_event);
+          me.rightClick.fire(_event);
         }
         else{
-          me.events.click.fire(_event);
+          me.click.fire(_event);
         }
       }
     });
     Microsoft.Maps.Events.addHandler(this.maps[api],'viewchangeend', function(event){
-      me.events.changeZoom.fire();        
+      me.changeZoom.fire();        
     });
     Microsoft.Maps.Events.addHandler(this.maps[api],'viewchangeend', function(event){
-      me.events.endPan.fire();
+      me.endPan.fire();
     });
     Microsoft.Maps.Events.addHandler(this.maps[api],'viewchange', function(event){
-      me.events.endPan.fire();        
+      me.endPan.fire();        
     });
-    Microsoft.Maps.Events.addHandler(this.maps[api],'mousemove', function(event){
-      var map = me.maps[me.api];
+    // Microsoft.Maps.Events.addHandler(this.maps[api],'mousemove', function(event){
+    //   var map = me.maps[me.api];
 
-      var _x = event.getX();
-      var _y = event.getY();
-      var pixel = new Microsoft.Maps.Point(_x, _y);
-      var ll = map.tryPixelToLocation(pixel);
-      var _event = {
-          'location': new mxn.LatLonPoint(ll.latitude, ll.longitude),
-          'position': {x:_x, y:_y}
-        };
-      me.events.mouseMove.fire(_event);
-    });
+    //   var _x = event.getX();
+    //   var _y = event.getY();
+    //   var pixel = new Microsoft.Maps.Point(_x, _y);
+    //   var ll = map.tryPixelToLocation(pixel);
+    //   var _event = {
+    //       'location': new mxn.LatLonPoint(ll.latitude, ll.longitude),
+    //       'position': {x:_x, y:_y}
+    //     };
+    //   me.mouseMove.fire(_event);
+    // });
 
   },
   
