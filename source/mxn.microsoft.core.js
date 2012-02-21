@@ -25,35 +25,35 @@ Mapstraction: {
           'position': {x:event.mapX, y:event.mapY}
         };
         if(event.rightMouseButton){
-          me.events.rightClick.fire(_event);
+          me.rightClick.fire(_event);
         }
         else{
-          me.events.click.fire(_event);
+          me.click.fire(_event);
         }
       }
     });
     this.maps[api].AttachEvent('onendzoom', function(event){
-      me.events.changeZoom.fire();        
+      me.changeZoom.fire();        
     });
     this.maps[api].AttachEvent('onendpan', function(event){
-      me.events.endPan.fire();
+      me.endPan.fire();
     });
     this.maps[api].AttachEvent('onchangeview', function(event){
-      me.events.endPan.fire();        
+      me.endPan.fire();        
     });
     this.maps[api].AttachEvent('onmousemove', function(event){
       var x = event.mapX;
       var y = event.mapY;
       var pixel = new VEPixel(x, y);
       var ll = me.maps[me.api].PixelToLatLong(pixel);
-      me.events.mouseMove.fire({'location': new mxn.LatLonPoint(ll.Latitude, ll.Longitude)});
+      me.mouseMove.fire({'location': new mxn.LatLonPoint(ll.Latitude, ll.Longitude)});
     });
     this.maps[api].LoadMap();
     document.getElementById("MSVE_obliqueNotification").style.visibility = "hidden"; 
   
     //removes the bird's eye pop-up
     this.loaded[api] = true;
-    me.events.load.fire();  
+    me.load.fire();  
   },
   
   applyOptions: function(){
