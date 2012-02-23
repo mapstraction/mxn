@@ -11,7 +11,7 @@ mxn.register('openlayers', {
 					maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
 					maxResolution: 156543,
 					numZoomLevels: 18,
-					units: 'meters',
+					units: 'm',
 					projection: 'EPSG:900913'
 				}
 			);
@@ -141,6 +141,9 @@ mxn.register('openlayers', {
 			}
 			if ( args.map_type ) {
 				map.addControl(new OpenLayers.Control.LayerSwitcher());
+			}
+			if ( args.scale ) {
+				map.addControl(new OpenLayers.Control.ScaleLine());
 			}
 		},
 
@@ -411,8 +414,17 @@ mxn.register('openlayers', {
 
 		mousePosition: function(element) {
 			var map = this.maps[this.api];
-
-			// TODO: Add provider code	
+			var locDisp = document.getElementById(element);
+			if (locDisp !== null) {
+				map.events.register('mousemove', map, function (evt) {
+					var lonlat = map.getLonLatFromViewPortPx(evt.xy);
+					var point = new mxn.LatLonPoint();
+					point.fromProprietary('openlayers', lonlat);
+					var loc = point.lat.toFixed(4) + ' / ' + point.lon.toFixed(4);
+					locDisp.innerHTML = loc;
+				});
+			}
+			locDisp.innerHTML = '0.0000 / 0.0000';
 		}
 	},
 
