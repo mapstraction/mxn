@@ -38,10 +38,10 @@ mxn.register('cloudmade', {
 
 		applyOptions: function(){
 			var map = this.maps[this.api];
-			if(this.options.enableScrollWheelZoom){
+			if (this.options.enableScrollWheelZoom) {
 				map.enableScrollWheelZoom();
 			}
-			if(this.options.disableScrollWheelZoom){
+			else {
 				map.disableScrollWheelZoom();
 			}
 		},

@@ -3,10 +3,10 @@ mxn.register('openmq', {
 Mapstraction: {
 	
 	init: function(element, api) {
-			var me = this;
-			var map = new MQA.TileMap(element);
-			this.maps[api] = map;
-			this.loaded[api] = true;
+		var me = this;
+		var map = new MQA.TileMap(element);
+		this.maps[api] = map;
+		this.loaded[api] = true;
 
 		MQA.withModule('shapes', function() {
 			// Loading all modules that can't be loaded on-demand
@@ -45,7 +45,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 
 		if (args.zoom) {
-			if (args.zoom == 'large'){ 
+			if (args.zoom == 'large') { 
 				this.addLargeControls();
 			} else { 
 				this.addSmallControls();
@@ -156,39 +156,41 @@ Mapstraction: {
 
 	setMapType: function(type) {
 		var map = this.maps[this.api];
-		switch(type) {
-			// MapQuest has a function to set map type, but open MapQuest only supports road
-			/*
+		// MapQuest has a function to set map type, but open MapQuest only supports road
+		/*
+		switch (type) {
 			case mxn.Mapstraction.SATELLITE:
 				map.setMapType('sat');
-			break;
+				break;
 			case mxn.Mapstraction.HYBRID:
 				map.setMapType('hyb');
-			break;
-			*/
-			case mxn.Mapstraction.ROAD:
+				break;
+			//case mxn.Mapstraction.ROAD:
+			//	break;						
 			default:
 				map.setMapType('map');
-			break;
-		}	 
+				break;
+		}
+		*/
+		map.setMapType('map');
 	},
 
 	getMapType: function() {
 		var map = this.maps[this.api];
 		
+		/*
 		var type = map.getMapType();
 		switch(type) {
 			case 'sat':
 				return mxn.Mapstraction.SATELLITE;
-			break;
 			case 'hyb':
 				return mxn.Mapstraction.HYBRID;
-			break;
 			case 'map':
 			default:
 				return mxn.Mapstraction.ROAD
-			break;
-		}	 
+		}
+		*/
+		return mxn.Mapstraction.ROAD;
 	},
 
 	getBounds: function () {

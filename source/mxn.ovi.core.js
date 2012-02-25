@@ -97,10 +97,10 @@ Mapstraction: {
 			map.addComponent(new ovi.mapsapi.map.component.zoom.MouseWheel());
 		} 
 		else {
-		    var mousewheel = map.getComponentById("zoom.MouseWheel");
-                    if (mousewheel){
-			map.removeComponent(mousewheel);
-		    }
+			var mousewheel = map.getComponentById('zoom.MouseWheel');
+			if (mousewheel) {
+				map.removeComponent(mousewheel);
+			}
 		}	
 	},
 	
