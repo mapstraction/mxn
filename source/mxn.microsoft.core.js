@@ -379,7 +379,7 @@ Polyline: {
 			return vecolor;
 		};
 		
-		for(var i =0, length = this.points.length; i < length; i++) {
+		for(var i = 0, length = this.points.length; i < length; i++) {
 			mpoints.push(this.points[i].toProprietary('microsoft'));
 		}
 		if (this.closed) {
@@ -389,12 +389,16 @@ Polyline: {
 			mtype = VEShapeType.Polyline;
 		}
 		var mpolyline = new VEShape(mtype, mpoints);
-		mpolyline.SetLineWidth(this.width);
-		mpolyline.SetLineColor(colorToVEColor(this.color, this.opacity));
-		mpolyline.SetFillColor(colorToVEColor(this.fillColor, this.fillOpacity));
-		if(this.lineStyle == mxn.PolyLineStyles.DASHED){
-			mpolyline.Primitives[0].symbol.stroke_dashstyle = 'Dash';
+		if (this.width) {
+			mpolyline.SetLineWidth(this.width);
 		}
+		if (this.color) {
+			mpolyline.SetLineColor(colorToVEColor(this.color, this.opacity));
+		}
+		if (this.fillColor) {
+			mpolyline.SetFillColor(colorToVEColor(this.fillColor, this.fillOpacity));
+		}
+
 		return mpolyline;
 	},
 		

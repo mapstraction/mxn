@@ -395,8 +395,8 @@ Marker: {
 	},
 
 	update: function() {
-		var _loc = this.proprietary_marker.getLocation();
-		var point = new mxn.LatLonPoint(_loc.latitude, _loc.longitude);
+		var loc = this.proprietary_marker.getLocation();
+		var point = new mxn.LatLonPoint(loc.latitude, loc.longitude);
 		this.location = point;
 	}
 	
@@ -410,18 +410,15 @@ Polyline: {
 			points.push(this.points[i].toProprietary(this.api));
 		}
 		
-		var _strokeColor = Microsoft.Maps.Color.fromHex(this.color);
-		_strokeColor.a = this.opacity * 255;
-		var _fillColor = Microsoft.Maps.Color.fromHex(this.fillColor);
-		_fillColor.a = this.fillOpacity * 255;
+		var strokeColor = Microsoft.Maps.Color.fromHex(this.color);
+		strokeColor.a = this.opacity * 255;
+		var fillColor = Microsoft.Maps.Color.fromHex(this.fillColor);
+		fillColor.a = this.fillOpacity * 255;
+		
 		var polyOptions = {
 			strokeColor: _strokeColor,
 			strokeThickness: this.width
 		};
-
-		if (this.lineStyle == mxn.PolyLineStyles.DASHED) {
-			polyOptions.strokeDashArray = "2 2 2 2";
-		}
 
 		if (this.closed) {
 			polyOptions.fillColor = _fillColor;

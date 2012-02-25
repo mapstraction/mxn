@@ -7,8 +7,7 @@
 	<script type="text/javascript" src="mxn-harness.js"></script>
 		
 	<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=5wTxDW_V34GQjK.7glLG6OnJSRxCvfLj7ktMsuOoR42Gkm16vDVEjjw6FGWJ1Gky"></script> 
-	<!-- script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3&mkt=en-us"></script -->
-	
+		
 	<script type="text/javascript">
 	//<![CDATA[
 	var provider;
@@ -31,6 +30,10 @@
 
 			case 'yahoo':
 				// already loaded as the default swap target
+				break;
+				
+			case 'microsoft':
+				document.write('<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3&mkt=en-us"><\/script>');
 				break;
 
 			case 'googlev3':
@@ -269,6 +272,7 @@
 			<a href="?provider=googlev3">googlev3</a>,
 			<a href="?provider=openlayers">openlayers</a>,
 			<a href="?provider=yahoo">yahoo</a>
+			<a href="?provider=microsoft">microsoft</a>
 		</p>
 		</div>
 </body>
