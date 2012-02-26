@@ -245,7 +245,7 @@ mxn.Invoker = function(aobj, asClassName, afnApiIdGetter){
 	this.go = function(sMethodName, args, oOptions){
 		
 		// make sure args is an array
-		args = Array.prototype.slice.apply(args);
+		args = typeof(args) != 'undefined' ? Array.prototype.slice.apply(args) : [];
 		
 		if(typeof(oOptions) == 'undefined'){
 			oOptions = defOpts;
@@ -292,7 +292,7 @@ mxn.util = {
 	merge: function(oRecv, oGive){
 		for (var sPropName in oGive){
 			if (oGive.hasOwnProperty(sPropName)) {
-				if(!oRecv.hasOwnProperty(sPropName)){
+				if(!oRecv.hasOwnProperty(sPropName) || typeof(oRecv[sPropName]) !== 'object' || typeof(oGive[sPropName]) !== 'object'){
 					oRecv[sPropName] = oGive[sPropName];
 				}
 				else {
@@ -487,14 +487,28 @@ mxn.util = {
 	 */
 	stringFormat: function(strIn){
 		var replaceRegEx = /\{\d+\}/g;
-		var args = Array.slice.apply(arguments);
+		var args = Array.prototype.slice.apply(arguments);
 		args.shift();
 		return strIn.replace(replaceRegEx, function(strVal){
 			var num = strVal.slice(1, -1);
 			return args[num];
 		});
-	}	
+	},
 	
+	/**
+	 * Traverses an object graph using a series of map functions provided as arguments 
+	 * 2 to n. Map functions are only called if the working object is not undefined/null.
+	 * For usage see mxn.google.geocoder.js.
+	 */
+	traverse: function(start) {
+		var args = Array.prototype.slice.apply(arguments);
+		args.shift();
+		var working = start;
+		while(typeof(working) != 'undefined' && working !== null && args.length > 0){
+			var op = args.shift();
+			working = op(working);
+		}
+	}
 };
 
 /**

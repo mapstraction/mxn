@@ -35,6 +35,9 @@
 			case 'microsoft':
 				document.write('<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3&mkt=en-us"><\/script>');
 				break;
+			case 'geocommons':
+				document.write('<script type="text/javascript" src="http://geocommons.com/javascripts/f1.api.js"><\/script>');
+				break;
 
 			case 'leaflet':
 				document.write('<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=5wTxDW_V34GQjK.7glLG6OnJSRxCvfLj7ktMsuOoR42Gkm16vDVEjjw6FGWJ1Gky"><\/script>');
@@ -195,7 +198,7 @@
 					m.addLargeControls();
 					m.addControls({
 						pan:	 true,
-						zoom:	 'small',
+						zoom:	 'large',
 						overview: true,
 						scale: true,
 						map_type: true

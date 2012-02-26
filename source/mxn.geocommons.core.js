@@ -1,55 +1,38 @@
-mxn.register('geocommons', {	
+mxn.register('geocommons', {
 
 	Mapstraction: {
 
-		// These methods can be called anytime but will only execute
-		// once the map has loaded. 
-		deferrable: {
-			applyOptions: true,
-			resizeTo: true,
-			addControls: true,
-			addSmallControls: true,
-			addLargeControls: true,
-			addMapTypeControls: true,
-			dragging: true,
-			setCenterAndZoom: true,
-			getCenter: true,
-			setCenter: true,
-			setZoom: true,
-			getZoom: true,
-			getZoomLevelForBoundingBox: true,
-			setMapType: true,
-			getMapType: true,
-			getBounds: true,
-			setBounds: true,
-			addTileLayer: true,
-			toggleTileLayer: true,
-			getPixelRatio: true,
-			mousePosition: true
-		},
-
-		init: function(element, api) {		
+		init: function(element, api) {
 			var me = this;
 			this.element = element;
 			this.loaded[this.api] = false; // Loading will take a little bit.
-			F1.Maker.core_host = f1_core_host;
-			F1.Maker.finder_host = f1_finder_host;
-			F1.Maker.maker_host = f1_maker_host;
-
-			// we don't use this object but assign it to dummy for JSLint
-			var dummy = new F1.Maker.Map({
+			
+			this.maps[api] = new F1.Maker.Map({
 				dom_id: this.element.id,
-				flashvars: {},				
-				onload: function(map){
-					me.maps[me.api] = map.swf; // Get the actual Flash object
-					me.loaded[me.api] = true;					 
-					for (var i = 0; i < me.onload[me.api].length; i++) {
+				map_id: 143049,
+				uiLayers: false,
+				flashvars: {},
+				onMapLoaded: function(map){
+					me.loaded[me.api] = true;
+					var num_events = me.onload[me.api].length;
+					for (var i = 0; i < num_events; i++) {
 						me.onload[me.api][i]();
 					}
+					me.load.fire();
+				},
+				onMapPanStop: function() {
+					me.endPan.fire();
+				},
+				onMapZoomed: function() {
+					me.changeZoom.fire();
+				},
+				onFeatureSelected: function() {
+					me.click.fire();
 				}
+
 			});
 			
-		  },
+		},
 
 		applyOptions: function(){
 			var map = this.maps[this.api];
@@ -57,19 +40,16 @@ mxn.register('geocommons', {
 			// TODO: Add provider code
 		},
 
-		resizeTo: function(width, height){	
+		resizeTo: function(width, height){
 			var map = this.maps[this.api];
 			map.setSize(width,height);
 		},
 
 		addControls: function( args ) {
 			var map = this.maps[this.api];
-			map.showControl("Zoom", args.zoom || false);
-			map.showControl("Layers", args.layers || false);
-			map.showControl("Styles", args.styles || false); 
-			map.showControl("Basemap", args.map_type || false);
-			map.showControl("Legend", args.legend || false, "open"); 
-			// showControl("Legend", true, "close"); 
+			map.setMapStyle({zoom: {visible: args.zoom || false, expanded: (args.zoom == 'large')}});
+			map.setMapStyle({layers: {visible: args.layers || false}});
+			map.setMapStyle({legend: {visible: args.legend || false, expanded: true}});
 		},
 
 		addSmallControls: function() {
@@ -78,8 +58,7 @@ mxn.register('geocommons', {
 				zoom:   'small',
 				legend: "open"
 			});
-			// showControl("Zoom", args.zoom);
-			// showControl("Legend", args.legend, "open"); 
+			
 		},
 
 		addLargeControls: function() {
@@ -103,7 +82,7 @@ mxn.register('geocommons', {
 			// TODO: Add provider code
 		},
 
-		setCenterAndZoom: function(point, zoom) { 
+		setCenterAndZoom: function(point, zoom) {
 			var map = this.maps[this.api];
 			map.setCenterZoom(point.lat, point.lon,zoom);
 		},
@@ -116,7 +95,7 @@ mxn.register('geocommons', {
 
 		setCenter: function(point, options) {
 			var map = this.maps[this.api];
-			map.setCenter(point.lat, point.lon);			
+			map.setCenter(point.lat, point.lon);
 		},
 
 		setZoom: function(zoom) {
@@ -145,34 +124,38 @@ mxn.register('geocommons', {
 			var map = this.maps[this.api];
 			switch(type) {
 				case mxn.Mapstraction.ROAD:
-				map.setMapProvider("OpenStreetMap (road)");
-				break;
+					map.setBasemap("openstreetmap");
+					break;
 				case mxn.Mapstraction.SATELLITE:
-				map.setMapProvider("BlueMarble");
-				break;
+					map.setBasemap("nasabluemarble");
+					break;
+				case mxn.Mapstraction.TERRAIN:
+					map.setBasemap("acetateterrain");
+					break;
 				case mxn.Mapstraction.HYBRID:
-				map.setMapProvider("Google Hybrid");
-				break;
+					map.setBasemap("googlehybrid");
+					break;
 				default:
-				map.setMapProvider(type);
-			}	 
+					map.setBasemap(type);
+			}
 		},
 
 		getMapType: function() {
 			var map = this.maps[this.api];
 			
 			// TODO: I don't thick this is correct -Derek
-			switch(map.getMapProvider()) {
-				case "OpenStreetMap (road)":
+			switch(map.getBasemap().name) {
+				case "openstreetmap":
 					return mxn.Mapstraction.ROAD;
-				case "BlueMarble":
+				case "nasabluemarble":
 					return mxn.Mapstraction.SATELLITE;
-				case "Google Hybrid":
+				case "acetateterrain":
+					return mxn.Mapstraction.TERRAIN;
+				case "googlehybrid":
 					return mxn.Mapstraction.HYBRID;
 				default:
 					return null;
-			}	
-
+			}
 		},
 
 		getBounds: function () {
@@ -185,7 +168,7 @@ mxn.register('geocommons', {
 			var map = this.maps[this.api];
 			var sw = bounds.getSouthWest();
 			var ne = bounds.getNorthEast();
-			map.setExtent(ne.lat,sw.lat,ne.lon,sw.lon);
+			map.setExtent(sw.lon,sw.lat,ne.lon,ne.lat);
 
 		},
 
@@ -216,31 +199,44 @@ mxn.register('geocommons', {
 		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code
+			map.addLayer({source: "tile:" + tile_url, styles: {fill: {opacity: opacity || 1.0}}});
 		},
 
 		toggleTileLayer: function(tile_url) {
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code
+			var layers = map.getLayers();
+			for(var i = 0; i < layers.length; ++i) {
+				if(layers[i].source == "tile:" + tile_url) {
+					map.showLayer(layers[i].guid, !layers[i].visible);
+				}
+			}
 		},
 
 		getPixelRatio: function() {
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code	
+			// TODO: Add provider code
 		},
 
 		mousePosition: function(element) {
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code	
+				// TODO: Add provider code
 		},
 		addMarker: function(marker, old) {
 			var map = this.maps[this.api];
 			var pin = marker.toProprietary(this.api);
 			// TODO: Add provider code
 			// map.addOverlay(pin);
+			var layers = map.getLayers();
+			for(var i = 0; i < layers.length; ++i) {
+				if(layers[i].title == "Edit Layer") {
+					map.addFeatures(layers[i].guid, [pin], false);
+					map.addLayerInfoWindowFilter(layers[i].guid, {title: "$[title]", tabs: [{type: "text", title: "About", value: "$[infoBubble]"}]})
+				}
+			}
+			
 			return pin;
 		},
 
@@ -259,7 +255,7 @@ mxn.register('geocommons', {
 		addPolyline: function(polyline, old) {
 			var map = this.maps[this.api];
 			var pl = polyline.toProprietary(this.api);
-			// TODO: Add provider code			
+			// TODO: Add provider code
 			// map.addOverlay(pl);
 			return pl;
 		},
@@ -274,12 +270,13 @@ mxn.register('geocommons', {
 	LatLonPoint: {
 
 		toProprietary: function() {
-			// TODO: Add provider code
-			return {};
+			// GeoJSON
+			return {type: "Point", coordinates: [this.lon,this.lat]};
 		},
 
-		fromProprietary: function(googlePoint) {
-			// TODO: Add provider code
+		fromProprietary: function(point) {
+			this.lon = point.coordinates[0];
+			this.lat = point.coordinates[1];
 		}
 
 	},
@@ -287,13 +284,16 @@ mxn.register('geocommons', {
 	Marker: {
 
 		toProprietary: function() {
-			// TODO: Add provider code
-			return {};
+			return {title: this.labelText || "", infoBubble: this.infoBubble || "", geometry: this.location.toProprietary('geocommons')};
 		},
 
-		openBubble: function() {		
+		openBubble: function() {
 			// TODO: Add provider code
 		},
+		closeBubble: function() {
+			// TODO: Add provider code
+		},
+
 
 		hide: function() {
 			// TODO: Add provider code

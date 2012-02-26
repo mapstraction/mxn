@@ -1,21 +1,9 @@
-/*
-Copyright (c) 2010 Tom Carden, Steve Coast, Mikel Maron, Andrew Turner, Henri Bergius, Rob Moran, Derek Fowler
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
- * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
- * Neither the name of the Mapstraction nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
-mxn.register('geocommons', {	
+mxn.register('geocommons', {
 
 	Mapstraction: {
 
 		// These methods can be called anytime but will only execute
-		// once the map has loaded. 
+		// once the map has loaded.
 		deferrable: {
 			applyOptions: true,
 			resizeTo: true,
@@ -40,28 +28,26 @@ mxn.register('geocommons', {
 			mousePosition: true
 		},
 
-		init: function(element, api) {		
+		init: function(element, api) {
 			var me = this;
 			this.element = element;
 			this.loaded[this.api] = false; // Loading will take a little bit.
-			F1.Maker.core_host = f1_core_host;
-			F1.Maker.finder_host = f1_finder_host;
-			F1.Maker.maker_host = f1_maker_host;
-
+			
 			// we don't use this object but assign it to dummy for JSLint
-			var dummy = new F1.Maker.Map({
+			this.maps[api] = new F1.Maker.Map({
 				dom_id: this.element.id,
-				flashvars: {},				
-				onload: function(map){
-					me.maps[me.api] = map.swf; // Get the actual Flash object
-					me.loaded[me.api] = true;					 
+				map_id: 127297,
+				flashvars: {},
+				onMapLoaded: function(map){
+					// me.maps[me.api] = map.swf; // Get the actual Flash object
+					me.loaded[me.api] = true;
 					for (var i = 0; i < me.onload[me.api].length; i++) {
 						me.onload[me.api][i]();
 					}
 				}
 			});
 			
-		  },
+		},
 
 		applyOptions: function(){
 			var map = this.maps[this.api];
@@ -69,7 +55,7 @@ mxn.register('geocommons', {
 			// TODO: Add provider code
 		},
 
-		resizeTo: function(width, height){	
+		resizeTo: function(width, height){
 			var map = this.maps[this.api];
 			map.setSize(width,height);
 		},
@@ -78,10 +64,10 @@ mxn.register('geocommons', {
 			var map = this.maps[this.api];
 			map.showControl("Zoom", args.zoom || false);
 			map.showControl("Layers", args.layers || false);
-			map.showControl("Styles", args.styles || false); 
+			map.showControl("Styles", args.styles || false);
 			map.showControl("Basemap", args.map_type || false);
-			map.showControl("Legend", args.legend || false, "open"); 
-			// showControl("Legend", true, "close"); 
+			map.showControl("Legend", args.legend || false, "open");
+			// showControl("Legend", true, "close");
 		},
 
 		addSmallControls: function() {
@@ -91,7 +77,7 @@ mxn.register('geocommons', {
 				legend: "open"
 			});
 			// showControl("Zoom", args.zoom);
-			// showControl("Legend", args.legend, "open"); 
+			// showControl("Legend", args.legend, "open");
 		},
 
 		addLargeControls: function() {
@@ -115,7 +101,7 @@ mxn.register('geocommons', {
 			// TODO: Add provider code
 		},
 
-		setCenterAndZoom: function(point, zoom) { 
+		setCenterAndZoom: function(point, zoom) {
 			var map = this.maps[this.api];
 			map.setCenterZoom(point.lat, point.lon,zoom);
 		},
@@ -128,7 +114,7 @@ mxn.register('geocommons', {
 
 		setCenter: function(point, options) {
 			var map = this.maps[this.api];
-			map.setCenter(point.lat, point.lon);			
+			map.setCenter(point.lat, point.lon);
 		},
 
 		setZoom: function(zoom) {
@@ -167,14 +153,14 @@ mxn.register('geocommons', {
 				break;
 				default:
 				map.setMapProvider(type);
-			}	 
+			}
 		},
 
 		getMapType: function() {
 			var map = this.maps[this.api];
 			
 			// TODO: I don't thick this is correct -Derek
-			switch(map.getMapProvider()) {
+			switch(map.getBasemap().name) {
 				case "OpenStreetMap (road)":
 					return mxn.Mapstraction.ROAD;
 				case "BlueMarble":
@@ -183,13 +169,13 @@ mxn.register('geocommons', {
 					return mxn.Mapstraction.HYBRID;
 				default:
 					return null;
-			}	
-
+			}
 		},
 
 		getBounds: function () {
 			var map = this.maps[this.api];
 			var extent = map.getExtent();
+			console.log([extent.northWest.lat, extent.southEast.lon, extent.southEast.lat, extent.northWest.lon]);
 			return new mxn.BoundingBox( extent.northWest.lat, extent.southEast.lon, extent.southEast.lat, extent.northWest.lon);
 		},
 
@@ -240,13 +226,13 @@ mxn.register('geocommons', {
 		getPixelRatio: function() {
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code	
+			// TODO: Add provider code
 		},
 
 		mousePosition: function(element) {
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code	
+				// TODO: Add provider code
 		},
 		addMarker: function(marker, old) {
 			var map = this.maps[this.api];
@@ -271,7 +257,7 @@ mxn.register('geocommons', {
 		addPolyline: function(polyline, old) {
 			var map = this.maps[this.api];
 			var pl = polyline.toProprietary(this.api);
-			// TODO: Add provider code			
+			// TODO: Add provider code
 			// map.addOverlay(pl);
 			return pl;
 		},
@@ -303,7 +289,7 @@ mxn.register('geocommons', {
 			return {};
 		},
 
-		openBubble: function() {		
+		openBubble: function() {
 			// TODO: Add provider code
 		},
 
