@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<project name="mapstraction" default="build">
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="tools/ant-contrib/ant-contrib-1.0b3.jar"/>
+		</classpath>
+	</taskdef>
+	
+	<!-- set global properties for this build -->
+	<property name="source" location="source"/>
+	<property name="build.base" location="build"/>
+	<property name="build.major" value="2"/>
+	<property name="build.minor" value="0"/>
+	
+	<target name="build">
+		<!-- generate build number -->
+		<buildnumber/>
+		<tstamp>
+			<format property="YEAR" pattern="yyyy"/>
+		</tstamp>
+		<property name="build.ver" value="${build.major}.${build.minor}.${build.number}"/>
+		<property name="build.dir" location="${build.base}/${build.ver}"/>
+		
+		<!-- make our build directory -->
+		<mkdir dir="${build.dir}"/>
+		
+		<!-- copy our sources in -->
+		<echo>--- COPY SOURCES ---</echo>
+		<copy todir="${build.dir}">
+			<fileset dir="${source}">
+				<exclude name="*(provider)*"/>
+			</fileset>
+		</copy>
+		
+		<!-- lint our sources -->
+		<echo>--- LINT ---</echo>
+		
+		<for param="file">
+			<path>
+				<fileset dir="${build.dir}" includes="*.js"/>
+			</path>
+			<sequential>
+				<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
+					<arg value="tools/jslint/jslint.js"/>
+					<arg value="@{file}"/>
+				</java>
+			</sequential>
+		</for>
+
+
+				
+		<!-- document our sources -->
+		<echo>--- DOC ---</echo>
+		<java jar="tools/jsdoc-toolkit/jsrun.jar" fork="true" failonerror="true">
+			<arg value="tools/jsdoc-toolkit/app/run.js"/>
+			<arg value="${build.dir}/mxn.js"/>
+			<arg value="${build.dir}/mxn.core.js"/>
+			<arg value="${build.dir}/mxn.geocoder.js"/>
+			<arg value="-c=tools/jsdoc-toolkit/mxn.conf"/>
+			<arg value="-d=${build.dir}/docs"/>
+		</java>
+		
+		<!-- minify our sources -->
+		<echo>--- MIN ---</echo>
+		<for param="file">
+			<path>
+				<fileset dir="${build.dir}" includes="*.js"/>
+			</path>
+			<sequential>
+				<propertyregex override="yes" property="minfile" input="@{file}" regexp=".*[\/\\]([a-z0-9\.]+)\.js" replace="\1-min.js"/>
+				<java jar="tools/yui-compressor/yuicompressor-2.4.2.jar" args="-o ${build.dir}/${minfile} @{file}" fork="true" failonerror="true"/>
+			</sequential>
+		</for>		
+		
+		<!-- prepend our copyright and license notice -->
+		<echo>--- COPYRIGHT ---</echo>
+		<for param="file">
+			<path>
+				<fileset dir="${build.dir}" includes="*.js"/>
+			</path>
+			<sequential>
+				<concat destfile="${build.dir}/temp.t">
+					<header file="license.js"/>
+					<fileset file="@{file}"/>
+					<filterchain>
+						<expandproperties/>
+					</filterchain>
+				</concat>
+				<move file="${build.dir}/temp.t" tofile="@{file}" overwrite="true"/>
+			</sequential>
+		</for>
+		
+		<zip destfile="${build.base}/mxn-${build.ver}.zip" basedir="${build.dir}"/>
+		
+	</target>
+</project>

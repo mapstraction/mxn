@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Mapstraction Examples</title>
+	<script type="text/javascript" charset="utf-8" src="http://maker.codiv.dev.fortiusone.local/javascripts/embed.js"></script>  
+	<script src="../source/mxn.js" type="text/javascript"></script>
+	<script src="../source/mxn.core.js" type="text/javascript"></script>
+	<script src="../source/mxn.geocommons.core.js" type="text/javascript"></script>  
+    <style type="text/css">
+    #mapstraction {
+        height: 400px;
+        width: 500px;
+    }
+    </style> 
+</head>
+<body>
+
+            <div id="mapstraction" style="position:relative;  height: 400px; width:100%"></div>
+            <script type="text/javascript">
+            // initialise the map with your choice of API
+            var mapstraction = new mxn.Mapstraction('mapstraction','geocommons');
+            mapstraction.addOverlay("4")
+            </script> 
+        <div class="">
+	<script type="text/javascript" charset="utf-8">
+
+			getCenter = function() {
+				var center = mapstraction.getCenter();
+				alert(center.lat + " " + center.lon);
+			}
+			alertBounds = function() { 
+				var bounds = mapstraction.getBounds();
+				var sw = bounds.getSouthWest();
+				var ne = bounds.getNorthEast();
+				alert(sw.lat + " " + sw.lon + " " + ne.lat + " " + ne.lon);
+			}
+
+</script> 
+<h2>Demo Functions</h2>
+<ul>
+  <li><a href="javascript:mapstraction.setBounds( new mxn.BoundingBox(51.9,-4.3,52.25,-3.75) );">click me to set bounds</a>.</li>
+  <li><a href="javascript:alertBounds();">click me to get bounds</a> </li>
+  <li><a href="javascript:mapstraction.setZoom( mapstraction.getZoom()-1 );">click me to decrement zoom</a>.</li>
+  <li><a href="javascript:mapstraction.setZoom( mapstraction.getZoom()+1 );">click me to increment zoom</a>.</li>
+  <li><a href="javascript:alert('zoom is ' + mapstraction.getZoom());">click me to get zoom</a>.</li>
+  <li><a href="javascript:getCenter();">click me to getCenter</a>.</li>
+  <li><a href="javascript:mapstraction.setCenter(new mxn.LatLonPoint(52,0));">click me to setCenter</a>.</li>
+  <li><a href="javascript:mapstraction.setCenter(new mxn.LatLonPoint(38.404196,-123.008194), {pan: true});">click me to pan to center</a>.</li>
+  <li><a href="javascript:mapstraction.addControls({zoom:true, layers:true});">click me to add controls</a>.</li>
+  <li><a href="javascript:mapstraction.addControls({});">click me to remove controls</a>.</li>
+  <li><a href="javascript:mapstraction.addControls({legend:true});">click me to open legend controls</a>.</li>
+  <li><a href="javascript:mapstraction.resizeTo('100px','200px');">click me to resize</a>.</li>
+</ul> 
+        </div>
+
+</body>
+</html>
+

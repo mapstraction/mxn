@@ -1,0 +1,41 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Mapstraction Examples - google v2</title>
+<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAY70wuSo0zF3ZtJVp5bDm1BS1Y2ErAqCHV5rDhHSzgjy23KqwdRRaoSBuZk72oDzzAYxVBjtsLqSmTw"></script>
+<script src="../source/mxn.js?(google)" type="text/javascript"></script> 
+<style type="text/css">
+#mapdiv {
+  height: 400px;
+}
+</style> 
+<script type="text/javascript">
+//<![CDATA[
+  function initialize() {
+
+      // create mxn object
+      var m = new mxn.Mapstraction('mapdiv','google');
+
+      m.addControls({zoom:'small'});
+
+      var latlon = new mxn.LatLonPoint(51.53468413093941, -0.09026169776916504)
+
+      // put map on page
+      m.setCenterAndZoom(latlon, 16);
+
+      // add a marker
+      var marker = new mxn.Marker(latlon);
+      m.addMarker(marker,true);
+  }
+//]]>
+</script> 
+</head>
+<body onload="initialize();">
+<center>
+<table border='1' width='50%'>
+<tr><td><div id="mapdiv"></div></td>
+</tr>
+</table>
+</center>
+</body>
+</html>
+

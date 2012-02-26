@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title>Mapstraction V2 core tests</title>
+		
+	<script type="text/javascript" src="mxn-harness.js"></script>
+		
+	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+	
+	<script src="../source/mxn.js?(googlev3,[geocoder])" type="text/javascript"></script>
+
+	<script type="text/javascript">
+	//<![CDATA[
+	window.onload = function() {
+		var actionElm = document.getElementById('actions');
+		var infoElm = document.getElementById('info');		
+		var eventsElm = document.getElementById('events');
+		
+		function successCallback(response) {
+			infoElm.innerHTML += [
+				'<strong>Response:</strong>',
+				'Point: ' + Dump(response.point),
+				'Street: ' + response.street,
+				'Locality: ' + response.locality,
+				'Region: ' + response.region,
+				'Country: ' + response.country].join('<br/>');
+		}	
+		
+		function errorCallback(err) {
+			infoElm.innerHTML += 'Error: ' + Dump(response.point);
+		}
+		
+		var geo = new mxn.Geocoder('googlev3', successCallback, errorCallback);
+		
+		var ops = [
+			{ 
+				desc: 'Center map', 
+				action: function(){
+					geo.geocode({address: '1600 Amphitheatre Pky, Mountain View, CA'});
+				} 
+			},
+			
+			{ desc: 'Done.', action: function(){} }
+			
+		];
+				
+		RunTests(ops, actionElm, infoElm);
+	};
+	//]]>
+	</script>
+	<style type="text/css">
+		.box {
+			float: left; 
+			width:300px; 
+			margin-right: 20px;
+			border: 1px solid #AAA;
+		}
+		
+		.box h2 {
+			margin: 0;
+			padding: 5px;
+			font-family: Arial;
+			background-color: #DDD;
+		}
+		
+		.box div {
+			overflow-y: scroll;
+			height:300px; 
+		}
+	</style>
+</head>
+<body>
+	<div style="height: 400px; width: 1000px; margin: 20px;">
+		<div id="map" style="position: relative; width: 500px; height: 300px;"></div>
+		<div style="margin-top: 20px;">
+			
+			<div class="box">
+				<h2>Actions</h2>
+				<div>
+					<ol id="actions"></ol>
+				</div>
+			</div>
+			<div class="box">
+				<h2>Info</h2>
+				<div id="info"></div>
+			</div>
+			<div class="box">
+				<h2>Events</h2>
+				<div id="events"></div>
+			</div>
+			
+		</div>
+	</div>
+</body>
+</html>
