@@ -233,7 +233,7 @@ mxn.register('geocommons', {
 			for(var i = 0; i < layers.length; ++i) {
 				if(layers[i].title == "Edit Layer") {
 					map.addFeatures(layers[i].guid, [pin], false);
-					map.addLayerInfoWindowFilter(layers[i].guid, {title: "$[title]", tabs: [{type: "text", title: "About", value: "$[infoBubble]"}]})
+					map.addLayerInfoWindowFilter(layers[i].guid, {title: "$[title]", tabs: [{type: "text", title: "About", value: "$[infoBubble]"}]});
 				}
 			}
 			
