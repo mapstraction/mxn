@@ -359,7 +359,7 @@ Marker: {
 			Microsoft.Maps.Events.addHandler(mmarker, event_action, function() {
 				mmarker.mapstraction_marker.openBubble();
 			});
-			Microsoft.Maps.Events.addHandler(map, 'viewchange', function () {
+			Microsoft.Maps.Events.addHandler(this.map, 'viewchange', function () {
 				mmarker.mapstraction_marker.closeBubble();
 			});
 		}
