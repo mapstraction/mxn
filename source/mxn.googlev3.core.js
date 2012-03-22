@@ -13,7 +13,8 @@ Mapstraction: {
 				mapTypeControlOptions: null,
 				navigationControl: false,
 				navigationControlOptions: null,
-				scrollwheel: false
+				scrollwheel: false,
+				disableDoubleClickZoom: true
 			};
 
 			// Background color can only be set at construction
@@ -112,9 +113,21 @@ Mapstraction: {
 		if (this.options.enableDragging) {
 			myOptions.draggable = true;
 		} 
+		else{
+			myOptions.draggable = false;
+		}
 		if (this.options.enableScrollWheelZoom){
 			myOptions.scrollwheel = true;
 		} 
+		else{
+			myOptions.scrollwheel = false;
+		}
+		if(this.options.disableDoubleClickZoom){
+			myOptions.disableDoubleClickZoom = true;
+		}
+		else{
+			myOptions.disableDoubleClickZoom = false;
+		}
 		map.setOptions(myOptions);
 	},
 
