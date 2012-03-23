@@ -604,11 +604,11 @@ Polyline: {
 	},
 	
 	show: function() {
-		throw 'Not implemented';
+		this.proprietary_polyline.setVisible(true);
 	},
 
 	hide: function() {
-		throw 'Not implemented';
+		this.proprietary_polyline.setVisible(false);
 	}
 	
 }
