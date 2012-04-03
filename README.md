@@ -29,8 +29,21 @@ Major Features
 * Geocoding of addresses
 * Driving directions
 
-Supported Libraries: "Cartociudad":http://www.cartociudad.es/VisualizadorCartografico/, "Cloudmade":http://developers.cloudmade.com/projects, "GeoCommons":http://developer.geoiq.com/api/, "Google Maps & Google Earth":http://code.google.com/apis/maps/index.html, "Leaflet":http://leaflet.cloudmade.com/, "MapQuest":http://developer.mapquest.com/, "Microsoft":http://www.microsoft.com/maps/developers/web.aspx, "OpenLayers":http://openlayers.org, OpenSpace, "Ovi":http://api.maps.ovi.com/, "Yahoo":http://developer.yahoo.com/maps/, "Yandex":http://api.yandex.ru/
+Supported Libraries
+-------------------
 
+* [Cartociudad](http://www.cartociudad.es/VisualizadorCartografico/)
+* [Cloudmade](http://developers.cloudmade.com/projects)
+* [GeoCommons](http://developer.geoiq.com/api/)
+* [Google Maps & Google Earth](http://code.google.com/apis/maps/index.html)
+* [Leaflet](http://leaflet.cloudmade.com/)
+* [MapQuest](http://developer.mapquest.com/)
+* [Microsoft](http://www.microsoft.com/maps/developers/web.aspx)
+* [OpenLayers](http://openlayers.org)
+* OpenSpace
+* [Ovi](http://api.maps.ovi.com/)
+* [Yahoo](http://developer.yahoo.com/maps/)
+* [Yandex](http://api.yandex.ru/)
 
 Mapstraction Users
 ------------------
