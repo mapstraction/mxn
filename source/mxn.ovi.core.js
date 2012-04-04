@@ -212,7 +212,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 
-		map.setCentre(pt);
+		map.setCenter(pt);
 	},
 	
 	setZoom: function(zoom) {
