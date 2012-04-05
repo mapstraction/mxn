@@ -43,7 +43,10 @@ Geocoder: {
 		
 		if (status != 200) {
 			this.error_callback(response.statusText);
-		} 
+		}
+		else if (results instanceof Array && !results.length){
+			this.error_callback("OpenLayers didn't recognize this address.");
+		}
 		else {
 			return_location.street = '';
 			return_location.locality = '';
