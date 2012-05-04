@@ -1503,7 +1503,6 @@ Marker.prototype.addData = function(options){
 					break;
 				case 'hover':
 					this.setHover(options.hover);
-					this.setHoverIcon(options.hoverIcon);
 					break;
 				case 'hoverIcon':
 					this.setHoverIcon(options.hoverIcon);
