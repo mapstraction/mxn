@@ -410,18 +410,18 @@ Polyline: {
 			points.push(this.points[i].toProprietary(this.api));
 		}
 		
-		var strokeColor = Microsoft.Maps.Color.fromHex(this.color);
+		var strokeColor = Microsoft.Maps.Color.fromHex(this.color || '#000000');
 		strokeColor.a = this.opacity * 255;
-		var fillColor = Microsoft.Maps.Color.fromHex(this.fillColor);
+		var fillColor = Microsoft.Maps.Color.fromHex(this.fillColor || '#000000');
 		fillColor.a = this.fillOpacity * 255;
 		
 		var polyOptions = {
-			strokeColor: _strokeColor,
+			strokeColor: strokeColor,
 			strokeThickness: this.width
 		};
 
 		if (this.closed) {
-			polyOptions.fillColor = _fillColor;
+			polyOptions.fillColor = fillColor;
 			points.push(this.points[0].toProprietary(this.api));
 			return new Microsoft.Maps.Polygon(points, polyOptions);
 		}
