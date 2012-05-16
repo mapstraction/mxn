@@ -149,13 +149,10 @@ Mapstraction: {
 	},
 	
 	getCenter: function() {
-		var point;
 		var map = this.maps[this.api];
-		// Get the existing options.
-		var options = map.getOptions();
-		point = new mxn.LatLonPoint(options.center.latitude,options.center.longitude);
+		var center = map.getCenter();
 		
-		return point;
+		return new mxn.LatLonPoint(center.latitude, center.longitude);
 	},
 
 	setCenter: function(point, options) {
