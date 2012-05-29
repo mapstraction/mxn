@@ -1,6 +1,8 @@
 /*
 MAPSTRACTION   v${build.ver}   http://www.mapstraction.com
 
+The BSD 3-Clause License (http://www.opensource.org/licenses/BSD-3-Clause)
+
 Copyright (c) ${YEAR} Tom Carden, Steve Coast, Mikel Maron, Andrew Turner, Henri Bergius, Rob Moran, Derek Fowler, Gary Gale
 All rights reserved.
 
