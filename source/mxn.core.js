@@ -401,7 +401,7 @@ Mapstraction.prototype.swap = function(element,api) {
 	this.api = api;
 	this.onload[api] = [];
 	
-	if (this.maps[this.api] === undefined) {	
+	if (!this.maps.hasOwnProperty(this.api)) {
 		init.apply(this);
 
 		for (var i = 0; i < this.markers.length; i++) {
