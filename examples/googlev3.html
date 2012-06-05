@@ -54,9 +54,6 @@
 		
 		geocoder = new mxn.Geocoder('googlev3',geocode_return);
 		
-		// add image overlay
-		mapstraction.addImageOverlay("over", "http://mapstraction.com/images/santodomingo.png", 50, -70.01544, 18.39777, -69.80567, 18.563517);
-
 		// add a marker
 		var marker = new mxn.Marker(latlon);
 		mapstraction.addMarker(marker,true);
@@ -65,7 +62,7 @@
 
 	function user_submit() {
 		var address = {};
-		address.address = document.getElementById('address').value;
+		address = document.getElementById('address').value;
 		geocoder.geocode(address);
 	}
 	
