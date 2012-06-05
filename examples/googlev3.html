@@ -62,7 +62,7 @@
 
 	function user_submit() {
 		var address = {};
-		address.address = document.getElementById('address').value;
+		address = document.getElementById('address').value;
 		geocoder.geocode(address);
 	}
 	
