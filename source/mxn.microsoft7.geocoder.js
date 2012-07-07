@@ -16,7 +16,7 @@ mxn.register('microsoft7', {
 				}
 				// query is an address object
 				else {
-					_address = [ query.street, query.locality, query.region, query.country ].join(', ');
+					_address = [ query.street, query.locality, query.region, query.country ].join(',');
 				}
 			}
 			// query is an address string
