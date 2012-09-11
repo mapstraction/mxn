@@ -379,11 +379,11 @@ Mapstraction.prototype.dragging = function(on) {
 };
 
 /**
- * Change the current api on the fly
+ * Change the current API on the fly
+ * @param {Object} element The DOM element containing the map
  * @param {String} api The API to swap to
- * @param element
  */
-Mapstraction.prototype.swap = function(element,api) {
+Mapstraction.prototype.swap = function(element, api) {
 	if (this.api === api) {
 		return;
 	}
