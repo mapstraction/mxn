@@ -20,7 +20,7 @@ var init = function() {
  * @name mxn.Mapstraction
  * @constructor
  * @param {String} element The HTML element to replace with a map
- * @param {String} api The API to use, one of 'google', 'googlev3', 'yahoo', 'microsoft', 'openstreetmap', 'multimap', 'map24', 'openlayers', 'mapquest'. If omitted, first loaded provider implementation is used.
+ * @param {String} api The API to use, one of 'google', 'googlev3', 'yahoo', 'microsoft', 'openstreetmap', 'multimap', 'map24', 'openlayers', 'mapquest', 'ovi', 'nokia'. If omitted, first loaded provider implementation is used.
  * @param {Bool} debug optional parameter to turn on debug support - this uses alert panels for unsupported actions
  * @exports Mapstraction as mxn.Mapstraction
  */
