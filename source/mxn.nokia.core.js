@@ -71,7 +71,7 @@ Mapstraction: {
 
 			nokia_map.addListener('mapviewchangeend', function(event) {
 				// The Nokia Maps API doesn't support a "map loaded" event, but both a
-				// "centre" and "size" mapviewchangestart/mapviewchangeupdate/mapviewchangeend
+				// "centre" and "size" mapviewchangestart/mapviewchange/mapviewchangeend
 				// event sequence will be fired as part of the initial loading so we can trap
 				// this and fire the MXN "load" event.
 				
@@ -84,11 +84,15 @@ Mapstraction: {
 						me.load.fire();
 					}
 				}
-				if (eventStates.center) {
-					eventStates.center = false;
-					me.moveendHandler(me);
-					me.endPan.fire();
+				
+				else {
+					if (eventStates.center) {
+						eventStates.center = false;
+						me.moveendHandler(me);
+						me.endPan.fire();
+					}
 				}
+				
 				if (eventStates.zoom) {
 					eventStates.zoom = false;
 					me.changeZoom.fire();
@@ -105,7 +109,13 @@ Mapstraction: {
 	},
 	
 	applyOptions: function() {
-		// TODO
+		var map = this.maps[this.api];
+	    if (this.options.enableScrollWheelZoom) {
+			map.addComponent(new nokia.maps.map.component.zoom.MouseWheel());
+		}
+		else {
+			map.removeComponent(map.getComponentById("zoom.MouseWheel"));
+		}
 	},
 	
 	resizeTo: function(width, height) {
@@ -282,17 +292,17 @@ Mapstraction: {
 	getBounds: function() {
 		var map = this.maps[this.api];
 		var bbox = map.getViewBounds();
-		var sw = bbox.topLeft;
-		var ne = bbox.bottomRight;
+		var nw = bbox.topLeft;
+		var se = bbox.bottomRight;
 
-		return new mxn.BoundingBox(sw.latitude, sw.longitude, ne.latitude, ne.longitude);
+		return new mxn.BoundingBox(se.latitude, nw.longitude, nw.latitude, se.longitude);
 	},
 	
 	setBounds: function(bounds) {
 		var map = this.maps[this.api];
-		var sw = bounds.getSouthWest().toProprietary(this.api);
-		var ne = bounds.getNorthEast().toProprietary(this.api);
-		var nokia_bb = new nokia.maps.geo.BoundingBox(sw, ne);
+		var nw = bounds.getNorthWest().toProprietary(this.api);
+		var se = bounds.getSouthEast().toProprietary(this.api);
+		var nokia_bb = new nokia.maps.geo.BoundingBox(nw, se);
 		var keepCentre = false;
 		
 		map.zoomTo(nokia_bb, keepCentre);

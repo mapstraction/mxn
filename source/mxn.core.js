@@ -1301,6 +1301,8 @@ var BoundingBox = mxn.BoundingBox = function(swlat, swlon, nelat, nelon) {
 	//FIXME throw error if box bigger than world
 	this.sw = new LatLonPoint(swlat, swlon);
 	this.ne = new LatLonPoint(nelat, nelon);
+	this.se = new LatLonPoint(swlat, nelon);
+	this.nw = new LatLonPoint(nelat, swlon);
 };
 
 /**
@@ -1310,6 +1312,24 @@ var BoundingBox = mxn.BoundingBox = function(swlat, swlon, nelat, nelon) {
  */
 BoundingBox.prototype.getSouthWest = function() {
 	return this.sw;
+};
+
+/**
+ * getSouthEast returns a LatLonPoint of the south-east point of the bounding box
+ * @returns the south-east point of the bounding box
+ * @type LatLonPoint
+ */
+BoundingBox.prototype.getSouthEast = function() {
+	return this.se;
+};
+
+/**
+ * getNorthWest returns a LatLonPoint of the north-west point of the bounding box
+ * @returns the north-west point of the bounding box
+ * @type LatLonPoint
+ */
+BoundingBox.prototype.getNorthWest = function() {
+	return this.nw;
 };
 
 /**
