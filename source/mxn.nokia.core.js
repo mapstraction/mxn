@@ -57,7 +57,7 @@ Mapstraction: {
 				}
 			});
 
-			nokia_map.addListener('mapviewchangeupdate', function(event) {
+			nokia_map.addListener('mapviewchange', function(event) {
 				if (event.data & event.MAPVIEWCHANGE_CENTER) {
 					eventStates.center = true;
 				}
@@ -76,9 +76,11 @@ Mapstraction: {
 				// this and fire the MXN "load" event.
 				
 				if (!mapLoaded) {
-					if (eventStates.center && eventStates.mapsize) {
+					if (eventStates.center && eventStates.mapsize && eventStates.zoom) {
 						mapLoaded = true;
 						eventStates.mapsize = false;
+						eventStates.center = false;
+						eventStates.zoom = false;
 						me.load.fire();
 					}
 				}
@@ -216,7 +218,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 
-		map.setCentre(pt);
+		map.setCenter(pt);
 	},
 	
 	setZoom: function(zoom) {
