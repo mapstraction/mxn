@@ -18,7 +18,7 @@
 
 	// Determine which scripts we need to load	
 	for (var i = 0; i < scripts.length; i++) {
-		var match = scripts[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?$/);
+		var match = scripts[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?(.*)$/);
 		if (match !== null) {
 			scriptBase = match[1];
 			if (match[3]) {
