@@ -1143,6 +1143,13 @@ Mapstraction.prototype.applyFilter = function(o, f) {
 				vis = false;
 			}
 			break;
+		case 'in':
+			if ( typeof(o.getAttribute( f[0] )) == 'undefined' ) {
+				vis = false;
+			} else if (o.getAttribute( f[0] ).indexOf( f[2] ) == -1 ) {
+				vis = false;
+			}
+			break;
 	}
 
 	return vis;
