@@ -1,0 +1,198 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Mapstraction Examples - Nokia</title>
+	<script src="http://code.jquery.com/jquery-1.8.2.min.js" type="text/javascript"></script>
+	<script src="http://api.maps.nokia.com/2.2.1/jsl.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../source/mxn.js?(nokia)" type="text/javascript"></script>
+	<meta http-equiv="X-UA-Compatible" content="IE=7; IE=EmulateIE9" />
+	<style type="text/css">
+		html, body, #mapDiv {
+			padding: 0;
+			margin: 0;
+			height: 400px;
+			font-size: 13px;
+			font-family: Helvetica, arial, freesans, clean, sans-serif;
+		}
+	</style>
+	<script type="text/javascript">
+	//<![CDATA[
+	nokia.Settings.set ("appId", "UFWp5rP0M5fBcQzbsbRv");
+	nokia.Settings.set ("authenticationToken", "zqWjwPeH0bOM2jFd2pEsGg");
+	
+	var map;
+	var	polyline;
+	var marker;
+
+	function initialize() {
+		console.log ('init');
+		map = new mxn.Mapstraction('mapDiv', 'nokia');
+		console.log ('done');
+		latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587);
+		map.setCenterAndZoom(latlon, 12);
+	}
+
+	getCenter = function() {
+		var center = map.getCenter();
+		alert(center.lat + " " + center.lon);
+	}
+
+	alertBounds = function() { 
+		var bounds = map.getBounds();
+		var sw = bounds.getSouthWest();
+		var ne = bounds.getNorthEast();
+		alert("SW: " + sw.lat + ", " + sw.lon + ", NE: " + ne.lat + ", " + ne.lon);
+	}
+
+	addMarker = function() {
+		// add a marker
+		marker = new mxn.Marker(map.getCenter());
+		marker.setIcon(
+			"http://api.maps.nokia.com/en/playground/examples/maps/res/markerHouse.png");
+		marker.setIconSize([32,32]);
+		marker.setIconAnchor([0,16]);
+		map.addMarker(marker);
+		// marker.addData({'infoBubble': 'This is a popup'});
+		// marker.openBubble();
+	}
+
+	addPolyline = function() {
+		polyline = new mxn.Polyline([
+			new mxn.LatLonPoint(53.94, 48.96),
+			new mxn.LatLonPoint(53.50, 49.03),
+			new mxn.LatLonPoint(53.41, 49.38),
+			new mxn.LatLonPoint(53.43, 50.02),
+			new mxn.LatLonPoint(53.33, 50.19),
+			new mxn.LatLonPoint(53.26, 50.21),
+			new mxn.LatLonPoint(53.13, 50.05),
+			new mxn.LatLonPoint(53.19, 49.83),
+			new mxn.LatLonPoint(53.11, 49.54),
+			new mxn.LatLonPoint(53.20, 49.20),
+			new mxn.LatLonPoint(53.10, 48.70),
+			new mxn.LatLonPoint(52.93, 48.56),
+			new mxn.LatLonPoint(52.54, 48.26)
+		]);
+		console.log ('Made polyline');
+		polyline.width = 3;
+		polyline.color = '#00DD55';
+		polyline.closed = true;
+		//polyline.fillColor = '#0077ff';
+		polyline.opacity = 0.6;
+		map.addPolyline(polyline);
+		map.setCenterAndZoom(new mxn.LatLonPoint(53.94, 48.96), 7);
+	}
+	
+	
+	//]]>
+	</script>
+</head>
+<body>
+	<div id="mapDiv"></div>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		initialize();
+		$('#set-bounds').click(function() {
+			map.setBounds(new mxn.BoundingBox(51.9,-4.3,52.25,-3.75));
+			return false;
+		});
+		$('#get-bounds').click(function(){
+			alertBounds();
+			return false;
+		});
+		$('#decrement-zoom').click(function(){
+			map.setZoom(map.getZoom() - 1);
+			return false;
+		});
+		$('#increment-zoom').click(function(){
+			map.setZoom(map.getZoom() + 1);
+			return false;
+		});
+		$('#get-zoom').click(function(){
+			alert ('Current zoom level is ' + map.getZoom());
+			return false;
+		});
+
+		$('#get-center').click(function(){
+			getCenter();
+			return false;
+		});
+		$('#set-center').click(function(){
+			map.setCenter(new mxn.LatLonPoint(53.94, 48.96));
+			return false;
+		});
+		$('#pan-center').click(function(){
+			map.setCenter(new mxn.LatLonPoint(38.404196,-123.008194), {pan: true});
+			return false;
+		});
+		
+		$('#set-road').click(function(){
+			map.setMapType(mxn.Mapstraction.ROAD);
+			return false;
+		});
+		$('#set-satellite').click(function(){
+			map.setMapType(mxn.Mapstraction.SATELLITE);
+			return false;
+		});
+		$('#set-hybrid').click(function(){
+			map.setMapType(mxn.Mapstraction.HYBRID);
+			return false;
+		});
+		$('#set-physical').click(function(){
+			map.setMapType(mxn.Mapstraction.PHYSICAL);
+			return false;
+		});
+		$('#add-marker').click(function(){
+			addMarker();
+			return false;
+		});
+		$('#add-polyline').click(function(){
+			addPolyline();
+			return false;
+		});
+		$('#remove-marker').click(function(){
+			map.removeMarker(marker);
+		});
+		$('#remove-polyline').click(function(){
+			map.removePolyline(polyline);
+		});
+		$('#resize-small').click(function(){
+			width = $(window).width() / 2 + "px";
+			height = "200px";
+			map.resizeTo(width,height);
+			return false;
+		});
+		$('#resize-restore').click(function(){
+			width = $(window).width() + "px";
+			height = "400px";
+			map.resizeTo(width,height);
+			return false;
+		});
+		$('#add-controls').click(function(){
+			map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
+			return false;
+		});
+		$('#hide-controls').click(function(){
+			map.addControls({});
+			return false;
+		});
+	});
+	</script>
+	<h2>Demo Functions</h2>
+	<ul>
+		<li><a id="set-bounds" href="#">Click me to set bounds</a>.</li>
+		<li><a id="get-bounds" href="#">click me to get bounds</a>.</li>
+		<li><a id="decrement-zoom" href="#">Click me to decrement zoom</a>.</li>
+		<li><a id="increment-zoom" href="#">Click me to increment zoom</a>.</li>
+		<li><a id="get-zoom" href="#">Click me to get zoom</a>.</li>
+		<li><a id="get-center" href="#">Click me to getCenter</a>.</li>
+		<li><a id="set-center" href="#">Click me to setCenter</a>.</li>
+		<li><a id="pan-center" href="#">Click me to pan to center</a>.</li>
+		<li><a id="add-controls" href="#">Click me to add controls</a>.</li>
+		<li><a id="hide-controls" href="#">Click me to remove controls</a>.</li>
+		<li>Resize map <a id="resize-restore" href="#">original size</a> or <a id="resize-small" href="#">half size</a>.</li>
+		<li>Set basemap to: <a id="set-road" href="#">road</a>, <a id="set-satellite" href="#">satellite</a>, <a id="set-hybrid" href="#">hybrid</a> or <a id="set-physical" href="#">physical</a>.</li>
+		<li>Click me to add a <a id="add-marker" href="#">marker</a> or <a id="add-polyline" href="#">line</a>.</li>
+		<li>Click me to remove a <a id="remove-marker" href="#">marker</a> or <a id="remove-polyline" href="#">line</a>.</li>
+	</ul>
+</body>
+</html>
