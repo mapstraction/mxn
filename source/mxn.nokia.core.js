@@ -257,18 +257,19 @@ Mapstraction: {
 		
 		switch (type) {
 			case mxn.Mapstraction.ROAD:
-				map.set("baseMapType", map.NORMAL);
+				map.set("baseMapType", nokia.maps.map.Display.NORMAL);
 				break;
 			case mxn.Mapstraction.PHYSICAL:
-				map.set("baseMapType", map.TERRAIN);
+				map.set("baseMapType", nokia.maps.map.Display.TERRAIN);
 				break;
 			case mxn.Mapstraction.HYBRID:
-				throw 'Not implemented';
+				map.set("baseMapType", nokia.maps.map.Display.SATELLITE);
+				break;
 			case mxn.Mapstraction.SATELLITE:
-				map.set("baseMapType", map.SATELLITE);
+				map.set("baseMapType", nokia.maps.map.Display.SATELLITE_PLAIN);
 				break;
 			default:
-				map.set("baseMapType", map.NORMAL);
+				map.set("baseMapType", nokia.maps.map.Display.NORMAL);
 				break;
 		}	// end-switch ()
 	},
