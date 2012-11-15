@@ -25,9 +25,7 @@
 	var marker;
 
 	function initialize() {
-		console.log ('init');
 		map = new mxn.Mapstraction('mapDiv', 'nokia');
-		console.log ('done');
 		latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587);
 		map.setCenterAndZoom(latlon, 12);
 	}
@@ -72,7 +70,6 @@
 			new mxn.LatLonPoint(52.93, 48.56),
 			new mxn.LatLonPoint(52.54, 48.26)
 		]);
-		console.log ('Made polyline');
 		polyline.width = 3;
 		polyline.color = '#00DD55';
 		polyline.closed = true;
