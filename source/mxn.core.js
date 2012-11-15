@@ -20,7 +20,7 @@ var init = function() {
  * @name mxn.Mapstraction
  * @constructor
  * @param {String} element The HTML element to replace with a map
- * @param {String} api The API to use, one of 'google', 'googlev3', 'yahoo', 'microsoft', 'openstreetmap', 'multimap', 'map24', 'openlayers', 'mapquest'. If omitted, first loaded provider implementation is used.
+ * @param {String} api The API to use, one of 'google', 'googlev3', 'yahoo', 'microsoft', 'openstreetmap', 'multimap', 'map24', 'openlayers', 'mapquest', 'ovi', 'nokia'. If omitted, first loaded provider implementation is used.
  * @param {Bool} debug optional parameter to turn on debug support - this uses alert panels for unsupported actions
  * @exports Mapstraction as mxn.Mapstraction
  */
@@ -762,7 +762,7 @@ var collectPoints = function(bMarkers, bPolylines, predicate) {
 			}
 		}
 	}
-	
+
 	return points;
 };
 
@@ -1308,6 +1308,8 @@ var BoundingBox = mxn.BoundingBox = function(swlat, swlon, nelat, nelon) {
 	//FIXME throw error if box bigger than world
 	this.sw = new LatLonPoint(swlat, swlon);
 	this.ne = new LatLonPoint(nelat, nelon);
+	this.se = new LatLonPoint(swlat, nelon);
+	this.nw = new LatLonPoint(nelat, swlon);
 };
 
 /**
@@ -1317,6 +1319,24 @@ var BoundingBox = mxn.BoundingBox = function(swlat, swlon, nelat, nelon) {
  */
 BoundingBox.prototype.getSouthWest = function() {
 	return this.sw;
+};
+
+/**
+ * getSouthEast returns a LatLonPoint of the south-east point of the bounding box
+ * @returns the south-east point of the bounding box
+ * @type LatLonPoint
+ */
+BoundingBox.prototype.getSouthEast = function() {
+	return this.se;
+};
+
+/**
+ * getNorthWest returns a LatLonPoint of the north-west point of the bounding box
+ * @returns the north-west point of the bounding box
+ * @type LatLonPoint
+ */
+BoundingBox.prototype.getNorthWest = function() {
+	return this.nw;
 };
 
 /**
@@ -1362,17 +1382,27 @@ BoundingBox.prototype.toSpan = function() {
  * extend extends the bounding box to include the new point
  */
 BoundingBox.prototype.extend = function(point) {
+	var extended = false;
 	if (this.sw.lat > point.lat) {
 		this.sw.lat = point.lat;
+		extended = true;
 	}
 	if (this.sw.lon > point.lon) {
 		this.sw.lon = point.lon;
+		extended = true;
 	}
 	if (this.ne.lat < point.lat) {
 		this.ne.lat = point.lat;
+		extended = true;
 	}
 	if (this.ne.lon < point.lon) {
 		this.ne.lon = point.lon;
+		extended = true;
+	}
+	
+	if (extended) {
+		this.se = new LatLonPoint(this.sw.lat, this.ne.lon);
+		this.nw = new LatLonPoint(this.ne.lat, this.sw.lon);
 	}
 	return;
 };

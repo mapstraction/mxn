@@ -58,7 +58,8 @@ window.Dump = function(obj) {
 		return '(' + obj.lat.toFixed(5) + ','+ obj.lon.toFixed(5) +')';
 	}
 	else if (obj instanceof mxn.BoundingBox) {
-		return 'SW' + Dump(obj.sw) + '<br/>NE' + Dump(obj.ne);
+		return 'SW' + Dump(obj.sw) + '<br/>NE' + Dump(obj.ne) + '<br/>SE ' + Dump(obj.se) + '<br/>NW ' + Dump(obj.nw);
+		
 	}
 	throw 'Not recognised';
 };
