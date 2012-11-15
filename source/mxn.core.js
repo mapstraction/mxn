@@ -762,7 +762,7 @@ var collectPoints = function(bMarkers, bPolylines, predicate) {
 			}
 		}
 	}
-	
+
 	return points;
 };
 
@@ -1375,17 +1375,27 @@ BoundingBox.prototype.toSpan = function() {
  * extend extends the bounding box to include the new point
  */
 BoundingBox.prototype.extend = function(point) {
+	var extended = false;
 	if (this.sw.lat > point.lat) {
 		this.sw.lat = point.lat;
+		extended = true;
 	}
 	if (this.sw.lon > point.lon) {
 		this.sw.lon = point.lon;
+		extended = true;
 	}
 	if (this.ne.lat < point.lat) {
 		this.ne.lat = point.lat;
+		extended = true;
 	}
 	if (this.ne.lon < point.lon) {
 		this.ne.lon = point.lon;
+		extended = true;
+	}
+	
+	if (extended) {
+		this.se = new LatLonPoint(this.sw.lat, this.ne.lon);
+		this.nw = new LatLonPoint(this.ne.lat, this.sw.lon);
 	}
 	return;
 };
