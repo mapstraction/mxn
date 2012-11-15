@@ -458,6 +458,20 @@ Marker: {
 Polyline: {
 	
 	toProprietary: function() {
+		// nokia.maps.map.Polyline
+		// color = nokia.maps.util.Pen.strokeColor
+		// width = nokia.maps.util.Pen.lineWidth
+		// opacity = 
+		// closed = false
+		// fillColor = brush.color
+
+		// nokia.maps.map.Polygon
+		// color = nokia.maps.util.Pen.strokeColor
+		// width = nokia.maps.util.Pen.lineWidth
+		// opacity = 
+		// closed = true
+		// fillColor = nokia.maps.util.Brush.color
+		
 		var	coords = [];
 		
 		for (var i=0, length=this.points.length; i<length; i++) {
@@ -467,26 +481,33 @@ Polyline: {
 		if (this.closed || coords[0].equals(coords[length-1])) {
 			var	polycolor = new mxn.util.Color();
 
-			polycolor.setHexColor(this.color || "#5462E3");
+			polycolor.setHexColor(this.fillColor || "#5462E3");
 
-			var polycolor_rgba = "rgba (" + polycolor.red + "," + polycolor.green + "," +
+			var polycolor_rgba = "rgba(" + polycolor.red + "," + polycolor.green + "," +
 				polycolor.blue + "," + (this.opacity || 1.0) + ")";
+
 			var polygon_options = {
-				'visibility' : true,
-				'fillColor' : polycolor_rgba,
-				'color' : this.color || "#5462E3",
-				'stroke' : 'solid',
-				'width' : this.width || 1
+				visibility: true,
+				pen: {
+					strokeColor: this.color || "#5462E3",
+					lineWidth: this.width || 1
+					 },
+				brush: {
+					fill: 'solid',
+					color: polycolor_rgba
+				}
 			};
+
 			this.proprietary_polyline = new nokia.maps.map.Polygon(coords, polygon_options);
 		}
 		
 		else {
 			var polyline_options = {
-				'visibility' : true,
-				'color' : this.color || "#5462E3",
-				'stroke' : 'solid',
-				'width' : this.width || 1
+				visibility : true,
+				pen: {
+					strokeColor: this.color || "#5462E3",
+					lineWidth: this.width || 1
+				}
 			};
 			this.proprietary_polyline = new nokia.maps.map.Polyline(coords, polyline_options);
 		}
