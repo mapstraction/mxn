@@ -141,20 +141,44 @@ Mapstraction: {
 		
 		// TODO: The Nokia Maps API doesn't currently differentiate between large and small
 		// style of Zoom controls so, for now, make them functionally equivalent
-		if (args.zoom == 'large' || args.zoom == 'small') {
-			map.addComponent(new nokia.maps.map.component.ZoomBar());
+		if ('zoom' in args) {
+			if (args.zoom || args.zoom == 'large' || args.zoom == 'small') {
+				map.addComponent(new nokia.maps.map.component.ZoomBar());
+			}
+			
+			else if (!args.zoom) {
+				map.removeComponent(map.getComponentById("ZoomBar"));
+			}
+		}
+		else {
+			map.removeComponent(map.getComponentById("ZoomBar"));
 		}
 		
-		if (args.overview) {
-			map.addComponent(new nokia.maps.map.component.Overview());
+		if ('overview' in args) {
+			if (args.overview) {
+				map.addComponent(new nokia.maps.map.component.Overview());
+			}
+		}
+		else {
+			map.removeComponent(map.getComponentById("Overview"));
 		}
 		
-		if (args.scale) {
-			map.addComponent(new nokia.maps.map.component.ScaleBar());
+		if ('scale' in args) {
+			if (args.scale) {
+				map.addComponent(new nokia.maps.map.component.ScaleBar());
+			}
+		}
+		else {
+			map.removeComponent(map.getComponentById('ScaleBar'));
 		}
 		
-		if (args.map_type) {
-			map.addComponent(new nokia.maps.map.component.TypeSelector());
+		if ('map_type' in args) {
+			if (args.map_type) {
+				map.addComponent(new nokia.maps.map.component.TypeSelector());
+			}
+		}
+		else {
+			map.removeComponent(map.getComponentById('TypeSelector'));
 		}
 	},
 
