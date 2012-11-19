@@ -368,11 +368,11 @@ Marker: {
 	},
 
 	openBubble: function() {		
-		var infowindow = new Microsoft.Maps.InfoBox({
+		var infowindow = new Microsoft.Maps.Infobox({
 			description: this.infoBubble
 		});
 		
-		this.events.openInfoBubble.fire({'marker': this});
+		this.openInfoBubble.fire({'marker': this});
 		this.map.entities.push(infowindow);
 		infowindow.setOptions({visible: true});
 		this.proprietary_infowindow = infowindow; // Save so we can close it later

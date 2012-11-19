@@ -16,7 +16,7 @@ mxn.register('microsoft7', {
 				}
 				// query is an address object
 				else {
-					_address = [ query.street, query.locality, query.region, query.country ].join(', ');
+					_address = [ query.street, query.locality, query.region, query.country ].join(',');
 				}
 			}
 			// query is an address string
@@ -37,14 +37,14 @@ mxn.register('microsoft7', {
 			}
 			else {
 				var topResult = results.resourceSets[0].resources[0];
-				var return_location = {
+				var return_location = topResult ? {
 					street: topResult.address.addressLine,
 					locality: topResult.address.locality,
 					postcode: topResult.address.postalCode,
 					region: topResult.address.adminDistrict,
 					country: topResult.address.countryRegion,
 					point: new mxn.LatLonPoint(topResult.point.coordinates[0], topResult.point.coordinates[1])			
-				};
+				} : null;
 				this.callback(return_location);
 			}
 		}
