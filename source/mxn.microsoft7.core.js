@@ -179,7 +179,7 @@ Mapstraction: {
 	
 	getZoom: function() {
 		var map = this.maps[this.api];
-		return map.getZoom;
+		return map.getZoom();
 	},
 
 	getZoomLevelForBoundingBox: function( bbox ) {
