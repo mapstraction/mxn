@@ -235,16 +235,16 @@ Mapstraction: {
 	getBounds: function () {
 		var map = this.maps[this.api];
 		var bounds = map.getBounds();
-		var nw = bounds.getNorthwest;
-		var se = bounds.getSoutheast;
+		var nw = bounds.getNorthwest();
+		var se = bounds.getSoutheast();
 		return new mxn.BoundingBox(se.latitude,nw.longitude	,nw.latitude	, se.longitude );
 	},
 
 	setBounds: function(bounds){
 		var map = this.maps[this.api];
-		var sw = bounds.getSouthWest();
-		var ne = bounds.getNorthEast();
-		var viewRect = Microsoft.Maps.LocationRect.fromCorners(new Microsoft.Maps.Location(sw.lat,ne.lon), new Microsoft.Maps.Location(ne.at,sw.lon));
+		var nw = bounds.getNorthWest();
+		var se = bounds.getSouthEast();
+		var viewRect = Microsoft.Maps.LocationRect.fromCorners(new Microsoft.Maps.Location(nw.lat,nw.lon), new Microsoft.Maps.Location(se.lat,se.lon));
 		var options = map.getOptions();
 		options.bounds = viewRect;
 		options.center = null;
@@ -359,7 +359,8 @@ Marker: {
 	},
 
 	openBubble: function() {		
-		var infowindow = new Microsoft.Maps.Infobox({
+		var infowindow = new Microsoft.Maps.Infobox( this.location.toProprietary('microsoft7') ,
+		{
 			description: this.infoBubble
 		});
 		
