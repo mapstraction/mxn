@@ -60,15 +60,14 @@ Mapstraction: {
 	applyOptions: function(){
 		var map = this.maps[this.api];
 		
-		var myOptions = [];
+		var myOptions = map.getOptions();
 		if (!this.options.enableDragging) {
 			myOptions.disablePanning = true;
 		} 
 		if (!this.options.enableScrollWheelZoom) {
 			myOptions.disableZooming = true;
 		} 
-		// map.setOptions(myOptions);
-		// TODO: Add provider code
+		map.setOptions(myOptions);
 	},
 
 	resizeTo: function(width, height){	
@@ -176,18 +175,11 @@ Mapstraction: {
 		var options = map.getOptions();
 		options.zoom = zoom;
 		map.setView(options);
-		
 	},
 	
 	getZoom: function() {
 		var map = this.maps[this.api];
-		var zoom;
-		
-		var options = map.getOptions();
-		zoom = options.zoom;
-		// TODO: Add provider code
-		
-		return zoom;
+		return map.getZoom;
 	},
 
 	getZoomLevelForBoundingBox: function( bbox ) {
@@ -242,10 +234,9 @@ Mapstraction: {
 
 	getBounds: function () {
 		var map = this.maps[this.api];
-		var options = map.getOptions();
-		// TODO: Add provider code
-		var nw = options.bounds.getNorthwest;
-		var se = options.bounds.getSoutheast;
+		var bounds = map.getBounds();
+		var nw = bounds.getNorthwest;
+		var se = bounds.getSoutheast;
 		return new mxn.BoundingBox(se.latitude,nw.longitude	,nw.latitude	, se.longitude );
 	},
 
