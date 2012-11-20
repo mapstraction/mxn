@@ -21,22 +21,27 @@
 		}
 
 		switch ( provider ) {
+			case 'cloudmade':
+				document.write('<script type="text/javascript" src="http://tile.cloudmade.com/wml/latest/web-maps-lite.js"><\/script>');
+				document.write('<script type="text/javascript">');
+				document.write('var cloudmade_key = "6f834cbbf6ea4f3ea798ece100d537b6";');
+				document.write('<\/script>');
+				break;
+
+			case 'geocommons':
+				document.write('<script type="text/javascript" src="http://geocommons.com/javascripts/f1.api.js"><\/script>');
+				break;
+
 			case 'google':
 				document.write( '<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAY70wuSo0zF3ZtJVp5bDm1BS1Y2ErAqCHV5rDhHSzgjy23KqwdRRaoSBuZk72oDzzAYxVBjtsLqSmTw"><\/script>' );
 				break;
 
-			case 'openlayers':
-				document.write( '<script type="text/javascript" src="http://dev.openlayers.org/releases/OpenLayers-2.9.1/OpenLayers.js"><\/script>' );
-				break;
-				
-			case 'openmq':
-				document.write('<script src="http://open.mapquestapi.com/sdk/js/v7.0.s/mqa.toolkit.js"><\/script>');
+			case 'leaflet':
+				document.write('<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=5wTxDW_V34GQjK.7glLG6OnJSRxCvfLj7ktMsuOoR42Gkm16vDVEjjw6FGWJ1Gky"><\/script>');
+				document.write('<link href="http://leaflet.cloudmade.com/dist/leaflet.css" media="all" rel="stylesheet" type="text/css" \/>');
+				document.write('<script src="http://leaflet.cloudmade.com/dist/leaflet.js" type="text/javascript"><\/script>');
 				break;
 
-			case 'yahoo':
-				// already loaded as the default swap target
-				break;
-				
 			case 'microsoft':
 				document.write('<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3&mkt=en-us"><\/script>');
 				break;
@@ -47,16 +52,6 @@
 				document.write('var microsoft_key = "AnSU6Nk1wZm1jU0z_Jnib5uy6ZdCllBorytKk0BBxJY2rBHVZayodUR5DxqLHlzt";');
 				document.write('<\/script>');
 				break;
-				
-			case 'geocommons':
-				document.write('<script type="text/javascript" src="http://geocommons.com/javascripts/f1.api.js"><\/script>');
-				break;
-
-			case 'leaflet':
-				document.write('<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=3.8&appid=5wTxDW_V34GQjK.7glLG6OnJSRxCvfLj7ktMsuOoR42Gkm16vDVEjjw6FGWJ1Gky"><\/script>');
-				document.write('<link href="http://leaflet.cloudmade.com/dist/leaflet.css" media="all" rel="stylesheet" type="text/css" \/>');
-				document.write('<script src="http://leaflet.cloudmade.com/dist/leaflet.js" type="text/javascript"><\/script>');
-				break;
 
 			case 'nokia':
 				document.write('<script src="http://api.maps.nokia.com/2.2.1/jsl.js" type="text/javascript" charset="utf-8"><\/script>');
@@ -65,20 +60,21 @@
 				document.write('nokia.Settings.set ("authenticationToken", "zqWjwPeH0bOM2jFd2pEsGg");');
 				document.write('<\/script>');
 				break;
+
+			case 'openlayers':
+				document.write( '<script type="text/javascript" src="http://dev.openlayers.org/releases/OpenLayers-2.9.1/OpenLayers.js"><\/script>' );
+				break;
 				
+			case 'openmq':
+				document.write('<script src="http://open.mapquestapi.com/sdk/js/v7.0.s/mqa.toolkit.js"><\/script>');
+				break;
+
 			case 'ovi':
 				document.write('<script src="http://api.maps.ovi.com/jsl.js" type="text/javascript" charset="utf-8"><\/script>');
 				break;
 
-			case 'cloudmade':
-				document.write('<script type="text/javascript" src="http://tile.cloudmade.com/wml/latest/web-maps-lite.js"><\/script>');
-				document.write('<script type="text/javascript">');
-				document.write('var cloudmade_key = "6f834cbbf6ea4f3ea798ece100d537b6";');
-				document.write('<\/script>');
-				break;
-
-			case 'geocommons':
-				document.write('<script type="text/javascript" charset="utf-8" src="http://geocommons.com/javascripts/f1.api.js"><\/script>');
+			case 'yahoo':
+				// already loaded as the default swap target
 				break;
 
 			case 'yandex':
@@ -304,18 +300,18 @@
 		<div style="">
 			<h3>Providers</h3>
 			<ul id="providers" >
-				<li><a href="core.html?provider=googlev3">Google v3</a></li>
+				<li><a href="core.html?provider=cloudmade">CloudMade</a></li>
+				<li><a href="core.html?provider=geocommons">GeoCommons / GeoIQ</a></li>
 				<li><a href="core.html?provider=google">Google v2</a></li>
+				<li><a href="core.html?provider=googlev3">Google v3</a></li>
 				<li><a href="core.html?provider=leaflet">Leaflet</a></li>
 				<li><a href="core.html?provider=microsoft">Microsoft v6</a></li>
 				<li><a href="core.html?provider=microsoft7">Microsoft v7</a></li>
-				<li><a href="core.html?provider=openlayers">OpenLayers</a></li>
-				<li><a href="core.html?provider=yahoo">Yahoo</a></li>
 				<li><a href="core.html?provider=nokia">Nokia</a></li>
-				<li><a href="core.html?provider=ovi">Ovi</a></li>
+				<li><a href="core.html?provider=openlayers">OpenLayers</a></li>
 				<li><a href="core.html?provider=openmq">MapQuest Open</a></li>
-				<li><a href="core.html?provider=cloudmade">CloudMade</a></li>
-				<li><a href="core.html?provider=geocommons">GeoCommons / GeoIQ</a></li>
+				<li><a href="core.html?provider=ovi">Ovi</a></li>
+				<li><a href="core.html?provider=yahoo">Yahoo</a></li>
 				<li><a href="core.html?provider=yandex">Yandex</a></li>
 			</ul>
 		</div>
@@ -337,18 +333,19 @@
 			</div>
 		</div>
 		<p id="provider-selection">
-			Run with provider: <a href="?provider=google">google</a>,
+			Run with provider: <a href="?provider=cloudmade">cloudmade</a>,
+			<a href="?provider=geocommons">geocommons</a>.
+			<a href="?provider=google">google</a>,
 			<a href="?provider=googlev3">googlev3</a>,
-			<a href="?provider=openlayers">openlayers</a>,
-			<a href="?provider=yahoo">yahoo</a>,
+			<a href="?provider=leaflet">leaflet</a>,
 			<a href="?provider=microsoft">microsoft</a>,
 			<a href="?provider=microsoft7">microsoft7</a>,
 			<a href="?provider=nokia">nokia</a>,
-			<a href="?provider=ovi">ovi</a>,
+			<a href="?provider=openlayers">openlayers</a>,
 			<a href="?provider=openmq">openmq</a>,
-			<a href="?provider=cloudmade">cloudmade</a>,
-			<a href="?provider=geocommons">geocommons</a>.
-			<a href="?provider=yandex">Yandex</a>.
+			<a href="?provider=ovi">ovi</a>,
+			<a href="?provider=yahoo">yahoo</a>,
+			<a href="?provider=yandex">yandex</a>.
 		</p>
 		</div>
 </body>
