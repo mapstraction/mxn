@@ -39,10 +39,10 @@ window.RunTests = function(ops, actionElm, infoElm) {
 				a.action();
 			}
 			catch(err){
-				infoElm.innerHTML = 'ERROR: ' + err;
+				infoElm.innerHTML += 'ERROR: ' + err;
 				infoElm.style.backgroundColor = '#FCC';
-				clearInterval(intervalID);
-				throw err;
+				//clearInterval(intervalID);
+				//throw err;
 			}
 			a.elm.style.textDecoration = 'line-through';
 			a.elm.style.color = '#AAA';

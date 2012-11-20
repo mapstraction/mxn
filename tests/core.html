@@ -46,7 +46,6 @@
 				document.write('<script type="text/javascript">');
 				document.write('var microsoft_key = "AnSU6Nk1wZm1jU0z_Jnib5uy6ZdCllBorytKk0BBxJY2rBHVZayodUR5DxqLHlzt";');
 				document.write('<\/script>');
-				
 				break;
 				
 			case 'geocommons':
@@ -163,7 +162,7 @@
 			{
 				desc: 'Get info',
 				action: function(){
-					infoElm.innerHTML = 'Info<br/>';
+					infoElm.innerHTML += 'Info<br/>';
 					var bb = m.getBounds();
 					infoElm.innerHTML += 'Bounds:<br/>' + Dump(bb) + '<br/>';
 					var ll = m.getCenter();
@@ -277,7 +276,7 @@
 	<style type="text/css">
 		.box {
 			float: left; 
-			width:300px; 
+			width: 300px; 
 			margin-right: 20px;
 			border: 1px solid #AAA;
 		}
@@ -335,7 +334,6 @@
 				<h2>Events</h2>
 				<div id="events"></div>
 			</div>
-		
 		</div>
 		<p id="provider-selection">
 			Run with provider: <a href="?provider=google">google</a>,
