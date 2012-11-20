@@ -29,6 +29,11 @@ Mapstraction: {
 			this.maps[api] = map;
 			this.setMapType();
 			this.currentMapType = mxn.Mapstraction.ROAD;
+			this.controls =  {
+				zoom: null,
+				map_type: null,
+				scale: null
+			};
 			this.loaded[api] = true;
 		} else {
 			alert(api + ' map script not imported');
@@ -51,27 +56,67 @@ Mapstraction: {
 	},
 
 	addControls: function(args) {
+		/* args = { 
+		 *     pan:      true,
+		 *     zoom:     'large' || 'small',
+		 *     overview: true,
+		 *     scale:    true,
+		 *     map_type: true,
+		 * }
+		 */
+
 		var map = this.maps[this.api];
-		if (args.zoom) {
-			var zoom = new L.Control.Zoom();
-			map.addControl(zoom);
+
+		if ('zoom' in args) {
+			if ((args.zoom || args.zoom == 'large' || args.zoom == 'small') && !this.controls.zoom) {
+				this.controls.zoom = new L.Control.Zoom();
+				map.addControl(this.controls.zoom);
+			}
 		}
-		if (args.map_type) {
-			var layersControl = new L.Control.Layers(this.layers, this.features);
-			map.addControl(layersControl);
+		else {
+			if (this.controls.zoom) {
+				map.removeControl(this.controls.zoom);
+				this.controls.zoom = null;
+			}
+		}
+		
+		if ('map_type' in args) {
+			if (args.map_type && !this.controls.map_type) {
+				this.controls.map_type = new L.Control.Layers(this.layers, this.features);
+				map.addControl(this.controls.map_type);
+			}
+		}
+		else {
+			if (this.controls.map_type) {
+				map.removeControl(this.controls.map_type);
+				this.controls.map_type = null;
+			}
+		}
+
+		if ('scale' in args) {
+			if (args.scale && !this.controls.scale) {
+				this.controls.scale = new L.Control.Scale();
+				map.addControl(this.controls.scale);
+			}
+		}
+		else {
+			if (this.controls.scale) {
+				map.removeControl(this.controls.scale);
+				this.controls.scale = null;
+			}
 		}
 	},
 
 	addSmallControls: function() {
-		this.addControls({zoom: true, map_type: true});
+		this.addControls({zoom: true});
 	},
 
 	addLargeControls: function() {
-		throw 'Not implemented';
+		this.addControls({zoom: true});
 	},
 
 	addMapTypeControls: function() {
-		throw 'Not implemented';
+		this.addControls({map_type: true});
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
@@ -264,7 +309,13 @@ Marker: {
 	
 	toProprietary: function() {
 		var me = this;
-		var thisIcon = L.Icon;
+		var thisIcon = null;
+		if (L.Icon.hasOwnProperty("Default")) {
+			thisIcon = L.Icon.Default;
+		}
+		else {
+			thisIcon = L.Icon;
+		}
 		if (me.iconUrl) {
 			thisIcon = thisIcon.extend({
 				iconUrl: me.iconUrl
