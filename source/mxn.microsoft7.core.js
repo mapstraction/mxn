@@ -60,15 +60,14 @@ Mapstraction: {
 	applyOptions: function(){
 		var map = this.maps[this.api];
 		
-		var myOptions = [];
+		var myOptions = map.getOptions();
 		if (!this.options.enableDragging) {
 			myOptions.disablePanning = true;
 		} 
 		if (!this.options.enableScrollWheelZoom) {
 			myOptions.disableZooming = true;
 		} 
-		// map.setOptions(myOptions);
-		// TODO: Add provider code
+		map.setOptions(myOptions);
 	},
 
 	resizeTo: function(width, height){	
@@ -176,18 +175,12 @@ Mapstraction: {
 		var options = map.getOptions();
 		options.zoom = zoom;
 		map.setView(options);
-		
 	},
 	
 	getZoom: function() {
 		var map = this.maps[this.api];
-		var zoom;
 		
-		var options = map.getOptions();
-		zoom = options.zoom;
-		// TODO: Add provider code
-		
-		return zoom;
+		return map.getZoom();
 	},
 
 	getZoomLevelForBoundingBox: function( bbox ) {
@@ -242,23 +235,22 @@ Mapstraction: {
 
 	getBounds: function () {
 		var map = this.maps[this.api];
-		var options = map.getOptions();
-		// TODO: Add provider code
-		var nw = options.bounds.getNorthwest;
-		var se = options.bounds.getSoutheast;
-		return new mxn.BoundingBox(se.latitude,nw.longitude	,nw.latitude	, se.longitude );
+		var bounds = map.getBounds();
+		var nw = bounds.getNorthwest();
+		var se = bounds.getSoutheast();
+		
+		return new mxn.BoundingBox(se.latitude, nw.longitude, nw.latitude, se.longitude);
 	},
 
 	setBounds: function(bounds){
 		var map = this.maps[this.api];
-		var sw = bounds.getSouthWest();
-		var ne = bounds.getNorthEast();
-		var viewRect = Microsoft.Maps.LocationRect.fromCorners(new Microsoft.Maps.Location(sw.lat,ne.lon), new Microsoft.Maps.Location(ne.at,sw.lon));
+		var nw = bounds.getNorthWest();
+		var se = bounds.getSouthEast();
+		var viewRect = Microsoft.Maps.LocationRect.fromCorners(new Microsoft.Maps.Location(nw.lat, nw.lon), new Microsoft.Maps.Location(se.lat ,se.lon));
 		var options = map.getOptions();
 		options.bounds = viewRect;
 		options.center = null;
 		map.setView(options);
-		
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
@@ -368,9 +360,10 @@ Marker: {
 	},
 
 	openBubble: function() {		
-		var infowindow = new Microsoft.Maps.Infobox({
-			description: this.infoBubble
-		});
+		var infowindow = new Microsoft.Maps.Infobox(this.location.toProprietary('microsoft7'),
+			{
+				description: this.infoBubble
+			});
 		
 		this.openInfoBubble.fire({'marker': this});
 		this.map.entities.push(infowindow);
