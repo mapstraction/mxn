@@ -320,16 +320,12 @@ mxn.register('cloudmade', {
 		openBubble: function() {		
 			var pin = this.proprietary_marker;
 			pin.openInfoWindow(this.infoBubble);
-			this.proprietary_infowindow = pin; // Save so we can close it later
 		},
 
 		closeBubble: function() {
-		if (this.hasOwnProperty('proprietary_infowindow') && this.proprietary_infowindow !== null) {
-			this.proprietary_infowindow.closeInfoWindow();
-			this.proprietary_infowindow = null;
-			this.closeInfoBubble.fire( { 'marker': this } );
-		}
-	},
+			var pin = this.proprietary_marker;
+			pin.closeInfoWindow();
+		},
 		
 		hide: function() {
 			var pin = this.proprietary_marker;
