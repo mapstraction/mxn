@@ -179,6 +179,7 @@ Mapstraction: {
 	
 	getZoom: function() {
 		var map = this.maps[this.api];
+		
 		return map.getZoom();
 	},
 
@@ -237,19 +238,19 @@ Mapstraction: {
 		var bounds = map.getBounds();
 		var nw = bounds.getNorthwest();
 		var se = bounds.getSoutheast();
-		return new mxn.BoundingBox(se.latitude,nw.longitude	,nw.latitude	, se.longitude );
+		
+		return new mxn.BoundingBox(se.latitude, nw.longitude, nw.latitude, se.longitude);
 	},
 
 	setBounds: function(bounds){
 		var map = this.maps[this.api];
 		var nw = bounds.getNorthWest();
 		var se = bounds.getSouthEast();
-		var viewRect = Microsoft.Maps.LocationRect.fromCorners(new Microsoft.Maps.Location(nw.lat,nw.lon), new Microsoft.Maps.Location(se.lat,se.lon));
+		var viewRect = Microsoft.Maps.LocationRect.fromCorners(new Microsoft.Maps.Location(nw.lat, nw.lon), new Microsoft.Maps.Location(se.lat ,se.lon));
 		var options = map.getOptions();
 		options.bounds = viewRect;
 		options.center = null;
 		map.setView(options);
-		
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
@@ -359,10 +360,10 @@ Marker: {
 	},
 
 	openBubble: function() {		
-		var infowindow = new Microsoft.Maps.Infobox( this.location.toProprietary('microsoft7') ,
-		{
-			description: this.infoBubble
-		});
+		var infowindow = new Microsoft.Maps.Infobox(this.location.toProprietary('microsoft7'),
+			{
+				description: this.infoBubble
+			});
 		
 		this.openInfoBubble.fire({'marker': this});
 		this.map.entities.push(infowindow);
