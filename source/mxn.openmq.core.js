@@ -103,18 +103,23 @@ Mapstraction: {
 	},
 
 	addPolyline: function(polyline, old) {
-		var thisapi = this.api;
-		var map = this.maps[thisapi];
+		var map = this.maps[this.api];
+		var	openmq_polyline = null;
+		
 		MQA.withModule('shapes', function() {
-			var pl = polyline.toProprietary(thisapi);
-			map.addShape(pl);
+			openmq_polyline = polyline.toProprietary(this.api);
+			map.addShape(openmq_polyline);
 		});
+		
+		return openmq_polyline;
 	},
 
 	removePolyline: function(polyline) {
 		var map = this.maps[this.api];
 		
-		// TODO: Add provider code
+		MQA.withModule('shapes', function() {
+			map.removeShape(polyline.proprietary_polyline);
+		});
 	},
 	
 	getCenter: function() {
