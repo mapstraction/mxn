@@ -104,12 +104,9 @@ Mapstraction: {
 
 	addPolyline: function(polyline, old) {
 		var map = this.maps[this.api];
-		var	openmq_polyline = null;
-		
-		MQA.withModule('shapes', function() {
-			openmq_polyline = polyline.toProprietary(this.api);
-			map.addShape(openmq_polyline);
-		});
+		var openmq_polyline = polyline.toProprietary(this.api);
+
+		map.addShape(openmq_polyline);
 		
 		return openmq_polyline;
 	},
@@ -117,9 +114,7 @@ Mapstraction: {
 	removePolyline: function(polyline) {
 		var map = this.maps[this.api];
 		
-		MQA.withModule('shapes', function() {
-			map.removeShape(polyline.proprietary_polyline);
-		});
+		map.removeShape(polyline.proprietary_polyline);
 	},
 	
 	getCenter: function() {
