@@ -26,7 +26,7 @@ mxn.register('openlayers', {
 					"http://b.tile.openstreetmap.org/",
 					"http://c.tile.openstreetmap.org/"
 				],
-				{
+				{ 
 					type:'png',
 					getURL: function (bounds) {
 						var res = this.map.getResolution();
@@ -273,42 +273,12 @@ mxn.register('openlayers', {
 		},
 
 		setMapType: function(type) {
-			var map = this.maps[this.api];
-			throw 'Not implemented (setMapType)';
-
-			// switch(type) {
-			//	 case mxn.Mapstraction.ROAD:
-			//	 map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-			//	 break;
-			//	 case mxn.Mapstraction.SATELLITE:
-			//	 map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-			//	 break;
-			//	 case mxn.Mapstraction.HYBRID:
-			//	 map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-			//	 break;
-			//	 default:
-			//	 map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-			// }	 
+			// Only Open Street Map road map is implemented, so you can't change the Map Type
 		},
 
 		getMapType: function() {
-			var map = this.maps[this.api];
-			// TODO: implement actual layer support
+			// Only Open Street Map road map is implemented, so you can't change the Map Type
 			return mxn.Mapstraction.ROAD;
-
-			// var type = map.getMapTypeId();
-			// switch(type) {
-			//	 case google.maps.MapTypeId.ROADMAP:
-			//	 return mxn.Mapstraction.ROAD;
-			//	 case google.maps.MapTypeId.SATELLITE:
-			//	 return mxn.Mapstraction.SATELLITE;
-			//	 case google.maps.MapTypeId.HYBRID:
-			//	 return mxn.Mapstraction.HYBRID;
-			//	 //case google.maps.MapTypeId.TERRAIN:
-			//	 //		return something;
-			//	 default:
-			//	 return null;
-			// }
 		},
 
 		getBounds: function () {
