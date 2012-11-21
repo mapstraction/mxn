@@ -280,8 +280,6 @@ Marker: {
 		var pt = this.location.toProprietary(this.api);
 		var mk = new MQA.Poi(pt);
 		
-		this.open_bubble = false;
-		
 		if (this.iconUrl) {
 			var icon = new MQA.Icon(this.iconUrl, this.iconSize[0], this.iconSize[1]);
 			mk.setIcon(icon);
@@ -301,18 +299,21 @@ Marker: {
 	openBubble: function() {
 		if (this.infoBubble) {
 			this.proprietary_marker.setInfoContentHTML(this.infoBubble);
-			if (!this.open_bubble) {
-				this.open_bubble = true;
+			if (!this.proprietary_marker.infoWindow) {
 				this.proprietary_marker.toggleInfoWindow ();
 			}
+			else {
+				// close
+			}
 		}
-		// TODO: Add provider code
 	},
 
 	closeBubble: function() {
-		if (this.open_bubble) {
+		if (!this.proprietary_marker.infoWindow) {
+			// open
+		}
+		else {
 			this.proprietary_marker.toggleInfoWindow ();
-			this.open_bubble = false;
 		}
 	},
 	
