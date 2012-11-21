@@ -68,7 +68,11 @@
 			</path>
 			<sequential>
 				<propertyregex override="yes" property="minfile" input="@{file}" regexp=".*[\/\\]([a-z0-9\.]+)\.js" replace="\1-min.js"/>
-				<java jar="tools/yui-compressor/yuicompressor-2.4.2.jar" args="-o ${build.dir}/${minfile} @{file}" fork="true" failonerror="true"/>
+				<java jar="tools/yui-compressor/yuicompressor-2.4.2.jar" fork="true" failonerror="true">
+					<arg value="-o"/>
+					<arg value="${build.dir}/${minfile}"/>
+					<arg value="@{file}"/>
+				</java>
 			</sequential>
 		</for>		
 		
