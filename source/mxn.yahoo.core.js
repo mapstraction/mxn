@@ -1,8 +1,15 @@
+function mxn_yahoo_obsoleted () {
+	var msg = 'The Yahoo! Maps API is now obsolete and no longer supported by Mapstraction';
+	alert (msg);
+	throw (msg);
+}
+
 mxn.register('yahoo', {	
 
 Mapstraction: {
-	
-	init: function(element,api) {		
+	init: function(element,api) {
+		mxn_yahoo_obsoleted ();
+
 		var me = this;
 		if (YMap) {
 			this.maps[api] = new YMap(element);
