@@ -1363,8 +1363,10 @@ BoundingBox.prototype.isEmpty = function() {
  * @returns whether point is within this bounding box
  * @type boolean
  */
-BoundingBox.prototype.contains = function(point){
-	return point.lat >= this.sw.lat && point.lat <= this.ne.lat && point.lon >= this.sw.lon && point.lon <= this.ne.lon;
+BoundingBox.prototype.contains = function(point) {
+	return point.lat >= this.sw.lat && point.lat <= this.ne.lat &&
+		((this.sw.lon <= this.ne.lon && point.lon >= this.sw.lon && point.lon <= this.ne.lon) ||
+			(this.sw.lon > this.ne.lon && (point.lon >= this.sw.lon || point.lon <= this.ne.lon)));
 };
 
 /**
@@ -1414,11 +1416,11 @@ BoundingBox.prototype.extend = function(point) {
  * @type boolean
  */
 BoundingBox.prototype.intersects = function(other) {
-	return this.sw.lat <= other.ne.lat && this.ne.lat >= other.sw.lat
-		&& ((this.sw.lon <= this.ne.lon && other.sw.lon <= other.ne.lon && this.sw.lon <= other.ne.lon && this.ne.lon >= other.sw.lon)
-			|| (this.sw.lon > this.ne.lon && other.sw.lon > other.ne.lon)
-			|| (this.sw.lon > this.ne.lon && other.sw.lon <= other.ne.lon && (this.sw.lon <= other.ne.lon || this.ne.lon >= other.sw.lon))
-			|| (this.sw.lon <= this.ne.lon && other.sw.lon > other.ne.lon && (this.ne.lon >= other.sw.lon || this.sw.lon <= other.ne.lon)));
+	return this.sw.lat <= other.ne.lat && this.ne.lat >= other.sw.lat &&
+		((this.sw.lon <= this.ne.lon && other.sw.lon <= other.ne.lon && this.sw.lon <= other.ne.lon && this.ne.lon >= other.sw.lon) ||
+			(this.sw.lon > this.ne.lon && other.sw.lon > other.ne.lon) ||
+			(this.sw.lon > this.ne.lon && other.sw.lon <= other.ne.lon && (this.sw.lon <= other.ne.lon || this.ne.lon >= other.sw.lon)) ||
+			(this.sw.lon <= this.ne.lon && other.sw.lon > other.ne.lon && (this.ne.lon >= other.sw.lon || this.sw.lon <= other.ne.lon)));
 };
 
 //////////////////////////////
