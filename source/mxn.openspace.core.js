@@ -148,7 +148,7 @@ Mapstraction: {
 		var pt = map.getCenter(); // an OpenSpace.MapPoint,
 							  // UK National Grid
 		point = new mxn.LatLonPoint();
-		point.fromOpenSpace(pt);  // convert to LatLonPoint
+		point.fromProprietary('openspace', pt);  // convert to LatLonPoint
 	
 		return point;
 	},
@@ -157,10 +157,10 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 		if(options && options.pan) {
-			map.setCenter(pt.toProprietary(this.api));
+			map.setCenter(pt);
 		}
 		else {
-			map.setCenter(pt.toProprietary(this.api));
+			map.setCenter(pt);
 		}
 	},
 	
@@ -229,18 +229,24 @@ Mapstraction: {
 	},
 
 	getBounds: function () {
+		console.log ('getBounds');
 		var map = this.maps[this.api];
 
 		// array of openspace coords	
 		// left, bottom, right, top
+		console.log ('Calling calculateBounds');
 		var olbox = map.calculateBounds().toArray(); 
+		console.log('Getting ossw');
 		var ossw = new OpenSpace.MapPoint( olbox[0], olbox[1] );
+		console.log('Getting osne');
 		var osne = new OpenSpace.MapPoint( olbox[2], olbox[3] );
 		// convert to LatLonPoints
+		console.log ('Converting SW');
 		var sw = new mxn.LatLonPoint();
-		sw.fromOpenSpace(ossw);
+		sw.fromProprietary('openspace', ossw);
+		console.log ('Converting NE');
 		var ne = new mxn.LatLonPoint();
-		ne.fromOpenSpace(osne);
+		ne.fromProprietary('openspace', osne);
 		return new mxn.BoundingBox(sw.lat, sw.lon, ne.lat, ne.lon);
 	},
 
@@ -330,6 +336,7 @@ LatLonPoint: {
 	},
 	
 	fromProprietary: function(osPoint) {
+		console.log ('LatLonPoint::fromProprietary');
 		var gridProjection = new OpenSpace.GridProjection();
 		var olpt = gridProjection.getLonLatFromMapPoint(osPoint); 
 		// an OpenLayers.LonLat
@@ -363,9 +370,8 @@ Marker: {
 		if(this.iconUrl) {
 			icon = new OpenSpace.Icon(this.iconUrl, size, anchor);
 		}
-		else { // leave at default OpenSpace icon
-		}
 	
+		var marker = 
 		// This requires an OpenLayers specific hack, doesn't work when
 		// not including OpenLayers.js
 		OpenLayers.Marker.Label(this.location.toProprietary(this.api), icon,
