@@ -78,6 +78,10 @@
 			case 'openmq':
 				document.write('<script src="http://open.mapquestapi.com/sdk/js/v7.0.s/mqa.toolkit.js"><\/script>');
 				break;
+				
+			case 'openspace':
+				document.write('<script type="text/javascript" src="http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key=CEEFBE51588492CBE0405F0ACA6010B1"><\/script>');
+				break;
 
 			case 'ovi':
 				document.write('<script src="http://api.maps.ovi.com/jsl.js" type="text/javascript" charset="utf-8"><\/script>');
@@ -156,22 +160,47 @@
 			{ 
 				desc: 'Center map', 
 				action: function(){
-					m.setCenterAndZoom(new mxn.LatLonPoint(37.4419, -122.1419), 10);
+					var point;
+					var zoom;
+					switch (provider) {
+						case 'openspace':
+							point = new mxn.LatLonPoint(52.6959, 1.6846);
+							zoom = 12;
+							break;
+						default:
+							point = new mxn.LatLonPoint(37.4419, -122.1419);
+							zoom = 9;
+							break;
+					}
+					m.setCenterAndZoom(point, zoom);
 				} 
 			},		 
 			{
 				desc: 'Pan map',
 				action: function(){
-					m.setCenter(new mxn.LatLonPoint(37.3419, -122.0419), {pan: true});
+					var point;
+					switch (provider) {
+						case 'openspace':
+							point = new mxn.LatLonPoint(51.4269, -0.3339);
+							break;
+						default:
+							point = new mxn.LatLonPoint(37.3419, -122.0419);
+							break;
+					}
+					
+					m.setCenter(point, {pan: true});
 				}
 			},
 			{
 				desc: 'Get info',
 				action: function(){
+					console.log ('Get info');
 					infoElm.innerHTML += 'Info<br/>';
 					var bb = m.getBounds();
+					console.log ('Got bounds');
 					infoElm.innerHTML += 'Bounds:<br/>' + Dump(bb) + '<br/>';
 					var ll = m.getCenter();
+					console.log ('Got center');
 					infoElm.innerHTML += 'Center: ' + Dump(ll) + '<br/>';
 					infoElm.innerHTML += 'Map type: ' + m.getMapType() + '<br/>';
 					infoElm.innerHTML += 'Zoom: ' + m.getZoom() + '<br/>';
@@ -180,7 +209,16 @@
 			{
 				desc: 'Set zoom',
 				action: function(){
-					m.setZoom(8);
+					var zoom;
+					switch (provider) {
+						case 'openspace':
+							zoom = 9;
+							break;
+						default:
+							zoom = 8;
+							break;
+					}
+					m.setZoom(zoom);
 				}
 			},
 			{
@@ -192,7 +230,16 @@
 			{
 				desc: 'Add marker',
 				action: function(){
-					var mkr = new mxn.Marker(new mxn.LatLonPoint(37.3419, -122.0419));
+					var point;
+					switch (provider) {
+						case 'openspace':
+							point = new mxn.LatLonPoint(51.40995, -0.33627);
+							break;
+						default:
+							point = new mxn.LatLonPoint(37.3419, -122.0419);
+							break;
+					}
+					var mkr = new mxn.Marker(point);
 					mkr.setLabel('Some random place');
 					mkr.setInfoBubble('Some information about the random place');
 					mkr.click.addHandler(markerEventHandler);
@@ -216,7 +263,16 @@
 			{
 				desc: 'Add marker offscreen',
 				action: function(){
-					var mkr = new mxn.Marker(new mxn.LatLonPoint(37.3419, -117.0419));
+					var marker;
+					switch (provider) {
+						case 'openspace':
+							point = new mxn.LatLonPoint(50.54157, -4.93825);
+							break;
+						default:
+							point = new mxn.LatLonPoint(37.3419, -117.0419);
+							break;
+					}
+					var mkr = new mxn.Marker(point);
 					mkr.setLabel('Some other place');
 					m.addMarker(mkr);
 				}
@@ -230,12 +286,25 @@
 			{
 				desc: 'Add line',
 				action: function(){
-					var pl = new mxn.Polyline([
-						new mxn.LatLonPoint(37.3419, -122.0419),
-						new mxn.LatLonPoint(36.3419, -120.0419),
-						new mxn.LatLonPoint(38.3419, -119.0419),
-						new mxn.LatLonPoint(37.3419, -117.0419)
-					]);
+					var pl;
+					switch (provider) {
+						case 'openspace':
+							pl = new mxn.Polyline([
+								new mxn.LatLonPoint(51.40995, -0.33627),
+								new mxn.LatLonPoint(51.4545, -2.5879),
+								new mxn.LatLonPoint(50.72363, -3.53440),
+								new mxn.LatLonPoint(50.54157, -4.93825)
+							]);
+							break;
+						default:
+							pl = new mxn.Polyline([
+								new mxn.LatLonPoint(37.3419, -122.0419),
+								new mxn.LatLonPoint(36.3419, -120.0419),
+								new mxn.LatLonPoint(38.3419, -119.0419),
+								new mxn.LatLonPoint(37.3419, -117.0419)
+							]);
+							break;
+					}
 					pl.color = '#00DD55';
 					m.addPolyline(pl);
 				}
@@ -243,6 +312,7 @@
 			{
 				desc: 'Add controls',
 				action: function() {
+					console.log ('Add controls');
 					m.addLargeControls();
 					m.addControls({
 						pan:	 true,

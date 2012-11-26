@@ -4,32 +4,63 @@ Mapstraction: {
 
 	init: function(element, api) {
 		var me = this;
-		// create the map with no controls and don't centre popup info window
-		this.maps[api] = new OpenSpace.Map(element,{
-				controls: [],
-				centreInfoWindow: false
-		});
-		// note that these three controls are always there and the fact that 
-		// there are three resident controls is used in addControls()
-		// enable map drag with mouse and keyboard
-		this.maps[api].addControl(new OpenLayers.Control.Navigation());
-		this.maps[api].addControl(new OpenLayers.Control.KeyboardDefaults());
-		// include copyright statement
-		this.maps[api].addControl(new OpenSpace.Control.CopyrightCollection());
 		
-		this.maps[api].events.register(
-			"click", 
-			this.maps[api],
-			function(evt) {
-				var point = this.getLonLatFromViewPortPx( evt.xy );
-				// convert to LatLonPoint
-				var llPoint = new mxn.LatLonPoint();
-				llPoint.fromProprietary(this.api, point);
-				me.clickHandler( llPoint.lat, llPoint.lon );
-				return false;
+		if (typeof(OpenLayers) == "undefined") {
+			alert('OpenLayers is not loaded but is required to work with OpenSpace');
+		}
+		
+		else if (OpenSpace) {
+			//FIX STUPID OPENSPACE BUG IN openspace Version 1.2 - is triggered by Mapstraction Core Tests when adding a marker with label text
+			if (typeof (OpenLayers.Marker.prototype.setDragMode) == "undefined")
+			{
+				OpenLayers.Marker.prototype.setDragMode = function(mode) {
+					if (this.eventObj) {
+						if (mode) {
+							this.events.unregister("mousedown", this.eventObj, this.eventFunc);
+						} 
+						else {
+							if (this.events.listeners.mousedown.length === 0) {
+								this.events.register("mousedown", this.eventObj, this.eventFunc);
+							}
+						}
+					}
+				};
 			}
-		);
-		this.loaded[api] = true;
+
+			// create the map with no controls and don't centre popup info window
+			this.maps[api] = new OpenSpace.Map(element,{
+					controls: [],
+					centreInfoWindow: false
+			});
+			// note that these three controls are always there and the fact that 
+			// there are three resident controls is used in addControls()
+			// enable map drag with mouse and keyboard
+			this.maps[api].addControl(new OpenLayers.Control.Navigation());
+			this.maps[api].addControl(new OpenLayers.Control.KeyboardDefaults());
+			// include copyright statement
+			this.maps[api].addControl(new OpenSpace.Control.CopyrightCollection());
+			this.maps[api].addControl(new OpenSpace.Control.PoweredBy());
+		
+			this.maps[api].events.register(
+				"click", 
+				this.maps[api],
+				function(evt) {
+					var point = this.getLonLatFromViewPortPx( evt.xy );
+					// convert to LatLonPoint
+					var llPoint = new mxn.LatLonPoint();
+					llPoint.fromProprietary(this.api, point);
+					me.clickHandler( llPoint.lat, llPoint.lon );
+					return false;
+				}
+			);
+			
+			this.poly_layer = new OpenLayers.Layer.Vector('Poly Layer');
+			this.loaded[api] = true;
+		}
+	
+		else {
+			alert (api + ' map script not imported');
+		}
 	},
 	
 	applyOptions: function(){
@@ -102,22 +133,21 @@ Mapstraction: {
 		else if (oszoom>10) {
 			oszoom = 10;
 		}
-		map.setCenter(pt, oszoom);
+		map.setCenter(pt, oszoom, false, false);
 	},
 	
 	addMarker: function(marker, old) {
 		var map = this.maps[this.api];
-		var pin = marker.toProprietary(this.api);
-	
-		map.addOverlay(pin);
+		var loc = marker.location.toProprietary(this.api);
+		var pin = map.createMarker(loc, null, marker.labelText);
 	
 		return pin;
 	},
 
 	removeMarker: function(marker) {
 		var map = this.maps[this.api];
-	
-		// TODO: Add provider code
+		
+		map.removeMarker(marker.toProprietary(this.api));
 	},
 	
 	declutterMarkers: function(opts) {
@@ -130,38 +160,33 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var pl = polyline.toProprietary(this.api);
 
-		// TODO: Add provider code
+		this.poly_layer.addFeatures([pl]);
+		map.addLayer(this.poly_layer);
 
 		return pl;
 	},
 
 	removePolyline: function(polyline) {
 		var map = this.maps[this.api];
-	
-		// TODO: Add provider code
+		var pl = polyline.toProprietary(this.api);
+
+		map.removeFeatures([pl]);
 	},
 	
 	getCenter: function() {
 		var point;
 		var map = this.maps[this.api];
 	
-		var pt = map.getCenter(); // an OpenSpace.MapPoint,
-							  // UK National Grid
-		point = new mxn.LatLonPoint();
-		point.fromProprietary('openspace', pt);  // convert to LatLonPoint
-	
-		return point;
+		var pt = map.getCenter(); // an OpenSpace.MapPoint, National Grid
+		var gridProjection = new OpenSpace.GridProjection();
+		var center = gridProjection.getLonLatFromMapPoint(pt);
+		return new mxn.LatLonPoint(center.lat, center.lon);
 	},
 
 	setCenter: function(point, options) {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
-		if(options && options.pan) {
-			map.setCenter(pt);
-		}
-		else {
-			map.setCenter(pt);
-		}
+		map.setCenter(pt);
 	},
 	
 	setZoom: function(zoom) {
@@ -203,29 +228,11 @@ Mapstraction: {
 	},
 
 	setMapType: function(type) {
-		var map = this.maps[this.api];
-		switch(type) {
-		case mxn.Mapstraction.ROAD:
-			// TODO: Add provider code
-			break;
-		case mxn.Mapstraction.SATELLITE:
-			// TODO: Add provider code
-			break;
-		case mxn.Mapstraction.HYBRID:
-			// TODO: Add provider code
-			break;
-		default:
-			// TODO: Add provider code
-		}
+		// OpenSpace only supports a single ROAD tile layer
 	},
 
 	getMapType: function() {
-		var map = this.maps[this.api];
-	
-		// TODO: Add provider code
-		//return mxn.Mapstraction.ROAD;
-		//return mxn.Mapstraction.SATELLITE;
-		//return mxn.Mapstraction.HYBRID;
+		return mxn.Mapstraction.ROAD;
 	},
 
 	getBounds: function () {
@@ -371,19 +378,18 @@ Marker: {
 			icon = new OpenSpace.Icon(this.iconUrl, size, anchor);
 		}
 	
-		var marker = 
-		// This requires an OpenLayers specific hack, doesn't work when
-		// not including OpenLayers.js
-		OpenLayers.Marker.Label(this.location.toProprietary(this.api), icon,
-				this.labelText, {mouseOver:true,tooltipsFormat:true});
-		
-		var marker = new OpenLayers.Marker(this.location.toProprietary(this.api), icon);
+		var marker = new OpenLayers.Marker(this.location.toProprietary(this.api), icon, this.labelText, new OpenLayers.Size(300,100));
 		
 		return marker;
 	},
 
 	openBubble: function() {
-		// TODO: Add provider code
+		//this.map.openInfoWindow(this.proprietary_marker.icon, this.location.toProprietary(this.api), this.infoBubble, new OpenLayers.Size(300,200));
+		this.map.openInfoWindow(this.proprietary_marker.icon, this.location.toProprietary(this.api), this.infoBubble);
+	},
+	
+	closeBubble: function() {
+		this.map.closeInfoWindow();
 	},
 
 	hide: function() {
@@ -415,11 +421,11 @@ Polyline: {
 				new OpenLayers.Geometry.LinearRing(ospoints), 
 				null,
 				{
-					fillColor: this.color,
-					strokeColor: this.color,
-					strokeOpacity: this.opacity,
-					fillOpacity: this.opacity,
-					strokeWidth: this.width
+					fillColor: (this.fillColor || "#5462E3"),
+					strokeColor: (this.color || "#5462E3"),
+					strokeOpacity: (this.opacity || 1.0),
+					fillOpacity: (this.opacity || 1.0),
+					strokeWidth: (this.width || 1)
 				}
 			);
 		}
@@ -428,11 +434,11 @@ Polyline: {
 				new	OpenLayers.Geometry.LineString(ospoints),
 				null, 
 				{
-				   fillColor: 0,
-				   strokeColor: this.color,
-				   strokeOpacity: this.opacity,
-				   fillOpacity: 0,
-				   strokeWidth: this.width
+				   fillColor: (this.fillColor || "#5462E3"),
+				   strokeColor: (this.color || "#5462E3"),
+				   strokeOpacity: (this.opacity || 1.0),
+				   fillOpacity: (this.opacity || 1.0),
+				   strokeWidth: (this.width || 1)
 				}
 			);
 		}
