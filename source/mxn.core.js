@@ -1407,6 +1407,20 @@ BoundingBox.prototype.extend = function(point) {
 	return;
 };
 
+/**
+ * intersects finds whether a given bounding box intersects another bounding box
+ * @param {BoundingBox} the bounding box to test with
+ * @returns whether the bounding box overlaps the other bounding box
+ * @type boolean
+ */
+BoundingBox.prototype.intersects = function(other) {
+	return this.sw.lat <= other.ne.lat && this.ne.lat >= other.sw.lat
+		&& ((this.sw.lon <= this.ne.lon && other.sw.lon <= other.ne.lon && this.sw.lon <= other.ne.lon && this.ne.lon >= other.sw.lon)
+			|| (this.sw.lon > this.ne.lon && other.sw.lon > other.ne.lon)
+			|| (this.sw.lon > this.ne.lon && other.sw.lon <= other.ne.lon && (this.sw.lon <= other.ne.lon || this.ne.lon >= other.sw.lon))
+			|| (this.sw.lon <= this.ne.lon && other.sw.lon > other.ne.lon && (this.ne.lon >= other.sw.lon || this.sw.lon <= other.ne.lon)));
+};
+
 //////////////////////////////
 //
 //  Marker
