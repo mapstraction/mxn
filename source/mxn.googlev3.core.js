@@ -361,8 +361,16 @@ Mapstraction: {
 		tilelayers[0] = {
 			getTileUrl: function (coord, zoom) {
 				url = tile_url;
+				var x = coord.x;
+				var maxX = Math.pow(2, zoom);
+				while (x < 0) {
+					x += maxX;
+				}
+				while (x >= maxX) {
+					x -= maxX;
+				}
 				url = url.replace(/\{Z\}/g, zoom);
-				url = url.replace(/\{X\}/g, coord.x);
+				url = url.replace(/\{X\}/g, x);
 				url = url.replace(/\{Y\}/g, coord.y);
 				return url;
 			},
