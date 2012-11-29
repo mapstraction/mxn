@@ -114,7 +114,10 @@ Mapstraction: {
 			map.addComponent(new nokia.maps.map.component.zoom.MouseWheel());
 		}
 		else {
-			map.removeComponent(map.getComponentById("zoom.MouseWheel"));
+			var cid = map.getComponentById('zoom.MouseWheel');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
 		}
 	},
 	
@@ -147,11 +150,17 @@ Mapstraction: {
 			}
 			
 			else if (!args.zoom) {
-				map.removeComponent(map.getComponentById("ZoomBar"));
+				var cid = map.getComponentById('ZoomBar');
+				if (cid !== null) {
+					map.removeComponent(cid);
+				}
 			}
 		}
 		else {
-			map.removeComponent(map.getComponentById("ZoomBar"));
+			var cid = map.getComponentById('ZoomBar');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
 		}
 		
 		if ('overview' in args) {
@@ -160,7 +169,10 @@ Mapstraction: {
 			}
 		}
 		else {
-			map.removeComponent(map.getComponentById("Overview"));
+			var cid = map.getComponentById('Overview');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
 		}
 		
 		if ('scale' in args) {
@@ -169,7 +181,10 @@ Mapstraction: {
 			}
 		}
 		else {
-			map.removeComponent(map.getComponentById('ScaleBar'));
+			var cid = map.getComponentById('ScaleBar');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
 		}
 		
 		if ('map_type' in args) {
@@ -178,7 +193,10 @@ Mapstraction: {
 			}
 		}
 		else {
-			map.removeComponent(map.getComponentById('TypeSelector'));
+			var cid = map.getComponentById('TypeSelector');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
 		}
 	},
 
