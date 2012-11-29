@@ -614,6 +614,7 @@ Mapstraction.prototype.removeMarker = function(marker) {
 	for(var i = 0; i < this.markers.length; i++){
 		current_marker = this.markers[i];
 		if(marker == current_marker) {
+			marker.closeBubble();
 			this.invoker.go('removeMarker', arguments);
 			marker.onmap = false;
 			this.markers.splice(i, 1);
