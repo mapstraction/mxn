@@ -952,6 +952,9 @@ Mapstraction.prototype.addJSON = function(json) {
 				break;
 			case "Polygon":
 				var points = [];
+				for (i = 0; i < item.geometry.coordinates[0].length; i++) {
+					points.push(new LatLonPoint(item.geometry.coordinates[0][i][1], item.geometry.coordinates[0][i][0]));
+				}
 				polyline = new Polyline(points);
 				mapstraction.addPolylineWithData(polyline,{
 					fillColor : item.poly_color,
@@ -960,7 +963,7 @@ Mapstraction.prototype.addJSON = function(json) {
 					width : item.line_width,
 					opacity : item.line_opacity,
 					color : item.line_color,
-					polygon : true
+					closed : points[points.length-1].equals(points[0]) //first point = last point in the polygon so its closed
 				});
 				markers.push(polyline);
 				break;
