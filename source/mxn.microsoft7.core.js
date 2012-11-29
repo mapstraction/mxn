@@ -202,10 +202,10 @@ Mapstraction: {
 		switch (type) {
 			case mxn.Mapstraction.ROAD:
 				options.mapTypeId = Microsoft.Maps.MapTypeId.road;
-				
 				break;
 			case mxn.Mapstraction.SATELLITE:
 				options.mapTypeId = Microsoft.Maps.MapTypeId.aerial;
+				options.labelOverlay = Microsoft.Maps.LabelOverlay.hidden;
 				break;
 			case mxn.Mapstraction.HYBRID:
 				options.mapTypeId = Microsoft.Maps.MapTypeId.birdseye;
@@ -405,9 +405,13 @@ Polyline: {
 		}
 		
 		var strokeColor = Microsoft.Maps.Color.fromHex(this.color || '#000000');
-		strokeColor.a = this.opacity * 255;
+		if (this.opacity) {
+			strokeColor.a = this.opacity * 255;
+		}
 		var fillColor = Microsoft.Maps.Color.fromHex(this.fillColor || '#000000');
-		fillColor.a = this.fillOpacity * 255;
+		if (this.opacity) {
+			fillColor.a = this.opacity * 255;
+		}
 		
 		var polyOptions = {
 			strokeColor: strokeColor,
