@@ -1236,12 +1236,19 @@ mxn.addProxyMethods(LatLonPoint, [
 ], true);
 
 /**
- * toString returns a string represntation of a point
- * @returns a string like '51.23, -0.123'
+ * toString returns a string representation of a point
+ * @name mxn.LatLonPoint#toString
+ * @param {Number} places Optional number of decimal places to display for the lat and long
+ * @returns A string like '51.23, -0.123'
  * @type String
  */
-LatLonPoint.prototype.toString = function() {
-	return this.lat + ', ' + this.lon;
+LatLonPoint.prototype.toString = function(places) {
+	if (typeof places !== 'undefined') {
+		return this.lat.toFixed(places) + ', ' + this.lon.toFixed(places);
+	}
+	else {
+		return this.lat + ', ' + this.lon;
+	}
 };
 
 /**
@@ -1379,6 +1386,29 @@ BoundingBox.prototype.toSpan = function() {
 };
 
 
+/**
+ * toString returns a string representation of a bounding box
+ * @name mxn.BoundingBox#toString
+ * @param {Number} places Optional number of decimal places to display for each lat and long
+ * @returns a string like 'SW: 52.62647572585443, 41.90677719368304, NE: 55.21343254471387, 56.01322251932069'
+ * @type String
+ */
+BoundingBox.prototype.toString = function(places) {
+	var sw;
+	var ne;
+	
+	if (typeof places !== 'undefined') {
+		sw = this.sw.toString(places);
+		ne = this.ne.toString(places);
+	}
+	else {
+
+		sw = this.sw;
+		ne = this.ne;
+	}
+
+	return 'SW: ' + sw +  ', NE: ' + ne;
+};
 
 /**
  * extend extends the bounding box to include the new point
