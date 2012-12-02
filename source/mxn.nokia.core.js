@@ -137,6 +137,7 @@ Mapstraction: {
 		 */
 
 		var map = this.maps[this.api];
+		var cid = null;
 		
 		if (args.pan) {
 			map.addComponent(new nokia.maps.map.component.Behavior());
@@ -150,14 +151,14 @@ Mapstraction: {
 			}
 			
 			else if (!args.zoom) {
-				var cid = map.getComponentById('ZoomBar');
+				cid = map.getComponentById('ZoomBar');
 				if (cid !== null) {
 					map.removeComponent(cid);
 				}
 			}
 		}
 		else {
-			var cid = map.getComponentById('ZoomBar');
+			cid = map.getComponentById('ZoomBar');
 			if (cid !== null) {
 				map.removeComponent(cid);
 			}
@@ -169,7 +170,7 @@ Mapstraction: {
 			}
 		}
 		else {
-			var cid = map.getComponentById('Overview');
+			cid = map.getComponentById('Overview');
 			if (cid !== null) {
 				map.removeComponent(cid);
 			}
@@ -181,7 +182,7 @@ Mapstraction: {
 			}
 		}
 		else {
-			var cid = map.getComponentById('ScaleBar');
+			cid = map.getComponentById('ScaleBar');
 			if (cid !== null) {
 				map.removeComponent(cid);
 			}
@@ -193,7 +194,7 @@ Mapstraction: {
 			}
 		}
 		else {
-			var cid = map.getComponentById('TypeSelector');
+			cid = map.getComponentById('TypeSelector');
 			if (cid !== null) {
 				map.removeComponent(cid);
 			}
