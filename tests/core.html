@@ -124,6 +124,22 @@
 		POLYLINE_ADDED: {name: 'polylineAdded', value: false},
 		POLYLINE_REMOVED: {name: 'polylineRemoved', value: false}
 	};
+
+	function logInfo(msg) {
+		logMessage ('info', msg);
+	}
+	
+	function logEvent(msg) {
+		logMessage ('events', msg);
+	}
+
+	function logMessage(element, msg) {
+		var	display = document.getElementById(element);
+		
+		display.innerHTML += msg + '<br />';
+		display.scrollTop = display.scrollHeight - display.clientHeight;
+		return false;
+	}
 	
 	var m;
 	window.onload = function() {
@@ -138,7 +154,7 @@
 		// call to setCenter after map load, not the actual loading itself)
 
 		m.load.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-			eventsElm.innerHTML += 'Map loaded for provider: ' + oEvtSource.api + '<br/>';
+			logEvent('Map loaded for provider: ' + oEvtSource.api);
 			events.LOAD.value = true;
 		});
 
@@ -147,42 +163,42 @@
 
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var center = oEvtSource.getCenter();
-			eventsElm.innerHTML += 'Map pan: ' + Dump(center) + '<br/>';
+			logEvent('Map pan: ' + Dump(center));
 			events.END_PAN.value = true;
 		});
 		
 		m.changeZoom.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var zoom = oEvtSource.getZoom();
-			eventsElm.innerHTML += 'Change zoom: ' + zoom.toString() + '<br/>';
+			logEvent('Change zoom: ' + zoom.toString());
 			events.CHANGE_ZOOM.value = true;
 		});
 		
 		m.markerAdded.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-			eventsElm.innerHTML += 'Marker added: ' + oEvtArgs.marker.labelText + '<br/>';
+			logEvent('Marker added: ' + oEvtArgs.marker.labelText);
 			events.MARKER_ADDED.value = true;
 		});
 		
 		m.markerRemoved.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-			eventsElm.innerHTML += 'Marker removed: ' + oEvtArgs.marker.labelText + '<br/>';
+			logEvent('Marker removed: ' + oEvtArgs.marker.labelText);
 			events.MARKER_REMOVED.value = true;
 		});
 
 		m.polylineAdded.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-			eventsElm.innerHTML += 'Polyline added.<br/>';
+			logEvent('Polyline added');
 			events.POLYLINE_ADDED.value = true;
 		});
 
 		m.polylineRemoved.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-			eventsElm.innerHTML += 'Polyline removed.<br/>';
+			logEvent('Polyline removed');
 			events.POLYLINE_REMOVED.value = true;
 		});
 
 		m.click.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
-			eventsElm.innerHTML += 'Map clicked: ' + Dump(oEvtArgs.location) + '<br/>';
+			logEvent('Map clicked: ' + Dump(oEvtArgs.location));
 		});
 		
 		var markerEventHandler = function(sEvtName, oEvtSource, oEvtArgs){
-			eventsElm.innerHTML += 'Marker event: ' + sEvtName + ' - ' + oEvtSource.labelText + '<br/>';
+			logEvent('Marker event: ' + sEvtName + ' - ' + oEvtSource.labelText);
 		};
 				
 		var ops = [
@@ -223,13 +239,13 @@
 			{
 				desc: 'Get info',
 				action: function(){
-					infoElm.innerHTML += 'Info<br/>';
+					logInfo('Info');
 					var bb = m.getBounds();
-					infoElm.innerHTML += 'Bounds:<br/>' + Dump(bb) + '<br/>';
+					logInfo('Bounds:<br/>' + Dump(bb));
 					var ll = m.getCenter();
-					infoElm.innerHTML += 'Center: ' + Dump(ll) + '<br/>';
-					infoElm.innerHTML += 'Map type: ' + m.getMapType() + '<br/>';
-					infoElm.innerHTML += 'Zoom: ' + m.getZoom() + '<br/>';
+					logInfo('Center: ' + Dump(ll));
+					logInfo('Map type: ' + m.getMapType());
+					logInfo('Zoom: ' + m.getZoom());
 				}
 			},
 			{
@@ -405,11 +421,11 @@
 						var props = events[evt];
 
 						if (props.value) {
-							infoElm.innerHTML += 'Event: ' + props.name + ' passed<br />';
+							logInfo('Event: ' + props.name + ' passed');
 						}
 						else {
 							infoElm.style.backgroundColor = '#FCC';
-							infoElm.innerHTML += 'Event: ' + props.name + ' failed<br />';
+							logInfo('Event: ' + props.name + ' failed');
 						}
 					}
 				}
@@ -418,7 +434,7 @@
 			{
 				desc: 'Swap API',
 				action: function(){
-					if (provider == 'googlev3') {
+					if (provider == 'googlev3' || provider == 'google') {
 						m.swap('map', 'nokia');
 					}
 					else {
