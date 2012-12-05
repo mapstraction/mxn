@@ -28,11 +28,14 @@ mxn.register('cloudmade', {
 					me.clickHandler(location.lat(),location.lng(),location,me);
 				}
 			});
-			CM.Event.addListener(this.maps[api], 'dragend', function() {
+			CM.Event.addListener(this.maps[api], 'moveend', function() {
 				me.endPan.fire();
 			});
 			CM.Event.addListener(this.maps[api], 'zoomend', function() {
 				me.changeZoom.fire();
+			});
+			CM.Event.addListener(this.maps[api], 'load', function() {
+				me.load.fire();
 			});
 		},
 
