@@ -93,6 +93,10 @@ Mapstraction: {
 				me.endPan.fire();
 			});
 			
+			google.maps.event.addListener(map, 'center_changed', function() {
+				me.endPan.fire();
+			});
+			
 			// deal with initial tile loading
 			var loadListener = google.maps.event.addListener(map, 'tilesloaded', function(){
 				me.load.fire();
