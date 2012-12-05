@@ -24,6 +24,12 @@ Mapstraction: {
 				  e.popup._source.mxnMarker.closeInfoBubble.fire({'bubbleContainer': e.popup._container});
 				}
 			});
+			map.on('load', function(e) {
+				me.load.fire();
+			});
+			map.on('zoomend', function(e) {
+				me.changeZoom.fire();
+			});
 			this.layers = {};
 			this.features = [];
 			this.maps[api] = map;
