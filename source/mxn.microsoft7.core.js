@@ -55,6 +55,11 @@ Mapstraction: {
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchange', function(event){
 			me.endPan.fire();
 		});
+		
+		var loadListener = Microsoft.Maps.Events.addHandler(this.maps[api], 'tiledownloadcomplete', function(event) {
+			me.load.fire();
+			Microsoft.Maps.Events.removeHandler(loadListener);
+		});
 	},
 	
 	applyOptions: function(){
@@ -424,7 +429,6 @@ Polyline: {
 			return new Microsoft.Maps.Polygon(points, polyOptions);
 		}
 		else {
-			console.log("Rendering PolyLine");
 			return new Microsoft.Maps.Polyline(points, polyOptions);
 		}
 
