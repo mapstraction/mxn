@@ -10,10 +10,33 @@ mxn.register('cloudmade', {
 			if (typeof cloudmade_styleId != "undefined"){
 				opts.styleId = cloudmade_styleId;
 			}
+
+			this.tileLayerControl = null;
+			this.scaleControl = null;
+			this.smallMapControl = null;
+			this.largeMapControl = null;
+			this.overviewMapControl = null;
+			this._fireOnNextCall = [];
+			this._fireQueuedEvents =  function() {
+				var fireListCount = me._fireOnNextCall.length;
+				if (fireListCount > 0) {
+					var fireList = me._fireOnNextCall.splice(0, fireListCount);
+					var handler;
+					while ((handler = fireList.shift())) {
+						handler();
+					}
+				}
+			};
+			
 			var cloudmade = new CM.Tiles.CloudMade.Web(opts);
 			this.maps[api] = new CM.Map(element, cloudmade);
-			this.loaded[api] = true;
 
+			CM.Event.addListener(this.maps[api], 'load', function() {
+				me._fireOnNextCall.push(function() {
+					me.load.fire();
+				});
+			});
+			
 			CM.Event.addListener(this.maps[api], 'click', function(location,marker) {
 				if ( marker && marker.mapstraction_marker ) {
 					marker.mapstraction_marker.click.fire();
@@ -34,9 +57,11 @@ mxn.register('cloudmade', {
 			CM.Event.addListener(this.maps[api], 'zoomend', function() {
 				me.changeZoom.fire();
 			});
-			CM.Event.addListener(this.maps[api], 'load', function() {
-				me.load.fire();
-			});
+
+			// CloudMade insists that setCenter is called with a valid lat/long and a zoom
+			// level before any other operation is called on the map. Surely a WTF moment.
+			this.maps[api].setCenter(new CM.LatLng(0, 0), 12);
+			this.loaded[api] = true;
 		},
 
 		applyOptions: function(){
@@ -50,47 +75,137 @@ mxn.register('cloudmade', {
 		},
 
 		resizeTo: function(width, height){	
+			this._fireQueuedEvents();
 			this.maps[this.api].checkResize();
 		},
 
 		addControls: function( args ) {
+			/* args = { 
+			 *     pan:      true,
+			 *     zoom:     'large' || 'small',
+			 *     overview: true,
+			 *     scale:    true,
+			 *     map_type: true,
+			 * }
+			 */
 			var map = this.maps[this.api];
 
-			var c = this.addControlsArgs;
-			switch (c.zoom) {
-				case 'large':
-					this.addLargeControls();
-					break;
-				case 'small':
-					this.addSmallControls();
-					break;
+			if ('zoom' in args) {
+				var control = null;
+				switch (args.zoom) {
+					case 'small':
+						this.smallMapControl = this.addSmallControls();
+						break;
+						
+					case 'large':
+					default:
+						this.largeMapControl = this.addLargeControls();
+						break;
+				}	// end-switch (args.zoom);
 			}
 
-			if (c.map_type) {
-				this.addMapTypeControls();
+			else {
+				if (this.smallMapControl !== null) {
+					map.removeControl(this.smallMapControl);
+					this.smallMapControl = null;
+				}
+				if (this.largeMapControl !== null) {
+					map.removeControl(this.largeMapControl);
+					this.largeMapControl = null;
+				}
 			}
-			if (c.scale) {
-				map.addControl(new CM.ScaleControl());
-				this.addControlsArgs.scale = true;
+
+			if ('overview' in args) {
+				if (this.overviewMapControl === null) {
+					this.overviewMapControl = new CM.OverviewMapControl();
+					map.addControl(this.overviewMapControl);
+				}
+			}
+			
+			else {
+				if (this.overviewMapControl !== null) {
+					map.removeControl(this.overviewMapControl);
+					this.overviewMapControl = null;
+				}
+			}
+			
+			if ('map_type' in args) {
+				if (this.tileLayerControl === null) {
+					this.tileLayerControl = this.addMapTypeControls();
+				}
+			}
+
+			else {
+				if (this.tileLayerControl !== null) {
+					map.removeControl(this.tileLayerControl);
+					this.tileLayerControl = null;
+				}
+			}
+			
+			if ('scale' in args) {
+				if (this.scaleControl === null) {
+					this.scaleControl = new CM.ScaleControl();
+					map.addControl(this.scaleControl);
+				}
+			}
+			
+			else {
+				if (this.scaleControl !== null) {
+					map.removeControl(this.scaleControl);
+					this.scaleControl = null;
+				}
 			}
 		},
 
 		addSmallControls: function() {
 			var map = this.maps[this.api];
-			map.addControl(new CM.SmallMapControl());
-			this.addControlsArgs.zoom = 'small';
+			var control = null;
+			if (this.smallMapControl === null) {
+				control = new CM.SmallMapControl();
+				map.addControl(control);
+			}
+			
+			else {
+				control = this.smallMapControl;
+			}
+			
+			return control;
+			//map.addControl(new CM.SmallMapControl());
+			//this.addControlsArgs.zoom = 'small';
 		},
 
 		addLargeControls: function() {
 			var map = this.maps[this.api];
-			map.addControl(new CM.LargeMapControl());
-			this.addControlsArgs.zoom = 'large';
+			var control = null;
+			if (this.largeMapControl === null) {
+				control = new CM.LargeMapControl();
+				map.addControl(control);
+			}
+			
+			else {
+				control = this.largeMapControl;
+			}
+			
+			return control;
+			//map.addControl(new CM.LargeMapControl());
+			//this.addControlsArgs.zoom = 'large';
 		},
 
 		addMapTypeControls: function() {
 			var map = this.maps[this.api];
-			map.addControl(new CM.TileLayerControl());
-			this.addControlsArgs.map_type = true;
+			var control = null;
+			if (this.tileLayerControl === null) {
+				control = new CM.TileLayerControl();
+				map.addControl(control);
+			}
+			
+			else {
+				control = this.tileLaterControl;
+			}
+			
+			return control;
+			//map.addControl(new CM.TileLayerControl());
+			//this.addControlsArgs.map_type = true;
 		},
 
 		dragging: function(on) {
@@ -104,13 +219,14 @@ mxn.register('cloudmade', {
 		},
 
 		setCenterAndZoom: function(point, zoom) { 
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			var pt = point.toProprietary(this.api);
 			map.setCenter(pt, zoom);
-
 		},
 
 		addMarker: function(marker, old) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			var pin = marker.toProprietary(this.api);
 			map.addOverlay(pin);
@@ -118,18 +234,21 @@ mxn.register('cloudmade', {
 		},
 
 		removeMarker: function(marker) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			marker.proprietary_marker.closeInfoWindow();
 			map.removeOverlay(marker.proprietary_marker);
 		},
 		
 		declutterMarkers: function(opts) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			// TODO: Add provider code
 		},
 
 		addPolyline: function(polyline, old) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			var pl = polyline.toProprietary(this.api);
 			map.addOverlay(pl);
@@ -137,11 +256,13 @@ mxn.register('cloudmade', {
 		},
 
 		removePolyline: function(polyline) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			map.removeOverlay(polyline.proprietary_polyline);
 		},
 
 		getCenter: function() {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			var pt = map.getCenter();
 
@@ -149,6 +270,7 @@ mxn.register('cloudmade', {
 		},
 
 		setCenter: function(point, options) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			var pt = point.toProprietary(this.api);
 			if(typeof (options) != 'undefined' && options.pan) { map.panTo(pt); }
@@ -156,16 +278,19 @@ mxn.register('cloudmade', {
 		},
 
 		setZoom: function(zoom) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			map.setZoom(zoom);
 		},
 
 		getZoom: function() {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			return map.getZoom();
 		},
 
 		getZoomLevelForBoundingBox: function( bbox ) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			// NE and SW points from the bounding box.
 			var ne = bbox.getNorthEast();
@@ -176,6 +301,7 @@ mxn.register('cloudmade', {
 		},
 
 		setMapType: function(type) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			// TODO: Are there any MapTypes for Cloudmade?
@@ -196,6 +322,7 @@ mxn.register('cloudmade', {
 		},
 
 		getMapType: function() {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			// TODO: Are there any MapTypes for Cloudmade?
@@ -207,6 +334,7 @@ mxn.register('cloudmade', {
 		},
 
 		getBounds: function () {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			var box = map.getBounds();
@@ -217,6 +345,7 @@ mxn.register('cloudmade', {
 		},
 
 		setBounds: function(bounds){
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			var sw = bounds.getSouthWest();
 			var ne = bounds.getNorthEast();
@@ -225,12 +354,14 @@ mxn.register('cloudmade', {
 		},
 
 		addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			// TODO: Add provider code
 		},
 
 		setImagePosition: function(id, oContext) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			var topLeftPoint; var bottomRightPoint;
 
@@ -239,6 +370,7 @@ mxn.register('cloudmade', {
 		},
 
 		addOverlay: function(url, autoCenterAndZoom) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			// TODO: Add provider code
@@ -246,24 +378,28 @@ mxn.register('cloudmade', {
 		},
 
 		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			// TODO: Add provider code
 		},
 
 		toggleTileLayer: function(tile_url) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			// TODO: Add provider code
 		},
 
 		getPixelRatio: function() {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			// TODO: Add provider code
 		},
 
 		mousePosition: function(element) {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			// TODO: Add provider code
