@@ -33,6 +33,11 @@ Mapstraction: {
 					me.changeZoom.fire();
 				});
 				
+				var loadListener = GEvent.addListener(this.maps[api], 'tilesloaded', function() {
+					me.load.fire();
+					GEvent.removeListener(loadListener);
+				});
+				
 				this.loaded[api] = true;
 				me.load.fire();
 			}
