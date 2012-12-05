@@ -113,6 +113,17 @@
 
 	<script type="text/javascript">
 	//<![CDATA[
+
+	var events = {
+		LOAD: {name: 'load', value: false},
+		//CLICK: {name: 'click', value: false},
+		END_PAN: {name: 'endPan', value: false},
+		CHANGE_ZOOM: {name: 'changeZoom', value: false},
+		MARKER_ADDED: {name: 'markerAdded', value: false},
+		MARKER_REMOVED: {name: 'markerRemoved', value: false},
+		POLYLINE_ADDED: {name: 'polylineAdded', value: false},
+		POLYLINE_REMOVED: {name: 'polylineRemoved', value: false}
+	};
 	
 	var m;
 	window.onload = function() {
@@ -121,13 +132,19 @@
 		var eventsElm = document.getElementById('events');
 		
 		m = new mxn.Mapstraction('map', provider);
-		// So far this is only necessary for leaflet.
-		m.setCenterAndZoom(new mxn.LatLonPoint(37.4419, -122.1419), 10);
 
+		// Ensure load event is handled before a subsequent call to setCenterAndZoom so
+		// that the CloudMade load event fires correctly (it appears to trap the first
+		// call to setCenter after map load, not the actual loading itself)
+		)
 		m.load.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Map loaded for provider: ' + oEvtSource.api + '<br/>';
 			events.LOAD.value = true;
 		});
+
+		// So far this is only necessary for leaflet.
+		m.setCenterAndZoom(new mxn.LatLonPoint(37.4419, -122.1419), 10);
+
 
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var center = oEvtSource.getCenter();
@@ -168,18 +185,7 @@
 		var markerEventHandler = function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Marker event: ' + sEvtName + ' - ' + oEvtSource.labelText + '<br/>';
 		};
-		
-		var events = {
-			LOAD: {name: 'load', value: false},
-			//CLICK: {name: 'click', value: false},
-			END_PAN: {name: 'endPan', value: false},
-			CHANGE_ZOOM: {name: 'changeZoom', value: false},
-			MARKER_ADDED: {name: 'markerAdded', value: false},
-			MARKER_REMOVED: {name: 'markerRemoved', value: false},
-			POLYLINE_ADDED: {name: 'polylineAdded', value: false},
-			POLYLINE_REMOVED: {name: 'polylineRemoved', value: false}
-		};
-		
+				
 		var ops = [
 			{ 
 				desc: 'Center map', 
