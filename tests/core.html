@@ -43,6 +43,11 @@
 				document.write('<\/script>');
 				break;
 
+			case 'esri':
+				document.write ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.1/js/dojo/dijit/themes/claro/claro.css" media="all" rel="stylesheet" type="text/css" \/>');
+				document.write ('<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.1" type="text/javascript"><\/script>');
+				break;
+				
 			case 'geocommons':
 				document.write('<script type="text/javascript" src="http://geocommons.com/javascripts/f1.api.js"><\/script>');
 				break;
@@ -121,39 +126,58 @@
 
 		m.load.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Map loaded for provider: ' + oEvtSource.api + '<br/>';
+			events.LOAD.value = true;
 		});
 
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var center = oEvtSource.getCenter();
 			eventsElm.innerHTML += 'Map pan: ' + Dump(center) + '<br/>';
+			events.END_PAN.value = true;
 		});
 		
 		m.changeZoom.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var zoom = oEvtSource.getZoom();
 			eventsElm.innerHTML += 'Change zoom: ' + zoom.toString() + '<br/>';
+			events.CHANGE_ZOOM.value = true;
 		});
 		
 		m.markerAdded.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Marker added: ' + oEvtArgs.marker.labelText + '<br/>';
+			events.MARKER_ADDED.value = true;
 		});
 		
 		m.markerRemoved.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Marker removed: ' + oEvtArgs.marker.labelText + '<br/>';
+			events.MARKER_REMOVED.value = true;
 		});
 
 		m.polylineAdded.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Polyline added.<br/>';
+			events.POLYLINE_ADDED.value = true;
 		});
 
 		m.polylineRemoved.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Polyline removed.<br/>';
+			events.POLYLINE_REMOVED.value = true;
 		});
-			m.click.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
+
+		m.click.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Map clicked: ' + Dump(oEvtArgs.location) + '<br/>';
 		});
 		
 		var markerEventHandler = function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Marker event: ' + sEvtName + ' - ' + oEvtSource.labelText + '<br/>';
+		};
+		
+		var events = {
+			LOAD: {name: 'load', value: false},
+			//CLICK: {name: 'click', value: false},
+			END_PAN: {name: 'endPan', value: false},
+			CHANGE_ZOOM: {name: 'changeZoom', value: false},
+			MARKER_ADDED: {name: 'markerAdded', value: false},
+			MARKER_REMOVED: {name: 'markerRemoved', value: false},
+			POLYLINE_ADDED: {name: 'polylineAdded', value: false},
+			POLYLINE_REMOVED: {name: 'polylineRemoved', value: false}
 		};
 		
 		var ops = [
@@ -194,13 +218,10 @@
 			{
 				desc: 'Get info',
 				action: function(){
-					console.log ('Get info');
 					infoElm.innerHTML += 'Info<br/>';
 					var bb = m.getBounds();
-					console.log ('Got bounds');
 					infoElm.innerHTML += 'Bounds:<br/>' + Dump(bb) + '<br/>';
 					var ll = m.getCenter();
-					console.log ('Got center');
 					infoElm.innerHTML += 'Center: ' + Dump(ll) + '<br/>';
 					infoElm.innerHTML += 'Map type: ' + m.getMapType() + '<br/>';
 					infoElm.innerHTML += 'Zoom: ' + m.getZoom() + '<br/>';
@@ -229,6 +250,45 @@
 			},
 			{
 				desc: 'Add marker',
+				action: function() {
+					var point;
+					var mkr;
+					point = new mxn.LatLonPoint(37.6156, -122.3891);
+					mkr = new mxn.Marker(point);
+					mkr.setLabel('SFO International Terminal');
+					m.setCenter(point);
+					m.addMarker(mkr);
+				}
+			},
+			{
+				desc: 'Remove marker',
+				action: function() {
+					m.removeMarker(m.markers[0]);
+				}
+			},
+			{
+				desc: 'Add shape',
+				action: function() {
+					var shp = new mxn.Polyline([
+						new mxn.LatLonPoint(37.805, -122.480),
+						new mxn.LatLonPoint(37.678, -121.800),
+						new mxn.LatLonPoint(37.238, -121.962),
+						new mxn.LatLonPoint(37.462, -122.444),
+						new mxn.LatLonPoint(37.805, -122.480),
+						]);
+					shp.color = '#00DD55';
+					shp.fillColor = '#00DD55';
+					m.addPolyline(shp);
+				}
+			},
+			{
+				desc: 'Remove shape',
+				action: function() {
+					m.removePolyline(m.polylines[0]);
+				}
+			},
+			{
+				desc: 'Add marker',
 				action: function(){
 					var point;
 					switch (provider) {
@@ -245,6 +305,7 @@
 					mkr.click.addHandler(markerEventHandler);
 					mkr.openInfoBubble.addHandler(markerEventHandler);
 					mkr.closeInfoBubble.addHandler(markerEventHandler);
+					m.setCenter(point);
 					m.addMarker(mkr);
 				}
 			},
@@ -312,7 +373,6 @@
 			{
 				desc: 'Add controls',
 				action: function() {
-					console.log ('Add controls');
 					m.addLargeControls();
 					m.addControls({
 						pan:	 true,
@@ -332,6 +392,24 @@
 				}
 			},
 			*/			
+			{
+				desc: 'Check events',
+				action: function() {
+					var evt;
+					for (evt in events) {
+						var props = events[evt];
+
+						if (props.value) {
+							infoElm.innerHTML += 'Event: ' + props.name + ' passed<br />';
+						}
+						else {
+							infoElm.style.backgroundColor = '#FCC';
+							infoElm.innerHTML += 'Event: ' + props.name + ' failed<br />';
+						}
+					}
+				}
+			},
+			
 			{
 				desc: 'Swap API',
 				action: function(){
@@ -371,7 +449,7 @@
 		
 		.box div {
 			overflow-y: scroll;
-			height:300px; 
+			height:400px; 
 		}
 
 		#provider-selection {
@@ -386,15 +464,17 @@
 			<h3>Providers</h3>
 			<ul id="providers" >
 				<li><a href="core.html?provider=cloudmade">CloudMade</a></li>
+				<li><a href="core.html?provider=esri">ESRI</a></li>
 				<li><a href="core.html?provider=geocommons">GeoCommons / GeoIQ</a></li>
 				<li><a href="core.html?provider=google">Google v2</a></li>
 				<li><a href="core.html?provider=googlev3">Google v3</a></li>
 				<li><a href="core.html?provider=leaflet">Leaflet</a></li>
+				<li><a href="core.html?provider=openmq">MapQuest Open</a></li>
 				<li><a href="core.html?provider=microsoft">Microsoft v6</a></li>
 				<li><a href="core.html?provider=microsoft7">Microsoft v7</a></li>
 				<li><a href="core.html?provider=nokia">Nokia</a></li>
 				<li><a href="core.html?provider=openlayers">OpenLayers</a></li>
-				<li><a href="core.html?provider=openmq">MapQuest Open</a></li>
+				<li><a href="core.html?provider=openspace">OS OpenSpace</a></li>
 				<li><a href="core.html?provider=ovi">Ovi</a></li>
 				<li><a href="core.html?provider=yandex">Yandex</a></li>
 			</ul>
@@ -418,7 +498,8 @@
 		</div>
 		<p id="provider-selection">
 			Run with provider: <a href="?provider=cloudmade">cloudmade</a>,
-			<a href="?provider=geocommons">geocommons</a>.
+			<a href="?provider=esri">esri</a>,
+			<a href="?provider=geocommons">geocommons</a>,
 			<a href="?provider=google">google</a>,
 			<a href="?provider=googlev3">googlev3</a>,
 			<a href="?provider=leaflet">leaflet</a>,
@@ -427,6 +508,7 @@
 			<a href="?provider=nokia">nokia</a>,
 			<a href="?provider=openlayers">openlayers</a>,
 			<a href="?provider=openmq">openmq</a>,
+			<a href="?provider=openspace">openspace</a>,
 			<a href="?provider=ovi">ovi</a>,
 			<a href="?provider=yandex">yandex</a>.
 		</p>
