@@ -136,7 +136,7 @@
 		// Ensure load event is handled before a subsequent call to setCenterAndZoom so
 		// that the CloudMade load event fires correctly (it appears to trap the first
 		// call to setCenter after map load, not the actual loading itself)
-		)
+
 		m.load.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			eventsElm.innerHTML += 'Map loaded for provider: ' + oEvtSource.api + '<br/>';
 			events.LOAD.value = true;
@@ -144,7 +144,6 @@
 
 		// So far this is only necessary for leaflet.
 		m.setCenterAndZoom(new mxn.LatLonPoint(37.4419, -122.1419), 10);
-
 
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var center = oEvtSource.getCenter();
