@@ -98,6 +98,9 @@ mxn.register('cloudmade', {
 						break;
 						
 					case 'large':
+						this.largeMapControl = this.addLargeControls();
+						break;
+						
 					default:
 						this.largeMapControl = this.addLargeControls();
 						break;
