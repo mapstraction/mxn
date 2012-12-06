@@ -46,7 +46,6 @@ Mapstraction: {
 	
 		//removes the bird's eye pop-up
 		this.loaded[api] = true;
-		me.load.fire();	
 	},
 	
 	applyOptions: function(){
