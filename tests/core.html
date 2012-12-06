@@ -115,7 +115,7 @@
 	//<![CDATA[
 
 	var events = {
-		LOAD: {name: 'load', value: false},
+		LOAD: {name: 'load', value: false, skip: 'microsoft'},
 		//CLICK: {name: 'click', value: false},
 		END_PAN: {name: 'endPan', value: false},
 		CHANGE_ZOOM: {name: 'changeZoom', value: false},
@@ -124,7 +124,7 @@
 		POLYLINE_ADDED: {name: 'polylineAdded', value: false},
 		POLYLINE_REMOVED: {name: 'polylineRemoved', value: false}
 	};
-
+	
 	function logInfo(msg) {
 		logMessage ('info', msg);
 	}
@@ -139,6 +139,16 @@
 		display.innerHTML += msg + '<br />';
 		display.scrollTop = display.scrollHeight - display.clientHeight;
 		return false;
+	}
+	
+	function arrayContains(a, obj) {
+	    var i = a.length;
+	    while (i--) {
+	       if (a[i] === obj) {
+	           return true;
+	       }
+	    }
+	    return false;
 	}
 	
 	var m;
@@ -419,13 +429,27 @@
 					var evt;
 					for (evt in events) {
 						var props = events[evt];
-
-						if (props.value) {
-							logInfo('Event: ' + props.name + ' passed');
+						var check = true;
+						
+						if (props.hasOwnProperty('skip')) {
+							var skip = props.skip.split(',');
+							if (arrayContains(skip, provider)) {
+								check = false;
+							}
 						}
+						
+						if (check) {
+							if (props.value) {
+								logInfo('Event: ' + props.name + ' passed');
+							}
+							else {
+								infoElm.style.backgroundColor = '#FCC';
+								logInfo('Event: ' + props.name + ' failed');
+							}
+						}
+						
 						else {
-							infoElm.style.backgroundColor = '#FCC';
-							logInfo('Event: ' + props.name + ' failed');
+							logInfo ('Event: ' + props.name + ' skipped');
 						}
 					}
 				}
