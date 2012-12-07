@@ -5,88 +5,94 @@ mxn.register('openlayers', {
 		init: function(element, api){
 			var me = this;
 			
-			var map = new OpenLayers.Map(
-				element.id,
-				{
-					maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
-					maxResolution: 156543,
-					numZoomLevels: 18,
-					units: 'm',
-					projection: 'EPSG:900913'
-				}
-			);
+			if (OpenLayers.Map) {
+				var map = new OpenLayers.Map(
+					element.id,
+					{
+						maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
+						maxResolution: 156543,
+						numZoomLevels: 18,
+						units: 'm',
+						projection: 'EPSG:900913'
+					}
+				);
 			
-			// initialize layers map (this was previously in mxn.core.js)
-			this.layers = {};
+				// initialize layers map (this was previously in mxn.core.js)
+				this.layers = {};
 
-			this.layers.osm = new OpenLayers.Layer.TMS(
-				'OpenStreetMap',
-				[
-					"http://a.tile.openstreetmap.org/",
-					"http://b.tile.openstreetmap.org/",
-					"http://c.tile.openstreetmap.org/"
-				],
-				{ 
-					type:'png',
-					getURL: function (bounds) {
-						var res = this.map.getResolution();
-						var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-						var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
-						var z = this.map.getZoom();
-						var limit = Math.pow(2, z);
-						if (y < 0 || y >= limit) {
-							return null;
-						} else {
-							x = ((x % limit) + limit) % limit;
-							var path = z + "/" + x + "/" + y + "." + this.type;
-							var url = this.url;
-							if (url instanceof Array) {
-								url = this.selectUrl(path, url);
+				this.layers.osm = new OpenLayers.Layer.TMS(
+					'OpenStreetMap',
+					[
+						"http://a.tile.openstreetmap.org/",
+						"http://b.tile.openstreetmap.org/",
+						"http://c.tile.openstreetmap.org/"
+					],
+					{ 
+						type:'png',
+						getURL: function (bounds) {
+							var res = this.map.getResolution();
+							var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
+							var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
+							var z = this.map.getZoom();
+							var limit = Math.pow(2, z);
+							if (y < 0 || y >= limit) {
+								return null;
+							} else {
+								x = ((x % limit) + limit) % limit;
+								var path = z + "/" + x + "/" + y + "." + this.type;
+								var url = this.url;
+								if (url instanceof Array) {
+									url = this.selectUrl(path, url);
+								}
+								return url + path;
 							}
-							return url + path;
-						}
-					},
-					displayOutsideMaxExtent: true
-				}
-			);
+						},
+						displayOutsideMaxExtent: true
+					}
+				);
 						
-			// deal with click
-			map.events.register('click', map, function(evt){
-				var lonlat = map.getLonLatFromViewPortPx(evt.xy);
-				var point = new mxn.LatLonPoint();
-				point.fromProprietary(api, lonlat);
-				me.click.fire({'location': point });
-			});
+				// deal with click
+				map.events.register('click', map, function(evt){
+					var lonlat = map.getLonLatFromViewPortPx(evt.xy);
+					var point = new mxn.LatLonPoint();
+					point.fromProprietary(api, lonlat);
+					me.click.fire({'location': point });
+				});
 
-			// deal with zoom change
-			map.events.register('zoomend', map, function(evt){
-				me.changeZoom.fire();
-			});
+				// deal with zoom change
+				map.events.register('zoomend', map, function(evt){
+					me.changeZoom.fire();
+				});
 			
-			// deal with map movement
-			map.events.register('moveend', map, function(evt){
-				me.moveendHandler(me);
-				me.endPan.fire();
-			});
+				// deal with map movement
+				map.events.register('moveend', map, function(evt){
+					me.moveendHandler(me);
+					me.endPan.fire();
+				});
 			
-			// deal with initial tile loading
-			var loadfire = function(e) {
-				me.load.fire();
-				this.events.unregister('loadend', this, loadfire);
-			};
+				// deal with initial tile loading
+				var loadfire = function(e) {
+					me.load.fire();
+					this.events.unregister('loadend', this, loadfire);
+				};
 			
-			for (var layerName in this.layers) {
-				if (this.layers.hasOwnProperty(layerName)) {
-					if (this.layers[layerName].visibility === true) {
-						this.layers[layerName].events.register('loadend', this.layers[layerName], loadfire);
+				for (var layerName in this.layers) {
+					if (this.layers.hasOwnProperty(layerName)) {
+						if (this.layers[layerName].visibility === true) {
+							this.layers[layerName].events.register('loadend', this.layers[layerName], loadfire);
+						}
 					}
 				}
+			
+				map.addLayer(this.layers.osm);
+				this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true]);
+				this.maps[api] = map;
+				this.loaded[api] = true;
 			}
 			
-			map.addLayer(this.layers.osm);
-			this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true]);
-			this.maps[api] = map;
-			this.loaded[api] = true;
+			else {
+				alert(api + ' map script not imported');
+			}
 		},
 
 		applyOptions: function(){
@@ -476,6 +482,7 @@ mxn.register('openlayers', {
 						}
 					});
 				}
+				popup.autoSize = true;
 				this.popup = popup;
 			}
 			

@@ -4,27 +4,35 @@ Mapstraction: {
 	
 	init: function(element, api) {
 		var me = this;
-		var map = new MQA.TileMap(element);
-		this.maps[api] = map;
-		this.loaded[api] = true;
+		
+		if (MQA.TileMap) {
+			var map = new MQA.TileMap(element);
+			this.maps[api] = map;
+			this.loaded[api] = true;
 
-		MQA.withModule('shapes', function() {
-			// Loading all modules that can't be loaded on-demand
-			// [This space left intentionally blank]
-		});
+			MQA.withModule('shapes', function() {
+				// Loading all modules that can't be loaded on-demand
+				// [This space left intentionally blank]
+			});
 		
-		MQA.EventManager.addListener(map, 'click', function(e) {
-			me.click.fire();
-		});
+			MQA.EventManager.addListener(map, 'click', function(e) {
+				me.click.fire();
+			});
 		
-		MQA.EventManager.addListener(map, 'zoomend', function(e) {
-			me.changeZoom.fire();
-		});
+			MQA.EventManager.addListener(map, 'zoomend', function(e) {
+				me.changeZoom.fire();
+			});
 
-		MQA.EventManager.addListener(map, 'moveend', function(e) {
-			me.endPan.fire();
-		});
+			MQA.EventManager.addListener(map, 'moveend', function(e) {
+				me.endPan.fire();
+			});
 		
+			me.load.fire();
+		}
+		
+		else {
+			alert (api + ' map script not imported');
+		}
 	},
 	
 	applyOptions: function(){
