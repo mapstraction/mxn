@@ -1,108 +1,263 @@
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Mapstraction Examples - esri</title>
-<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.1/js/dojo/dijit/themes/claro/claro.css" media="all" rel="stylesheet" type="text/css" />
-<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.1" type="text/javascript"></script>
-<script src="../source/mxn.js?(esri)" type="text/javascript"></script>
+	<title>Mapstraction Example - ESRI</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/dojo/dijit/themes/claro/claro.css" media="all" rel="stylesheet" type="text/css" />
+	<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.2" type="text/javascript"></script>
+	<script src="../source/mxn.js?(esri)" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
+	<!--
+	<script src="http://code.jquery.com/jquery-1.8.2.min.js" type="text/javascript"></script>
+	-->
+	<script type="text/javascript">
+	//<![CDATA[
+	var map;
+	var	polyline;
+	var icon_marker;
+	var marker;
+	
+	function initialize() {
+		map = new mxn.Mapstraction('map', 'esri');
+		//map.addControls({pan: true, zoom: 'small'});
+		//map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
+		
+		map.load.addHandler(function(en, es, ea) {
+			logEvent ('Map loaded');
+			latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587);
+			map.setCenterAndZoom(latlon, 12);
+		});
+		
+		map.click.addHandler(function(en, es, ea) {
+			var point = ea.location;
+			logEvent ('Mouse click at ' + point.toString(4));
+		});
+		
+		map.endPan.addHandler(function(en, es, ea) {
+			logEvent('End Pan: new center is ' + map.getCenter().toString (4));
+		});
 
+		map.changeZoom.addHandler(function(en, es, ea) {
+			logEvent('Change Zoom: new zoom level is ' + map.getZoom());
+		});
+		
+		map.markerAdded.addHandler(function(en, es, ea) {
+			logEvent('Marker Added');
+		});
+		map.markerRemoved.addHandler(function(en, es, ea) {
+			logEvent('Marker Removed');
+		});
+		map.polylineAdded.addHandler(function(en, es, ea) {
+			logEvent('Polyline Added');
+		});
+		map.polylineRemoved.addHandler(function(en, es, ea) {
+			logEvent('Polyline Removed');
+		});
+	}
+	
+	addMarker  = function () {
+		marker = new mxn.Marker(map.getCenter());
+		map.addMarker(marker);
+		marker.addData({'infoBubble': 'This is an InfoBubble'});
+		marker.openBubble();
+		
+	}
+	
+	addIconMarker = function() {
+		var iconURL = "http://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png";
+		// add a marker
+		icon_marker = new mxn.Marker(map.getCenter());
+		icon_marker.setIcon(iconURL);
+		icon_marker.setIconSize([32,32]);
+		icon_marker.setIconAnchor([0,16]);
+		map.addMarker(icon_marker);
+		icon_marker.addData({'infoBubble': 'This icon is ' + iconURL});
+		icon_marker.openBubble();
+	}
 
-<style type="text/css">
-html, body, #mapDiv {
-      padding:0;
-      margin:0;
-      height:400px;
-    }
-</style> 
-<script type="text/javascript">
-//<![CDATA[
+	addPolyline = function() {
+		polyline = new mxn.Polyline([
+			new mxn.LatLonPoint(53.94, 48.96),
+			new mxn.LatLonPoint(53.50, 49.03),
+			new mxn.LatLonPoint(53.41, 49.38),
+			new mxn.LatLonPoint(53.43, 50.02),
+			new mxn.LatLonPoint(53.33, 50.19),
+			new mxn.LatLonPoint(53.26, 50.21),
+			new mxn.LatLonPoint(53.13, 50.05),
+			new mxn.LatLonPoint(53.19, 49.83),
+			new mxn.LatLonPoint(53.11, 49.54),
+			new mxn.LatLonPoint(53.20, 49.20),
+			new mxn.LatLonPoint(53.10, 48.70),
+			new mxn.LatLonPoint(52.93, 48.56),
+			new mxn.LatLonPoint(52.54, 48.26)
+		]);
+		polyline.width = 3;
+		polyline.color = '#00DD55';
+		polyline.closed = true;
+		//polyline.fillColor = '#0077ff';
+		polyline.opacity = 0.6;
+		map.addPolyline(polyline);
+		map.setCenterAndZoom(new mxn.LatLonPoint(53.94, 48.96), 7);
+	}
+	
+	function logInfo(msg) {
+		logMessage ('info', msg);
+	}
+	
+	function logEvent(msg) {
+		logMessage ('events', msg);
+	}
 
-  var map;
-  function initialize() {
-      // create mxn object
-      map = new mxn.Mapstraction('mapDiv', 'esri');
-      console.log('made mapstraction map');
-      //map.setMapType(mxn.Mapstraction.SATELLITE);
-      latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587)
-      latlon2 = new mxn.LatLonPoint(41.88756115424155,-91.67015573501587)
-      
-      // put map on page
-      // map.setCenterAndZoom(latlon, 12);
-  }
-  
-  var polyline;
-  getCenter = function() {
-    var center = map.getCenter();
-    alert(center.lat + " " + center.lon);
-  }
-  alertBounds = function() { 
-    var bounds = map.getBounds();
-    var sw = bounds.getSouthWest();
-    var ne = bounds.getNorthEast();
-    alert(sw.lat + " " + sw.lon + " " + ne.lat + " " + ne.lon);
-  }
-  addMarker = function() {
-    // add a marker
-    marker = new mxn.Marker(map.getCenter());
-    marker.setIcon("http://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png")
-    marker.setIconSize([32,32]);
-    marker.setIconAnchor([0,16])
-    map.addMarker(marker);
-    // marker.addData({'infoBubble': 'This is a popup'})
-    // marker.openBubble();
-  }
-  addPolyline = function() {
-    polyline = new mxn.Polyline([
-        new mxn.LatLonPoint(53.94, 48.96),
-        new mxn.LatLonPoint(53.50, 49.03),
-        new mxn.LatLonPoint(53.41, 49.38),
-        new mxn.LatLonPoint(53.43, 50.02),
-        new mxn.LatLonPoint(53.33, 50.19),
-        new mxn.LatLonPoint(53.26, 50.21),
-        new mxn.LatLonPoint(53.13, 50.05),
-        new mxn.LatLonPoint(53.19, 49.83),
-        new mxn.LatLonPoint(53.11, 49.54),
-        new mxn.LatLonPoint(53.20, 49.20),
-        new mxn.LatLonPoint(53.10, 48.70),
-        new mxn.LatLonPoint(52.93, 48.56),
-        new mxn.LatLonPoint(52.54, 48.26)
-      ]);
-    polyline.width = 3;         
-    polyline.color = '#00DD55';
-    polyline.closed = true;
-    polyline.fillColor = '#0077ff';
-    polyline.opacity = 0.6;
-    map.addPolyline(polyline);      
-    map.setCenterAndZoom(new mxn.LatLonPoint(53.94, 48.96), 7)  
-  }
-  dojo.addOnLoad(initialize);
-//]]>
-</script> 
+	function logMessage(element, msg) {
+		var	display = document.getElementById(element);
+		
+		display.innerHTML += "\n" + msg;
+		display.scrollTop = display.scrollHeight - display.clientHeight;
+		return false;
+	}
+	
+	dojo.addOnLoad(function() {
+		initialize();
+
+		dojo.query('#set-bounds').onclick(function() {
+			var bb = new mxn.BoundingBox(51.9,-4.3,52.25,-3.75);
+			map.setBounds(bb);
+			logInfo ('Bounds set to ' + bb.toString(4));
+			
+			return false;
+		});
+		dojo.query('#get-bounds').onclick(function(){
+			logInfo ('Current bounds are ' + map.getBounds().toString(4));
+			return false;
+		});
+		dojo.query('#decrement-zoom').onclick(function(){
+			map.setZoom(map.getZoom() - 1);
+			logInfo ('Zoom decremented, new zoom level is ' + map.getZoom());
+			return false;
+		});
+		dojo.query('#increment-zoom').onclick(function(){
+			map.setZoom(map.getZoom() + 1);
+			logInfo ('Zoom incremented, new zoom level is ' + map.getZoom());
+			return false;
+		});
+		dojo.query('#get-zoom').onclick(function(){
+			logInfo ('Current zoom level is ' + map.getZoom());
+			return false;
+		});
+
+		dojo.query('#get-center').onclick(function(){
+			var disp = document.getElementById('info');
+			disp.innerHTML += "\n" + "Current center is " + map.getCenter().toString(4);
+			disp.scrollTop = disp.scrollHeight - disp.clientHeight;
+			return false;
+		});
+		dojo.query('#set-center').onclick(function(){
+			map.setCenter(new mxn.LatLonPoint(53.94, 48.96));
+			return false;
+		});
+		dojo.query('#pan-center').onclick(function(){
+			map.setCenter(new mxn.LatLonPoint(38.404196,-123.008194), {pan: true});
+			return false;
+		});
+		
+		dojo.query('#set-road').onclick(function(){
+			map.setMapType(mxn.Mapstraction.ROAD);
+			return false;
+		});
+		dojo.query('#set-satellite').onclick(function(){
+			map.setMapType(mxn.Mapstraction.SATELLITE);
+			return false;
+		});
+		dojo.query('#set-hybrid').onclick(function(){
+			map.setMapType(mxn.Mapstraction.HYBRID);
+			return false;
+		});
+		dojo.query('#set-physical').onclick(function(){
+			map.setMapType(mxn.Mapstraction.PHYSICAL);
+			return false;
+		});
+		dojo.query('#add-icon-marker').onclick(function(){
+			addIconMarker();
+			return false;
+		});
+		dojo.query('#remove-icon-marker').onclick(function(){
+			map.removeMarker(icon_marker);
+			return false;
+		});
+		dojo.query('#add-marker').onclick(function(){
+			addMarker();
+			return false;
+		});
+		dojo.query('#remove-marker').onclick(function(){
+			map.removeMarker(marker);
+			return false;
+		});
+		dojo.query('#add-polyline').onclick(function(){
+			addPolyline();
+			return false;
+		});
+		dojo.query('#remove-polyline').onclick(function(){
+			map.removePolyline(polyline);
+			return false;
+		});
+		dojo.query('#resize-small').onclick(function(){
+			width = dojo.window.getBox().w / 2 + "px";
+			height = "200px";
+			map.resizeTo(width,height);
+			return false;
+		});
+		dojo.query('#resize-restore').onclick(function(){
+			width = dojo.window.getBox().w + "px";
+			height = "400px";
+			map.resizeTo(width,height);
+			return false;
+		});
+		dojo.query('#add-controls').onclick(function(){
+			map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
+			return false;
+		});
+		dojo.query('#hide-controls').onclick(function(){
+			map.addControls({});
+			return false;
+		});
+	});
+	//]]>
+	</script>
 </head>
-<body class="claro">
-<div id="mapDiv"></div>
-      
-
-</script> 
-<h2>Demo Functions</h2>
-<ul>
-  <li><a href="javascript:map.setBounds( new mxn.BoundingBox(51.9,-4.3,52.25,-3.75) );">click me to set bounds</a>.</li>
-  <li><a href="javascript:alertBounds();">click me to get bounds</a> </li>
-  <li><a href="javascript:map.setZoom( map.getZoom()-1 );">click me to decrement zoom</a>.</li>
-  <li><a href="javascript:map.setZoom( map.getZoom()+1 );">click me to increment zoom</a>.</li>
-  <li><a href="javascript:alert('zoom is ' + map.getZoom());">click me to get zoom</a>.</li>
-  <li><a href="javascript:getCenter();">click me to getCenter</a>.</li>
-  <li><a href="javascript:map.setCenter(new mxn.LatLonPoint(53.94, 48.96));">click me to setCenter</a>.</li>
-  <li><a href="javascript:map.setCenter(new mxn.LatLonPoint(38.404196,-123.008194), {pan: true});">click me to pan to center</a>.</li>
-  <li><a href="javascript:map.addControls({zoom:true, layers:true});">click me to add controls</a>.</li>
-  <li><a href="javascript:map.addControls({});">click me to remove controls</a>.</li>
-  <li><a href="javascript:map.addControls({legend:true});">click me to open legend controls</a>.</li>
-  <li>resize <a href="javascript:map.resizeTo('400px','400px');">big</a> or <a href="javascript:map.resizeTo('100px','200px');">small</a></li>
-  <li>basemap <a href="javascript:map.setMapType(mxn.Mapstraction.ROAD);">road</a>, <a href="javascript:map.setMapType(mxn.Mapstraction.SATELLITE);">satellite</a>, <a href="javascript:map.setMapType(mxn.Mapstraction.HYBRID);">hybrid</a></li>
-  <li>click me to add a <a href="javascript:addMarker();">marker</a> or 
-        <a href="javascript:addPolyline();">line</a>.</li>
-</ul> 
-</div>
+<body>
 </body>
+	<div id="map"></div>
+	<div id="container">
+		<div class="box">
+			<h2>Examples</h2>
+			<div id="examples">
+				<ul>
+					<li><a id="set-bounds" href="#">Click me to set bounds</a>.</li>
+					<li><a id="get-bounds" href="#">click me to get bounds</a>.</li>
+					<li><a id="decrement-zoom" href="#">Click me to decrement zoom</a>.</li>
+					<li><a id="increment-zoom" href="#">Click me to increment zoom</a>.</li>
+					<li><a id="get-zoom" href="#">Click me to get zoom</a>.</li>
+					<li><a id="get-center" href="#">Click me to getCenter</a>.</li>
+					<li><a id="set-center" href="#">Click me to setCenter</a>.</li>
+					<li><a id="pan-center" href="#">Click me to pan to center</a>.</li>
+					<li><a id="add-controls" href="#">Click me to add controls</a>.</li>
+					<li><a id="hide-controls" href="#">Click me to remove controls</a>.</li>
+					<li>Resize map <a id="resize-restore" href="#">original size</a> or <a id="resize-small" href="#">half size</a>.</li>
+					<li>Set basemap to: <a id="set-road" href="#">road</a>, <a id="set-satellite" href="#">satellite</a>, <a id="set-hybrid" href="#">hybrid</a> or <a id="set-physical" href="#">physical</a>.</li>
+					<li>Add a <a id="add-marker" href="#">standard marker</a> or <a id="remove-marker" href="#">remove it</a>.</li>
+					<li>Add a <a id="add-icon-marker" href="#">marker with a custom icon</a> or <a id="remove-icon-marker" href="#">remove it</a>.</li>
+					<li>Add a <a id="add-polyline" href="#">polyline</a> or <a id="remove-polyline" href="#">remove it</a>.</li>
+				</ul>
+			</div>
+		</div>
+		<div class="box">
+			<h2>Info</h2>
+			<textarea id="info" placeholder="API Events"></textarea>
+		</div>
+		<div class="box">
+			<h2>Events</h2>
+			<textarea id="events" placeholder="API Events"></textarea>
+		</div>
+	</div>
 </html>
-
