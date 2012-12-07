@@ -11,7 +11,7 @@ mxn.register('esri', {
 Mapstraction: {
 	
 	init: function(element, api) {
-		var me = this, p;
+		var me = this;
 		dojo.require("esri.map");
 		dojo.require("esri.layers.FeatureLayer");
 		dojo.require("esri.dijit.BasemapGallery");
@@ -43,10 +43,18 @@ Mapstraction: {
 					map.infoWindow.show(evt.screenPoint,map.getInfoWindowAnchor(evt.screenPoint));
 				});
 
+				dojo.connect(map, 'onZoomEnd', function(evt) {
+					me.changeZoom.fire();
+				});
+				
+				dojo.connect(map, 'onPanEnd', function(evt) {
+					me.endPan.fire();
+				});
+				
+				me.load.fire();
 				// var basemap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer");
 				// map.addLayer(basemap);
 			});
-
 
 			// map.addEventListener('moveend', function(){
 			// 	me.endPan.fire();
@@ -96,7 +104,7 @@ Mapstraction: {
 	resizeTo: function(width, height){
 		this.currentElement.style.width = width;
 		this.currentElement.style.height = height;
-		this.maps[this.api].invalidateSize();
+		this.maps[this.api].resize();
 	},
 
 	addControls: function(args) {
@@ -145,9 +153,8 @@ Mapstraction: {
 	},
 
 	removeMarker: function(marker) {
-		throw 'removeMarkers not implemented';
-		// var map = this.maps[this.api];
-		// map.removeLayer(marker.proprietary_marker);
+		var map = this.maps[this.api];
+		map.graphics.remove(marker.proprietary_marker);
 	},
 	
 	declutterMarkers: function(opts) {
@@ -164,9 +171,9 @@ Mapstraction: {
 	},
 
 	removePolyline: function(polyline) {
-		throw 'removePolyline not implemented';
-		// var map = this.maps[this.api];
-		// map.removeLayer(polyline.proprietary_polyline);
+		var map = this.maps[this.api];
+		map.graphics.remove(polyline.proprietary_polyline);
+		this.features.pop(polyline);
 	},
 
 	getCenter: function() {
@@ -245,7 +252,7 @@ Mapstraction: {
 		var sw = bounds.getSouthWest().toProprietary(this.api);
 		var ne = bounds.getNorthEast().toProprietary(this.api);
 		var newBounds = new esri.geometry.Extent(sw.x,sw.y,ne.x,ne.y);
-		map.setExtent(newBounds); 
+		map.setExtent(newBounds, true); 
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north) {
