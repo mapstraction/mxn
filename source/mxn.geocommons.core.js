@@ -4,6 +4,11 @@ mxn.register('geocommons', {
 
 		init: function(element, api) {
 			var me = this;
+
+			if (typeof F1.Maker.Map === 'undefined') {
+				throw new Error(api + ' map script not imported');
+			}
+
 			this.element = element;
 			this.loaded[this.api] = false; // Loading will take a little bit.
 			
@@ -29,7 +34,6 @@ mxn.register('geocommons', {
 				onFeatureSelected: function() {
 					me.click.fire();
 				}
-
 			});
 			
 		},

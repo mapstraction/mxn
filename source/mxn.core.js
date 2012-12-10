@@ -686,7 +686,7 @@ Mapstraction.prototype.declutterMarkers = function(opts) {
 			break;
 		default:
 			if(this.debug) {
-				alert(this.api + ' not supported by Mapstraction.declutterMarkers');
+				throw new Error(this.api + ' not supported by Mapstraction.declutterMarkers');
 			}
 	}
 };

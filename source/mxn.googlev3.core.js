@@ -4,111 +4,110 @@ Mapstraction: {
 	
 	init: function(element, api){		
 		var me = this;
-		if ( google && google.maps ){
-			// by default add road map and no controls
-			var myOptions = {
-				disableDefaultUI: true,
-				mapTypeId: google.maps.MapTypeId.ROADMAP,
-				mapTypeControl: false,
-				mapTypeControlOptions: null,
-				navigationControl: false,
-				navigationControlOptions: null,
-				scrollwheel: false,
-				disableDoubleClickZoom: true
-			};
-
-			// Background color can only be set at construction
-			// To provide some control, adopt any explicit element style
-			var backgroundColor = null;
-			if ( element.currentStyle ) {
-				backgroundColor = element.currentStyle['background-color'];
-			}
-			else if ( window.getComputedStyle ) {
-				backgroundColor = document.defaultView.getComputedStyle(element, null).getPropertyValue('background-color');
-			}
-			// Only set the background if a style has been explicitly set, ruling out the "transparent" default
-			if ( backgroundColor && 'transparent' !== backgroundColor ) {
-				myOptions.backgroundColor = backgroundColor;
-			}
-
-			// find controls
-			if (!this.addControlsArgs && loadoptions.addControlsArgs) {
-				this.addControlsArgs = loadoptions.addControlsArgs;
-			}
-			if (this.addControlsArgs) {
-				if (this.addControlsArgs.zoom) {
-					myOptions.navigationControl = true;
-					if (this.addControlsArgs.zoom == 'small') {
-						myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.SMALL};
-					}
-					if (this.addControlsArgs.zoom == 'large') {
-						myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.ZOOM_PAN};
-					}
-				}
-				if (this.addControlsArgs.map_type) {
-					myOptions.mapTypeControl = true;
-					myOptions.mapTypeControlOptions = {style: google.maps.MapTypeControlStyle.DEFAULT};
-				}
-				if (this.addControlsArgs.overview) {
-					myOptions.overviewMapControl = true;
-					myOptions.overviewMapControlOptions = {opened: true};
-				}
-			}
 		
-			var map = new google.maps.Map(element, myOptions);
-			
-			var fireOnNextIdle = [];
-			
-			google.maps.event.addListener(map, 'idle', function() {
-				var fireListCount = fireOnNextIdle.length;
-				if (fireListCount > 0) {
-					var fireList = fireOnNextIdle.splice(0, fireListCount);
-					var handler;
-					while((handler = fireList.shift())){
-						handler();
-					}
+		if (typeof google.maps.Map === 'undefined') {
+			throw new Error(api + ' map script not imported');
+		}
+
+		var myOptions = {
+			disableDefaultUI: true,
+			mapTypeId: google.maps.MapTypeId.ROADMAP,
+			mapTypeControl: false,
+			mapTypeControlOptions: null,
+			navigationControl: false,
+			navigationControlOptions: null,
+			scrollwheel: false,
+			disableDoubleClickZoom: true
+		};
+
+		// Background color can only be set at construction
+		// To provide some control, adopt any explicit element style
+		var backgroundColor = null;
+		if ( element.currentStyle ) {
+			backgroundColor = element.currentStyle['background-color'];
+		}
+		else if ( window.getComputedStyle ) {
+			backgroundColor = document.defaultView.getComputedStyle(element, null).getPropertyValue('background-color');
+		}
+		// Only set the background if a style has been explicitly set, ruling out the "transparent" default
+		if ( backgroundColor && 'transparent' !== backgroundColor ) {
+			myOptions.backgroundColor = backgroundColor;
+		}
+
+		// find controls
+		if (!this.addControlsArgs && loadoptions.addControlsArgs) {
+			this.addControlsArgs = loadoptions.addControlsArgs;
+		}
+		if (this.addControlsArgs) {
+			if (this.addControlsArgs.zoom) {
+				myOptions.navigationControl = true;
+				if (this.addControlsArgs.zoom == 'small') {
+					myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.SMALL};
 				}
-			});
-			
-			// deal with click
-			google.maps.event.addListener(map, 'click', function(location){
-				me.click.fire({'location': 
-					new mxn.LatLonPoint(location.latLng.lat(),location.latLng.lng())
-				});
-			});
-
-			// deal with zoom change
-			google.maps.event.addListener(map, 'zoom_changed', function(){
-				// zoom_changed fires before the zooming has finished so we 
-				// wait for the next idle event before firing our changezoom
-				// so that method calls report the correct values
-				fireOnNextIdle.push(function() {
-					me.changeZoom.fire();
-				});
-			});
-
-			// deal with map movement
-			google.maps.event.addListener(map, 'dragend', function(){
-				me.moveendHandler(me);
-				me.endPan.fire();
-			});
-			
-			google.maps.event.addListener(map, 'center_changed', function() {
-				me.endPan.fire();
-			});
-			
-			// deal with initial tile loading
-			var loadListener = google.maps.event.addListener(map, 'tilesloaded', function(){
-				me.load.fire();
-				google.maps.event.removeListener( loadListener );
-			});			
-			
-			this.maps[api] = map;
-			this.loaded[api] = true;
+				if (this.addControlsArgs.zoom == 'large') {
+					myOptions.navigationControlOptions = {style: google.maps.NavigationControlStyle.ZOOM_PAN};
+				}
+			}
+			if (this.addControlsArgs.map_type) {
+				myOptions.mapTypeControl = true;
+				myOptions.mapTypeControlOptions = {style: google.maps.MapTypeControlStyle.DEFAULT};
+			}
+			if (this.addControlsArgs.overview) {
+				myOptions.overviewMapControl = true;
+				myOptions.overviewMapControlOptions = {opened: true};
+			}
 		}
-		else {
-			alert(api + ' map script not imported');
-		}
+	
+		var map = new google.maps.Map(element, myOptions);
+		
+		var fireOnNextIdle = [];
+		
+		google.maps.event.addListener(map, 'idle', function() {
+			var fireListCount = fireOnNextIdle.length;
+			if (fireListCount > 0) {
+				var fireList = fireOnNextIdle.splice(0, fireListCount);
+				var handler;
+				while((handler = fireList.shift())){
+					handler();
+				}
+			}
+		});
+		
+		// deal with click
+		google.maps.event.addListener(map, 'click', function(location){
+			me.click.fire({'location': 
+				new mxn.LatLonPoint(location.latLng.lat(),location.latLng.lng())
+			});
+		});
+
+		// deal with zoom change
+		google.maps.event.addListener(map, 'zoom_changed', function(){
+			// zoom_changed fires before the zooming has finished so we 
+			// wait for the next idle event before firing our changezoom
+			// so that method calls report the correct values
+			fireOnNextIdle.push(function() {
+				me.changeZoom.fire();
+			});
+		});
+
+		// deal with map movement
+		google.maps.event.addListener(map, 'dragend', function(){
+			me.moveendHandler(me);
+			me.endPan.fire();
+		});
+		
+		google.maps.event.addListener(map, 'center_changed', function() {
+			me.endPan.fire();
+		});
+		
+		// deal with initial tile loading
+		var loadListener = google.maps.event.addListener(map, 'tilesloaded', function(){
+			me.load.fire();
+			google.maps.event.removeListener( loadListener );
+		});			
+		
+		this.maps[api] = map;
+		this.loaded[api] = true;
 	},
 	
 	applyOptions: function(){

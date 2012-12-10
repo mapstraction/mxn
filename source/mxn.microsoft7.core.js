@@ -3,66 +3,64 @@ mxn.register('microsoft7', {
 Mapstraction: {
 	init: function(element, api) {
 		var me = this;
-		
-		if (!Microsoft || !Microsoft.Maps) {
-			alert(api + ' map script not imported');
+
+		if (typeof Microsoft.Maps === 'undefined') {
+			throw new Error(api + ' map script not imported');
 		}
-		
-		else {
-			this.maps[api] = new Microsoft.Maps.Map(element, { 
-				credentials: microsoft_key,
-				enableSearchLogo: false, // Remove the pointless Bing Search advert form the map's lower left, as this has nothing to do with the map
-				enableClickableLogo: false // Stop the Bing logo from being clickable, so no-one accidently clicks it and leaves the map
-				} );
-			//Add Click Event
-			element.addEventListener('contextmenu', function(evt) { evt.preventDefault(); });
-			Microsoft.Maps.Events.addHandler(this.maps[api], 'rightclick', function(event) {
-				var map = me.maps[me.api];
+
+		this.maps[api] = new Microsoft.Maps.Map(element, { 
+			credentials: microsoft_key,
+			enableSearchLogo: false, // Remove the pointless Bing Search advert form the map's lower left, as this has nothing to do with the map
+			enableClickableLogo: false // Stop the Bing logo from being clickable, so no-one accidently clicks it and leaves the map
+			} );
+		//Add Click Event
+		element.addEventListener('contextmenu', function(evt) { evt.preventDefault(); });
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'rightclick', function(event) {
+			var map = me.maps[me.api];
+			var _x = event.getX();
+			var _y = event.getY();
+			var pixel = new Microsoft.Maps.Point(_x, _y);
+			var ll = map.tryPixelToLocation(pixel);
+			var _event = {
+					'location': new mxn.LatLonPoint(ll.latitude, ll.longitude),
+					'position': {x:_x, y:_y},
+					'button': 'right'
+				};
+			me.click.fire(_event);
+		});
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'click', function(event){
+			var map = me.maps[me.api];
+			event.originalEvent.preventDefault();
+			if (event.targetType == 'pushpin') {
+				event.target.mapstraction_marker.click.fire();
+			}
+			else {
 				var _x = event.getX();
 				var _y = event.getY();
 				var pixel = new Microsoft.Maps.Point(_x, _y);
 				var ll = map.tryPixelToLocation(pixel);
 				var _event = {
-						'location': new mxn.LatLonPoint(ll.latitude, ll.longitude),
-						'position': {x:_x, y:_y},
-						'button': 'right'
-					};
+					'location': new mxn.LatLonPoint(ll.latitude, ll.longitude),
+					'position': {x:_x, y:_y},
+					'button': event.isSecondary ? 'right' : 'left'
+				};
 				me.click.fire(_event);
-			});
-			Microsoft.Maps.Events.addHandler(this.maps[api], 'click', function(event){
-				var map = me.maps[me.api];
-				event.originalEvent.preventDefault();
-				if (event.targetType == 'pushpin') {
-					event.target.mapstraction_marker.click.fire();
-				}
-				else {
-					var _x = event.getX();
-					var _y = event.getY();
-					var pixel = new Microsoft.Maps.Point(_x, _y);
-					var ll = map.tryPixelToLocation(pixel);
-					var _event = {
-						'location': new mxn.LatLonPoint(ll.latitude, ll.longitude),
-						'position': {x:_x, y:_y},
-						'button': event.isSecondary ? 'right' : 'left'
-					};
-					me.click.fire(_event);
-				}
-			});
-			Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', function(event){
-				me.changeZoom.fire();
-			});
-			Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', function(event){
-				me.endPan.fire();
-			});
-			Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchange', function(event){
-				me.endPan.fire();
-			});
-		
-			var loadListener = Microsoft.Maps.Events.addHandler(this.maps[api], 'tiledownloadcomplete', function(event) {
-				me.load.fire();
-				Microsoft.Maps.Events.removeHandler(loadListener);
-			});
-		}
+			}
+		});
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', function(event){
+			me.changeZoom.fire();
+		});
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', function(event){
+			me.endPan.fire();
+		});
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchange', function(event){
+			me.endPan.fire();
+		});
+	
+		var loadListener = Microsoft.Maps.Events.addHandler(this.maps[api], 'tiledownloadcomplete', function(event) {
+			me.load.fire();
+			Microsoft.Maps.Events.removeHandler(loadListener);
+		});
 	},
 	
 	applyOptions: function(){

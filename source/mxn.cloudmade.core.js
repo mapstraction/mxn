@@ -5,70 +5,68 @@ mxn.register('cloudmade', {
 		init: function(element, api) {
 			var me = this;
 			
-			if (CM.Map) {
-				var opts = {
-					key: cloudmade_key
-				};
-				if (typeof cloudmade_styleId != "undefined"){
-					opts.styleId = cloudmade_styleId;
+			if (typeof CM.Map === 'undefined') {
+				throw new Error(api + ' map script not imported');
+			}
+			
+			var opts = {
+				key: cloudmade_key
+			};
+			if (typeof cloudmade_styleId != "undefined"){
+				opts.styleId = cloudmade_styleId;
+			}
+
+			this.tileLayerControl = null;
+			this.scaleControl = null;
+			this.smallMapControl = null;
+			this.largeMapControl = null;
+			this.overviewMapControl = null;
+			this._fireOnNextCall = [];
+			this._fireQueuedEvents =  function() {
+				var fireListCount = me._fireOnNextCall.length;
+				if (fireListCount > 0) {
+					var fireList = me._fireOnNextCall.splice(0, fireListCount);
+					var handler;
+					while ((handler = fireList.shift())) {
+						handler();
+					}
+				}
+			};
+		
+			var cloudmade = new CM.Tiles.CloudMade.Web(opts);
+			this.maps[api] = new CM.Map(element, cloudmade);
+
+			CM.Event.addListener(this.maps[api], 'load', function() {
+				me._fireOnNextCall.push(function() {
+					me.load.fire();
+				});
+			});
+		
+			CM.Event.addListener(this.maps[api], 'click', function(location,marker) {
+				if ( marker && marker.mapstraction_marker ) {
+					marker.mapstraction_marker.click.fire();
+				}
+				else if ( location ) {
+					me.click.fire({'location': new mxn.LatLonPoint(location.lat(), location.lng())});
 				}
 
-				this.tileLayerControl = null;
-				this.scaleControl = null;
-				this.smallMapControl = null;
-				this.largeMapControl = null;
-				this.overviewMapControl = null;
-				this._fireOnNextCall = [];
-				this._fireQueuedEvents =  function() {
-					var fireListCount = me._fireOnNextCall.length;
-					if (fireListCount > 0) {
-						var fireList = me._fireOnNextCall.splice(0, fireListCount);
-						var handler;
-						while ((handler = fireList.shift())) {
-							handler();
-						}
-					}
-				};
-			
-				var cloudmade = new CM.Tiles.CloudMade.Web(opts);
-				this.maps[api] = new CM.Map(element, cloudmade);
+				// If the user puts their own Google markers directly on the map
+				// then there is no location and this event should not fire.
+				if ( location ) {
+					me.clickHandler(location.lat(),location.lng(),location,me);
+				}
+			});
+			CM.Event.addListener(this.maps[api], 'moveend', function() {
+				me.endPan.fire();
+			});
+			CM.Event.addListener(this.maps[api], 'zoomend', function() {
+				me.changeZoom.fire();
+			});
 
-				CM.Event.addListener(this.maps[api], 'load', function() {
-					me._fireOnNextCall.push(function() {
-						me.load.fire();
-					});
-				});
-			
-				CM.Event.addListener(this.maps[api], 'click', function(location,marker) {
-					if ( marker && marker.mapstraction_marker ) {
-						marker.mapstraction_marker.click.fire();
-					}
-					else if ( location ) {
-						me.click.fire({'location': new mxn.LatLonPoint(location.lat(), location.lng())});
-					}
-
-					// If the user puts their own Google markers directly on the map
-					// then there is no location and this event should not fire.
-					if ( location ) {
-						me.clickHandler(location.lat(),location.lng(),location,me);
-					}
-				});
-				CM.Event.addListener(this.maps[api], 'moveend', function() {
-					me.endPan.fire();
-				});
-				CM.Event.addListener(this.maps[api], 'zoomend', function() {
-					me.changeZoom.fire();
-				});
-
-				// CloudMade insists that setCenter is called with a valid lat/long and a zoom
-				// level before any other operation is called on the map. Surely a WTF moment.
-				this.maps[api].setCenter(new CM.LatLng(0, 0), 12);
-				this.loaded[api] = true;
-			}
-			
-			else {
-				alert(api + ' map script not imported');
-			}
+			// CloudMade insists that setCenter is called with a valid lat/long and a zoom
+			// level before any other operation is called on the map. Surely a WTF moment.
+			this.maps[api].setCenter(new CM.LatLng(0, 0), 12);
+			this.loaded[api] = true;
 		},
 
 		applyOptions: function(){

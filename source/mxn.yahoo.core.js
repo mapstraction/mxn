@@ -1,41 +1,35 @@
-function mxn_yahoo_obsoleted () {
-	var msg = 'The Yahoo! Maps API is now obsolete and no longer supported by Mapstraction';
-	alert (msg);
-	throw (msg);
-}
-
 mxn.register('yahoo', {	
 
 Mapstraction: {
 	init: function(element,api) {
-		mxn_yahoo_obsoleted ();
+		throw new Error('The Yahoo! Maps API is now obsolete and no longer supported by Mapstraction');
 
 		var me = this;
-		if (YMap) {
-			this.maps[api] = new YMap(element);
-
-			YEvent.Capture(this.maps[api], EventsList.MouseClick, function(event,location) {
-				me.clickHandler(location.Lat, location.Lon, location, me);
-				me.click.fire({'location': new mxn.LatLonPoint(location.Lat, location.Lon)});
-			});
-			YEvent.Capture(this.maps[api], EventsList.changeZoom, function() {
-				me.moveendHandler(me);
-				me.changeZoom.fire();
-			});
-			YEvent.Capture(this.maps[api], EventsList.endPan, function() {
-				me.moveendHandler(me);
-				me.endPan.fire();
-			});
-			YEvent.Capture(this.maps[api], EventsList.endAutoPan, function() {
-				me.endPan.fire();
-			});
-			
-			this.loaded[api] = true;
-			me.load.fire();
+		
+		if (!YMap) {
+			throw new Error(api + ' map script not imported');
 		}
-		else {
-			alert(api + ' map script not imported');
-		}  
+
+		this.maps[api] = new YMap(element);
+
+		YEvent.Capture(this.maps[api], EventsList.MouseClick, function(event,location) {
+			me.clickHandler(location.Lat, location.Lon, location, me);
+			me.click.fire({'location': new mxn.LatLonPoint(location.Lat, location.Lon)});
+		});
+		YEvent.Capture(this.maps[api], EventsList.changeZoom, function() {
+			me.moveendHandler(me);
+			me.changeZoom.fire();
+		});
+		YEvent.Capture(this.maps[api], EventsList.endPan, function() {
+			me.moveendHandler(me);
+			me.endPan.fire();
+		});
+		YEvent.Capture(this.maps[api], EventsList.endAutoPan, function() {
+			me.endPan.fire();
+		});
+		
+		this.loaded[api] = true;
+		me.load.fire();
 	},
 	
 	applyOptions: function(){

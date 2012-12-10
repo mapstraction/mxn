@@ -5,6 +5,10 @@ Mapstraction: {
 	init: function(element, api) {		
 		var me = this;		
 
+		if (typeof google.earth === 'undefined') {
+			throw new Error(api + ' map script not imported');
+		}
+
 		this.maps[api] = null;
 				
 		google.earth.createInstance(

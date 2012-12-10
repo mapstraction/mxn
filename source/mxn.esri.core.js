@@ -16,78 +16,76 @@ Mapstraction: {
 		dojo.require("esri.layers.FeatureLayer");
 		dojo.require("esri.dijit.BasemapGallery");
 
-		if (esri.Map) {
-			var map = new esri.Map(element.id, {
-				wrapAround180: true
-			});
-			dojo.connect(map, "onLoad",function() {
-				dojo.connect(map, "onClick", function(evt){
-					var pt = esri.geometry.webMercatorToGeographic(evt.mapPoint);
-					me.click.fire({location: new mxn.LatLonPoint(pt.y, pt.x)});
-				});
-				dojo.connect(map, "onMouseDown", function(evt){
-					map.onPanStart.apply(map.extent, evt.mapPoint);
-				});
-				dojo.connect(map, "onMouseDragStart", function(evt){
-					map.onPanStart.apply(map.extent, evt.mapPoint);
-				});
-				dojo.connect(map, "onMouseDragEnd", function(evt){
-					map.centerAt(evt.mapPoint);
-					me.endPan.fire();
-				});
-				dojo.connect(map.graphics, "onClick", function(evt) {
-					// FIXME: esri - need to over-ride the Marker.setInfoBubble method to set the graphics content
-					var g = evt.graphic;
-					map.infoWindow.setContent(g.getContent());
-					map.infoWindow.setTitle(g.getTitle());
-					map.infoWindow.show(evt.screenPoint,map.getInfoWindowAnchor(evt.screenPoint));
-				});
+		if (typeof esri.Map === 'undefined') {
+			throw new Error(api + ' map script not imported');
+		}
 
-				dojo.connect(map, 'onZoomEnd', function(evt) {
-					me.changeZoom.fire();
-				});
-				
-				dojo.connect(map, 'onPanEnd', function(evt) {
-					me.endPan.fire();
-				});
-				
-				me.load.fire();
-				// var basemap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer");
-				// map.addLayer(basemap);
+		var map = new esri.Map(element.id, {
+			wrapAround180: true
+		});
+		dojo.connect(map, "onLoad",function() {
+			dojo.connect(map, "onClick", function(evt){
+				var pt = esri.geometry.webMercatorToGeographic(evt.mapPoint);
+				me.click.fire({location: new mxn.LatLonPoint(pt.y, pt.x)});
+			});
+			dojo.connect(map, "onMouseDown", function(evt){
+				map.onPanStart.apply(map.extent, evt.mapPoint);
+			});
+			dojo.connect(map, "onMouseDragStart", function(evt){
+				map.onPanStart.apply(map.extent, evt.mapPoint);
+			});
+			dojo.connect(map, "onMouseDragEnd", function(evt){
+				map.centerAt(evt.mapPoint);
+				me.endPan.fire();
+			});
+			dojo.connect(map.graphics, "onClick", function(evt) {
+				// FIXME: esri - need to over-ride the Marker.setInfoBubble method to set the graphics content
+				var g = evt.graphic;
+				map.infoWindow.setContent(g.getContent());
+				map.infoWindow.setTitle(g.getTitle());
+				map.infoWindow.show(evt.screenPoint,map.getInfoWindowAnchor(evt.screenPoint));
 			});
 
-			// map.addEventListener('moveend', function(){
-			// 	me.endPan.fire();
-			// }); 
-			//map.on("click", function(e) {
-			//	console.log("map clicked");
-			// 	me.click.fire({'location': new mxn.LatLonPoint(e.latlng.lat, e.latlng.lng)});
-			 //});
-			// map.on("popupopen", function(e) {
-			// 	if (e.popup._source.mxnMarker) {
-			// 		e.popup._source.mxnMarker.openInfoBubble.fire({'bubbleContainer': e.popup._container});
-			// 	}
-			// });
-			// map.on("popupclose", function(e) {
-			// 	if (e.popup._source.mxnMarker) {
-			// 		e.popup._source.mxnMarker.closeInfoBubble.fire({'bubbleContainer': e.popup._container});
-			// 	}
-			// });
-		
-			this.layers = {};
-			this.features = [];
-			this.maps[api] = map;
-			this.setMapType();
-			//this.currentMapType = mxn.Mapstraction.SATELLITE;
-			this.loaded[api] = true;
-			// for(p in this.options){
-			// 	console.log( p + ": " + this.options[p]);
-			// }
-		}
-		
-		else {
-			alert(api + ' map script not imported');
-		}
+			dojo.connect(map, 'onZoomEnd', function(evt) {
+				me.changeZoom.fire();
+			});
+			
+			dojo.connect(map, 'onPanEnd', function(evt) {
+				me.endPan.fire();
+			});
+			
+			me.load.fire();
+			// var basemap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer");
+			// map.addLayer(basemap);
+		});
+
+		// map.addEventListener('moveend', function(){
+		// 	me.endPan.fire();
+		// }); 
+		//map.on("click", function(e) {
+		//	console.log("map clicked");
+		// 	me.click.fire({'location': new mxn.LatLonPoint(e.latlng.lat, e.latlng.lng)});
+		 //});
+		// map.on("popupopen", function(e) {
+		// 	if (e.popup._source.mxnMarker) {
+		// 		e.popup._source.mxnMarker.openInfoBubble.fire({'bubbleContainer': e.popup._container});
+		// 	}
+		// });
+		// map.on("popupclose", function(e) {
+		// 	if (e.popup._source.mxnMarker) {
+		// 		e.popup._source.mxnMarker.closeInfoBubble.fire({'bubbleContainer': e.popup._container});
+		// 	}
+		// });
+	
+		this.layers = {};
+		this.features = [];
+		this.maps[api] = map;
+		this.setMapType();
+		//this.currentMapType = mxn.Mapstraction.SATELLITE;
+		this.loaded[api] = true;
+		// for(p in this.options){
+		// 	console.log( p + ": " + this.options[p]);
+		// }
 	},
 	
 	applyOptions: function(){

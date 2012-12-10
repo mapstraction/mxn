@@ -4,10 +4,11 @@ Mapstraction: {
 	
 	init: function(element, api) {		
 		var me = this;
-		if (!VEMap) {
-			throw api + ' map script not imported';
-		}
 		
+		if (typeof VEMap === 'undefined') {
+			throw new Error(api + ' map script not imported');
+		}
+
 		this.maps[api] = new VEMap(element.id);
 		this.maps[api].AttachEvent('onclick', function(event){
 			me.clickHandler();

@@ -4,50 +4,49 @@ Mapstraction: {
 	
 	init: function(element,api) {		
 		var me = this;
-		if (GMap2) {
-			if (GBrowserIsCompatible()) {
-				this.maps[api] = new GMap2(element);
 
-				GEvent.addListener(this.maps[api], 'click', function(marker,location) {
-					
-					if ( marker && marker.mapstraction_marker ) {
-						marker.mapstraction_marker.click.fire();
-					}
-					else if ( location ) {
-						me.click.fire({'location': new mxn.LatLonPoint(location.y, location.x)});
-					}
-					
-					// If the user puts their own Google markers directly on the map
-					// then there is no location and this event should not fire.
-					if ( location ) {
-						me.clickHandler(location.y,location.x,location,me);
-					}
-				});
-
-				GEvent.addListener(this.maps[api], 'moveend', function() {
-					me.moveendHandler(me);
-					me.endPan.fire();
-				});
-				
-				GEvent.addListener(this.maps[api], 'zoomend', function() {
-					me.changeZoom.fire();
-				});
-				
-				var loadListener = GEvent.addListener(this.maps[api], 'tilesloaded', function() {
-					me.load.fire();
-					GEvent.removeListener(loadListener);
-				});
-				
-				this.loaded[api] = true;
-				me.load.fire();
-			}
-			else {
-				alert('browser not compatible with Google Maps');
-			}
+		if (typeof GMap2 === 'undefined') {
+			throw new Error(api + ' map script not imported');
 		}
-		else {
-			alert(api + ' map script not imported');
-		}	  
+
+		if (!GBrowserIsCompatible()) {
+			throw new Error('This browser is not compatible with Google Maps');
+		}
+
+		this.maps[api] = new GMap2(element);
+
+		GEvent.addListener(this.maps[api], 'click', function(marker,location) {
+			
+			if ( marker && marker.mapstraction_marker ) {
+				marker.mapstraction_marker.click.fire();
+			}
+			else if ( location ) {
+				me.click.fire({'location': new mxn.LatLonPoint(location.y, location.x)});
+			}
+			
+			// If the user puts their own Google markers directly on the map
+			// then there is no location and this event should not fire.
+			if ( location ) {
+				me.clickHandler(location.y,location.x,location,me);
+			}
+		});
+
+		GEvent.addListener(this.maps[api], 'moveend', function() {
+			me.moveendHandler(me);
+			me.endPan.fire();
+		});
+		
+		GEvent.addListener(this.maps[api], 'zoomend', function() {
+			me.changeZoom.fire();
+		});
+		
+		var loadListener = GEvent.addListener(this.maps[api], 'tilesloaded', function() {
+			me.load.fire();
+			GEvent.removeListener(loadListener);
+		});
+		
+		this.loaded[api] = true;
+		me.load.fire();
 	},
 	
 	applyOptions: function(){

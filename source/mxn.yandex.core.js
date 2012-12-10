@@ -4,25 +4,25 @@ Mapstraction: {
 
 	init: function(element, api) {
 		var me = this;
-		if (YMaps) {
-			var yandexMap = this.maps[api] = new YMaps.Map(element);
-			
-			YMaps.Events.observe(yandexMap, yandexMap.Events.Click, function(map, mouseEvent) {
-				var lat = mouseEvent.getCoordPoint().getX();
-				var lon = mouseEvent.getCoordPoint().getY();
-				me.click.fire({'location': new mxn.LatLonPoint(lat, lon)});
-			});
-			// deal with zoom change
-			YMaps.Events.observe(yandexMap, yandexMap.Events.SmoothZoomEnd, function(map) {
-				me.changeZoom.fire();
-			});
-			
-			this.loaded[api] = true;
-			me.load.fire();
-		  }
-		else {
-			alert(api + ' map script not imported');
+
+		if (typeof YMaps.Map === 'undefined') {
+			throw new Error(api + ' map script not imported');
 		}
+
+		var yandexMap = this.maps[api] = new YMaps.Map(element);
+		
+		YMaps.Events.observe(yandexMap, yandexMap.Events.Click, function(map, mouseEvent) {
+			var lat = mouseEvent.getCoordPoint().getX();
+			var lon = mouseEvent.getCoordPoint().getY();
+			me.click.fire({'location': new mxn.LatLonPoint(lat, lon)});
+		});
+		// deal with zoom change
+		YMaps.Events.observe(yandexMap, yandexMap.Events.SmoothZoomEnd, function(map) {
+			me.changeZoom.fire();
+		});
+		
+		this.loaded[api] = true;
+		me.load.fire();
 	},
 	
 	applyOptions: function(){
@@ -278,7 +278,7 @@ Mapstraction: {
 		map.addOverlay(kml);
 		
 		YMaps.Events.observe(kml, kml.Events.Fault, function (kml, error) {
-			alert("KML upload faults. Error: " + error);
+			throw new Error(api + "KML upload faults. Error: " + error);
 		});
 	},
 

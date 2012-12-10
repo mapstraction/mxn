@@ -5,6 +5,10 @@ Mapstraction: {
 	init: function(element, api) {		
 		var me = this;
 		
+		if (typeof map-provider-namespace === 'undefined') {
+			throw new Error(api + ' map script not imported');
+		}
+		
 		// TODO: Add provider code
 	},
 	

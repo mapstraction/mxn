@@ -6,86 +6,84 @@ Mapstraction: {
 		var me = this;
 		var map;
 		
-		if (typeof(OpenLayers) == "undefined") {
-			alert('OpenLayers is not loaded but is required to work with OpenSpace');
+		if (typeof OpenLayers === 'undefined') {
+			throw new Error('OpenLayers is not loaded but is required to work with OpenSpace');
 		}
 		
-		else if (OpenSpace) {
-			//FIX STUPID OPENSPACE BUG IN openspace Version 1.2 - is triggered by Mapstraction Core Tests when adding a marker with label text
-			if (typeof (OpenLayers.Marker.prototype.setDragMode) == "undefined")
-			{
-				OpenLayers.Marker.prototype.setDragMode = function(mode) {
-					if (this.eventObj) {
-						if (mode) {
-							this.events.unregister("mousedown", this.eventObj, this.eventFunc);
-						} 
-						else {
-							if (this.events.listeners.mousedown.length === 0) {
-								this.events.register("mousedown", this.eventObj, this.eventFunc);
-							}
+		if (typeof OpenSpace.Map === 'undefined') {
+			throw new Error(api + ' map script not imported');
+		}
+
+		//FIX STUPID OPENSPACE BUG IN openspace Version 1.2 - is triggered by Mapstraction Core Tests when adding a marker with label text
+		if (typeof (OpenLayers.Marker.prototype.setDragMode) == "undefined")
+		{
+			OpenLayers.Marker.prototype.setDragMode = function(mode) {
+				if (this.eventObj) {
+					if (mode) {
+						this.events.unregister("mousedown", this.eventObj, this.eventFunc);
+					} 
+					else {
+						if (this.events.listeners.mousedown.length === 0) {
+							this.events.register("mousedown", this.eventObj, this.eventFunc);
 						}
 					}
-				};
-			}
-
-			// create the map with no controls and don't centre popup info window
-			map = new OpenSpace.Map(element,{
-				controls: [],
-				centreInfoWindow: false
-			});
-
-			// note that these three controls are always there and the fact that 
-			// there are three resident controls is used in addControls()
-			// enable map drag with mouse and keyboard
-
-			map.addControl(new OpenLayers.Control.Navigation());
-			map.addControl(new OpenLayers.Control.KeyboardDefaults());
-			// include copyright statement
-			map.addControl(new OpenSpace.Control.CopyrightCollection());
-			map.addControl(new OpenSpace.Control.PoweredBy());
-		
-			map.events.register(
-				"click", 
-				map,
-				function(evt) {
-					var point = this.getLonLatFromViewPortPx( evt.xy );
-					// convert to LatLonPoint
-					var llPoint = new mxn.LatLonPoint();
-					llPoint.fromProprietary(this.api, point);
-					me.clickHandler( llPoint.lat, llPoint.lon );
-					return false;
 				}
-			);
-			
-			var loadfire = function(e) {
-				me.load.fire();
-				this.events.unregister('loadend', this, loadfire);
 			};
-			
-			for (var layerName in map.layers) {
-				if (map.layers.hasOwnProperty(layerName)) {
-					if (map.layers[layerName].visibility === true) {
-						map.layers[layerName].events.register('loadend', map.layers[layerName], loadfire);
-					}
+		}
+
+		// create the map with no controls and don't centre popup info window
+		map = new OpenSpace.Map(element,{
+			controls: [],
+			centreInfoWindow: false
+		});
+
+		// note that these three controls are always there and the fact that 
+		// there are three resident controls is used in addControls()
+		// enable map drag with mouse and keyboard
+
+		map.addControl(new OpenLayers.Control.Navigation());
+		map.addControl(new OpenLayers.Control.KeyboardDefaults());
+		// include copyright statement
+		map.addControl(new OpenSpace.Control.CopyrightCollection());
+		map.addControl(new OpenSpace.Control.PoweredBy());
+	
+		map.events.register(
+			"click", 
+			map,
+			function(evt) {
+				var point = this.getLonLatFromViewPortPx( evt.xy );
+				// convert to LatLonPoint
+				var llPoint = new mxn.LatLonPoint();
+				llPoint.fromProprietary(this.api, point);
+				me.clickHandler( llPoint.lat, llPoint.lon );
+				return false;
+			}
+		);
+		
+		var loadfire = function(e) {
+			me.load.fire();
+			this.events.unregister('loadend', this, loadfire);
+		};
+		
+		for (var layerName in map.layers) {
+			if (map.layers.hasOwnProperty(layerName)) {
+				if (map.layers[layerName].visibility === true) {
+					map.layers[layerName].events.register('loadend', map.layers[layerName], loadfire);
 				}
 			}
-			
-			map.events.register('zoomend', map, function(evt) {
-				me.changeZoom.fire();
-			});
-			
-			map.events.register('moveend', map, function(evt) {
-				me.moveendHandler(me);
-				me.endPan.fire();
-			});
-			
-			this.maps[api] = map;
-			this.loaded[api] = true;
 		}
-	
-		else {
-			alert (api + ' map script not imported');
-		}
+		
+		map.events.register('zoomend', map, function(evt) {
+			me.changeZoom.fire();
+		});
+		
+		map.events.register('moveend', map, function(evt) {
+			me.moveendHandler(me);
+			me.endPan.fire();
+		});
+		
+		this.maps[api] = map;
+		this.loaded[api] = true;
 	},
 	
 	applyOptions: function(){
@@ -441,7 +439,8 @@ Mapstraction: {
 	mousePosition: function(element) {
 		var map = this.maps[this.api];
 
-		try {
+		locDisp = document.getElementById(element);
+		if (locDisp !== null) {
 			map.events.register('mousemove', map, function (e) {
 				var lonLat = map.getLonLatFromViewPortPx(e.xy);
 				var lon = lonLat.lon * (180.0 / 20037508.34);
@@ -452,12 +451,7 @@ Mapstraction: {
 				   // 4 dec places
 				locDisp.innerHTML = loc;
 			});
-			locDisp.innerHTML = '0.0000 / 0.0000';
-		} catch (x) {
-				alert("Error: " + x);
 		}
-	
-		// TODO: Add provider code
 	}
 },
 

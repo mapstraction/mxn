@@ -13,81 +13,79 @@ Mapstraction: {
 			"mapsize": false
 		};
 		
-		if (ovi.mapsapi) {
-			ovi_map = new ovi.mapsapi.map.Display (element);
-			ovi_map.addComponent(new ovi.mapsapi.map.component.InfoBubbles());
-			ovi_map.addComponent(new ovi.mapsapi.map.component.Behavior());
-
-			// Handle click event
-			ovi_map.addListener('click', function(event){
-				coords = ovi_map.pixelToGeo(event.targetX, event.targetY);
-				me.click.fire({'location': new mxn.LatLonPoint(coords.latitude, coords.longitude)});
-			});
-
-			// Handle endPan (via centre change) and zoom events
-			// the Ovi Maps API doesn't have a discrete event for each of these events
-			// instead it uses a start/update/end sequence of events, where update may happen
-			// multiple times or not at all, so we need to keep track of which Ovi events have
-			// fired during a start(/update) event sequence and then fire the relevent Mapstraction
-			// events upon receiving the Ovi end event
-			ovi_map.addListener('mapviewchangestart', function(event){
-				if (event.data & event.MAPVIEWCHANGE_CENTER) {
-					eventStates.center = true;
-				}
-				if (event.data & event.MAPVIEWCHANGE_ZOOM) {
-					eventStates.zoom = true;
-				}
-				if (event.data & event.MAPVIEWCHANGE_SIZE) {
-					eventStates.mapsize = true;
-				}
-			});
-
-			ovi_map.addListener('mapviewchangeupdate', function(event){
-				if (event.data & event.MAPVIEWCHANGE_CENTER) {
-					eventStates.center = true;
-				}
-				if (event.data & event.MAPVIEWCHANGE_ZOOM) {
-					eventStates.zoom = true;
-				}
-				if (event.data & event.MAPVIEWCHANGE_SIZE) {
-					eventStates.mapsize = true;
-				}
-			});
-
-			ovi_map.addListener('mapviewchangeend', function(event){
-				// The Ovi Maps API doesn't support a "map loaded" event, but both a
-				// "centre" and "size" mapviewchangestart/mapviewchangeupdate/mapviewchangeend
-				// event sequence will be fired as part of the initial loading so we can trap
-				// this and fire the MXN "load" event.
-				
-				if (!mapLoaded) {
-					if (eventStates.center && eventStates.mapsize) {
-						mapLoaded = true;
-						eventStates.mapsize = false;
-						me.load.fire();
-					}
-				} 
-				else {
-				    if (eventStates.center) {
-						eventStates.center = false;
-						me.moveendHandler(me);
-						me.endPan.fire();
-				    }
-				}
-				
-				if (eventStates.zoom) {
-					eventStates.zoom = false;
-					me.changeZoom.fire();
-				}
-			});
-
-			this.maps[api] = ovi_map;
-			this.loaded[api] = true;
+		if (typeof ovi.mapsapi.map.Display === 'undefined') {
+			throw new Error(api + ' map script not imported');
 		}
-		
-		else {
-			alert(api + ' map script not imported');
-		}
+
+		ovi_map = new ovi.mapsapi.map.Display (element);
+		ovi_map.addComponent(new ovi.mapsapi.map.component.InfoBubbles());
+		ovi_map.addComponent(new ovi.mapsapi.map.component.Behavior());
+
+		// Handle click event
+		ovi_map.addListener('click', function(event){
+			coords = ovi_map.pixelToGeo(event.targetX, event.targetY);
+			me.click.fire({'location': new mxn.LatLonPoint(coords.latitude, coords.longitude)});
+		});
+
+		// Handle endPan (via centre change) and zoom events
+		// the Ovi Maps API doesn't have a discrete event for each of these events
+		// instead it uses a start/update/end sequence of events, where update may happen
+		// multiple times or not at all, so we need to keep track of which Ovi events have
+		// fired during a start(/update) event sequence and then fire the relevent Mapstraction
+		// events upon receiving the Ovi end event
+		ovi_map.addListener('mapviewchangestart', function(event){
+			if (event.data & event.MAPVIEWCHANGE_CENTER) {
+				eventStates.center = true;
+			}
+			if (event.data & event.MAPVIEWCHANGE_ZOOM) {
+				eventStates.zoom = true;
+			}
+			if (event.data & event.MAPVIEWCHANGE_SIZE) {
+				eventStates.mapsize = true;
+			}
+		});
+
+		ovi_map.addListener('mapviewchangeupdate', function(event){
+			if (event.data & event.MAPVIEWCHANGE_CENTER) {
+				eventStates.center = true;
+			}
+			if (event.data & event.MAPVIEWCHANGE_ZOOM) {
+				eventStates.zoom = true;
+			}
+			if (event.data & event.MAPVIEWCHANGE_SIZE) {
+				eventStates.mapsize = true;
+			}
+		});
+
+		ovi_map.addListener('mapviewchangeend', function(event){
+			// The Ovi Maps API doesn't support a "map loaded" event, but both a
+			// "centre" and "size" mapviewchangestart/mapviewchangeupdate/mapviewchangeend
+			// event sequence will be fired as part of the initial loading so we can trap
+			// this and fire the MXN "load" event.
+			
+			if (!mapLoaded) {
+				if (eventStates.center && eventStates.mapsize) {
+					mapLoaded = true;
+					eventStates.mapsize = false;
+					me.load.fire();
+				}
+			} 
+			else {
+			    if (eventStates.center) {
+					eventStates.center = false;
+					me.moveendHandler(me);
+					me.endPan.fire();
+			    }
+			}
+			
+			if (eventStates.zoom) {
+				eventStates.zoom = false;
+				me.changeZoom.fire();
+			}
+		});
+
+		this.maps[api] = ovi_map;
+		this.loaded[api] = true;
 	},
 	
 	applyOptions: function() {

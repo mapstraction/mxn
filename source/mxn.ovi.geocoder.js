@@ -6,19 +6,17 @@ Geocoder: {
 		var me = this;
 		var ovi_geocoder;
 		
-		if (ovi.mapsapi) {
-			ovi_geocoder = new ovi.mapsapi.search.Manager();
-			ovi_geocoder.addObserver("state", function (manager, key, value){
-				if (value == "finished" || value == "failed") {
-					me.geocode_callback (manager.locations, value);
-				}
-			});
-			this.geocoders[this.api] = ovi_geocoder;
+		if (typeof ovi.mapsapi.search.Manager === 'undefined') {
+			throw new Error(api + ' map script not imported');
 		}
-		
-		else {
-			alert(api + ' map script not imported');
-		}
+
+		ovi_geocoder = new ovi.mapsapi.search.Manager();
+		ovi_geocoder.addObserver("state", function (manager, key, value){
+			if (value == "finished" || value == "failed") {
+				me.geocode_callback (manager.locations, value);
+			}
+		});
+		this.geocoders[this.api] = ovi_geocoder;
 	},
 	
 	geocode: function(address){

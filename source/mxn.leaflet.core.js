@@ -3,47 +3,47 @@ mxn.register('leaflet', {
 Mapstraction: {
 	
 	init: function(element, api) {
-		if (typeof(L) != 'undefined') {
-			var me = this;
-			var map = new L.Map(element.id, {
-				zoomControl: false
-			});
-			map.addEventListener('moveend', function(){
-				me.endPan.fire();
-			}); 
-			map.on("click", function(e) {
-				me.click.fire({'location': new mxn.LatLonPoint(e.latlng.lat, e.latlng.lng)});
-			});
-			map.on("popupopen", function(e) {
-				if (e.popup._source.mxnMarker) {
-				  e.popup._source.mxnMarker.openInfoBubble.fire({'bubbleContainer': e.popup._container});
-				}
-			});
-			map.on("popupclose", function(e) {
-				if (e.popup._source.mxnMarker) {
-				  e.popup._source.mxnMarker.closeInfoBubble.fire({'bubbleContainer': e.popup._container});
-				}
-			});
-			map.on('load', function(e) {
-				me.load.fire();
-			});
-			map.on('zoomend', function(e) {
-				me.changeZoom.fire();
-			});
-			this.layers = {};
-			this.features = [];
-			this.maps[api] = map;
-			this.setMapType();
-			this.currentMapType = mxn.Mapstraction.ROAD;
-			this.controls =  {
-				zoom: null,
-				map_type: null,
-				scale: null
-			};
-			this.loaded[api] = true;
-		} else {
-			alert(api + ' map script not imported');
+		if (typeof L.Map === 'undefined') {
+			throw new Error(api + ' map script not imported');
 		}
+
+		var me = this;
+		var map = new L.Map(element.id, {
+			zoomControl: false
+		});
+		map.addEventListener('moveend', function(){
+			me.endPan.fire();
+		}); 
+		map.on("click", function(e) {
+			me.click.fire({'location': new mxn.LatLonPoint(e.latlng.lat, e.latlng.lng)});
+		});
+		map.on("popupopen", function(e) {
+			if (e.popup._source.mxnMarker) {
+			  e.popup._source.mxnMarker.openInfoBubble.fire({'bubbleContainer': e.popup._container});
+			}
+		});
+		map.on("popupclose", function(e) {
+			if (e.popup._source.mxnMarker) {
+			  e.popup._source.mxnMarker.closeInfoBubble.fire({'bubbleContainer': e.popup._container});
+			}
+		});
+		map.on('load', function(e) {
+			me.load.fire();
+		});
+		map.on('zoomend', function(e) {
+			me.changeZoom.fire();
+		});
+		this.layers = {};
+		this.features = [];
+		this.maps[api] = map;
+		this.setMapType();
+		this.currentMapType = mxn.Mapstraction.ROAD;
+		this.controls =  {
+			zoom: null,
+			map_type: null,
+			scale: null
+		};
+		this.loaded[api] = true;
 	},
 	
 	applyOptions: function(){

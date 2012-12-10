@@ -18,94 +18,92 @@ Mapstraction: {
 		var	nokia_map;
 		var	mapLoaded = false;
 		
+		if (typeof nokia.maps === 'undefined') {
+			throw new Error(api + ' map script not imported');
+		}
+
 		var eventStates = {
 			"center": false,
 			"zoom": false,
 			"mapsize": false
 		};
 		
-		if (nokia.maps) {
-			nokia_map = new nokia.maps.map.Display(element);
-			nokia_map.addComponent(new nokia.maps.map.component.InfoBubbles());
-			nokia_map.addComponent(new nokia.maps.map.component.Behavior());
+		nokia_map = new nokia.maps.map.Display(element);
+		nokia_map.addComponent(new nokia.maps.map.component.InfoBubbles());
+		nokia_map.addComponent(new nokia.maps.map.component.Behavior());
 
-			// Handle click event
-			nokia_map.addListener('click', function(event) {
-				coords = nokia_map.pixelToGeo(event.targetX, event.targetY);
-				me.click.fire(
-					{
-						'location': new mxn.LatLonPoint(coords.latitude, coords.longitude)
-					});
-			});
+		// Handle click event
+		nokia_map.addListener('click', function(event) {
+			coords = nokia_map.pixelToGeo(event.targetX, event.targetY);
+			me.click.fire(
+				{
+					'location': new mxn.LatLonPoint(coords.latitude, coords.longitude)
+				});
+		});
 
-			// Handle endPan (via centre change) and zoom events
-			// the Nokia Maps API doesn't have a discrete event for each of these events
-			// instead it uses a start/update/end sequence of events, where update may happen
-			// multiple times or not at all, so we need to keep track of which Nokia events have
-			// fired during a start(/update) event sequence and then fire the relevent Mapstraction
-			// events upon receiving the Nokia end event
+		// Handle endPan (via centre change) and zoom events
+		// the Nokia Maps API doesn't have a discrete event for each of these events
+		// instead it uses a start/update/end sequence of events, where update may happen
+		// multiple times or not at all, so we need to keep track of which Nokia events have
+		// fired during a start(/update) event sequence and then fire the relevent Mapstraction
+		// events upon receiving the Nokia end event
 
-			nokia_map.addListener('mapviewchangestart', function(event) {
-				if (event.data & event.MAPVIEWCHANGE_CENTER) {
-					eventStates.center = true;
-				}
-				if (event.data & event.MAPVIEWCHANGE_ZOOM) {
-					eventStates.zoom = true;
-				}
-				if (event.data & event.MAPVIEWCHANGE_SIZE) {
-					eventStates.mapsize = true;
-				}
-			});
+		nokia_map.addListener('mapviewchangestart', function(event) {
+			if (event.data & event.MAPVIEWCHANGE_CENTER) {
+				eventStates.center = true;
+			}
+			if (event.data & event.MAPVIEWCHANGE_ZOOM) {
+				eventStates.zoom = true;
+			}
+			if (event.data & event.MAPVIEWCHANGE_SIZE) {
+				eventStates.mapsize = true;
+			}
+		});
 
-			nokia_map.addListener('mapviewchange', function(event) {
-				if (event.data & event.MAPVIEWCHANGE_CENTER) {
-					eventStates.center = true;
-				}
-				if (event.data & event.MAPVIEWCHANGE_ZOOM) {
-					eventStates.zoom = true;
-				}
-				if (event.data & event.MAPVIEWCHANGE_SIZE) {
-					eventStates.mapsize = true;
-				}
-			});
+		nokia_map.addListener('mapviewchange', function(event) {
+			if (event.data & event.MAPVIEWCHANGE_CENTER) {
+				eventStates.center = true;
+			}
+			if (event.data & event.MAPVIEWCHANGE_ZOOM) {
+				eventStates.zoom = true;
+			}
+			if (event.data & event.MAPVIEWCHANGE_SIZE) {
+				eventStates.mapsize = true;
+			}
+		});
 
-			nokia_map.addListener('mapviewchangeend', function(event) {
-				// The Nokia Maps API doesn't support a "map loaded" event, but both a
-				// "centre" and "size" mapviewchangestart/mapviewchange/mapviewchangeend
-				// event sequence will be fired as part of the initial loading so we can trap
-				// this and fire the MXN "load" event.
-				
-				if (!mapLoaded) {
-					if (eventStates.center && eventStates.mapsize && eventStates.zoom) {
-						mapLoaded = true;
-						eventStates.mapsize = false;
-						eventStates.center = false;
-						eventStates.zoom = false;
-						me.load.fire();
-					}
-				}
-				
-				else {
-					if (eventStates.center) {
-						eventStates.center = false;
-						me.moveendHandler(me);
-						me.endPan.fire();
-					}
-				}
-				
-				if (eventStates.zoom) {
+		nokia_map.addListener('mapviewchangeend', function(event) {
+			// The Nokia Maps API doesn't support a "map loaded" event, but both a
+			// "centre" and "size" mapviewchangestart/mapviewchange/mapviewchangeend
+			// event sequence will be fired as part of the initial loading so we can trap
+			// this and fire the MXN "load" event.
+			
+			if (!mapLoaded) {
+				if (eventStates.center && eventStates.mapsize && eventStates.zoom) {
+					mapLoaded = true;
+					eventStates.mapsize = false;
+					eventStates.center = false;
 					eventStates.zoom = false;
-					me.changeZoom.fire();
+					me.load.fire();
 				}
-			});
+			}
+			
+			else {
+				if (eventStates.center) {
+					eventStates.center = false;
+					me.moveendHandler(me);
+					me.endPan.fire();
+				}
+			}
+			
+			if (eventStates.zoom) {
+				eventStates.zoom = false;
+				me.changeZoom.fire();
+			}
+		});
 
-			this.maps[api] = nokia_map;
-			this.loaded[api] = true;
-		}
-		
-		else {
-			alert(api + ' map script not imported');
-		}
+		this.maps[api] = nokia_map;
+		this.loaded[api] = true;
 	},
 	
 	applyOptions: function() {
