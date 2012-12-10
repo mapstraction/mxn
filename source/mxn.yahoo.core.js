@@ -4,7 +4,7 @@ Mapstraction: {
 	init: function(element,api) {
 		throw new Error('The Yahoo! Maps API is now obsolete and no longer supported by Mapstraction');
 
-		var me = this;
+		/*var me = this;
 		
 		if (!YMap) {
 			throw new Error(api + ' map script not imported');
@@ -29,7 +29,7 @@ Mapstraction: {
 		});
 		
 		this.loaded[api] = true;
-		me.load.fire();
+		me.load.fire();*/
 	},
 	
 	applyOptions: function(){

@@ -175,7 +175,7 @@ Mapstraction: {
 		}
 		if ('overview' in args) {
 			controls = map.getControlsByClass('OpenSpace.Control.OverviewMap');
-			if (controls.length == 0) {
+			if (controls.length === 0) {
 				// Yuck, yuck and more yuck. OpenSpace 1.2 with OpenLayers 2.8
 				// throws a TypeError exception with the message "Cannot read property
 				// '_eventCacheID' of null" if you try to add the OverviewMap control
@@ -225,7 +225,7 @@ Mapstraction: {
 		var controls;
 		
 		controls = map.getControlsByClass('OpenSpace.Control.SmallMapControl');
-		if (controls.length == 0) {
+		if (controls.length === 0) {
 			map.addControl(new OpenSpace.Control.SmallMapControl());
 		}
 	},
@@ -235,7 +235,7 @@ Mapstraction: {
 		var controls;
 
 		controls = map.getControlsByClass('OpenSpace.Control.LargeMapControl');
-		if (controls.length == 0) {
+		if (controls.length === 0) {
 			map.addControl(new OpenSpace.Control.LargeMapControl());
 		}
 	},
@@ -248,7 +248,7 @@ Mapstraction: {
 		// off the layers and markers; probably not much use to anybody
 
 		controls = map.getControlsByClass('OpenSpace.Control.LayerSwitcher');
-		if (controls.length == 0) {
+		if (controls.length === 0) {
 			map.addControl(new OpenLayers.Control.LayerSwitcher());
 		}
 	},
