@@ -4,6 +4,7 @@ Mapstraction: {
 
 	init: function(element, api) {
 		var me = this;
+		var map;
 		
 		if (typeof(OpenLayers) == "undefined") {
 			alert('OpenLayers is not loaded but is required to work with OpenSpace');
@@ -28,22 +29,24 @@ Mapstraction: {
 			}
 
 			// create the map with no controls and don't centre popup info window
-			this.maps[api] = new OpenSpace.Map(element,{
-					controls: [],
-					centreInfoWindow: false
+			map = new OpenSpace.Map(element,{
+				controls: [],
+				centreInfoWindow: false
 			});
+
 			// note that these three controls are always there and the fact that 
 			// there are three resident controls is used in addControls()
 			// enable map drag with mouse and keyboard
-			this.maps[api].addControl(new OpenLayers.Control.Navigation());
-			this.maps[api].addControl(new OpenLayers.Control.KeyboardDefaults());
+
+			map.addControl(new OpenLayers.Control.Navigation());
+			map.addControl(new OpenLayers.Control.KeyboardDefaults());
 			// include copyright statement
-			this.maps[api].addControl(new OpenSpace.Control.CopyrightCollection());
-			this.maps[api].addControl(new OpenSpace.Control.PoweredBy());
+			map.addControl(new OpenSpace.Control.CopyrightCollection());
+			map.addControl(new OpenSpace.Control.PoweredBy());
 		
-			this.maps[api].events.register(
+			map.events.register(
 				"click", 
-				this.maps[api],
+				map,
 				function(evt) {
 					var point = this.getLonLatFromViewPortPx( evt.xy );
 					// convert to LatLonPoint
@@ -54,7 +57,29 @@ Mapstraction: {
 				}
 			);
 			
-			this.poly_layer = new OpenLayers.Layer.Vector('Poly Layer');
+			var loadfire = function(e) {
+				me.load.fire();
+				this.events.unregister('loadend', this, loadfire);
+			};
+			
+			for (var layerName in map.layers) {
+				if (map.layers.hasOwnProperty(layerName)) {
+					if (map.layers[layerName].visibility === true) {
+						map.layers[layerName].events.register('loadend', map.layers[layerName], loadfire);
+					}
+				}
+			}
+			
+			map.events.register('zoomend', map, function(evt) {
+				me.changeZoom.fire();
+			});
+			
+			map.events.register('moveend', map, function(evt) {
+				me.moveendHandler(me);
+				me.endPan.fire();
+			});
+			
+			this.maps[api] = map;
 			this.loaded[api] = true;
 		}
 	
@@ -147,7 +172,8 @@ Mapstraction: {
 	removeMarker: function(marker) {
 		var map = this.maps[this.api];
 		
-		map.removeMarker(marker.toProprietary(this.api));
+		//map.removeMarker(marker.toProprietary(this.api));
+		map.removeMarker(marker.proprietary_marker);
 	},
 	
 	declutterMarkers: function(opts) {
@@ -160,15 +186,17 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var pl = polyline.toProprietary(this.api);
 
-		this.poly_layer.addFeatures([pl]);
-		map.addLayer(this.poly_layer);
+		map.getVectorLayer().addFeatures([pl]);
+		//this.poly_layer.addFeatures([pl]);
+		//map.addLayer(this.poly_layer);
 
 		return pl;
 	},
 
 	removePolyline: function(polyline) {
 		var map = this.maps[this.api];
-		var pl = polyline.toProprietary(this.api);
+		//var pl = polyline.toProprietary(this.api);
+		var pl = polyline.proprietary_polyline;
 
 		map.removeFeatures([pl]);
 	},
@@ -236,22 +264,16 @@ Mapstraction: {
 	},
 
 	getBounds: function () {
-		console.log ('getBounds');
 		var map = this.maps[this.api];
 
 		// array of openspace coords	
 		// left, bottom, right, top
-		console.log ('Calling calculateBounds');
 		var olbox = map.calculateBounds().toArray(); 
-		console.log('Getting ossw');
 		var ossw = new OpenSpace.MapPoint( olbox[0], olbox[1] );
-		console.log('Getting osne');
 		var osne = new OpenSpace.MapPoint( olbox[2], olbox[3] );
 		// convert to LatLonPoints
-		console.log ('Converting SW');
 		var sw = new mxn.LatLonPoint();
 		sw.fromProprietary('openspace', ossw);
-		console.log ('Converting NE');
 		var ne = new mxn.LatLonPoint();
 		ne.fromProprietary('openspace', osne);
 		return new mxn.BoundingBox(sw.lat, sw.lon, ne.lat, ne.lon);
@@ -343,7 +365,6 @@ LatLonPoint: {
 	},
 	
 	fromProprietary: function(osPoint) {
-		console.log ('LatLonPoint::fromProprietary');
 		var gridProjection = new OpenSpace.GridProjection();
 		var olpt = gridProjection.getLonLatFromMapPoint(osPoint); 
 		// an OpenLayers.LonLat
@@ -417,16 +438,17 @@ Polyline: {
 			var olgpoint = new OpenLayers.Geometry.Point(ospoint.getEasting(),ospoint.getNorthing());
 			ospoints.push(olgpoint);
 		}
-		if (this.closed) {
+
+		if (this.closed || this.points[0].equals(this.points[this.points.length-1])) {
 			ospolyline = new OpenLayers.Feature.Vector(
 				new OpenLayers.Geometry.LinearRing(ospoints), 
 				null,
 				{
-					fillColor: (this.fillColor || "#5462E3"),
-					strokeColor: (this.color || "#5462E3"),
-					strokeOpacity: (this.opacity || 1.0),
-					fillOpacity: (this.opacity || 1.0),
-					strokeWidth: (this.width || 1)
+					fillColor: (typeof this.fillColor === 'undefined' ? "#5462E3" : this.fillColor),
+					strokeColor: (typeof this.color === 'undefined' ? "#5462E3" : this.color),
+					strokeOpacity: (typeof this.opacity === 'undefined' ? 1.0 : this.opacity),
+					fillOpacity: (typeof this.opacity === 'undefined' ? 1.0 : this.opacity),
+					strokeWidth: (typeof this.width === 'undefined' ? 1 : this.width)
 				}
 			);
 		}
@@ -435,11 +457,11 @@ Polyline: {
 				new	OpenLayers.Geometry.LineString(ospoints),
 				null, 
 				{
-				   fillColor: (this.fillColor || "#5462E3"),
-				   strokeColor: (this.color || "#5462E3"),
-				   strokeOpacity: (this.opacity || 1.0),
-				   fillOpacity: (this.opacity || 1.0),
-				   strokeWidth: (this.width || 1)
+					fillColor: (typeof this.fillColor === 'undefined' ? "#5462E3" : this.fillColor),
+					strokeColor: (typeof this.color === 'undefined' ? "#5462E3" : this.color),
+					strokeOpacity: (typeof this.opacity === 'undefined' ? 1.0 : this.opacity),
+					fillOpacity: (typeof this.opacity === 'undefined' ? 1.0 : this.opacity),
+					strokeWidth: (typeof this.width === 'undefined' ? 1 : this.width)
 				}
 			);
 		}
