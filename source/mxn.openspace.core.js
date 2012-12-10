@@ -101,25 +101,34 @@ Mapstraction: {
 	},
 	
 	addControls: function( args ) {
+		/* args = { 
+		 *     pan:      true,
+		 *     zoom:     'large' || 'small',
+		 *     overview: true,
+		 *     scale:    true,
+		 *     map_type: true,
+		 * }
+		 */
+
 		var map = this.maps[this.api];
 		// remove existing controls but leave the basic navigation,	keyboard 
 		// and copyright controls in place these were added in addAPI and not 
 		// normally be removed
-		for (var i = map.controls.length; i>3; i--) {
+		/*for (var i = map.controls.length; i>3; i--) {
 			map.controls[i-1].deactivate();
 			map.removeControl(map.controls[i-1]);
-		}
+		}*/
 		// pan and zoom controls not available separately
-		if ( args.zoom == 'large') {
+		/*if ( args.zoom == 'large') {
 			map.addControl(new OpenSpace.Control.LargeMapControl());
 		}
 		else if ( args.zoom == 'small' || args.pan ) {
 			map.addControl(new OpenSpace.Control.SmallMapControl());
 		}
-		if ( args.overview ) {
+		if ( args.overview ) {*/
 			// this should work but as of OpenSpace 0.7.2 generates an error
 			// unless done before setCenterAndZoom
-			var osOverviewControl = new OpenSpace.Control.OverviewMap();
+			/*var osOverviewControl = new OpenSpace.Control.OverviewMap();
 			map.addControl(osOverviewControl);
 			osOverviewControl.maximizeControl();
 		}
@@ -128,23 +137,122 @@ Mapstraction: {
 			// off the layers and markers
 			// probably not much use to anybody
 			map.addControl(new OpenLayers.Control.LayerSwitcher());
+		}*/
+		
+		var controls;
+		var	control;
+		var i;
+		
+		if ('zoom' in args || ('pan' in args && args.pan)) {
+			if (args.pan || args.zoom == 'small') {
+				this.addSmallControls();
+			}
+			
+			else if (args.zoom == 'large') {
+				this.addLargeControls();
+			}
+		}
+
+		else {
+			if (!('pan' in args)) {
+				controls = map.getControlsByClass('OpenSpace.Control.SmallMapControl');
+				for (i=0; i < controls.length; i++) {
+					controls[i].deactivate();
+					map.removeControl(controls[i]);
+				}
+			}
+			
+			if (!('zoom' in args)) {
+				controls = map.getControlsByClass('OpenSpace.Control.SmallMapControl');
+				for (i=0; i < controls.length; i++) {
+					controls[i].deactivate();
+					map.removeControl(controls[i]);
+				}
+				controls = map.getControlsByClass('OpenSpace.Control.LargeMapControl');
+				for (i=0; i < controls.length; i++) {
+					controls[i].deactivate();
+					map.removeControl(controls[i]);
+				}
+			}
+		}
+		if ('overview' in args) {
+			controls = map.getControlsByClass('OpenSpace.Control.OverviewMap');
+			if (controls.length == 0) {
+				// Yuck, yuck and more yuck. OpenSpace 1.2 with OpenLayers 2.8
+				// throws a TypeError exception with the message "Cannot read property
+				// '_eventCacheID' of null" if you try to add the OverviewMap control
+				// after calling an initial setCenterAndZoom
+				try {
+					control = new OpenSpace.Control.OverviewMap();
+					map.addControl(control);
+					control.maximizeControl();
+				}
+				
+				catch (e) {
+					//
+				}
+			}
+		}
+		
+		else {
+			controls = map.getControlsByClass('OpenSpace.Control.OverviewMap');
+			for (i=0; i < controls.length; i++) {
+				controls[i].deactivate();
+				map.removeControl(controls[i]);
+			}
+		}
+		
+		// Note: there's no analog to the 'scale' control in OpenSpace (or in the underlying
+		// OpenLayers either)
+		
+		/*if ('scale' in args) {
+			
+		}*/
+		
+		if ('map_type' in args) {
+			this.addMapTypeControls ();
+		}
+
+		else {
+			controls = map.getControlsByClass('OpenSpace.Control.LayerSwitcher');
+			for (i=0; i < controls.length; i++) {
+				controls[i].deactivate();
+				map.removeControl(controls[i]);
+			}
 		}
 	},
 	
 	addSmallControls: function() {
 		var map = this.maps[this.api];
-		map.addControl(new OpenSpace.Control.SmallMapControl());
+		var controls;
+		
+		controls = map.getControlsByClass('OpenSpace.Control.SmallMapControl');
+		if (controls.length == 0) {
+			map.addControl(new OpenSpace.Control.SmallMapControl());
+		}
 	},
 	
 	addLargeControls: function() {
 		var map = this.maps[this.api];
-		map.addControl(new OpenSpace.Control.LargeMapControl());
+		var controls;
+
+		controls = map.getControlsByClass('OpenSpace.Control.LargeMapControl');
+		if (controls.length == 0) {
+			map.addControl(new OpenSpace.Control.LargeMapControl());
+		}
 	},
 	
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
+		var controls;
 	
-		// TODO: Add provider code
+		// This is all you get with OpenSpace, a control to switch on or
+		// off the layers and markers; probably not much use to anybody
+
+		controls = map.getControlsByClass('OpenSpace.Control.LayerSwitcher');
+		if (controls.length == 0) {
+			map.addControl(new OpenLayers.Control.LayerSwitcher());
+		}
 	},
 	
 	setCenterAndZoom: function(point, zoom) {
