@@ -285,9 +285,20 @@
 				action: function() {
 					var point;
 					var mkr;
-					point = new mxn.LatLonPoint(37.6156, -122.3891);
+					var label;
+					switch (provider) {
+						case 'openspace':
+							label = 'Twickenham Rugby Stadium';
+							point = new mxn.LatLonPoint(51.45599, -0.34146);
+							break;
+							
+						default:
+							label = 'SFO International Terminal';
+							point = new mxn.LatLonPoint(37.6156, -122.3891);
+							break;
+					}
 					mkr = new mxn.Marker(point);
-					mkr.setLabel('SFO International Terminal');
+					mkr.setLabel(label);
 					m.setCenter(point);
 					m.addMarker(mkr);
 				}
@@ -301,15 +312,34 @@
 			{
 				desc: 'Add shape',
 				action: function() {
-					var shp = new mxn.Polyline([
-						new mxn.LatLonPoint(37.805, -122.480),
-						new mxn.LatLonPoint(37.678, -121.800),
-						new mxn.LatLonPoint(37.238, -121.962),
-						new mxn.LatLonPoint(37.462, -122.444),
-						new mxn.LatLonPoint(37.805, -122.480),
+					var shp;
+					switch (provider) {
+						case 'openspace':
+						shp = new mxn.Polyline([
+							new mxn.LatLonPoint(51.564, -0.534),
+							new mxn.LatLonPoint(51.690, -0.231),
+							new mxn.LatLonPoint(51.596, 0.040),
+							new mxn.LatLonPoint(51.390, 0.191),
+							new mxn.LatLonPoint(51.264, -0.131),
+							new mxn.LatLonPoint(51.311, -0.429),
+							new mxn.LatLonPoint(51.430, -0.533),
+							new mxn.LatLonPoint(51.564, -0.534)
 						]);
+							break;
+						default:
+							shp = new mxn.Polyline([
+								new mxn.LatLonPoint(37.805, -122.480),
+								new mxn.LatLonPoint(37.678, -121.800),
+								new mxn.LatLonPoint(37.238, -121.962),
+								new mxn.LatLonPoint(37.462, -122.444),
+								new mxn.LatLonPoint(37.805, -122.480)
+							]);
+							break;
+					}
+					shp.width = 3;
 					shp.color = '#00DD55';
-					shp.fillColor = '#00DD55';
+					shp.fillColor = '#0077FF';
+					shp.opacity = 0.6;
 					m.addPolyline(shp);
 				}
 			},
