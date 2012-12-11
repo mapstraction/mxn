@@ -19,7 +19,7 @@
 	function initialize() {
 		map = new mxn.Mapstraction('map', 'cloudmade');
 		//map.addControls({pan: true, zoom: 'small'});
-		map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
+		map.addControls({zoom: 'large', overview: true, scale: true, map_type: true, pan: true});
 		
 		map.load.addHandler(function(en, es, ea) {
 			logEvent ('Map loaded');

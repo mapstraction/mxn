@@ -17,7 +17,7 @@
 	function initialize() {
 		map = new mxn.Mapstraction('map', 'google');
 		//map.addControls({pan: true, zoom: 'small'});
-		map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
+		map.addControls({zoom: 'large', overview: true, scale: true, map_type: true, pan: true});
 		latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587);
 		map.setCenterAndZoom(latlon, 12);
 		
@@ -210,7 +210,7 @@
 			return false;
 		});
 		$('#add-controls').click(function(){
-			map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
+			map.addControls({zoom: 'large', overview: true, scale: true, map_type: true, pan: true});
 			return false;
 		});
 		$('#hide-controls').click(function(){
