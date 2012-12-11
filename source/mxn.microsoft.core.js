@@ -9,6 +9,18 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		this._fireOnNextCall = [];
+		this._fireQueuedEvents =  function() {
+			var fireListCount = me._fireOnNextCall.length;
+			if (fireListCount > 0) {
+				var fireList = me._fireOnNextCall.splice(0, fireListCount);
+				var handler;
+				while ((handler = fireList.shift())) {
+					handler();
+				}
+			}
+		};
+
 		this.maps[api] = new VEMap(element.id);
 		this.maps[api].AttachEvent('onclick', function(event){
 			me.clickHandler();
@@ -42,14 +54,22 @@ Mapstraction: {
 		this.maps[api].AttachEvent('onchangeview', function(event){
 			me.endPan.fire();				
 		});
+
 		this.maps[api].LoadMap();
 		document.getElementById("MSVE_obliqueNotification").style.visibility = "hidden"; 
 	
 		//removes the bird's eye pop-up
 		this.loaded[api] = true;
+		
+		me._fireOnNextCall.push(function() {
+			me.load.fire();
+		})
 	},
 	
 	applyOptions: function(){
+		// applyOptions is called by mxn.core.js immediate after the provider specific call
+		// to init, so don't check for queued events just yet.
+		//this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		if(this.options.enableScrollWheelZoom){
 			map.enableContinuousZoom();
@@ -58,10 +78,12 @@ Mapstraction: {
 	},
 
 	resizeTo: function(width, height){	
+		this._fireQueuedEvents();
 		this.maps[this.api].Resize(width, height);
 	},
 
 	addControls: function( args ) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
 		if (args.pan) {
@@ -84,11 +106,13 @@ Mapstraction: {
 	},
 
 	addSmallControls: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		map.SetDashboardSize(VEDashboardSize.Tiny);
 	},
 
 	addLargeControls: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		map.SetDashboardSize(VEDashboardSize.Normal);
 		this.addControlsArgs.pan = true;
@@ -96,6 +120,7 @@ Mapstraction: {
 	},
 
 	addMapTypeControls: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		map.addTypeControl();
 	
@@ -112,6 +137,7 @@ Mapstraction: {
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 		var vzoom =	zoom;
@@ -119,6 +145,7 @@ Mapstraction: {
 	},
 	
 	addMarker: function(marker, old) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		marker.pinID = "mspin-"+new Date().getTime()+'-'+(Math.floor(Math.random()*Math.pow(2,16)));
 		var pin = marker.toProprietary(this.api);
@@ -133,6 +160,7 @@ Mapstraction: {
 	},
 
 	removeMarker: function(marker) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var id = marker.proprietary_marker.GetID();
 		var microsoftShape = map.GetShapeByID(id);
@@ -140,12 +168,14 @@ Mapstraction: {
 	},
 	
 	declutterMarkers: function(opts) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
 		// TODO: Add provider code
 	},
 
 	addPolyline: function(polyline, old) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var pl = polyline.toProprietary(this.api);
 		pl.HideIcon(); //hide the icon VE automatically displays
@@ -154,6 +184,7 @@ Mapstraction: {
 	},
 
 	removePolyline: function(polyline) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var id = polyline.proprietary_polyline.GetID();
 		var microsoftShape = map.GetShapeByID(id);
@@ -161,6 +192,7 @@ Mapstraction: {
 	},
 	
 	getCenter: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var LL = map.GetCenter();
 		var point = new mxn.LatLonPoint(LL.Latitude, LL.Longitude);
@@ -168,23 +200,27 @@ Mapstraction: {
 	},
  
 	setCenter: function(point, options) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 		map.SetCenter(new VELatLong(point.lat, point.lon));
 	},
 
 	setZoom: function(zoom) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		map.SetZoomLevel(zoom);
 	},
 	
 	getZoom: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var zoom = map.GetZoomLevel();
 		return zoom;
 	},
 
 	getZoomLevelForBoundingBox: function( bbox ) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		// NE and SW points from the bounding box.
 		var ne = bbox.getNorthEast();
@@ -197,6 +233,7 @@ Mapstraction: {
 	},
 
 	setMapType: function(type) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		switch(type) {
 			case mxn.Mapstraction.ROAD:
@@ -214,6 +251,7 @@ Mapstraction: {
 	},
 
 	getMapType: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var mode = map.GetMapStyle();
 		switch(mode){
@@ -229,6 +267,7 @@ Mapstraction: {
 	},
 
 	getBounds: function () {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		view = map.GetMapView();
 		var topleft = view.TopLeftLatLong;
@@ -238,6 +277,7 @@ Mapstraction: {
 	},
 
 	setBounds: function(bounds){
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var sw = bounds.getSouthWest();
 		var ne = bounds.getNorthEast();
@@ -247,12 +287,14 @@ Mapstraction: {
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
 		// TODO: Add provider code
 	},
 
 	setImagePosition: function(id, oContext) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var topLeftPoint; var bottomRightPoint;
 
@@ -265,6 +307,7 @@ Mapstraction: {
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var layer = new VEShapeLayer(); 
 		var mlayerspec = new VEShapeSourceSpecification(VEDataType.GeoRSS, url, layer);
@@ -272,18 +315,22 @@ Mapstraction: {
 	},
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
+		this._fireQueuedEvents();
 		throw 'Not implemented';
 	},
 
 	toggleTileLayer: function(tile_url) {
+		this._fireQueuedEvents();
 		throw 'Not implemented';
 	},
 
 	getPixelRatio: function() {
+		this._fireQueuedEvents();
 		throw 'Not implemented';
 	},
 	
 	mousePosition: function(element) {
+		this._fireQueuedEvents();
 		var locDisp = document.getElementById(element);
 		if (locDisp !== null) {
 			var map = this.maps[this.api];
