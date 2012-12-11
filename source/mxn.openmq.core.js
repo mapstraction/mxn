@@ -8,6 +8,19 @@ Mapstraction: {
 		if (typeof MQA.TileMap === 'undefined') {
 			throw new Error(api + ' map script not imported');
 		}
+
+		this._fireOnNextCall = [];
+		this._fireQueuedEvents =  function() {
+			var fireListCount = me._fireOnNextCall.length;
+			if (fireListCount > 0) {
+				var fireList = me._fireOnNextCall.splice(0, fireListCount);
+				var handler;
+				while ((handler = fireList.shift())) {
+					handler();
+				}
+			}
+		};
+
 		var map = new MQA.TileMap(element);
 		this.maps[api] = map;
 		this.loaded[api] = true;
@@ -29,10 +42,15 @@ Mapstraction: {
 			me.endPan.fire();
 		});
 	
-		me.load.fire();
+		me._fireOnNextCall.push(function() {
+			me.load.fire();
+		})
 	},
 	
 	applyOptions: function(){
+		// applyOptions is called by mxn.core.js immediate after the provider specific call
+		// to init, so don't check for queued events just yet.
+		//this._fireQueuedEvents();
 		if (this.options.enableScrollWheelZoom) {
 			MQA.withModule('mousewheel', function() {
 				var map = this.maps[this.api];
@@ -42,11 +60,13 @@ Mapstraction: {
 	},
 
 	resizeTo: function(width, height){	
+		this._fireQueuedEvents();
 		this.currentElement.style.width = width;
 		this.currentElement.style.height = height;
 	},
 
 	addControls: function( args ) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 
 		if (args.zoom) {
@@ -59,6 +79,7 @@ Mapstraction: {
 	},
 
 	addSmallControls: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		MQA.withModule('smallzoom', function() {
 			map.addControl(
@@ -69,6 +90,7 @@ Mapstraction: {
 	},
 
 	addLargeControls: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		MQA.withModule('largezoom', function() {
 			map.addControl(
@@ -79,16 +101,19 @@ Mapstraction: {
 	},
 
 	addMapTypeControls: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		// Open MapQuest only supports a single map type, so there is no map type control	
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
+		this._fireQueuedEvents();
 		this.setCenter(point);
 		this.setZoom(zoom);
 	},
 	
 	addMarker: function(marker, old) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var pin = marker.toProprietary(this.api);
 		
@@ -98,16 +123,19 @@ Mapstraction: {
 	},
 
 	removeMarker: function(marker) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		map.removeShape(marker.proprietary_marker);
 	},
 	
 	declutterMarkers: function(opts) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		// TODO: Add provider code
 	},
 
 	addPolyline: function(polyline, old) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var openmq_polyline = polyline.toProprietary(this.api);
 
@@ -117,12 +145,14 @@ Mapstraction: {
 	},
 
 	removePolyline: function(polyline) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
 		map.removeShape(polyline.proprietary_polyline);
 	},
 	
 	getCenter: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var point = map.getCenter();
 		
@@ -130,17 +160,20 @@ Mapstraction: {
 	},
 
 	setCenter: function(point, options) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 		map.setCenter(pt);
 	},
 
 	setZoom: function(zoom) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		map.setZoomLevel(zoom);
 	},
 	
 	getZoom: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var zoom = map.getZoomLevel();
 		
@@ -148,6 +181,7 @@ Mapstraction: {
 	},
 
 	getZoomLevelForBoundingBox: function( bbox ) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		// NE and SW points from the bounding box.
 		var ne = bbox.getNorthEast();
@@ -160,6 +194,7 @@ Mapstraction: {
 	},
 
 	setMapType: function(type) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		// MapQuest has a function to set map type, but open MapQuest only supports road
 		/*
@@ -181,6 +216,7 @@ Mapstraction: {
 	},
 
 	getMapType: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
 		/*
@@ -199,6 +235,7 @@ Mapstraction: {
 	},
 
 	getBounds: function () {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var rect = map.getBounds();
 		var se = rect.lr;
@@ -208,6 +245,7 @@ Mapstraction: {
 	},
 
 	setBounds: function(bounds){
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var sw = bounds.getSouthWest();
 		var ne = bounds.getNorthEast();
@@ -218,12 +256,14 @@ Mapstraction: {
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
 		// TODO: Add provider code
 	},
 
 	setImagePosition: function(id, oContext) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var topLeftPoint; var bottomRightPoint;
 
@@ -236,6 +276,7 @@ Mapstraction: {
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
 		// TODO: Add provider code
@@ -243,24 +284,28 @@ Mapstraction: {
 	},
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
 		// TODO: Add provider code
 	},
 
 	toggleTileLayer: function(tile_url) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
 		// TODO: Add provider code
 	},
 
 	getPixelRatio: function() {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 
 		// TODO: Add provider code	
 	},
 	
 	mousePosition: function(element) {
+		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 
 		// TODO: Add provider code	
