@@ -316,13 +316,12 @@ Mapstraction: {
 			var tileLayer = this.tileLayers[f];
 			if (tileLayer[0] == tile_url) {
 				if (tileLayer[2]) {
-					map.entities.remove(tileLayer[3]);
 					tileLayer[2] = false;
 				}
 				else {
-					map.entities.push(tileLayer[3]);
 					tileLayer[2] = true;
 				}
+				tileLayer[1].setOptions({ visible: tileLayer[2]});
 			}
 		}
 	},
