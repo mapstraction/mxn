@@ -1,56 +1,78 @@
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>Mapstraction Examples - Nokia</title>
+	<title>Mapstraction Example - Cloudmade</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 	<script src="http://code.jquery.com/jquery-1.8.2.min.js" type="text/javascript"></script>
-	<script src="http://tile.cloudmade.com/wml/latest/web-maps-lite.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="http://tile.cloudmade.com/wml/latest/web-maps-lite.js"></script>
 	<script src="../source/mxn.js?(cloudmade)" type="text/javascript"></script>
-	<meta http-equiv="X-UA-Compatible" content="IE=7; IE=EmulateIE9" />
-	<style type="text/css">
-		html, body, #mapDiv {
-			padding: 0;
-			margin: 0;
-			height: 400px;
-			font-size: 13px;
-			font-family: Helvetica, arial, freesans, clean, sans-serif;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
 	<script type="text/javascript">
 	//<![CDATA[
-	var cloudmade_key = "6f834cbbf6ea4f3ea798ece100d537b6";
 	
 	var map;
 	var	polyline;
+	var icon_marker;
 	var marker;
-
+	var cloudmade_key = "6f834cbbf6ea4f3ea798ece100d537b6";
+	
 	function initialize() {
-		map = new mxn.Mapstraction('mapDiv', 'cloudmade');
+		map = new mxn.Mapstraction('map', 'cloudmade');
+		//map.addControls({pan: true, zoom: 'small'});
+		map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
+		
+		map.load.addHandler(function(en, es, ea) {
+			logEvent ('Map loaded');
+		});
+		
 		latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587);
 		map.setCenterAndZoom(latlon, 12);
-	}
 
-	getCenter = function() {
-		var center = map.getCenter();
-		alert(center.lat + " " + center.lon);
-	}
+		map.click.addHandler(function(en, es, ea) {
+			var point = ea.location;
+			logEvent ('Mouse click at ' + point.toString(4));
+		});
+		
+		map.endPan.addHandler(function(en, es, ea) {
+			logEvent('End Pan: new center is ' + map.getCenter().toString (4));
+		});
 
-	alertBounds = function() { 
-		var bounds = map.getBounds();
-		var sw = bounds.getSouthWest();
-		var ne = bounds.getNorthEast();
-		alert("SW: " + sw.lat + ", " + sw.lon + ", NE: " + ne.lat + ", " + ne.lon);
+		map.changeZoom.addHandler(function(en, es, ea) {
+			logEvent('Change Zoom: new zoom level is ' + map.getZoom());
+		});
+		
+		map.markerAdded.addHandler(function(en, es, ea) {
+			logEvent('Marker Added');
+		});
+		map.markerRemoved.addHandler(function(en, es, ea) {
+			logEvent('Marker Removed');
+		});
+		map.polylineAdded.addHandler(function(en, es, ea) {
+			logEvent('Polyline Added');
+		});
+		map.polylineRemoved.addHandler(function(en, es, ea) {
+			logEvent('Polyline Removed');
+		});
 	}
-
-	addMarker = function() {
-		// add a marker
+	
+	addMarker  = function () {
 		marker = new mxn.Marker(map.getCenter());
-		marker.setIcon(
-			"http://developers.cloudmade.com/js-api/examples/cloudmade.gif");
-		marker.setIconSize([76, 93]);
-		marker.setIconAnchor([0,16]);
 		map.addMarker(marker);
-		// marker.addData({'infoBubble': 'This is a popup'});
-		// marker.openBubble();
+		marker.addData({'infoBubble': 'This is an InfoBubble'});
+		marker.openBubble();
+		
+	}
+	
+	addIconMarker = function() {
+		var iconURL = "http://api.maps.nokia.com/en/playground/examples/maps/res/markerHouse.png";
+		// add a marker
+		icon_marker = new mxn.Marker(map.getCenter());
+		icon_marker.setIcon(iconURL);
+		icon_marker.setIconSize([32,32]);
+		icon_marker.setIconAnchor([0,16]);
+		map.addMarker(icon_marker);
+		icon_marker.addData({'infoBubble': 'This icon is ' + iconURL});
+		icon_marker.openBubble();
 	}
 
 	addPolyline = function() {
@@ -78,38 +100,55 @@
 		map.setCenterAndZoom(new mxn.LatLonPoint(53.94, 48.96), 7);
 	}
 	
+	function logInfo(msg) {
+		logMessage ('info', msg);
+	}
 	
-	//]]>
-	</script>
-</head>
-<body>
-	<div id="mapDiv"></div>
-	<script type="text/javascript">
+	function logEvent(msg) {
+		logMessage ('events', msg);
+	}
+
+	function logMessage(element, msg) {
+		var	display = document.getElementById(element);
+		
+		display.innerHTML += "\n" + msg;
+		display.scrollTop = display.scrollHeight - display.clientHeight;
+		return false;
+	}
+	
 	$(document).ready(function() {
 		initialize();
+
 		$('#set-bounds').click(function() {
-			map.setBounds(new mxn.BoundingBox(51.9,-4.3,52.25,-3.75));
+			var bb = new mxn.BoundingBox(51.9,-4.3,52.25,-3.75);
+			map.setBounds(bb);
+			logInfo ('Bounds set to ' + bb.toString(4));
+			
 			return false;
 		});
 		$('#get-bounds').click(function(){
-			alertBounds();
+			logInfo ('Current bounds are ' + map.getBounds().toString(4));
 			return false;
 		});
 		$('#decrement-zoom').click(function(){
 			map.setZoom(map.getZoom() - 1);
+			logInfo ('Zoom decremented, new zoom level is ' + map.getZoom());
 			return false;
 		});
 		$('#increment-zoom').click(function(){
 			map.setZoom(map.getZoom() + 1);
+			logInfo ('Zoom incremented, new zoom level is ' + map.getZoom());
 			return false;
 		});
 		$('#get-zoom').click(function(){
-			alert ('Current zoom level is ' + map.getZoom());
+			logInfo ('Current zoom level is ' + map.getZoom());
 			return false;
 		});
 
 		$('#get-center').click(function(){
-			getCenter();
+			var disp = document.getElementById('info');
+			disp.innerHTML += "\n" + "Current center is " + map.getCenter().toString(4);
+			disp.scrollTop = disp.scrollHeight - disp.clientHeight;
 			return false;
 		});
 		$('#set-center').click(function(){
@@ -137,19 +176,29 @@
 			map.setMapType(mxn.Mapstraction.PHYSICAL);
 			return false;
 		});
+		$('#add-icon-marker').click(function(){
+			addIconMarker();
+			return false;
+		});
+		$('#remove-icon-marker').click(function(){
+			map.removeMarker(icon_marker);
+			return false;
+		});
 		$('#add-marker').click(function(){
 			addMarker();
+			return false;
+		});
+		$('#remove-marker').click(function(){
+			map.removeMarker(marker);
 			return false;
 		});
 		$('#add-polyline').click(function(){
 			addPolyline();
 			return false;
 		});
-		$('#remove-marker').click(function(){
-			map.removeMarker(marker);
-		});
 		$('#remove-polyline').click(function(){
 			map.removePolyline(polyline);
+			return false;
 		});
 		$('#resize-small').click(function(){
 			width = $(window).width() / 2 + "px";
@@ -164,7 +213,7 @@
 			return false;
 		});
 		$('#add-controls').click(function(){
-			map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
+			map.addControls({zoom: 'large', overview: true, scale: true, map_type: true, pan: true});
 			return false;
 		});
 		$('#hide-controls').click(function(){
@@ -173,22 +222,40 @@
 		});
 	});
 	</script>
-	<h2>Demo Functions</h2>
-	<ul>
-		<li><a id="set-bounds" href="#">Click me to set bounds</a>.</li>
-		<li><a id="get-bounds" href="#">click me to get bounds</a>.</li>
-		<li><a id="decrement-zoom" href="#">Click me to decrement zoom</a>.</li>
-		<li><a id="increment-zoom" href="#">Click me to increment zoom</a>.</li>
-		<li><a id="get-zoom" href="#">Click me to get zoom</a>.</li>
-		<li><a id="get-center" href="#">Click me to getCenter</a>.</li>
-		<li><a id="set-center" href="#">Click me to setCenter</a>.</li>
-		<li><a id="pan-center" href="#">Click me to pan to center</a>.</li>
-		<li><a id="add-controls" href="#">Click me to add controls</a>.</li>
-		<li><a id="hide-controls" href="#">Click me to remove controls</a>.</li>
-		<li>Resize map <a id="resize-restore" href="#">original size</a> or <a id="resize-small" href="#">half size</a>.</li>
-		<li>Set basemap to: <a id="set-road" href="#">road</a>, <a id="set-satellite" href="#">satellite</a>, <a id="set-hybrid" href="#">hybrid</a> or <a id="set-physical" href="#">physical</a>.</li>
-		<li>Click me to add a <a id="add-marker" href="#">marker</a> or <a id="add-polyline" href="#">line</a>.</li>
-		<li>Click me to remove a <a id="remove-marker" href="#">marker</a> or <a id="remove-polyline" href="#">line</a>.</li>
-	</ul>
+</head>
+<body>
 </body>
+	<div id="map"></div>
+	<div id="container">
+		<div class="box">
+			<h2>Examples</h2>
+			<div id="examples">
+				<ul>
+					<li><a id="set-bounds" href="#">Click me to set bounds</a>.</li>
+					<li><a id="get-bounds" href="#">click me to get bounds</a>.</li>
+					<li><a id="decrement-zoom" href="#">Click me to decrement zoom</a>.</li>
+					<li><a id="increment-zoom" href="#">Click me to increment zoom</a>.</li>
+					<li><a id="get-zoom" href="#">Click me to get zoom</a>.</li>
+					<li><a id="get-center" href="#">Click me to getCenter</a>.</li>
+					<li><a id="set-center" href="#">Click me to setCenter</a>.</li>
+					<li><a id="pan-center" href="#">Click me to pan to center</a>.</li>
+					<li><a id="add-controls" href="#">Click me to add controls</a>.</li>
+					<li><a id="hide-controls" href="#">Click me to remove controls</a>.</li>
+					<li>Resize map <a id="resize-restore" href="#">original size</a> or <a id="resize-small" href="#">half size</a>.</li>
+					<li>Set basemap to: <a id="set-road" href="#">road</a>, <a id="set-satellite" href="#">satellite</a>, <a id="set-hybrid" href="#">hybrid</a> or <a id="set-physical" href="#">physical</a>.</li>
+					<li>Add a <a id="add-marker" href="#">standard marker</a> or <a id="remove-marker" href="#">remove it</a>.</li>
+					<li>Add a <a id="add-icon-marker" href="#">marker with a custom icon</a> or <a id="remove-icon-marker" href="#">remove it</a>.</li>
+					<li>Add a <a id="add-polyline" href="#">polyline</a> or <a id="remove-polyline" href="#">remove it</a>.</li>
+				</ul>
+			</div>
+		</div>
+		<div class="box">
+			<h2>Info</h2>
+			<textarea id="info" placeholder="API Events"></textarea>
+		</div>
+		<div class="box">
+			<h2>Events</h2>
+			<textarea id="events" placeholder="API Events"></textarea>
+		</div>
+	</div>
 </html>
