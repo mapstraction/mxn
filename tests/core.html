@@ -44,7 +44,7 @@
 				break;
 
 			case 'esri':
-				document.write ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" media="all" rel="stylesheet" type="text/css" \/>')
+				document.write ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" media="all" rel="stylesheet" type="text/css" \/>');
 				document.write ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/dojo/dijit/themes/claro/claro.css" media="all" rel="stylesheet" type="text/css" \/>');
 				document.write ('<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.2" type="text/javascript"><\/script>');
 				break;
@@ -116,7 +116,7 @@
 	//<![CDATA[
 
 	var events = {
-		LOAD: {name: 'load', value: false, skip: 'microsoft,openmq'},
+		LOAD: {name: 'load', value: false},
 		//CLICK: {name: 'click', value: false},
 		END_PAN: {name: 'endPan', value: false},
 		CHANGE_ZOOM: {name: 'changeZoom', value: false},
