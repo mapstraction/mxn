@@ -367,7 +367,7 @@ mxn.register('openlayers', {
 			}
 			map.addLayer(overlay);
 			OpenLayers.Util.onImageLoadErrorColor = "transparent"; //Otherwise missing tiles default to pink!			
-			this.tileLayers.push( [tile_url, overlay, false] );			
+			this.tileLayers.push( [tile_url, overlay, true] );			
 		},
 
 		toggleTileLayer: function(tile_url) {

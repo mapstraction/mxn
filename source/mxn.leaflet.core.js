@@ -259,6 +259,7 @@ Mapstraction: {
 	},
 
 	addTileLayer: function(tile_url, options) {
+		var z_index = this.tileLayers.length || 0;
 		var layerName;
 		if (options && options.name) {
 			layerName = options.name;
@@ -270,10 +271,24 @@ Mapstraction: {
 		this.layers[layerName] = new L.TileLayer(lowerCaseXYZ_url, options || {});
 		var map = this.maps[this.api];
 		map.addLayer(this.layers[layerName]);
+		this.tileLayers.push( [tile_url, this.layers[layerName], true, z_index] );
 	},
 
 	toggleTileLayer: function(tile_url) {
-		throw 'Not implemented';
+		var map = this.maps[this.api];
+		for (var f = 0; f < this.tileLayers.length; f++) {
+			var tileLayer = this.tileLayers[f];
+			if (tileLayer[0] == tile_url) {
+				if (tileLayer[2]) {
+					tileLayer[2] = false;
+					map.removeLayer(tileLayer[1]);
+				}
+				else {
+					tileLayer[2] = true;
+					map.addLayer(tileLayer[1]);
+				}
+			}
+		}
 	},
 
 	getPixelRatio: function() {

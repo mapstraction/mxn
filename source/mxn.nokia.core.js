@@ -364,6 +364,7 @@ Mapstraction: {
 	
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 		var map = this.maps[this.api];
+		var z_index = this.tileLayers.length || 0;
 		
 		var tileProviderOptions = {
 			getUrl: function(zoom, row, column){return tile_url.replace(/\{Z\}/gi, zoom).replace(/\{X\}/gi, column).replace(/\{Y\}/gi, row)}, // obligatory 
@@ -375,12 +376,26 @@ Mapstraction: {
 		};	
 		
 		var Overlay =  new nokia.maps.map.provider.ImgTileProvider (tileProviderOptions);                
-
+		this.tileLayers.push( [tile_url, Overlay, true, z_index] );
+		
 		return map.overlays.add(Overlay);
 	},
 	
 	toggleTileLayer: function(tile_url) {
-		throw 'Not implemented';
+		var map = this.maps[this.api];
+		for (var f = 0; f < this.tileLayers.length; f++) {
+			var tileLayer = this.tileLayers[f];
+			if (tileLayer[0] == tile_url) {
+				if (tileLayer[2]) {
+					tileLayer[2] = false;
+					map.overlays.remove(tileLayer[1]);
+				}
+				else {
+					tileLayer[2] = true;
+					map.overlays.add(tileLayer[1]);
+				}
+			}
+		}
 	},
 	
 	getPixelRatio: function() {
