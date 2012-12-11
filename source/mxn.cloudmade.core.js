@@ -70,6 +70,9 @@ mxn.register('cloudmade', {
 		},
 
 		applyOptions: function(){
+			// applyOptions is called by mxn.core.js immediate after the provider specific call
+			// to init, so don't check for queued events just yet.
+			//this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			if (this.options.enableScrollWheelZoom) {
 				map.enableScrollWheelZoom();
@@ -93,6 +96,7 @@ mxn.register('cloudmade', {
 			 *     map_type: true,
 			 * }
 			 */
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			if ('zoom' in args) {
@@ -166,6 +170,7 @@ mxn.register('cloudmade', {
 		},
 
 		addSmallControls: function() {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			var control = null;
 			if (this.smallMapControl === null) {
@@ -183,6 +188,7 @@ mxn.register('cloudmade', {
 		},
 
 		addLargeControls: function() {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			var control = null;
 			if (this.largeMapControl === null) {
@@ -200,6 +206,7 @@ mxn.register('cloudmade', {
 		},
 
 		addMapTypeControls: function() {
+			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 			var control = null;
 			if (this.tileLayerControl === null) {
