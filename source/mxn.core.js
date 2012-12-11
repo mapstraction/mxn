@@ -956,7 +956,7 @@ Mapstraction.prototype.addJSON = function(json) {
 					points.push(new LatLonPoint(item.geometry.coordinates[0][i][1], item.geometry.coordinates[0][i][0]));
 				}
 				polyline = new Polyline(points);
-				mapstraction.addPolylineWithData(polyline,{
+				this.addPolylineWithData(polyline,{
 					fillColor : item.poly_color,
 					date : "new Date(\""+item.date+"\")",
 					category : item.source_id,
