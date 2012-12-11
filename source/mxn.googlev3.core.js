@@ -357,11 +357,10 @@ Mapstraction: {
 		layer.setMap(map);
 	},
 
-	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
+addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 		var map = this.maps[this.api];
-		var tilelayers = [];
 		var z_index = this.tileLayers.length || 0;
-		tilelayers[0] = {
+		var tilelayer = {
 			getTileUrl: function (coord, zoom) {
 				url = tile_url;
 				var x = coord.x;
@@ -372,9 +371,9 @@ Mapstraction: {
 				while (x >= maxX) {
 					x -= maxX;
 				}
-				url = url.replace(/\{Z\}/g, zoom);
-				url = url.replace(/\{X\}/g, x);
-				url = url.replace(/\{Y\}/g, coord.y);
+				url = url.replace(/\{Z\}/gi, zoom);
+				url = url.replace(/\{X\}/gi, x);
+				url = url.replace(/\{Y\}/gi, coord.y);
 				return url;
 			},
 			tileSize: new google.maps.Size(256, 256),
@@ -384,7 +383,7 @@ Mapstraction: {
 			opacity: opacity,
 			name: copyright_text
 		};
-		var tileLayerOverlay = new google.maps.ImageMapType(tilelayers[0]);
+		var tileLayerOverlay = new google.maps.ImageMapType(tilelayer);
 		if (map_type) {
 			map.mapTypes.set('tile' + z_index, tileLayerOverlay);
 			var mapTypeIds = [

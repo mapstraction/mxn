@@ -363,7 +363,20 @@ Mapstraction: {
 	},
 	
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
-		throw 'Not implemented';
+		var map = this.maps[this.api];
+		
+		var tileProviderOptions = {
+			getUrl: function(zoom, row, column){return tile_url.replace(/\{Z\}/gi, zoom).replace(/\{X\}/gi, column).replace(/\{Y\}/gi, row)}, // obligatory 
+			max: max_zoom,  // max zoom level for overlay
+			min: min_zoom,  // min zoom level for overlay
+			opacity: opacity, // 0 = transparent overlay, 1 = opaque
+			alpha: true, // renderer to read alpha channel    
+			getCopyrights : function(area, zoom) {return [{ label: copyright_text, alt: copyright_text } ]}// display copyright
+		};	
+		
+		var Overlay =  new nokia.maps.map.provider.ImgTileProvider (tileProviderOptions);                
+
+		return map.overlays.add(Overlay);
 	},
 	
 	toggleTileLayer: function(tile_url) {

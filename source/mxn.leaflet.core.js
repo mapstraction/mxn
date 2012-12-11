@@ -266,7 +266,8 @@ Mapstraction: {
 		} else {
 			layerName = 'Tiles';
 		}
-		this.layers[layerName] = new L.TileLayer(tile_url, options || {});
+		var lowerCaseXYZ_url = tile_url.replace(/\{Z\}/g, '{z}').replace(/\{X\}/g, '{x}').replace(/\{Y\}/g, '{y}');
+		this.layers[layerName] = new L.TileLayer(lowerCaseXYZ_url, options || {});
 		var map = this.maps[this.api];
 		map.addLayer(this.layers[layerName]);
 	},

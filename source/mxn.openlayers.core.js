@@ -355,9 +355,9 @@ mxn.register('openlayers', {
 
 		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 			var map = this.maps[this.api];
-			var new_tile_url = tile_url.replace(/\{Z\}/g,'${z}');
-			new_tile_url = new_tile_url.replace(/\{X\}/g,'${x}');
-			new_tile_url = new_tile_url.replace(/\{Y\}/g,'${y}');
+			var new_tile_url = tile_url.replace(/\{Z\}/gi,'${z}');
+			new_tile_url = new_tile_url.replace(/\{X\}/gi,'${x}');
+			new_tile_url = new_tile_url.replace(/\{Y\}/gi,'${y}');
 			var overlay = new OpenLayers.Layer.XYZ(copyright_text,
 				new_tile_url,
 				{sphericalMercator: false, opacity: opacity}
@@ -366,6 +366,7 @@ mxn.register('openlayers', {
 				overlay.addOptions({displayInLayerSwitcher: false, isBaseLayer: false});
 			}
 			map.addLayer(overlay);
+			OpenLayers.Util.onImageLoadErrorColor = "transparent"; //Otherwise missing tiles default to pink!			
 			this.tileLayers.push( [tile_url, overlay, false] );			
 		},
 

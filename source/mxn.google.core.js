@@ -306,28 +306,27 @@ Mapstraction: {
 		var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0, "copyleft");
 		var copyrightCollection = new GCopyrightCollection(copyright_text);
 		copyrightCollection.addCopyright(copyright);
-		var tilelayers = [];
-		tilelayers[0] = new GTileLayer(copyrightCollection, min_zoom, max_zoom);
-		tilelayers[0].isPng = function() {
+		var tilelayer = new GTileLayer(copyrightCollection, min_zoom, max_zoom);
+		tilelayer.isPng = function() {
 			return true;
 		};
-		tilelayers[0].getOpacity = function() {
+		tilelayer.getOpacity = function() {
 			return opacity;
 		};
-		tilelayers[0].getTileUrl = function (a, b) {
+		tilelayer.getTileUrl = function (a, b) {
 			url = tile_url;
-			url = url.replace(/\{Z\}/g,b);
-			url = url.replace(/\{X\}/g,a.x);
-			url = url.replace(/\{Y\}/g,a.y);
+			url = url.replace(/\{Z\}/gi,b);
+			url = url.replace(/\{X\}/gi,a.x);
+			url = url.replace(/\{Y\}/gi,a.y);
 			return url;
 		};
 		if(map_type) {
-			var tileLayerOverlay = new GMapType(tilelayers, new GMercatorProjection(19), copyright_text, {
+			var tileLayerOverlay = new GMapType(this.tilelayers, new GMercatorProjection(19), copyright_text, {
 				errorMessage:"More "+copyright_text+" tiles coming soon"
 			});		
 			this.maps[this.api].addMapType(tileLayerOverlay);
 		} else {
-			tileLayerOverlay = new GTileLayerOverlay(tilelayers[0]);
+			tileLayerOverlay = new GTileLayerOverlay(tilelayer);
 			this.maps[this.api].addOverlay(tileLayerOverlay);
 		}		
 		this.tileLayers.push( [tile_url, tileLayerOverlay, true] );
