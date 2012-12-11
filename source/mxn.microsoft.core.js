@@ -63,7 +63,7 @@ Mapstraction: {
 		
 		me._fireOnNextCall.push(function() {
 			me.load.fire();
-		})
+		});
 	},
 	
 	applyOptions: function(){
