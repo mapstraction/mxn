@@ -8,7 +8,7 @@
 	<script src="../source/mxn.js?(googlev3)" type="text/javascript"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
 	<script type="text/javascript">
-	//<![CDATA[
+
 	var map;
 	var	polyline;
 	var icon_marker;
@@ -217,6 +217,26 @@
 			map.addControls({});
 			return false;
 		});
+		$('#add-small-controls').click(function() {
+			map.addControls({});
+			map.addSmallControls();
+		});
+		$('#add-large-controls').click(function() {
+			map.addControls({});
+			map.addLargeControls();
+		});
+		$('#add-type-controls').click(function() {
+			map.addControls({});
+			map.addMapTypeControls();
+		});
+		$('#add-overview-controls').click(function() {
+			map.addControls({});
+			map.addControls({overview: true});
+		});
+		$('#add-scale-controls').click(function() {
+			map.addControls({});
+			map.addControls({scale: true});
+		});
 	});
 	</script>
 </head>
@@ -238,6 +258,11 @@
 					<li><a id="pan-center" href="#">Click me to pan to center</a>.</li>
 					<li><a id="add-controls" href="#">Click me to add controls</a>.</li>
 					<li><a id="hide-controls" href="#">Click me to remove controls</a>.</li>
+					<li><a id="add-small-controls" href="#">Click me to add small controls</a>.</li>
+					<li><a id="add-large-controls" href="#">Click me to add large controls</a>.</li>
+					<li><a id="add-type-controls" href="#">Click me to add map type controls</a>.</li>
+					<li><a id="add-overview-controls" href="#">Click me to add map overview controls</a>.</li>
+					<li><a id="add-scale-controls" href="#">Click me to add map scale controls</a>.</li>
 					<li>Resize map <a id="resize-restore" href="#">original size</a> or <a id="resize-small" href="#">half size</a>.</li>
 					<li>Set basemap to: <a id="set-road" href="#">road</a>, <a id="set-satellite" href="#">satellite</a>, <a id="set-hybrid" href="#">hybrid</a> or <a id="set-physical" href="#">physical</a>.</li>
 					<li>Add a <a id="add-marker" href="#">standard marker</a> or <a id="remove-marker" href="#">remove it</a>.</li>

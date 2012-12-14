@@ -8,11 +8,8 @@
 	<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.2" type="text/javascript"></script>
 	<script src="../source/mxn.js?(esri)" type="text/javascript"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
-	<!--
-	<script src="http://code.jquery.com/jquery-1.8.2.min.js" type="text/javascript"></script>
-	-->
 	<script type="text/javascript">
-	//<![CDATA[
+
 	var map;
 	var	polyline;
 	var icon_marker;
@@ -21,7 +18,7 @@
 	function initialize() {
 		map = new mxn.Mapstraction('map', 'esri');
 		//map.addControls({pan: true, zoom: 'small'});
-		//map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
+		map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
 		
 		map.load.addHandler(function(en, es, ea) {
 			logEvent ('Map loaded');
@@ -221,6 +218,26 @@
 			map.addControls({});
 			return false;
 		});
+		dojo.query('#add-small-controls').onclick(function() {
+			map.addControls({});
+			map.addSmallControls();
+		});
+		dojo.query('#add-large-controls').onclick(function() {
+			map.addControls({});
+			map.addLargeControls();
+		});
+		dojo.query('#add-type-controls').onclick(function() {
+			map.addControls({});
+			map.addMapTypeControls();
+		});
+		dojo.query('#add-overview-controls').onclick(function() {
+			map.addControls({});
+			map.addControls({overview: true});
+		});
+		dojo.query('#add-scale-controls').onclick(function() {
+			map.addControls({});
+			map.addControls({scale: true});
+		});
 	});
 	//]]>
 	</script>
@@ -243,6 +260,12 @@
 					<li><a id="pan-center" href="#">Click me to pan to center</a>.</li>
 					<li><a id="add-controls" href="#">Click me to add controls</a>.</li>
 					<li><a id="hide-controls" href="#">Click me to remove controls</a>.</li>
+					<li><a id="add-small-controls" href="#">Click me to add small controls</a>.</li>
+					<li><a id="add-large-controls" href="#">Click me to add large controls</a>.</li>
+					<li><a id="add-type-controls" href="#">Click me to add map type controls</a>.</li>
+					<li><a id="add-overview-controls" href="#">Click me to add map overview controls</a>.</li>
+					<li><a id="add-scale-controls" href="#">Click me to add map scale controls</a>.</li>
+					
 					<li>Resize map <a id="resize-restore" href="#">original size</a> or <a id="resize-small" href="#">half size</a>.</li>
 					<li>Set basemap to: <a id="set-road" href="#">road</a>, <a id="set-satellite" href="#">satellite</a>, <a id="set-hybrid" href="#">hybrid</a> or <a id="set-physical" href="#">physical</a>.</li>
 					<li>Add a <a id="add-marker" href="#">standard marker</a> or <a id="remove-marker" href="#">remove it</a>.</li>
