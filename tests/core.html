@@ -433,9 +433,8 @@
 				}
 			},
 			{
-				desc: 'Add controls',
+				desc: 'Add All Controls',
 				action: function() {
-					m.addLargeControls();
 					m.addControls({
 						pan:	 true,
 						zoom:	 'large',
@@ -443,6 +442,32 @@
 						scale: true,
 						map_type: true
 					});
+				}
+			},
+			{
+				desc: 'Remove Controls',
+				action: function() {
+					m.addControls( { } );
+				}
+			},
+			{
+				desc: 'Add Small Controls',
+				action: function() {
+					m.addSmallControls();
+				}
+			},
+			{
+				desc: 'Add Large Controls',
+				action: function() {
+					m.addControls( { } );
+					m.addLargeControls();
+				}
+			},
+			{
+				desc: 'Add Map Type Controls',
+				action: function() {
+					m.addControls( { });
+					m.addMapTypeControls();
 				}
 			},
 			/*
@@ -559,7 +584,7 @@
 			
 			<div class="box">
 				<h2>Actions</h2>
-				<div>
+				<div id="container">
 					<ol id="actions"></ol>
 				</div>
 			</div>

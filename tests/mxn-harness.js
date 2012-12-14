@@ -14,6 +14,9 @@ if(typeof(Enumerator) == 'undefined'){
 		this.item = function(){
 			return ary[current];
 		};
+		this.getCurrent = function() {
+			return current;
+		}
 	}
 }
 
@@ -28,6 +31,8 @@ window.RunTests = function(ops, actionElm, infoElm) {
 	
 	var e = new Enumerator(ops);
 	var intervalID;
+	var contElm = document.getElementById("container");
+	var viewport = actionElm.clientHeight - contElm.clientHeight;
 	
 	function doNextAction(){
 		if(e.atEnd()){
@@ -46,7 +51,14 @@ window.RunTests = function(ops, actionElm, infoElm) {
 			}
 			a.elm.style.textDecoration = 'line-through';
 			a.elm.style.color = '#AAA';
+			viewport += a.elm.clientHeight;
 			e.moveNext();
+			if (viewport >= contElm.clientHeight) {
+				//contElm.scrollTop += a.elm.clientHeight;
+				//actionElm.scrollTop += a.elm.clientHeight;
+				contElm.scrollTop = viewport;
+				//actionElm.scrollTop = viewport;
+			}
 		}
 	}
 	
