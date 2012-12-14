@@ -13,6 +13,14 @@ Mapstraction: {
 			throw new Error('This browser is not compatible with Google Maps');
 		}
 
+		this.controls =  {
+			pan: null,
+			zoom: null,
+			overview: null,
+			scale: null,
+			map_type: null
+		};
+		
 		this.maps[api] = new GMap2(element);
 
 		GEvent.addListener(this.maps[api], 'click', function(marker,location) {
@@ -72,66 +80,103 @@ Mapstraction: {
 	},
 
 	addControls: function( args ) {
+		/* args = { 
+		 *     pan:      true,
+		 *     zoom:     'large' || 'small',
+		 *     overview: true,
+		 *     scale:    true,
+		 *     map_type: true,
+		 * }
+		 */
+
 		var map = this.maps[this.api];
 	
-		// remove old controls
-		if (this.controls) {
-			while ((ctl = this.controls.pop())) {
-				// Google specific method
-				map.removeControl(ctl);
-			}
-		} 
-		else {
-  			this.controls = [];
-		}
-		c = this.controls;
- 
-		// Google has a combined zoom and pan control.
-		if (args.zoom || args.pan) {
-			if (args.zoom == 'large'){ 
-				this.addLargeControls();
-			} else {
+		if ('zoom' in args || ('pan' in args && args.pan)) {
+			if (args.pan || args.zoom == 'small') {
 				this.addSmallControls();
+			}
+			
+			else if (args.zoom == 'large') {
+				this.addLargeControls();
+			}
+		}
+		
+		else {
+			if (this.controls.zoom !== null) {
+				map.removeControl(this.controls.zoom);
+				this.controls.zoom = null;
+			}
+		}
+		
+		if ('overview' in args && args.overview) {
+			if (this.controls.overview === null) {
+				this.controls.overview = new GOverviewMapControl();
+				map.addControl(this.controls.overview);
+			}
+		}
+		
+		else {
+			if (this.controls.overview !== null) {
+				map.removeControl(this.controls.overview);
+				this.controls.overview = null;
 			}
 		}
 
-		if (args.scale) {
-			this.controls.unshift(new GScaleControl());
-			map.addControl(this.controls[0]);
-			this.addControlsArgs.scale = true;
+		if ('scale' in args && args.scale) {
+			if (this.controls.scale === null) {
+				this.controls.scale = new GScaleControl();
+				map.addControl(this.controls.scale);
+			}
 		}
 		
-		if (args.overview) {
-			c.unshift(new GOverviewMapControl()); 
-			map.addControl(c[0]);
-			this.addControlsArgs.overview = true;
+		else {
+			if (this.controls.scale !== null) {
+				map.removeControl(this.controls.scale);
+				this.controls.scale = null;
+			}
 		}
-		if (args.map_type) {
- 			this.addMapTypeControls();
-		} 
+		
+		if ('map_type' in args && args.map_type) {
+			this.addMapTypeControls();
+		}
+		
+		else {
+			if (this.controls.map_type !== null) {
+				map.removeControl(this.controls.map_type);
+				this.controls.map_type = null;
+			}
+		}
 	},
 
 	addSmallControls: function() {
 		var map = this.maps[this.api];
-		this.controls.unshift(new GSmallMapControl());
-		map.addControl(this.controls[0]);
-		this.addControlsArgs.zoom = 'small';
-		this.addControlsArgs.pan = true;
+		
+		if (this.controls.zoom !== null) {
+			map.removeControl(this.controls.zoom);
+		}
+
+		this.controls.zoom = new GSmallMapControl();
+		map.addControl(this.controls.zoom);
 	},
 
 	addLargeControls: function() {
-		var map = this.maps[this.api];				
-		this.controls.unshift(new GLargeMapControl());
-		map.addControl(this.controls[0]);
-		this.addControlsArgs.zoom = 'large';
-		this.addControlsArgs.pan = true;
+		var map = this.maps[this.api];
+		
+		if (this.controls.zoom !== null) {
+			map.removeControl(this.controls.zoom);
+		}
+
+		this.controls.zoom = new GLargeMapControl();
+		map.addControl(this.controls.zoom);
 	},
 
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
-		this.controls.unshift(new GMapTypeControl());
-		map.addControl(this.controls[0]);
-		this.addControlsArgs.map_type = true;
+
+		if (this.controls.map_type === null) {
+			this.controls.map_type = new GMapTypeControl();
+			map.addControl(this.controls.map_type);
+		}
 	},
 
 	setCenterAndZoom: function(point, zoom) { 

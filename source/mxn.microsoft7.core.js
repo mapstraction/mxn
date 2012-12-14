@@ -8,6 +8,13 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		// The design decisions behind the Microsoft/Bing v7 API are simply jaw dropping.
+		// Want to show/hide the dashboard or show/hide the scale bar? Nope. You can only
+		// do that when you're creating the map object. Once you've done that the map controls
+		// stay "as-is" unless you want to tear down the map and redisplay it. And as for the
+		// overview "mini-map", that's not supported at all and you have to write your own.
+		// See http://msdn.microsoft.com/en-us/library/gg427603.aspx for the whole sorry tale.
+
 		this.maps[api] = new Microsoft.Maps.Map(element, { 
 			credentials: microsoft_key,
 			enableSearchLogo: false, // Remove the pointless Bing Search advert form the map's lower left, as this has nothing to do with the map

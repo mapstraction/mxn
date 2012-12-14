@@ -137,24 +137,28 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var cid = null;
 		
-		if (args.pan) {
-			map.addComponent(new nokia.maps.map.component.Behavior());
+		if ('pan' in args && args.pan) {
+			cid = map.getComponentById('Behavior');
+			if (cid === null) {
+				map.addComponent(new nokia.maps.map.component.Behavior());
+			}
+		}
+
+		else {
+			cid = map.getComponentById('Behavior');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
 		}
 		
 		// TODO: The Nokia Maps API doesn't currently differentiate between large and small
 		// style of Zoom controls so, for now, make them functionally equivalent
 		if ('zoom' in args) {
 			if (args.zoom || args.zoom == 'large' || args.zoom == 'small') {
-				map.addComponent(new nokia.maps.map.component.ZoomBar());
-			}
-			
-			else if (!args.zoom) {
-				cid = map.getComponentById('ZoomBar');
-				if (cid !== null) {
-					map.removeComponent(cid);
-				}
+				this.addSmallControls();
 			}
 		}
+
 		else {
 			cid = map.getComponentById('ZoomBar');
 			if (cid !== null) {
@@ -162,11 +166,13 @@ Mapstraction: {
 			}
 		}
 		
-		if ('overview' in args) {
-			if (args.overview) {
+		if ('overview' in args && args.overview) {
+			cid = map.getComponentById('Overview');
+			if (cid === null) {
 				map.addComponent(new nokia.maps.map.component.Overview());
 			}
 		}
+
 		else {
 			cid = map.getComponentById('Overview');
 			if (cid !== null) {
@@ -174,11 +180,13 @@ Mapstraction: {
 			}
 		}
 		
-		if ('scale' in args) {
-			if (args.scale) {
+		if ('scale' in args && args.scale) {
+			cid = map.getComponentById('ScaleBar');
+			if (cid === null) {
 				map.addComponent(new nokia.maps.map.component.ScaleBar());
 			}
 		}
+
 		else {
 			cid = map.getComponentById('ScaleBar');
 			if (cid !== null) {
@@ -186,11 +194,10 @@ Mapstraction: {
 			}
 		}
 		
-		if ('map_type' in args) {
-			if (args.map_type) {
-				map.addComponent(new nokia.maps.map.component.TypeSelector());
-			}
+		if ('map_type' in args && args.map_type) {
+			this.addMapTypeControls();
 		}
+
 		else {
 			cid = map.getComponentById('TypeSelector');
 			if (cid !== null) {
@@ -203,20 +210,22 @@ Mapstraction: {
 	// style of Zoom controls so, for now, make them functionally equivalent
 	addSmallControls: function() {
 		var map = this.maps[this.api];
-		
-		map.addComponent(new nokia.maps.map.component.ZoomBar());
+		cid = map.getComponentById('ZoomBar');
+		if (cid === null) {
+			map.addComponent(new nokia.maps.map.component.ZoomBar());
+		}
 	},
 	
 	addLargeControls: function() {
-		var map = this.maps[this.api];
-		
-		map.addComponent(new nokia.maps.map.component.ZoomBar());
+		this.addSmallControls();
 	},
 	
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
-		
-		map.addComponent(new nokia.maps.map.component.TypeSelector());
+		cid = map.getComponentById('TypeSelector');
+		if (cid === null) {
+			map.addComponent(new nokia.maps.map.component.TypeSelector());
+		}
 	},
 	
 	setCenterAndZoom: function(point, zoom) {

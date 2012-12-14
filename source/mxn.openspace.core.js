@@ -14,6 +14,14 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		this.controls = {
+			pan: null,
+			zoom: null,
+			overview: null,
+			scale: null,
+			map_type: null
+		};
+
 		//FIX STUPID OPENSPACE BUG IN openspace Version 1.2 - is triggered by Mapstraction Core Tests when adding a marker with label text
 		if (typeof (OpenLayers.Marker.prototype.setDragMode) == "undefined")
 		{
@@ -109,34 +117,6 @@ Mapstraction: {
 		 */
 
 		var map = this.maps[this.api];
-		// remove existing controls but leave the basic navigation,	keyboard 
-		// and copyright controls in place these were added in addAPI and not 
-		// normally be removed
-		/*for (var i = map.controls.length; i>3; i--) {
-			map.controls[i-1].deactivate();
-			map.removeControl(map.controls[i-1]);
-		}*/
-		// pan and zoom controls not available separately
-		/*if ( args.zoom == 'large') {
-			map.addControl(new OpenSpace.Control.LargeMapControl());
-		}
-		else if ( args.zoom == 'small' || args.pan ) {
-			map.addControl(new OpenSpace.Control.SmallMapControl());
-		}
-		if ( args.overview ) {*/
-			// this should work but as of OpenSpace 0.7.2 generates an error
-			// unless done before setCenterAndZoom
-			/*var osOverviewControl = new OpenSpace.Control.OverviewMap();
-			map.addControl(osOverviewControl);
-			osOverviewControl.maximizeControl();
-		}
-		if ( args.map_type ) {
-			// this is all you get with openspace, a control to switch on or
-			// off the layers and markers
-			// probably not much use to anybody
-			map.addControl(new OpenLayers.Control.LayerSwitcher());
-		}*/
-		
 		var controls;
 		var	control;
 		var i;
@@ -200,12 +180,21 @@ Mapstraction: {
 			}
 		}
 		
-		// Note: there's no analog to the 'scale' control in OpenSpace (or in the underlying
-		// OpenLayers either)
-		
-		/*if ('scale' in args) {
-			
-		}*/
+		if ('scale' in args && args.scale) {
+			if (this.controls.scale === null) {
+				this.controls.scale = new OpenLayers.Control.ScaleLine();
+				map.addControl(this.controls.scale);
+			}
+		}
+
+		else {
+			if (this.controls.scale !== null) {
+				this.controls.scale.deactivate();
+				map.removeControl(this.controls.scale);
+				this.controls.scale = null;
+			}
+		}
+
 		
 		if ('map_type' in args) {
 			this.addMapTypeControls ();

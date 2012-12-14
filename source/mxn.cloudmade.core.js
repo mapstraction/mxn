@@ -16,11 +16,13 @@ mxn.register('cloudmade', {
 				opts.styleId = cloudmade_styleId;
 			}
 
-			this.tileLayerControl = null;
-			this.scaleControl = null;
-			this.smallMapControl = null;
-			this.largeMapControl = null;
-			this.overviewMapControl = null;
+			this.controls = {
+				zoom: null,
+				overview: null,
+				scale: null,
+				map_type: null
+			};
+			
 			this._fireOnNextCall = [];
 			this._fireQueuedEvents =  function() {
 				var fireListCount = me._fireOnNextCall.length;
@@ -96,75 +98,63 @@ mxn.register('cloudmade', {
 			 *     map_type: true,
 			 * }
 			 */
+
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
 			if ('zoom' in args) {
-				var control = null;
-				switch (args.zoom) {
-					case 'small':
-						this.smallMapControl = this.addSmallControls();
-						break;
-						
-					case 'large':
-						this.largeMapControl = this.addLargeControls();
-						break;
-						
-					default:
-						this.largeMapControl = this.addLargeControls();
-						break;
-				}	// end-switch (args.zoom);
-			}
+				if (args.zoom == 'small') {
+					this.addSmallControls();
+				}
 
-			else {
-				if (this.smallMapControl !== null) {
-					map.removeControl(this.smallMapControl);
-					this.smallMapControl = null;
-				}
-				if (this.largeMapControl !== null) {
-					map.removeControl(this.largeMapControl);
-					this.largeMapControl = null;
-				}
-			}
-
-			if ('overview' in args) {
-				if (this.overviewMapControl === null) {
-					this.overviewMapControl = new CM.OverviewMapControl();
-					map.addControl(this.overviewMapControl);
-				}
-			}
-			
-			else {
-				if (this.overviewMapControl !== null) {
-					map.removeControl(this.overviewMapControl);
-					this.overviewMapControl = null;
-				}
-			}
-			
-			if ('map_type' in args) {
-				if (this.tileLayerControl === null) {
-					this.tileLayerControl = this.addMapTypeControls();
+				else if (args.zoom == 'large') {
+					this.addLargeControls();
 				}
 			}
 
 			else {
-				if (this.tileLayerControl !== null) {
-					map.removeControl(this.tileLayerControl);
-					this.tileLayerControl = null;
+				if (this.controls.zoom !== null) {
+					map.removeControl(this.controls.zoom);
+					this.controls.zoom = null;
 				}
 			}
-			
-			if ('scale' in args) {
-				if (this.scaleControl === null) {
-					this.scaleControl = new CM.ScaleControl();
-					map.addControl(this.scaleControl);
+
+			if ('overview' in args && args.overview) {
+				if (this.controls.overview === null) {
+					this.controls.overview = new CM.OverviewMapControl();
+					map.addControl(this.controls.overview);
 				}
 			}
 			
 			else {
-				if (this.scaleControl !== null) {
-					map.removeControl(this.scaleControl);
-					this.scaleControl = null;
+				if (this.controls.overview !== null) {
+					map.removeControl(this.controls.overview);
+					this.controls.overview = null;
+				}
+			}
+			
+			if ('map_type' in args && args.map_type) {
+				this.addMapTypeControls();
+			}
+
+			else {
+				if (this.controls.map_type !== null) {
+					map.removeControl(this.controls.map_type);
+					this.controls.map_type = null;
+				}
+			}
+			
+			if ('scale' in args && args.scale) {
+				if (this.controls.scale === null) {
+					this.controls.scale = new CM.ScaleControl();
+					map.addControl(this.controls.scale);
+				}
+			}
+			
+			else {
+				if (this.controls.scale !== null) {
+					map.removeControl(this.controls.scale);
+					this.controls.scale = null;
 				}
 			}
 		},
@@ -172,55 +162,35 @@ mxn.register('cloudmade', {
 		addSmallControls: function() {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
-			var control = null;
-			if (this.smallMapControl === null) {
-				control = new CM.SmallMapControl();
-				map.addControl(control);
+
+			if (this.controls.zoom !== null) {
+				map.removeControl(this.controls.zoom);
 			}
-			
-			else {
-				control = this.smallMapControl;
-			}
-			
-			return control;
-			//map.addControl(new CM.SmallMapControl());
-			//this.addControlsArgs.zoom = 'small';
+
+			this.controls.zoom = new CM.SmallMapControl();
+			map.addControl(this.controls.zoom);
 		},
 
 		addLargeControls: function() {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
-			var control = null;
-			if (this.largeMapControl === null) {
-				control = new CM.LargeMapControl();
-				map.addControl(control);
+
+			if (this.controls.zoom !== null) {
+				map.removeControl(this.controls.zoom);
 			}
-			
-			else {
-				control = this.largeMapControl;
-			}
-			
-			return control;
-			//map.addControl(new CM.LargeMapControl());
-			//this.addControlsArgs.zoom = 'large';
+
+			this.controls.zoom = new CM.LargeMapControl();
+			map.addControl(this.controls.zoom);
 		},
 
 		addMapTypeControls: function() {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
-			var control = null;
-			if (this.tileLayerControl === null) {
-				control = new CM.TileLayerControl();
-				map.addControl(control);
+
+			if (this.controls.map_type === null) {
+				this.controls.map_type = new CM.TileLayerControl();
+				map.addControl(this.controls.map_type);
 			}
-			
-			else {
-				control = this.tileLaterControl;
-			}
-			
-			return control;
-			//map.addControl(new CM.TileLayerControl());
-			//this.addControlsArgs.map_type = true;
 		},
 
 		dragging: function(on) {

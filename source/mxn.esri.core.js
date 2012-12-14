@@ -15,10 +15,22 @@ Mapstraction: {
 		dojo.require("esri.map");
 		dojo.require("esri.layers.FeatureLayer");
 		dojo.require("esri.dijit.BasemapGallery");
+		dojo.require('dijit.layout.BorderContainer');
+		dojo.require('dijit.layout.ContentPane');
+		dojo.require("esri.dijit.OverviewMap");
+		dojo.require("esri.dijit.Scalebar");
 
 		if (typeof esri.Map === 'undefined') {
 			throw new Error(api + ' map script not imported');
 		}
+
+		this.controls =  {
+			pan: null,
+			zoom: null,
+			overview: null,
+			scale: null,
+			map_type: null
+		};
 
 		var map = new esri.Map(element.id, {
 			wrapAround180: true
@@ -106,32 +118,102 @@ Mapstraction: {
 	},
 
 	addControls: function(args) {
+		/* args = { 
+		 *     pan:      true,
+		 *     zoom:     'large' || 'small',
+		 *     overview: true,
+		 *     scale:    true,
+		 *     map_type: true,
+		 * }
+		 */
+
 		var map = this.maps[this.api];
-		if (args.zoom) {
-			map.showZoomSlider();
-		} else {
+
+		if ('pan' in args && args.pan) {
+			map.showPanArrows();
+		}
+		
+		else {
+			map.hidePanArrows();
+		}
+
+		if ('zoom' in args && (args.zoom == 'small' || args.zoom == 'large')) {
+			this.addSmallControls();
+		}
+		
+		else {
 			map.hideZoomSlider();
 		}
-		if (args.map_type) {
-			var basemapGallery = new esri.dijit.BasemapGallery({
-				showArcGISBasemaps: true,
-				map: map
-			}, "basemapGallery");
+		
+		if ('overview' in args && args.overview) {
+			if (this.controls.overview === null) {
+				if (typeof esri.dijit.OverviewMap !== 'undefined') {
+					this.controls.overview = new esri.dijit.OverviewMap(
+						{
+							map: map,
+							visible: true
+						}
+					);
+					this.controls.overview.startup();
+				}
+			}
+		}
+		
+		else {
+			if (this.controls.overview !== null) {
+				this.controls.overview.destroy();
+				this.controls.overview = null;
+			}
+		}
+		
+		if ('scale' in args && args.scale) {
+			if (this.controls.scale === null) {
+				if (typeof esri.dijit.Scalebar !== 'undefined') {
+					this.controls.scale = new esri.dijit.Scalebar( { map: map });
+				}
+			}
+		}
 
-			basemapGallery.startup();
+		else {
+			if (this.controls.scale !== null) {
+				this.controls.scale.destroy();
+				this.controls.scale = null;
+			}
+		}
+		
+		if ('map_type' in args && args.map_type) {
+			this.addMapTypeControls();
+		}
+		
+		else {
+			if (this.controls.overview !== null) {
+				this.controls.overview.destroy();
+			}
 		}
 	},
 
 	addSmallControls: function() {
-		this.addControls({zoom: true, map_type: true});
+		var map = this.maps[this.api];
+		map.showZoomSlider();
 	},
 
 	addLargeControls: function() {
-		this.addControls({zoom: true, map_type: true});
+		this.addSmallControls();
 	},
 
 	addMapTypeControls: function() {
-		this.addControls({map_type: true});
+		var map = this.maps[this.api];
+
+		if (this.controls.overview === null) {
+			if (typeof esri.dijit.BasemapGallery !== 'undefined') {
+				this.controls.overview = new esri.dijit.BasemapGallery({
+					showArcGISBasemaps: true,
+					map: map
+					}, "basemapGallery");
+
+				this.controls.overview.startup();
+			}
+		}
 	},
 
 	setCenterAndZoom: function(point, zoom) { 

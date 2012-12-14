@@ -21,7 +21,16 @@ Mapstraction: {
 			}
 		};
 
+		this.controls =  {
+			zoom: false,
+			overview: false,
+			map_type: false,
+			scale: false
+		};
+
 		this.maps[api] = new VEMap(element.id);
+		this.maps[api].HideDashboard();
+		
 		this.maps[api].AttachEvent('onclick', function(event){
 			me.clickHandler();
 			var map = me.maps[me.api];
@@ -55,8 +64,9 @@ Mapstraction: {
 			me.endPan.fire();				
 		});
 
+		this.maps[this.api].SetDashboardSize(VEDashboardSize.Normal);
 		this.maps[api].LoadMap();
-		document.getElementById("MSVE_obliqueNotification").style.visibility = "hidden"; 
+		//document.getElementById("MSVE_obliqueNotification").style.visibility = "hidden"; 
 	
 		//removes the bird's eye pop-up
 		this.loaded[api] = true;
@@ -83,25 +93,60 @@ Mapstraction: {
 	},
 
 	addControls: function( args ) {
+		/* args = { 
+		 *     pan:      true,
+		 *     zoom:     'large' || 'small',
+		 *     overview: true,
+		 *     scale:    true,
+		 *     map_type: true,
+		 * }
+		 */
+
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
-		if (args.pan) {
-			map.SetDashboardSize(VEDashboardSize.Normal);
+		// Yuck. Microsoft 6 only lets you set the size of the dashboard before you
+		// load the map for the first time. What a genius design decision that is.
+		
+		if (('zoom' in args && args.zoom == 'small' || args.zoom == 'large') || ('pan' in args && args.pan)) {
+			if (!this.controls.zoom) {
+				map.ShowDashboard();
+				this.controls.zoom = true;
+			}
 		}
+		
 		else {
-			map.SetDashboardSize(VEDashboardSize.Tiny);
+			if (this.controls.zoom) {
+				map.HideDashboard();
+				this.controls.zoom = false;
+			}
+		}
+		if ('overview' in args && args.overview) {
+			if (!this.controls.overview) {
+				map.ShowMiniMap(0, 150, VEMiniMapSize.Small);
+				this.controls.overview = true;
+			}
 		}
 
-		if (args.zoom == 'large') {
-			map.SetDashboardSize(VEDashboardSize.Small);
-		}
-		else if ( args.zoom == 'small' ) {
-			map.SetDashboardSize(VEDashboardSize.Tiny);
-		}
 		else {
-			map.HideDashboard();
-			map.HideScalebar();
+			if (this.controls.overview) {
+				map.HideMiniMap();
+				this.controls.overview = false;
+			}
+		}
+		
+		if ('scale' in args && args.scale) {
+			if (!this.controls.scale) {
+				map.ShowScalebar();
+				this.controls.scale = true;
+			}
+		}
+		
+		else {
+			if (this.controls.scale) {
+				map.HideScalebar();
+				this.controls.scale = false;
+			}
 		}
 	},
 
@@ -109,21 +154,24 @@ Mapstraction: {
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		map.SetDashboardSize(VEDashboardSize.Tiny);
+		if (!this.controls.zoom) {
+			map.ShowDashboard();
+			this.controls.zoom = true;
+		}
 	},
 
 	addLargeControls: function() {
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		map.SetDashboardSize(VEDashboardSize.Normal);
-		this.addControlsArgs.pan = true;
-		this.addControlsArgs.zoom = 'large';
+		if (!this.controls.zoom) {
+			map.ShowDashboard();
+			this.controls.zoom = true;
+		}
 	},
 
 	addMapTypeControls: function() {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		map.addTypeControl();
-	
 	},
 
 	dragging: function(on) {

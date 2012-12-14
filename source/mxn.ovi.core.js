@@ -118,27 +118,74 @@ Mapstraction: {
 		 */
 
 		var map = this.maps[this.api];
+		var cid = null;
 		
-		if (args.pan) {
-			map.addComponent(new ovi.mapsapi.map.component.Behavior());
+		if ('pan' in args && args.pan) {
+			cid = map.getComponentById('Behavior');
+			if (cid === null) {
+				map.addComponent(new ovi.mapsapi.map.component.Behavior());
+			}
+		}
+		
+		else {
+			cid = map.getComponentById('Behavior');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
 		}
 		
 		// TODO: The Ovi Maps API doesn't currently differentiate between large and small
 		// style of Zoom controls so, for now, make them functionally equivalent
-		if (args.zoom == 'large' || args.zoom == 'small') {
-			map.addComponent(new ovi.mapsapi.map.component.ZoomBar());
+		if ('zoom' in args) {
+			if (args.zoom || args.zoom == 'large' || args.zoom == 'small') {
+				this.addSmallControls();
+			}
+		}
+
+		else {
+			cid = map.getComponentById('ZoomBar');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
+		}
+
+		if ('overview' in args && args.overview) {
+			cid = map.getComponentById('Overview');
+			if (cid === null) {
+				map.addComponent(new ovi.mapsapi.map.component.Overview());
+			}
 		}
 		
-		if (args.overview) {
-			map.addComponent(new ovi.mapsapi.map.component.Overview());
+		else {
+			cid = map.getComponentById('Overview');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
 		}
 		
-		if (args.scale) {
-			map.addComponent(new ovi.mapsapi.map.component.ScaleBar ());
+		if ('scale' in args && args.scale) {
+			cid = map.getComponentById('ScaleBar');
+			if (cid === null) {
+				map.addComponent(new ovi.mapsapi.map.component.ScaleBar ());
+			}
+		}
+
+		else {
+			cid = map.getComponentById('ScaleBar');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
 		}
 		
-		if (args.map_type) {
-			map.addComponent(new ovi.mapsapi.map.component.TypeSelector ());
+		if ('map_type' in args && args.map_type) {
+			this.addMapTypeControls();
+		}
+
+		else {
+			cid = map.getComponentById('TypeSelector');
+			if (cid !== null) {
+				map.removeComponent(cid);
+			}
 		}
 	},
 
@@ -146,18 +193,22 @@ Mapstraction: {
 	// style of Zoom controls so, for now, make them functionally equivalent
 	addSmallControls: function() {
 		var map = this.maps[this.api];
-		map.addComponent(new ovi.mapsapi.map.component.ZoomBar());
+		cid = map.getComponentById('ZoomBar');
+		if (cid === null) {
+			map.addComponent(new ovi.mapsapi.map.component.ZoomBar());
+		}
 	},
 	
 	addLargeControls: function() {
-		var map = this.maps[this.api];
-		map.addComponent(new ovi.mapsapi.map.component.ZoomBar());
+		this.addSmallControls();
 	},
 	
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
-		
-		map.addComponent(new ovi.mapsapi.map.component.TypeSelector ());
+		cid = map.getComponentById('TypeSelector');
+		if (cid === null) {
+			map.addComponent(new ovi.mapsapi.map.component.TypeSelector ());
+		}
 	},
 	
 	setCenterAndZoom: function(point, zoom) {

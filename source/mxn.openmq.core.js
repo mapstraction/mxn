@@ -24,6 +24,11 @@ Mapstraction: {
 		var map = new MQA.TileMap(element);
 		this.maps[api] = map;
 		this.loaded[api] = true;
+		this.controls = {
+			zoom: null,
+			overview: null,
+			map_type: null
+		};
 
 		MQA.withModule('shapes', function() {
 			// Loading all modules that can't be loaded on-demand
@@ -66,14 +71,68 @@ Mapstraction: {
 	},
 
 	addControls: function( args ) {
+		/* args = { 
+		 *     pan:      true,
+		 *     zoom:     'large' || 'small',
+		 *     overview: true,
+		 *     scale:    true,
+		 *     map_type: true,
+		 * }
+		 */
+
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
+		var me = this;
 
-		if (args.zoom) {
-			if (args.zoom == 'large') { 
-				this.addLargeControls();
-			} else { 
+		if ('zoom' in args || ('pan' in args && args.pan)) {
+			if (args.pan || args.zoom == 'small') {
 				this.addSmallControls();
+			}
+			
+			else if (args.zoom == 'large') {
+				this.addLargeControls();
+			}
+		}
+		
+		else {
+			if (this.controls.zoom) {
+				map.removeControl(this.controls.zoom);
+				this.controls.zoom = null;
+			}
+		}
+
+		if ('overview' in args && args.overview) {
+			if (this.controls.overview === null) {
+				MQA.withModule('insetmapcontrol', function() {
+					var options = {
+						size: { width: 150, height: 125},
+						zoom: 3,
+						mapType: 'map',
+						minimized: false
+					};
+					me.controls.overview = new MQA.InsetMapControl(options);
+					map.addControl(
+						me.controls.overview,
+						new MQA.MapCornerPlacement(MQA.MapCorner.BOTTOM_RIGHT));
+				});
+			}
+		}
+		
+		else {
+			if (this.controls.overview) {
+				map.removeControl(this.controls.overview);
+				this.controls.overview = null;
+			}
+		}
+		
+		if ('map_type' in args && args.map_type) {
+			this.addMapTypeControls();
+		}
+		
+		else {
+			if (this.controls.map_type) {
+				map.removeControl(this.controls.map_type);
+				this.controls.map_type = null;
 			}
 		}
 	},
@@ -81,9 +140,16 @@ Mapstraction: {
 	addSmallControls: function() {
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
+		var me = this;
+
+		if (this.controls.zoom !== null) {
+			map.removeControl(this.controls.zoom);
+		}
+
 		MQA.withModule('smallzoom', function() {
+			me.controls.zoom = new MQA.SmallZoom();
 			map.addControl(
-			    new MQA.SmallZoom(), 
+			    me.controls.zoom, 
 			    new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
 			  );
 		});
@@ -92,9 +158,16 @@ Mapstraction: {
 	addLargeControls: function() {
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
+		var me = this;
+
+		if (this.controls.zoom !== null) {
+			map.removeControl(this.controls.zoom);
+		}
+		
 		MQA.withModule('largezoom', function() {
+			me.controls.zoom = new MQA.LargeZoom();
 			map.addControl(
-			    new MQA.LargeZoom(), 
+				me.controls.zoom, 
 			    new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
 			  );
 		});
@@ -103,7 +176,14 @@ Mapstraction: {
 	addMapTypeControls: function() {
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
-		// Open MapQuest only supports a single map type, so there is no map type control	
+		var me = this;
+		
+		if (this.controls.map_type === null) {
+			MQA.withModule('viewoptions', function() {
+				me.controls.map_type = new MQA.ViewOptions();
+				map.addControl(me.controls.map_type);
+			});
+		}
 	},
 
 	setCenterAndZoom: function(point, zoom) { 

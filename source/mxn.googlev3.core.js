@@ -142,19 +142,50 @@ Mapstraction: {
   	},
 
 	addControls: function( args ) {
+		/* args = { 
+		 *     pan:      true,
+		 *     zoom:     'large' || 'small',
+		 *     overview: true,
+		 *     scale:    true,
+		 *     map_type: true,
+		 * }
+		 */
+
 		var map = this.maps[this.api];
 		var myOptions;
-		// remove old controls
 
 		// Google has a combined zoom and pan control.
-		if (args.zoom || args.pan) {
-			if (args.zoom == 'large'){ 
-				this.addLargeControls();
-			} else { 
+
+		if ('pan' in args && args.pan) {
+			myOptions = { panControl: true };
+			map.setOptions(myOptions);
+			this.addControlsArgs.pan = true;
+			
+		}
+		
+		else if (!('pan' in args) || ('pan' in args && !args.pan)) {
+			myOptions = { panControl: false };
+			map.setOptions(myOptions);
+			this.addControlsArgs.pan = false;
+		}
+		
+		if ('zoom' in args) {
+			if (args.zoom == 'small') {
 				this.addSmallControls();
 			}
+			
+			else if (args.zoom == 'large') {
+				this.addLargeControls();
+			}
 		}
-		if (args.scale){
+		
+		else {
+			myOptions = { zoomControl: false };
+			map.setOptions(myOptions);
+			this.addControlsArgs.zoom = false;
+		}
+
+		if ('scale' in args && args.scale){
 			myOptions = {
 				scaleControl:true,
 				scaleControlOptions: {style:google.maps.ScaleControlStyle.DEFAULT}				
@@ -162,10 +193,24 @@ Mapstraction: {
 			map.setOptions(myOptions);
 			this.addControlsArgs.scale = true;
 		}
-		if (args.map_type){
+		
+		else {
+			myOptions = { scaleControl: false };
+			map.setOptions(myOptions);
+			this.addControlsArgs.scale = false;
+		}
+
+		if ('map_type' in args && args.map_type){
 			this.addMapTypeControls();
 		}
-		if (args.overview) {
+
+		else {
+			myOptions = { mapTypeControl : false };
+			map.setOptions(myOptions);
+			this.addControlsArgs.map_type = false;
+		}
+		
+		if ('overview' in args) {
 			myOptions = {
 				overviewMapControl: true,
 				overviewMapControlOptions: {opened: true}
@@ -173,26 +218,30 @@ Mapstraction: {
 			map.setOptions(myOptions);
 			this.addControlsArgs.overview = true;
 		}
+		
+		else {
+			myOptions = { overviewMapControl: false };
+			map.setOptions(myOptions);
+			this.addControlsArgs.overview = false;
+		}
 	},
 
 	addSmallControls: function() {
 		var map = this.maps[this.api];
 		var myOptions = {
-			navigationControl: true,
-			navigationControlOptions: {style: google.maps.NavigationControlStyle.SMALL}
+			zoomControl: true,
+			zoomControlOptions: {style: google.maps.ZoomControlStyle.SMALL}
 		};
 		map.setOptions(myOptions);
-
-		this.addControlsArgs.pan = false;
-		this.addControlsArgs.scale = false;						
 		this.addControlsArgs.zoom = 'small';
 	},
 
 	addLargeControls: function() {
 		var map = this.maps[this.api];
 		var myOptions = {
-			navigationControl: true,
-			navigationControlOptions: {style:google.maps.NavigationControlStyle.DEFAULT}
+			panControl: true,
+			zoomControl: true,
+			zoomControlOptions: {style:google.maps.ZoomControlStyle.LARGE}
 		};
 		map.setOptions(myOptions);
 		this.addControlsArgs.pan = true;

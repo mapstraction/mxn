@@ -39,9 +39,11 @@ Mapstraction: {
 		this.setMapType();
 		this.currentMapType = mxn.Mapstraction.ROAD;
 		this.controls =  {
+			pan: null,
 			zoom: null,
-			map_type: null,
-			scale: null
+			overview: null,
+			scale: null,
+			map_type: null
 		};
 		this.loaded[api] = true;
 	},
@@ -73,56 +75,62 @@ Mapstraction: {
 
 		var map = this.maps[this.api];
 
-		if ('zoom' in args) {
-			if ((args.zoom || args.zoom == 'large' || args.zoom == 'small') && !this.controls.zoom) {
-				this.controls.zoom = new L.Control.Zoom();
-				map.addControl(this.controls.zoom);
+		if ('zoom' in args || ('pan' in args && args.pan)) {
+			if (args.pan || args.zoom || args.zoom == 'large' || args.zoom == 'small') {
+				this.addSmallControls();
 			}
 		}
 		else {
-			if (this.controls.zoom) {
+			if (this.controls.zoom !== null) {
 				map.removeControl(this.controls.zoom);
 				this.controls.zoom = null;
 			}
 		}
 		
-		if ('map_type' in args) {
-			if (args.map_type && !this.controls.map_type) {
-				this.controls.map_type = new L.Control.Layers(this.layers, this.features);
-				map.addControl(this.controls.map_type);
-			}
-		}
-		else {
-			if (this.controls.map_type) {
-				map.removeControl(this.controls.map_type);
-				this.controls.map_type = null;
-			}
-		}
-
-		if ('scale' in args) {
-			if (args.scale && !this.controls.scale) {
+		if ('scale' in args && args.scale) {
+			if (this.controls.scale === null) {
 				this.controls.scale = new L.Control.Scale();
 				map.addControl(this.controls.scale);
 			}
 		}
 		else {
-			if (this.controls.scale) {
+			if (this.controls.scale !== null) {
 				map.removeControl(this.controls.scale);
 				this.controls.scale = null;
+			}
+		}
+
+		if ('map_type' in args && args.map_type) {
+			this.addMapTypeControls();
+		}
+		else {
+			if (this.controls.map_type !== null) {
+				map.removeControl(this.controls.map_type);
+				this.controls.map_type = null;
 			}
 		}
 	},
 
 	addSmallControls: function() {
-		this.addControls({zoom: true});
+		var map = this.maps[this.api];
+		
+		if (this.controls.zoom === null) {
+			this.controls.zoom = new L.Control.Zoom();
+			map.addControl(this.controls.zoom);
+		}
 	},
 
 	addLargeControls: function() {
-		this.addControls({zoom: true});
+		return this.addSmallControls();
 	},
 
 	addMapTypeControls: function() {
-		this.addControls({map_type: true});
+		var map = this.maps[this.api];
+		
+		if (this.controls.map_type === null) {
+			this.controls.map_type = new L.Control.Layers(this.layers, this.features);
+			map.addControl(this.controls.map_type);
+		}
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
