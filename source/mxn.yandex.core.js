@@ -286,7 +286,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var dataSource = new YMaps.TileDataSource(tile_url, true, true);
 		dataSource.getTileUrl = function (t, s) { 
-			return this._tileUrlTemplate.replace(/\{X\}/g,t.x).replace(/\{Y\}/g,t.y).replace(/\{Z\}/g,s); 
+			return this._tileUrlTemplate.replace(/\{X\}/gi,t.x).replace(/\{Y\}/gi,t.y).replace(/\{Z\}/gi,s); 
 		};
 		var newLayer = new YMaps.Layer(dataSource);
 		newLayer._$element.css('opacity', opacity);

@@ -20,8 +20,12 @@ Mapstraction: {
 			enableSearchLogo: false, // Remove the pointless Bing Search advert form the map's lower left, as this has nothing to do with the map
 			enableClickableLogo: false // Stop the Bing logo from being clickable, so no-one accidently clicks it and leaves the map
 			} );
-		//Add Click Event
-		element.addEventListener('contextmenu', function(evt) { evt.preventDefault(); });
+	   //Add Click Event - with IE7 workaround if needed
+		if (element.addEventListener){
+			element.addEventListener('contextmenu', function (evt) { evt.preventDefault(); });
+		} else if (element.attachEvent){
+			element.attachEvent('contextmenu', function (evt) { evt.preventDefault(); });
+		}
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'rightclick', function(event) {
 			var map = me.maps[me.api];
 			var _x = event.getX();
@@ -293,14 +297,44 @@ Mapstraction: {
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 		var map = this.maps[this.api];
+		var z_index = this.tileLayers.length || 0;
+
+		 var newtileobj = {
+			getTileUrl: function(tile){
+				return tile_url.replace(/\{Z\}/gi, tile.levelOfDetail).replace(/\{X\}/gi, tile.x).replace(/\{Y\}/gi, tile.y);
+			}
+		 };
+
+        var tileSource = new Microsoft.Maps.TileSource({ uriConstructor: newtileobj.getTileUrl});
+
+        var tileLayerOptions = {};
+        tileLayerOptions.mercator = tileSource;
+		tileLayerOptions.opacity = opacity;
+
+        // Construct the layer using the tile source
+        var tilelayer = new Microsoft.Maps.TileLayer(tileLayerOptions);
+
+        // Push the tile layer to the map
+        map.entities.push(tilelayer);
 		
-		// TODO: Add provider code
+		this.tileLayers.push( [tile_url, tilelayer, true, z_index] );
+		return tilelayer;
 	},
 
 	toggleTileLayer: function(tile_url) {
 		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		for (var f = 0; f < this.tileLayers.length; f++) {
+			var tileLayer = this.tileLayers[f];
+			if (tileLayer[0] == tile_url) {
+				if (tileLayer[2]) {
+					tileLayer[2] = false;
+				}
+				else {
+					tileLayer[2] = true;
+				}
+				tileLayer[1].setOptions({ visible: tileLayer[2]});
+			}
+		}
 	},
 
 	getPixelRatio: function() {
