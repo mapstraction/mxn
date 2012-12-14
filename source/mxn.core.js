@@ -549,9 +549,12 @@ Mapstraction.prototype.callEventListeners = function(sEventType, oEventArgs) {
 
 
 /**
- * addControls adds controls to the map. You specify which controls to add in
+ * addControls adds (or removes) controls to/from the map. You specify which controls to add in
  * the associative array that is the only argument.
- * addControls can be called multiple time, with different args, to dynamically change controls.
+ * To remove all controls from the map, call addControls with an empty property list as the
+ * argument.
+ * Each time addControls is called, those controls present in the property list argument will
+ * be added; those that are not specified or as specified as false will be removed.
  *
  * args = {
  *	 pan:	  true,
