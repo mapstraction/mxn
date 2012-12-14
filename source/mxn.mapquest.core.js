@@ -309,16 +309,12 @@ Mapstraction: {
 		switch(type) {
 			case 'sat':
 				return mxn.Mapstraction.SATELLITE;
-				break;
 			case 'hyb':
 				return mxn.Mapstraction.HYBRID;
-				break;
 			case 'map':
 				return mxn.Mapstraction.ROAD;
-				break;
 			default:
 				return mxn.Mapstraction.ROAD;
-				break;
 		}
 	},
 
