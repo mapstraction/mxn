@@ -20,8 +20,13 @@ Mapstraction: {
 				}
 			}
 		};
+		
+		var options = {
+			elt: element,
+			mtype: 'osm'
+		};
 
-		var map = new MQA.TileMap(element);
+		var map = new MQA.TileMap(options);
 		this.maps[api] = map;
 		this.loaded[api] = true;
 		this.controls = {
@@ -276,42 +281,45 @@ Mapstraction: {
 	setMapType: function(type) {
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
-		// MapQuest has a function to set map type, but open MapQuest only supports road
-		/*
+		
 		switch (type) {
 			case mxn.Mapstraction.SATELLITE:
-				map.setMapType('sat');
+				map.setMapType('osmsat');
 				break;
 			case mxn.Mapstraction.HYBRID:
 				map.setMapType('hyb');
 				break;
-			//case mxn.Mapstraction.ROAD:
-			//	break;						
+			case mxn.Mapstraction.PHYSICAL:
+				map.setMapType('osm');
+				break;
+			case mxn.Mapstraction.ROAD:
+				map.setMapType('osm');
+				break;						
 			default:
-				map.setMapType('map');
+				map.setMapType('osm');
 				break;
 		}
-		*/
-		map.setMapType('map');
 	},
 
 	getMapType: function() {
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		
-		/*
 		var type = map.getMapType();
 		switch(type) {
-			case 'sat':
+			case 'osmsat':
 				return mxn.Mapstraction.SATELLITE;
+				break;
 			case 'hyb':
 				return mxn.Mapstraction.HYBRID;
-			case 'map':
+				break;
+			case 'osm':
+				return mxn.Mapstraction.ROAD;
+				break;
 			default:
-				return mxn.Mapstraction.ROAD
+				return mxn.Mapstraction.ROAD;
+				break;
 		}
-		*/
-		return mxn.Mapstraction.ROAD;
 	},
 
 	getBounds: function () {
