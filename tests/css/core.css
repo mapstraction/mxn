@@ -1,0 +1,50 @@
+@charset "utf-8";
+/* CSS Document */
+
+html, body, #map {
+	padding: 0;
+	/*margin: 0;*/
+	font-size: 13px;
+	font-family: Helvetica, arial, freesans, clean, sans-serif;
+}
+
+.box {
+	float: left; 
+	width: 300px; 
+	margin-right: 20px;
+	border: 1px solid #AAA;
+}
+
+.box h2 {
+	margin: 0;
+	padding: 5px;
+	background-color: #DDD;
+}
+
+.box div {
+	overflow-y: scroll;
+	height:400px; 
+}
+
+#provider-selection {
+	clear:both;
+}
+
+#wrapper {
+	height: 400px;
+	width: 1000px;
+	margin: 20px;
+}
+
+#map {
+	position: relative;
+	width: 700px;
+	height: 300px;
+	float: left;
+	margin: 0 20px 20px 0
+}
+
+#container {
+	margin-top: 20px;
+	clear: both;
+}

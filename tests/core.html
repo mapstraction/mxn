@@ -2,30 +2,58 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-	<title>Mapstraction V2 core tests</title>
-		
+	<title>Mapstraction V2 Core Tests</title>
 	<script type="text/javascript" src="mxn-harness.js"></script>
-		
 	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 	<script src="http://api.maps.nokia.com/2.2.1/jsl.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-	nokia.Settings.set ("appId", "UFWp5rP0M5fBcQzbsbRv");
-	nokia.Settings.set ("authenticationToken", "zqWjwPeH0bOM2jFd2pEsGg");
 	</script>
+	<link rel="stylesheet" type="text/css" media="all" href="css/core.css" />
 	<meta http-equiv="X-UA-Compatible" content="IE=7; IE=EmulateIE9" />
 		
 	<script type="text/javascript">
 	//<![CDATA[
+	nokia.Settings.set ("appId", "UFWp5rP0M5fBcQzbsbRv");
+	nokia.Settings.set ("authenticationToken", "zqWjwPeH0bOM2jFd2pEsGg");
+
+	var supportedProviders = [
+		'cloudmade',
+		'esri',
+		'google',
+		'googlev3',
+		'leaflet',
+		'mapquest',
+		'microsoft',
+		'microsoft7',
+		'nokia',
+		'openlayers',
+		'openmq',
+		'openspace',
+		'ovi'
+	];
+	
 	var provider;
+	var autoRun = 'false';
+
 	(function() {
-		var providerMatch = location.search.match( /provider=([^&]*)/ ),
-			providerScript, mxnScript;
-		if ( providerMatch ) {
+		var providerMatch = location.search.match( /provider=([^&]*)/ );
+		var autorunMatch = location.search.match( /auto=([^&]*)/ );
+
+		if (providerMatch) {
 			provider = providerMatch[1];
-		} else {
+		}
+		
+		else {
 			provider = 'googlev3';
 		}
 
+		if (autorunMatch) {
+			autoRun = autorunMatch[1];
+			if (autoRun !== 'true') {
+				autoRun = 'false';
+			}
+		}
+		
 		switch (provider) {
 			case 'nokia':
 				new_provider = 'googlev3';
@@ -111,13 +139,8 @@
 		if (provider != 'googlev3' && provider != 'nokia') {
 			providers = provider + ',' + providers;
 		}
-		document.write( '<script type="text/javascript" src="../source/mxn.js?(' + providers + ')"><\/script>' );
+		document.write('<script type="text/javascript" src="../source/mxn.js?(' + providers + ')"><\/script>');
 	})();
-	//]]>
-	</script>
-
-	<script type="text/javascript">
-	//<![CDATA[
 
 	var events = {
 		LOAD: {name: 'load', value: false},
@@ -156,11 +179,25 @@
 	    return false;
 	}
 	
+	function arrayIndex(arr, obj) {
+		var i = arr.length;
+		while (i--) {
+			if (arr[i] === obj) {
+				return i
+			}
+		}
+		
+		return false;
+	}
+	
 	var m;
 	window.onload = function() {
 		var actionElm = document.getElementById('actions');
 		var infoElm = document.getElementById('info');		
 		var eventsElm = document.getElementById('events');
+		var providerElm = document.getElementById('provider');
+		
+		providerElm.innerHTML = provider;
 		
 		m = new mxn.Mapstraction('map', provider);
 
@@ -529,48 +566,41 @@
 			
 			
 			
-			{ desc: 'Done.', action: function(){} }
+			{
+				desc: 'Done.',
+				action: function(){
+					if (autoRun === 'true') {
+						idx = arrayIndex(supportedProviders, provider);
+						if (++idx < supportedProviders.length) {
+							var nextProvider = supportedProviders[idx];
+							var nextURL =  location.pathname + '?auto=true&provider=' + nextProvider;
+							window.location = nextURL;
+							return false;
+						}
+					}
+				}
+			}
 		];
 		
 		RunTests(ops, actionElm, infoElm);
+	
 	};
 		
 	//]]>
 	</script>
-	<style type="text/css">
-		.box {
-			float: left; 
-			width: 300px; 
-			margin-right: 20px;
-			border: 1px solid #AAA;
-		}
-		
-		.box h2 {
-			margin: 0;
-			padding: 5px;
-			font-family: Arial;
-			background-color: #DDD;
-		}
-		
-		.box div {
-			overflow-y: scroll;
-			height:400px; 
-		}
-
-		#provider-selection {
-			clear:both;
-		}
-	</style>
 </head>
 <body>
-	<div style="height: 400px; width: 1000px; margin: 20px;">
-		<div id="map" style="position: relative; width: 700px; height: 300px; float: left; margin: 0 20px 20px 0"></div>
-		<div style="">
+	<h1>Mapstraction Core Test For Provider "<span id="provider"></span>"</h1>
+	<div id="wrapper">
+		<div id="map"></div>
+		<div>
 			<h3>Providers</h3>
 			<ul id="providers" >
 				<li><a href="core.html?provider=cloudmade">CloudMade</a></li>
 				<li><a href="core.html?provider=esri">ESRI</a></li>
+				<!--
 				<li><a href="core.html?provider=geocommons">GeoCommons / GeoIQ</a></li>
+				-->
 				<li><a href="core.html?provider=google">Google v2</a></li>
 				<li><a href="core.html?provider=googlev3">Google v3</a></li>
 				<li><a href="core.html?provider=leaflet">Leaflet</a></li>
@@ -587,8 +617,7 @@
 				-->
 			</ul>
 		</div>
-		<div style="margin-top: 20px; clear: both;">
-			
+		<div id="container">
 			<div class="box">
 				<h2>Actions</h2>
 				<div id="container">
@@ -605,9 +634,11 @@
 			</div>
 		</div>
 		<p id="provider-selection">
-			Run with provider: <a href="?provider=cloudmade">cloudmade</a>,
+			<a href="core.html?provider=cloudmade&auto=true">Auto-run all provider core tests</a> or run with provider: <a href="?provider=cloudmade">cloudmade</a>,
 			<a href="?provider=esri">esri</a>,
+			<!--
 			<a href="?provider=geocommons">geocommons</a>,
+			-->
 			<a href="?provider=google">google</a>,
 			<a href="?provider=googlev3">googlev3</a>,
 			<a href="?provider=leaflet">leaflet</a>,
@@ -624,7 +655,7 @@
 			<a href="?provider=yandex">yandex</a>.
 			-->
 		</p>
-		</div>
+	</div>
 </body>
 </html>
 
