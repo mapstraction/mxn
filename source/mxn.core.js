@@ -1745,6 +1745,11 @@ var Polyline = mxn.Polyline = function(points) {
 	this.proprietary_polyline = false;
 	this.pllID = "mspll-"+new Date().getTime()+'-'+(Math.floor(Math.random()*Math.pow(2,16)));
 	this.invoker = new mxn.Invoker(this, 'Polyline', function(){return this.api;});
+	this.color = "#000000";
+	this.width = 3;
+	this.opacity = 0.5;
+	this.closed = false;
+	this.fillColor = "#808080";
 };
 
 mxn.addProxyMethods(Polyline, [ 
