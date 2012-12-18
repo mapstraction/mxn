@@ -547,23 +547,46 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		var gpoints = [];
+		var coords = [];
+
 		for (var i = 0,  length = this.points.length ; i< length; i++){
-			gpoints.push(this.points[i].toProprietary('google'));
+			coords.push(this.points[i].toProprietary('google'));
 		}
-		if (this.closed	|| gpoints[0].equals(gpoints[length-1])) {
-			return new GPolygon(gpoints, this.color, this.width, this.opacity, this.fillColor || "#5462E3", this.opacity || "0.3");
-		} else {
-			return new GPolyline(gpoints, this.color, this.width, this.opacity);
+
+		// Drawing a polygon in Google v2 where the first and last point are not equal
+		// results in "undefined behaviour", which seems to mean that the polygon will be
+		// filled but the enclosing line will not be closed. So we need to ensure that
+		// if this is a polygon, the first and last point match and push the first point
+		// to the end of the points array if this isn't the case ...
+		// see https://developers.google.com/maps/documentation/javascript/v2/overlays#Polygons_Overview
+		
+		if (this.closed) {
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(coords[0]);
+			}
 		}
+
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
+		
+		if (this.closed) {
+			this.proprietary_polyline = new GPolygon(coords, this.color, this.width, this.opacity, this.fillColor, this.opacity);
+		}
+		
+		else {
+			this.proprietary_polyline = new GPolyline(coords, this.color, this.width, this.opacity);
+		}
+		
+		return this.proprietary_polyline;
 	},
 	
 	show: function() {
-		throw 'Not implemented';
+		this.proprietary_polyline.show();
 	},
 
 	hide: function() {
-		throw 'Not implemented';
+		this.proprietary_polyline.hide();
 	}
 }
 
