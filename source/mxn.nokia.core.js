@@ -376,12 +376,12 @@ Mapstraction: {
 		var z_index = this.tileLayers.length || 0;
 		
 		var tileProviderOptions = {
-			getUrl: function(zoom, row, column){return tile_url.replace(/\{Z\}/gi, zoom).replace(/\{X\}/gi, column).replace(/\{Y\}/gi, row)}, // obligatory 
+			getUrl: function(zoom, row, column){return tile_url.replace(/\{Z\}/gi, zoom).replace(/\{X\}/gi, column).replace(/\{Y\}/gi, row);}, // obligatory 
 			max: max_zoom,  // max zoom level for overlay
 			min: min_zoom,  // min zoom level for overlay
 			opacity: opacity, // 0 = transparent overlay, 1 = opaque
 			alpha: true, // renderer to read alpha channel    
-			getCopyrights : function(area, zoom) {return [{ label: copyright_text, alt: copyright_text } ]}// display copyright
+			getCopyrights : function(area, zoom) {return [{ label: copyright_text, alt: copyright_text }];}// display copyright
 		};	
 		
 		var Overlay =  new nokia.maps.map.provider.ImgTileProvider (tileProviderOptions);                
@@ -557,10 +557,20 @@ Polyline: {
 			coords.push(this.points[i].toProprietary('nokia'));
 		}
 		
-		if (this.closed || coords[0].equals(coords[length-1])) {
+		if (this.closed) {
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(coords[0]);
+			}
+		}
+
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
+		
+		if (this.closed) {
 			var	polycolor = new mxn.util.Color();
 
-			polycolor.setHexColor(this.fillColor || "#5462E3");
+			polycolor.setHexColor(this.fillColor);
 
 			var polycolor_rgba = "rgba(" + polycolor.red + "," + polycolor.green + "," +
 				polycolor.blue + "," + (this.opacity || 1.0) + ")";
@@ -568,8 +578,8 @@ Polyline: {
 			var polygon_options = {
 				visibility: true,
 				pen: {
-					strokeColor: this.color || "#5462E3",
-					lineWidth: this.width || 1
+					strokeColor: this.color,
+					lineWidth: this.width
 					 },
 				brush: {
 					fill: 'solid',
@@ -584,8 +594,8 @@ Polyline: {
 			var polyline_options = {
 				visibility : true,
 				pen: {
-					strokeColor: this.color || "#5462E3",
-					lineWidth: this.width || 1
+					strokeColor: this.color,
+					lineWidth: this.width
 				}
 			};
 			this.proprietary_polyline = new nokia.maps.map.Polyline(coords, polyline_options);
