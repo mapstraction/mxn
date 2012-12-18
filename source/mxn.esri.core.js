@@ -469,27 +469,44 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		var points = [];
-		var p = null;
+		var coords = [];
 		var path = null;
 		var fill = null;
 		var i;
 		var style = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, this.fillColor || "#FFFFFF", this.width || 3);
 
 		for (i = 0, length = this.points.length ; i < length; i+=1){
-			p = this.points[i].toProprietary(this.api);
-			points.push([p.x, p.y]);
-		}
-		if (this.closed) {
-			path = new esri.geometry.Polygon(new esri.SpatialReference({wkid:4326}));
-			style = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, style, this.fillColor || "#FFFFFF");
-			path.addRing(points);
-		} else {
-			path = new esri.geometry.Polyline(new esri.SpatialReference({wkid:4326}));
-			path.addPath(points);
+			coords.push(this.points[i].toProprietary(this.api));
 		}
 
-		return new esri.Graphic(path,style);
+		if (this.closed) {
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(coords[0]);
+			}
+		}
+
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
+
+		if (this.closed) {
+			var polycolor;
+			var polycolor_rgba;
+			
+			polycolor = new mxn.util.Color();
+			polycolor.setHexColor(this.fillColor);
+			polycolor_rgba = [polycolor.red, polycolor.green, polycolor.blue, this.opacity];
+
+			path = new esri.geometry.Polygon(new esri.SpatialReference({wkid:4326}));
+			style = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, style, new dojo.Color(polycolor_rgba));
+			path.addRing(coords);
+		} else {
+			path = new esri.geometry.Polyline(new esri.SpatialReference({wkid:4326}));
+			path.addPath(coords);
+		}
+
+		this.proprietary_polyline = new esri.Graphic(path,style);
+		return this.proprietary_polyline;
 	},
 	
 	show: function() {
@@ -497,11 +514,7 @@ Polyline: {
 	},
 
 	hide: function() {
-		this.map.remote(this.proprietary_polyline);
-	},
-	
-	isHidden: function() {
-		throw 'Polyline.isHidden not implemented';
+		this.map.remove(this.proprietary_polyline);
 	}
 }
 
