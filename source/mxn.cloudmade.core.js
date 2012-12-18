@@ -470,19 +470,31 @@ mxn.register('cloudmade', {
 	Polyline: {
 
 		toProprietary: function() {
-			var pts = [];
-			var poly;
+			var coords = [];
 
 			for (var i = 0,  length = this.points.length ; i< length; i++){
-				pts.push(this.points[i].toProprietary(this.api));
+				coords.push(this.points[i].toProprietary(this.api));
 			}
-			if (this.closed || pts[0].equals(pts[pts.length-1])) {
-				poly = new CM.Polygon(pts, this.color, this.width, this.opacity, this.fillColor || "#5462E3", this.opacity || "0.3");
+			
+			if (this.closed) {
+				if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+					coords.push(coords[0]);
+				}
+			}
+
+			else if (this.points[0].equals(this.points[this.points.length - 1])) {
+				this.closed = true;
+			}
+			
+			
+			if (this.closed) {
+				this.proprietary_polyline = new CM.Polygon(coords, this.color, this.width, this.opacity, this.fillColor || "#5462E3", this.opacity || "0.3");
 			}
 			else {
-				poly = new CM.Polyline(pts, this.color, this.width, this.opacity);
+				this.proprietary_polyline = new CM.Polyline(coords, this.color, this.width, this.opacity);
 			}
-			return poly;
+
+			return this.proprietary_polyline;
 		},
 
 		show: function() {
