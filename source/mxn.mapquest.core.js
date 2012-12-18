@@ -468,32 +468,51 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		var points = [];
-		var oldpoints = this.points;
+		var coords = [];
 		
-		for(var i =0, length = this.points.length; i < length; i++) {
-			var thispt = this.points[i];
-			points.push(thispt.lat);
-			points.push(thispt.lon);
+		for (var i=0, length=this.points.length; i < length; i++) {
+			coords.push(this.points[i].lat);
+			coords.push(this.points[i].lon);
 		}
 
-		var line = new MQA.LineOverlay();
-		line.setShapePoints(points);
+		if (this.closed) {
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(this.points[0].lat);
+				coords.push(this.points[0].lon);
+			}
+		}
 
-		// Line options
-		line.color = this.color || '#000000';
-		line.colorAlpha = this.opacity || 1.0;
-		line.borderWidth = this.width || 3;
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
 
-		return line;
+		if (this.closed) {
+			this.proprietary_polyline = new MQA.PolygonOverlay();
+			this.proprietary_polyline.color = this.color;
+			this.proprietary_polyline.fillColor = this.fillColor;
+			this.proprietary_polyline.fillColorAlpha = this.opacity;
+			this.proprietary_polyline.colorAlpha = this.opacity;
+			this.proprietary_polyline.borderWidth = this.width;
+		}
+		
+		else {
+			this.proprietary_polyline = new MQA.LineOverlay();
+			this.proprietary_polyline.color = this.color;
+			this.proprietary_polyline.colorAlpha = this.opacity;
+			this.proprietary_polyline.borderWidth = this.width;
+		}
+
+		this.proprietary_polyline.setShapePoints(coords);
+
+		return this.proprietary_polyline;
 	},
 	
 	show: function() {
-		// TODO: Add provider code
+		this.proprietary_polyline.visible = true;
 	},
 
 	hide: function() {
-		// TODO: Add provider code
+		this.proprietary_polyline.visible = false;
 	}
 	
 }
