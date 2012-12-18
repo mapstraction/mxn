@@ -500,19 +500,29 @@ Polyline: {
 			coords.push(this.points[i].toProprietary('ovi'));
 		}
 		
-		if (this.closed || coords[0].equals(coords[length-1])) {
+		if (this.closed) {
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(coords[0]);
+			}
+		}
+
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
+
+		if (this.closed) {
 			var polycolor = new mxn.util.Color();
 
-			polycolor.setHexColor(this.color || "#5462E3");
+			polycolor.setHexColor(this.color);
 
 			var polycolor_rgba = "rgba(" + polycolor.red + "," + polycolor.green + "," +
-				polycolor.blue + "," + (this.opacity || 1.0) + ")";
+				polycolor.blue + "," + this.opacity + ")";
 			var polygon_options = {
 				'visibility' : true,
 				'fillColor' : polycolor_rgba,
-				'color' : this.color || "#5462E3",
+				'color' : this.color,
 				'stroke' : 'solid',
-				'width' : this.width || 1
+				'width' : this.width
 			};
 			this.proprietary_polyline = new ovi.mapsapi.map.Polygon (coords, polygon_options);
 		}
@@ -520,9 +530,9 @@ Polyline: {
 		else {
 			var polyline_options = {
 				'visibility' : true,
-				'color' : this.color || "#5462E3",
+				'color' : this.color,
 				'stroke' : 'solid',
-				'width' : this.width || 1
+				'width' : this.width
 			};
 			this.proprietary_polyline = new ovi.mapsapi.map.Polyline (coords, polyline_options);
 		}
