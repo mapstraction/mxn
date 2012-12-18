@@ -521,50 +521,60 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		var ospolyline;
-		var ospoints = [];
+		var coords = [];
+
 		for (var i = 0, length = this.points.length ; i< length; i++){
 			// convert each point to OpenSpace.MapPoint
 			var ospoint = this.points[i].toProprietary(this.api);
-			var olgpoint = new OpenLayers.Geometry.Point(ospoint.getEasting(),ospoint.getNorthing());
-			ospoints.push(olgpoint);
+			coords.push(new OpenLayers.Geometry.Point(ospoint.getEasting(),ospoint.getNorthing()));
 		}
 
-		if (this.closed || this.points[0].equals(this.points[this.points.length-1])) {
-			ospolyline = new OpenLayers.Feature.Vector(
-				new OpenLayers.Geometry.LinearRing(ospoints), 
+		if (this.closed) {
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(coords[0]);
+			}
+		}
+
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
+
+		if (this.closed) {
+			this.proprietary_polyline = new OpenLayers.Feature.Vector(
+				new OpenLayers.Geometry.LinearRing(coords), 
 				null,
 				{
-					fillColor: (typeof this.fillColor === 'undefined' ? "#5462E3" : this.fillColor),
-					strokeColor: (typeof this.color === 'undefined' ? "#5462E3" : this.color),
-					strokeOpacity: (typeof this.opacity === 'undefined' ? 1.0 : this.opacity),
-					fillOpacity: (typeof this.opacity === 'undefined' ? 1.0 : this.opacity),
-					strokeWidth: (typeof this.width === 'undefined' ? 1 : this.width)
+					fillColor: this.fillColor,
+					strokeColor: this.color,
+					strokeOpacity: this.opacity,
+					fillOpacity: this.opacity,
+					strokeWidth: this.width
 				}
 			);
 		}
 		else {
-			ospolyline = new OpenLayers.Feature.Vector(
-				new	OpenLayers.Geometry.LineString(ospoints),
+			this.proprietary_polyline = new OpenLayers.Feature.Vector(
+				new	OpenLayers.Geometry.LineString(coords),
 				null, 
 				{
-					fillColor: (typeof this.fillColor === 'undefined' ? "#5462E3" : this.fillColor),
-					strokeColor: (typeof this.color === 'undefined' ? "#5462E3" : this.color),
-					strokeOpacity: (typeof this.opacity === 'undefined' ? 1.0 : this.opacity),
-					fillOpacity: (typeof this.opacity === 'undefined' ? 1.0 : this.opacity),
-					strokeWidth: (typeof this.width === 'undefined' ? 1 : this.width)
+					fillColor: this.fillColor,
+					strokeColor: this.color,
+					strokeOpacity: this.opacity,
+					fillOpacity: this.opacity,
+					strokeWidth: this.width
 				}
 			);
 		}
-		return ospolyline;
+
+		return this.proprietary_polyline;
 	},
 	
 	show: function() {
-		// TODO: Add provider code
+		delete this.proprietary_polyline.style.display;
 	},
 	
 	hide: function() {
-		// TODO: Add provider code
+		this.proprietary_polyline.style.display = "none";
 	}
 	
 }
