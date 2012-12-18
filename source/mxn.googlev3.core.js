@@ -652,27 +652,40 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		var points = [];
+		var coords = [];
+
 		for (var i = 0, length = this.points.length; i < length; i++) {
-			points.push(this.points[i].toProprietary('googlev3'));
+			coords.push(this.points[i].toProprietary('googlev3'));
 		}
 		
 		var polyOptions = {
-			path: points,
-			strokeColor: this.color || '#000000',
-			strokeOpacity: this.opacity || 1.0, 
-			strokeWeight: this.width || 3
+			path: coords,
+			strokeColor: this.color,
+			strokeOpacity: this.opacity, 
+			strokeWeight: this.width
 		};
 		
 		if (this.closed) {
-			polyOptions.fillColor = this.fillColor || '#000000';
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(coords[0]);
+			}
+		}
+
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
+
+		if (this.closed) {
+			polyOptions.fillColor = this.fillColor;
 			polyOptions.fillOpacity = polyOptions.strokeOpacity;
 			
-			return new google.maps.Polygon(polyOptions);
+			this.proprietary_polyline = new google.maps.Polygon(polyOptions);
 		}
 		else {
-			return new google.maps.Polyline(polyOptions);
+			this.proprietary_polyline = new google.maps.Polyline(polyOptions);
 		}
+		
+		return this.proprietary_polyline;
 	},
 	
 	show: function() {
@@ -682,7 +695,6 @@ Polyline: {
 	hide: function() {
 		this.proprietary_polyline.setVisible(false);
 	}
-	
 }
 
 });
