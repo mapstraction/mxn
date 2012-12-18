@@ -426,23 +426,36 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		var points = [];
+		var coords = [];
+
 		for (var i = 0,  length = this.points.length ; i< length; i++){
-			points.push(this.points[i].toProprietary('leaflet'));
+			coords.push(this.points[i].toProprietary('leaflet'));
 		}
 
 		var polyOptions = {
-			color: this.color || '#000000',
-			opacity: this.opacity || 1.0, 
-			weight: this.width || 3,
-			fillColor: this.fillColor || '#000000'
+			color: this.color,
+			opacity: this.opacity, 
+			weight: this.width,
+			fillColor: this.fillColor
 		};
 
 		if (this.closed) {
-			return new L.Polygon(points, polyOptions);
-		} else {
-			return new L.Polyline(points, polyOptions);
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(coords[0]);
+			}
 		}
+
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
+
+		if (this.closed) {
+			this.proprietary_polyline = new L.Polygon(coords, polyOptions);
+		} else {
+			this.proprietary_polyline = new L.Polyline(coords, polyOptions);
+		}
+		
+		return this.proprietary_polyline;
 	},
 	
 	show: function() {
