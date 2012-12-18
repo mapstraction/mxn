@@ -465,7 +465,8 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		var mpoints = [], mtype;
+		var coords = [];
+		var mtype;
 		
 		var colorToVEColor = function(color, opacity) {
 			var mxColor = new mxn.util.Color(color);
@@ -475,26 +476,38 @@ Polyline: {
 		};
 		
 		for(var i = 0, length = this.points.length; i < length; i++) {
-			mpoints.push(this.points[i].toProprietary('microsoft'));
+			coords.push(this.points[i].toProprietary('microsoft'));
 		}
+
+		if (this.closed) {
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(coords[0]);
+			}
+		}
+
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
+
 		if (this.closed) {
 			mtype = VEShapeType.Polygon;
 		}
 		else {
 			mtype = VEShapeType.Polyline;
 		}
-		var mpolyline = new VEShape(mtype, mpoints);
+
+		this.proprietary_polyline = new VEShape(mtype, coords);
 		if (this.width) {
-			mpolyline.SetLineWidth(this.width);
+			this.proprietary_polyline.SetLineWidth(this.width);
 		}
 		if (this.color) {
-			mpolyline.SetLineColor(colorToVEColor(this.color, this.opacity));
+			this.proprietary_polyline.SetLineColor(colorToVEColor(this.color, this.opacity));
 		}
 		if (this.fillColor) {
-			mpolyline.SetFillColor(colorToVEColor(this.fillColor, this.fillOpacity));
+			this.proprietary_polyline.SetFillColor(colorToVEColor(this.fillColor, this.opacity));
 		}
 
-		return mpolyline;
+		return this.proprietary_polyline;
 	},
 		
 	show: function() {
