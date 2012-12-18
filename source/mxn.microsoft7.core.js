@@ -446,16 +446,27 @@ Marker: {
 Polyline: {
 
 	toProprietary: function() {
-		var points = [];
+		var coords = [];
+
 		for (var i = 0, length = this.points.length; i < length; i++) {
-			points.push(this.points[i].toProprietary(this.api));
+			coords.push(this.points[i].toProprietary(this.api));
 		}
 		
-		var strokeColor = Microsoft.Maps.Color.fromHex(this.color || '#000000');
+		if (this.closed) {
+			if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+				coords.push(coords[0]);
+			}
+		}
+
+		else if (this.points[0].equals(this.points[this.points.length - 1])) {
+			this.closed = true;
+		}
+
+		var strokeColor = Microsoft.Maps.Color.fromHex(this.color);
 		if (this.opacity) {
 			strokeColor.a = this.opacity * 255;
 		}
-		var fillColor = Microsoft.Maps.Color.fromHex(this.fillColor || '#000000');
+		var fillColor = Microsoft.Maps.Color.fromHex(this.fillColor);
 		if (this.opacity) {
 			fillColor.a = this.opacity * 255;
 		}
@@ -467,13 +478,13 @@ Polyline: {
 
 		if (this.closed) {
 			polyOptions.fillColor = fillColor;
-			points.push(this.points[0].toProprietary(this.api));
-			return new Microsoft.Maps.Polygon(points, polyOptions);
+			this.proprietary_polyline = new Microsoft.Maps.Polygon(coords, polyOptions);
 		}
 		else {
-			return new Microsoft.Maps.Polyline(points, polyOptions);
+			this.proprietary_polyline = new Microsoft.Maps.Polyline(coords, polyOptions);
 		}
 
+		return this.proprietary_polyline;
 	},
 	
 	show: function() {
