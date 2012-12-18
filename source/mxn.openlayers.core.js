@@ -656,43 +656,51 @@ mxn.register('openlayers', {
 	Polyline: {
 
 		toProprietary: function() {
-			var olpolyline;
-			var olpoints = [];
+			var coords = [];
 			var ring;
 			var style = {
-				strokeColor: this.color || "#000000",
-				strokeOpacity: this.opacity || 1,
-				strokeWidth: this.width || 1,
-				fillColor: this.fillColor || "#000000",
-				fillOpacity: this.getAttribute('fillOpacity') || 0.2
+				strokeColor: this.color,
+				strokeOpacity: this.opacity,
+				strokeWidth: this.width,
+				fillColor: this.fillColor,
+				fillOpacity: this.opacity
 			};
 
 			//TODO Handle closed attribute
 
 			for (var i = 0, length = this.points.length ; i< length; i++){
-				olpoint = this.points[i].toProprietary("openlayers");
-				olpoints.push(new OpenLayers.Geometry.Point(olpoint.lon, olpoint.lat));
+				var point = this.points[i].toProprietary("openlayers");
+				coords.push(new OpenLayers.Geometry.Point(point.lon, point.lat));
+			}
+
+			if (this.closed) {
+				if (!(this.points[0].equals(this.points[this.points.length - 1]))) {
+					coords.push(coords[0]);
+				}
+			}
+
+			else if (this.points[0].equals(this.points[this.points.length - 1])) {
+				this.closed = true;
 			}
 
 			if (this.closed) {
 				// a closed polygon
-				ring = new OpenLayers.Geometry.LinearRing(olpoints);
+				ring = new OpenLayers.Geometry.LinearRing(coords);
 			} else {
 				// a line
-				ring = new OpenLayers.Geometry.LineString(olpoints);
+				ring = new OpenLayers.Geometry.LineString(coords);
 			}
 
-			olpolyline = new OpenLayers.Feature.Vector(ring, null, style);
-
-			return olpolyline;
+			this.proprietary_polyline = new OpenLayers.Feature.Vector(ring, null, style);
+			return this.proprietary_polyline;
 		},
 
 		show: function() {
-			throw 'Not implemented';
+			delete this.proprietary_polyline.style.display;
 		},
 
 		hide: function() {
-			throw 'Not implemented';
+			this.proprietary_polyline.style.display = "none";
 		}
 
 	}
