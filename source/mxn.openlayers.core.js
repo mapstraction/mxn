@@ -486,7 +486,6 @@ mxn.register('openlayers', {
 					this.tileLayers[f][1].setVisibility(this.tileLayers[f][2]);
 				}
 			}	   
-			// TODO: Add provider code
 		},
 
 		getPixelRatio: function() {
@@ -665,8 +664,6 @@ mxn.register('openlayers', {
 				fillColor: this.fillColor,
 				fillOpacity: this.opacity
 			};
-
-			//TODO Handle closed attribute
 
 			for (var i = 0, length = this.points.length ; i< length; i++){
 				var point = this.points[i].toProprietary("openlayers");
