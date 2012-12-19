@@ -3,50 +3,79 @@ mxn.register('yandex', {
 Geocoder: {
 	
 	init: function() {		
-		var me = this;
 	},
 	
 	geocode: function(address){
-		var mapstraction_geocoder = this;		
+		var me = this;
 		
 		if (!address.hasOwnProperty('address') || address.address === null || address.address === '') {
-			address.address = [ address.street, address.locality, address.region, address.country ].join(', ');
+			var parts = [];
+			if (address.country && address.country.length > 3) {// Yandex.Maps do not support country codes in input
+				parts.push(address.country);
+			}
+			if (address.region) {
+				parts.push(address.region);
+			}
+			if (address.locality) {
+				parts.push(address.locality);
+			}
+			if (address.street) {
+				parts.push(address.street);
+			}
+			address.address = parts.join(', ');
+	     }
+
+		if (!address.address) {
+			me.error_callback('Empty address passed to geocoder.');
+			return;
 		}
 		var geocoder = new YMaps.Geocoder(address.address, { results: 1 });
 		YMaps.Events.observe(geocoder, geocoder.Events.Load, function (response) {
 			if (response.found > 0) {
-				mapstraction_geocoder.geocode_callback(response.get(0));
+				me.geocode_callback(response.get(0));
 			} else {
-				mapstraction_geocoder.error_callback(response);
+				me.error_callback(response);
 			}
 		});
  
 		YMaps.Events.observe(geocoder, geocoder.Events.Fault, function (error) {
-			mapstraction_geocoder.error_callback(error.message);
+			me.error_callback(error.message);
 		});
 	},
 	
 	geocode_callback: function(response){
+		var location = { street: '', locality: '', region: '', country: '' };
 
-		var return_location = { street: '', locality: '', region: '', country: '' };
-		
-		var locLev;
-		if ((locLev = response.AddressDetails.Country)) {
-			return_location.country = locLev.CountryName;
-			if ((locLev = locLev.AdministrativeArea)) {
-				return_location.region = locLev.AdministrativeAreaName;
-				if ((locLev = locLev.Locality)) {
-					return_location.locality = locLev.LocalityName;
-					if ((locLev = locLev.Thoroughfare)) {
-						return_location.street = locLev.ThoroughfareName;
-					}
-				}
-			}
+		var locLev = response.AddressDetails;
+		if (locLev.Country) {
+			locLev = locLev.Country;
+			location.country = locLev.CountryName;
+		}
+		if (locLev.AdministrativeArea) {
+			locLev = locLev.AdministrativeArea;
+			location.region = locLev.AdministrativeAreaName;
+		}
+		if (locLev.Locality) {
+			locLev = locLev.Locality;
+			location.locality = locLev.LocalityName;
+		}
+		var street = [];
+		if (locLev.Thoroughfare) {
+			locLev = locLev.Thoroughfare;
+			street.push(locLev.ThoroughfareName);
+		}
+		if (locLev.Premise) {
+			locLev = locLev.Premise;
+			street.push(locLev.PremiseNumber);
+		}
+		if (street.length > 0) {
+			location.street = street.join(', ');
 		}
 
-		ypoint = response.getGeoPoint();
-		return_location.point = new mxn.LatLonPoint(ypoint.getY(), ypoint.getX());
-		this.callback(return_location);
+		var point = response.getGeoPoint();
+		location.point = new mxn.LatLonPoint(point.getY(), point.getX());
+		
+		this.callback(location);
 	}
 }
 });

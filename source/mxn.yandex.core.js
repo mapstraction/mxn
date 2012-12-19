@@ -94,7 +94,7 @@ Mapstraction: {
 	addLargeControls: function() {
 		var map = this.maps[this.api];
 		
-		this.controls.unshift(new YMaps.SmallZoom());
+		this.controls.unshift(new YMaps.Zoom());
 		this.addControlsArgs.zoom = 'large';
 		map.addControl(this.controls[0]);
 	},
