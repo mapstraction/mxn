@@ -270,8 +270,7 @@ Mapstraction: {
 	},
 
 	removeMarker: function(marker) {
-		// doesn't really remove them, just hides them
-		marker.hide();
+		marker.proprietary_marker.setMap(null);
 	},
 	
 	declutterMarkers: function(opts) {
