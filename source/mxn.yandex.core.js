@@ -9,6 +9,14 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		this.controls =  {
+			pan: null,
+			zoom: null,
+			overview: null,
+			scale: null,
+			map_type: null
+		};
+
 		var yandexMap = this.maps[api] = new YMaps.Map(element);
 		
 		YMaps.Events.observe(yandexMap, yandexMap.Events.Click, function(map, mouseEvent) {
@@ -16,13 +24,24 @@ Mapstraction: {
 			var lon = mouseEvent.getCoordPoint().getY();
 			me.click.fire({'location': new mxn.LatLonPoint(lat, lon)});
 		});
-		// deal with zoom change
-		YMaps.Events.observe(yandexMap, yandexMap.Events.SmoothZoomEnd, function(map) {
+
+		YMaps.Events.observe(yandexMap, yandexMap.Events.BoundsChange, function(map, scaling) {
 			me.changeZoom.fire();
+		});
+
+		YMaps.Events.observe(yandexMap, yandexMap.Events.ZoomRangeChange, function(map, scaling) {
+			me.changeZoom.fire();
+		});
+
+		YMaps.Events.observe(yandexMap, yandexMap.Events.Update, function(map) {
+			me.endPan.fire();
+		});
+
+		YMaps.Events.observe(yandexMap, yandexMap.Events.AddLayer, function(map, layer) {
+			me.load.fire();
 		});
 		
 		this.loaded[api] = true;
-		me.load.fire();
 	},
 	
 	applyOptions: function(){
@@ -48,63 +67,120 @@ Mapstraction: {
 	},
 
 	addControls: function(args) {
+		/* args = { 
+		 *     pan:      true,
+		 *     zoom:     'large' || 'small',
+		 *     overview: true,
+		 *     scale:    true,
+		 *     map_type: true,
+		 * }
+		 */
+		
 		var map = this.maps[this.api];
 		
-		if (args.zoom == 'large') {
-			this.addLargeControls();
-		} 
-		else if (args.zoom == 'small') {
-			this.addSmallControls();
-		}
-		
-		if (args.pan) {
-			this.controls.unshift(new YMaps.ToolBar());
-			this.addControlsArgs.pan = true;
-			map.addControl(this.controls[0]);
-		}
-		
-		if (args.scale) {
-			this.controls.unshift(new YMaps.ScaleLine());
-			this.addControlsArgs.scale = true;
-			map.addControl(this.controls[0]);
-		}
-		
-		if (args.overview) {
-			if (typeof(args.overview) != 'number') {
-				args.overview = 5;
+		if ('pan' in args && args.pan) {
+			if (this.controls.pan !== null) {
+				this.controls.pan = new YMaps.ToolBar();
+				map.addControl(this.controls.pan);
 			}
-			this.controls.unshift(new YMaps.MiniMap(args.overview));
-			this.addControlsArgs.overview = true;
-			map.addControl(this.controls[0]);
 		}
 		
-		if (args.map_type) {
+		else {
+			if (this.controls.pan !== null) {
+				map.removeControl(this.controls.pan);
+				this.controls.pan = null;
+			}
+		}
+
+		if ('zoom' in args) {
+			if (args.zoom || args.zoom == 'small') {
+				this.addSmallControls();
+			}
+			
+			else if (args.zoom == 'large') {
+				this.addLargeControls();
+			}
+		}
+		
+		else {
+			if (this.controls.zoom !== null) {
+				map.removeControl(this.controls.zoom);
+				this.controls.zoom = null;
+			}
+		}
+		
+		if ('overview' in args) {
+			if (this.controls.overview === null) {
+				if (typeof(args.overview) != 'number') {
+					args.overview = 5;
+				}
+				this.controls.overview = new YMaps.MiniMap(args.overview);
+				map.addControl(this.controls.overview);
+			}
+		}
+		
+		else {
+			if (this.controls.overview !== null) {
+				map.removeControl(this.controls.overview);
+				this.controls.overview = null;
+			}
+		}
+		
+		if ('scale' in args && args.scale) {
+			if (this.controls.scale === null) {
+				this.controls.scale = new YMaps.ScaleLine();
+				map.addControl(this.controls.scale);
+			}
+		}
+		
+		else {
+			if (this.controls.scale !== null) {
+				map.removeControl(this.controls.scale);
+				this.controls.scale = null;
+			}
+		}
+		
+		if ('map_type' in args && args.map_type) {
 			this.addMapTypeControls();
+		}
+		
+		else {
+			if (this.controls.map_type !== null) {
+				map.removeControl(this.controls.map_type);
+				this.controls.map_type = null;
+			}
 		}
 	},
 
 	addSmallControls: function() {
 		var map = this.maps[this.api];
 		
-		this.controls.unshift(new YMaps.SmallZoom());
-		this.addControlsArgs.zoom = 'small';
-		map.addControl(this.controls[0]);
+		if (this.controls.zoom !== null) {
+			map.removeControl(this.controls.zoom);
+		}
+		
+		this.controls.zoom = new YMaps.SmallZoom();
+		map.addControl(this.controls.zoom);
 	},
 
 	addLargeControls: function() {
 		var map = this.maps[this.api];
 		
-		this.controls.unshift(new YMaps.Zoom());
-		this.addControlsArgs.zoom = 'large';
-		map.addControl(this.controls[0]);
+		if (this.controls.zoom !== null) {
+			map.removeControl(this.controls.zoom);
+		}
+		
+		this.controls.zoom = new YMaps.Zoom();
+		map.addControl(this.controls.zoom);
 	},
 
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
-
-		this.controls.unshift(new YMaps.TypeControl());
-		this.addControlsArgs.map_type = true;
-		map.addControl(this.controls[0]);
+		
+		if (this.controls.map_type === null) {
+			this.controls.map_type = new YMaps.TypeControl();
+			map.addControl(this.controls.map_type);
+		}
 	},
 
 	setCenterAndZoom: function(point, zoom) {
