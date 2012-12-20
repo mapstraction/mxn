@@ -506,6 +506,24 @@
 				}
 			},
 			{
+				desc: 'Add Pan Controls',
+				action: function() {
+					m.addControls( { pan: true });
+				}
+			},
+			{
+				desc: 'Add Overview Controls',
+				action: function() {
+					m.addControls( { overview: true });
+				}
+			},
+			{
+				desc: 'Add Scale Controls',
+				action: function() {
+					m.addControls( { scale: true });
+				}
+			},
+			{
 				desc: 'Add Map Type Controls',
 				action: function() {
 					m.addControls( { });
@@ -616,10 +634,12 @@
 				<li><a href="core.html?provider=yandex">Yandex</a></li>
 			</ul>
 		</div>
-		<div id="container">
+		<div id="box-wrapper">
 			<div class="box">
 				<h2>Actions</h2>
-				<ol id="actions"></ol>
+				<div id="container">
+					<ol id="actions"></ol>
+				</div>
 			</div>
 			<div class="box">
 				<h2>Info</h2>

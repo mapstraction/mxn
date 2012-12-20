@@ -10,7 +10,7 @@ html, body, #map {
 
 .box {
 	float: left; 
-	width: 300px; 
+	width: 300px;
 	margin-right: 20px;
 	border: 1px solid #AAA;
 }
@@ -21,9 +21,9 @@ html, body, #map {
 	background-color: #DDD;
 }
 
-.box div {
+.box div, .box ol {
 	overflow-y: scroll;
-	height:400px; 
+	height: 430px; 
 }
 
 #provider-selection {
@@ -44,7 +44,7 @@ html, body, #map {
 	margin: 0 20px 20px 0
 }
 
-#container {
+#box-wrapper {
 	margin-top: 20px;
 	clear: both;
 }
