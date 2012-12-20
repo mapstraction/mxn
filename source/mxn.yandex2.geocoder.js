@@ -18,14 +18,18 @@ Geocoder: {
 
 		if (!address.hasOwnProperty('address') || address.address === null || address.address === '') {
 			var parts = [];
-			if (address.country && address.country.length > 3) // Yandex.Maps do not support country codes in input
+			if (address.country && address.country.length > 3) { // Yandex.Maps do not support country codes in input
 				parts.push(address.country);
-			if (address.region)
+			}
+			if (address.region) {
 				parts.push(address.region);
-			if (address.locality)
+			}
+			if (address.locality) {
 				parts.push(address.locality);
-			if (address.street)
+			}
+			if (address.street) {
 				parts.push(address.street);
+			}
 			address.address = parts.join(', ');
 		}
 
