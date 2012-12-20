@@ -29,7 +29,8 @@
 		'openlayers',
 		'openmq',
 		'openspace',
-		'ovi'
+		'ovi',
+		'yandex'
 	];
 	
 	var provider;
@@ -126,7 +127,7 @@
 				break;
 
 			case 'yandex':
-				document.write('<script src="http://api-maps.yandex.ru/2.0-stable/?load=package.standard&lang=ru-RU" type="text/javascript"><\/script >');
+				document.write('<script src="http://api-maps.yandex.ru/1.1/index.xml?key=AHnI2UsBAAAAE7iFMgQAuOr58ZpTkCOpR4hl6vZj4z6zlDwAAAAAAAAAAAA0y08vLMbu-4nqqPip1Ezras8J3Q==" type="text/javascript"><\/script >');
 				break;
 				
 			case 'googlev3':
@@ -612,17 +613,13 @@
 				<li><a href="core.html?provider=openlayers">OpenLayers</a></li>
 				<li><a href="core.html?provider=openspace">OS OpenSpace</a></li>
 				<li><a href="core.html?provider=ovi">Ovi</a></li>
-				<!--
 				<li><a href="core.html?provider=yandex">Yandex</a></li>
-				-->
 			</ul>
 		</div>
 		<div id="container">
 			<div class="box">
 				<h2>Actions</h2>
-				<div id="container">
-					<ol id="actions"></ol>
-				</div>
+				<ol id="actions"></ol>
 			</div>
 			<div class="box">
 				<h2>Info</h2>
@@ -649,11 +646,8 @@
 			<a href="?provider=openlayers">openlayers</a>,
 			<a href="?provider=openmq">openmq</a>,
 			<a href="?provider=openspace">openspace</a>,
-			<a href="?provider=ovi">ovi</a>.
-			<!--
 			<a href="?provider=ovi">ovi</a>,
 			<a href="?provider=yandex">yandex</a>.
-			-->
 		</p>
 	</div>
 </body>
