@@ -1,12 +1,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Mapstraction Examples - OpenLayers Geocoder</title>
-<script src="http://openlayers.org/api/2.11/OpenLayers.js"></script>
-<script src="../source/mxn.js?(openlayers,[geocoder])" type="text/javascript"></script>
+<title>Mapstraction Examples - microsoft7 Geocoder</title>
+<script charset="UTF-8" type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>		
+<script src="../source/mxn.js?(microsoft7,[geocoder])" type="text/javascript"></script>
 <style type="text/css">
 
 	#mapdiv {
 		height: 400px;
+		position: relative;
+		width: !important;
 	}
 
 </style> 
@@ -15,43 +17,38 @@
 
 	var mapstraction;
 	var geocoder;
+	var microsoft_key = "AnSU6Nk1wZm1jU0z_Jnib5uy6ZdCllBorytKk0BBxJY2rBHVZayodUR5DxqLHlzt";
 
 	function geocode_return(geocoded_locations) {
-		console.log ('test: geocode_return++');
-		if (typeof(geocoded_locations.point) == "object") { //ie we only got 1 result back the way it used to work
+		if (typeof(geocoded_locations.point) == "object") //ie we only got 1 result back the way it used to work
+		{
 			geocoded_locations_array = {};
 			geocoded_locations_array[0] = geocoded_locations;
 			geocoded_locations = geocoded_locations_array;
 			geocoded_locations.length = 1;
 		}
 
-		console.log ('test: Got ' + geocoded_locations.length + ' results');
-		
 		mapstraction.removeAllMarkers();
-		for (i=0; i<geocoded_locations.length; i++) {
+		for (i=0; i<geocoded_locations.length; i++)
+		{
 			// create a marker positioned at a lat/lon
-			console.log ('test: Result ' + i);
-			console.log ('test: ' + JSON.stringify(geocoded_locations[i]));
-			
 			var geocode_marker = new mxn.Marker(geocoded_locations[i].point);
 			geocode_marker.setIcon('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + i + '|FF1CAE|000000');
 			geocode_marker.setIconSize([21,34]);
 			geocode_marker.setIconAnchor([11,34]);
 			var address = geocoded_locations[i].locality + ", " + geocoded_locations[i].region + ", " + geocoded_locations[i].country;
-geocode_marker.setInfoBubble(address);
-
+			geocode_marker.setInfoBubble(address);
+			
 			// display marker
 			mapstraction.addMarker(geocode_marker);
-			// open the marker
-			//geocode_marker.openBubble();
-		}
+		}	
 		mapstraction.autoCenterAndZoom()
 	}
 
 	function initialize() {
 
 		// create mxn object
-		mapstraction = new mxn.Mapstraction('mapdiv','openlayers');
+		mapstraction = new mxn.Mapstraction('mapdiv','microsoft7');
 
 		mapstraction.addControls({
 			pan: true,
@@ -64,7 +61,7 @@ geocode_marker.setInfoBubble(address);
 		mapstraction.setCenterAndZoom(latlon, 10);
 		mapstraction.mousePosition('position');
 		
-		geocoder = new mxn.Geocoder('openlayers',geocode_return);
+		geocoder = new mxn.Geocoder('microsoft7',geocode_return);
 		
 		// add a marker
 		var marker = new mxn.Marker(latlon);
@@ -73,8 +70,7 @@ geocode_marker.setInfoBubble(address);
 	}
 
 	function user_submit() {
-		var address = {};
-		address.address = document.getElementById('address').value;
+		var address = document.getElementById('address').value;
 		var limit = document.getElementById('limit').value;
 		geocoder.geocode(address, limit);
 	}
@@ -94,8 +90,8 @@ geocode_marker.setInfoBubble(address);
 				<td>
 					<input type="text" id="address" name="address" value="brest" size="35"/>
 					<a href="#" onclick="user_submit(); return false;">Geocode</a>
-					but limit the number of results to:
-					<input type="text" id="limit" name="limit" value="3" size="1" />
+					but limit the number of results to: 
+					<input type="text" id="limit" name="limit" value="3" size="1"/>					
 				</td>
 			</tr>
 		</table>

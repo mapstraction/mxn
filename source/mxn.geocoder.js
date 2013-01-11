@@ -13,12 +13,12 @@ var init = function() {
  * Geocoder instantiates a geocoder with some API choice
  * @name mxn.Geocoder
  * @constructor
- * @param {String} api The API to use, currently only 'mapquest' is supported
+ * @param {String} api The API to use
  * @param {Function} callback The function to call when a geocode request returns (function(waypoint))
  * @param {Function} error_callback The optional function to call when a geocode request fails
  * @exports Geocoder as mxn.Geocoder
  */
-var Geocoder = mxn.Geocoder = function (api, callback, error_callback) {
+var Geocoder = mxn.Geocoder = function (api, callback, error_callback, row_limit) {
 	this.api = api;
 	this.geocoders = {};
 	this.callback = callback;
@@ -36,6 +36,7 @@ mxn.addProxyMethods(Geocoder, [
 	 * @name mxn.Geocoder#geocode
 	 * @function
 	 * @param {Object} address Address hash, keys are: street, locality, region, country.
+	 * @param {Int} Row_Limit to limit returned results, defaults to 1 to support previous Mapstraction 2.0 API definition.
 	 */
 	'geocode',
 	
