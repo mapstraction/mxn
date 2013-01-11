@@ -40,6 +40,12 @@ Geocoder: {
 		else {
 			var places = [];
 
+			// Code Health Warning
+			// Don't let the fact that the Google geocoder returns 'results' as an array
+			// fool you. Google 'generally' returns a single value when geocoding address
+			// lookups; multiple values 'may' be returned but only where there is ambiguity
+			// See https://developers.google.com/maps/documentation/geocoding/#JSON
+			
 			for (i=0; i<results.length; i++) {
 				place = results[i];
 				var streetparts = [];

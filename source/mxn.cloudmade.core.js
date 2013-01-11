@@ -229,7 +229,7 @@ mxn.register('cloudmade', {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code
+			throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + api);
 		},
 
 		addPolyline: function(polyline, old) {
@@ -289,33 +289,19 @@ mxn.register('cloudmade', {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			// TODO: Are there any MapTypes for Cloudmade?
-
-			switch(type) {
-				case mxn.Mapstraction.ROAD:
-					// TODO: Add provider code
-					break;
-				case mxn.Mapstraction.SATELLITE:
-					// TODO: Add provider code
-					break;
-				case mxn.Mapstraction.HYBRID:
-					// TODO: Add provider code
-					break;
-				default:
-					// TODO: Add provider code
-			}	 
+			// CloudMade supports Web, Mobile, Mapnik, OSMarender and Cycle map tiles
+			// but none of theme map to the standard MXN map tile types. So effectively
+			// we can only support mxn.Mapstraction.ROAD, which is equivalent to the
+			// default CloudMade Web map tile type.
 		},
 
 		getMapType: function() {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			// TODO: Are there any MapTypes for Cloudmade?
+			// See note in setMapType() above regarding CloudMade map tile types
 
 			return mxn.Mapstraction.ROAD;
-			//return mxn.Mapstraction.SATELLITE;
-			//return mxn.Mapstraction.HYBRID;
-
 		},
 
 		getBounds: function () {
@@ -342,7 +328,7 @@ mxn.register('cloudmade', {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code
+			throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + api);
 		},
 
 		setImagePosition: function(id, oContext) {
@@ -350,44 +336,49 @@ mxn.register('cloudmade', {
 			var map = this.maps[this.api];
 			var topLeftPoint; var bottomRightPoint;
 
-			// TODO: Add provider code
-
+			throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + api);
 		},
 
 		addOverlay: function(url, autoCenterAndZoom) {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code
-
+			throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + api);
 		},
 
 		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code
+			throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + api);
 		},
 
 		toggleTileLayer: function(tile_url) {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code
+			throw new Error('Mapstraction.toggleTileLayer is not currently supported by provider ' + api);
 		},
 
 		getPixelRatio: function() {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code
+			throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + api);
 		},
 
 		mousePosition: function(element) {
 			this._fireQueuedEvents();
-			var map = this.maps[this.api];
 
-			// TODO: Add provider code
+			var map = this.maps[this.api];
+			var locDisp = document.getElementById(element);
+			if (locDisp !== null) {
+				CM.Event.addListener(map, 'mousemove', function(point) {
+					var loc = point.latLng.lat().toFixed(4) + ' / ' + point.latLng.lng().toFixed(4);
+					locDisp.innerHTML = loc;
+				});
+				locDisp.innerHTML = '0.0000 / 0.0000';
+			}
 		}
 	},
 
@@ -402,7 +393,6 @@ mxn.register('cloudmade', {
 			this.lat = point.lat();
 			this.lon = point.lng();
 		}
-
 	},
 
 	Marker: {
@@ -462,9 +452,8 @@ mxn.register('cloudmade', {
 		},
 
 		update: function() {
-			// TODO: Add provider code
+			throw new Error('Marker.update is not currently supported by provider ' + api);
 		}
-
 	},
 
 	Polyline: {
@@ -504,7 +493,5 @@ mxn.register('cloudmade', {
 		hide: function() {
 			this.proprietary_polyline.hide();
 		}
-
 	}
-
 });
