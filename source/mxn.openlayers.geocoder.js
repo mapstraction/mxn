@@ -8,7 +8,7 @@ Geocoder: {
 
 	geocode: function(address, rowlimit) {
 		var me = this;
-		rowlimit = rowlimit || 1; //default to one result
+		me.row_limit = rowlimit || 1; //default to one result
 		if (!address.hasOwnProperty('address') || address.address === null || address.address === '') {
 			address.address = [ address.street, address.locality, address.region, address.country ].join(', ');
 		}
@@ -18,7 +18,7 @@ Geocoder: {
 				me.error_callback("OpenLayers geocoding is temporarily unavailable (were you blocked for excessive use?)");
 			}
 			else {
-				me.geocode_callback(JSON.parse(response.responseText), response.status);
+				me.geocode_callback(JSON.parse(response.responseText), response.status, me.row_limit);
 			}
 		};
 

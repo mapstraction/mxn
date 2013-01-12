@@ -5,8 +5,6 @@ Geocoder: {
 
 	},
 
-	row_limit: int = 1,
-
 	geocode: function(query, rowlimit) {
 		this.row_limit = rowlimit || 1; //default to one result
 		var _address = '';

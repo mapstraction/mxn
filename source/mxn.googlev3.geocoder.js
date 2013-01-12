@@ -5,8 +5,6 @@ Geocoder: {
 		this.geocoders[this.api] = new google.maps.Geocoder();
 	},
 
-	row_limit: int = 1,
-
 	geocode: function(query, rowlimit){
 		var me = this;
 		me.row_limit = rowlimit || 1; //default to one result
