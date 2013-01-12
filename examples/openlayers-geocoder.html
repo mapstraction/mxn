@@ -17,7 +17,6 @@
 	var geocoder;
 
 	function geocode_return(geocoded_locations) {
-		console.log ('test: geocode_return++');
 		if (typeof(geocoded_locations.point) == "object") { //ie we only got 1 result back the way it used to work
 			geocoded_locations_array = {};
 			geocoded_locations_array[0] = geocoded_locations;
@@ -25,14 +24,9 @@
 			geocoded_locations.length = 1;
 		}
 
-		console.log ('test: Got ' + geocoded_locations.length + ' results');
-		
 		mapstraction.removeAllMarkers();
 		for (i=0; i<geocoded_locations.length; i++) {
 			// create a marker positioned at a lat/lon
-			console.log ('test: Result ' + i);
-			console.log ('test: ' + JSON.stringify(geocoded_locations[i]));
-			
 			var geocode_marker = new mxn.Marker(geocoded_locations[i].point);
 			geocode_marker.setIcon('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + i + '|FF1CAE|000000');
 			geocode_marker.setIconSize([21,34]);
