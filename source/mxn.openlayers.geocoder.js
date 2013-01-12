@@ -13,6 +13,15 @@ Geocoder: {
 			address.address = [ address.street, address.locality, address.region, address.country ].join(', ');
 		}
 
+		var handle_response = function(response) {
+			if (response.status == 503) { // Service Temporarily Unavailable
+				me.error_callback("OpenLayers geocoding is temporarily unavailable (were you blocked for excessive use?)");
+			}
+			else {
+				me.geocode_callback(JSON.parse(response.responseText), response.status);
+			}
+		};
+
 		if (address.hasOwnProperty('lat') && address.hasOwnProperty('lon')) {
 			var latlon = address.toProprietary(this.api);
 			OpenLayers.Request.GET({
@@ -23,7 +32,7 @@ Geocoder: {
 					'addressdetails': 1,
 					'format': 'json'
 				},
-				callback: function(request) { me.geocode_callback(JSON.parse(request.responseText), request.status, rowlimit); }
+				callback: handle_response
 			});
 		}
 		else {
@@ -34,13 +43,12 @@ Geocoder: {
 					'addressdetails': 1,
 					'format': 'json'
 				},
-				callback: function(request) { me.geocode_callback(JSON.parse(request.responseText), request.status, rowlimit); }
+				callback: handle_response
 			});
 		}
 	},
 
 	geocode_callback: function(results, status, rowlimit) {
-		console.log('geocode_callback: ' + status);
 		if (status != 200) {
 			this.error_callback(response.statusText);
 		}
@@ -51,7 +59,6 @@ Geocoder: {
 			var place;
 			var places = [];
 
-			console.log ('Got ' + results.length + ' results');
 			for (i=0; i<results.length; i++) {
 				place = results[i];
 				var return_location = {};
@@ -62,8 +69,6 @@ Geocoder: {
 				return_location.country = '';
 				var street_components = [];
 
-				console.log (JSON.stringify(place));
-				
 				if (place.address.country) {
 					return_location.country = place.address.country;
 				}
@@ -81,6 +86,10 @@ Geocoder: {
 				}
 				else if (place.address.hamlet) {
 					return_location.locality = place.address.hamlet;
+				}
+				
+				if (!return_location.locality && place.address.county) {
+					return_location.locality = place.address.county;
 				}
 
 				if (place.address.postcode) {
