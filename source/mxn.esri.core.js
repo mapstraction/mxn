@@ -271,7 +271,7 @@ mxn.register('esri', {
 		},
 
 		getZoomLevelForBoundingBox: function(bbox) {
-			throw new Error('Mapstraction.getZoomLevelForBoundingBox is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.getZoomLevelForBoundingBox is not currently supported by provider ' + this.api);
 		},
 
 		setMapType: function(type) {
@@ -328,31 +328,31 @@ mxn.register('esri', {
 		},
 
 		addImageOverlay: function(id, src, opacity, west, south, east, north) {
-			throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + this.api);
 		},
 
 		setImagePosition: function(id, oContext) {
-			throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + this.api);
 		},
 	
 		addOverlay: function(url, autoCenterAndZoom) {
-			throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 		},
 
 		addTileLayer: function(tile_url, options) {
-			throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + this.api);
 		},
 
 		toggleTileLayer: function(tile_url) {
-			throw new Error('Mapstraction.toggleTileLayer is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.toggleTileLayer is not currently supported by provider ' + this.api);
 		},
 
 		getPixelRatio: function() {
-			throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 		},
 	
 		mousePosition: function(element) {
-			throw new Error('Mapstraction.mousePosition is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.mousePosition is not currently supported by provider ' + this.api);
 		},
 
 		openBubble: function(point, content) {
@@ -453,7 +453,7 @@ mxn.register('esri', {
 		},
 
 		update: function() {
-			throw new Error('Marker.update is not currently supported by provider ' + api);
+			throw new Error('Marker.update is not currently supported by provider ' + this.api);
 		}
 	},
 

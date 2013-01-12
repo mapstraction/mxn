@@ -204,7 +204,7 @@ Mapstraction: {
 	},
 	
 	declutterMarkers: function(opts) {
-		throw 'Not supported';
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 
 	addPolyline: function(polyline, old) {
@@ -334,6 +334,7 @@ Mapstraction: {
 		this.setImageOpacity(id, opacity);
 		this.setImagePosition(id);
 	},
+
 	setImagePosition: function(id, oContext) {
 		var map = this.maps[this.api];
 
@@ -354,7 +355,7 @@ Mapstraction: {
 		map.addOverlay(kml);
 		
 		YMaps.Events.observe(kml, kml.Events.Fault, function (kml, error) {
-			throw new Error(api + "KML upload faults. Error: " + error);
+			throw new Error('Mapstraction.addOverlay. KML upload error: ' + error + ' for provider ' + this.api);
 		});
 	},
 
@@ -416,7 +417,7 @@ Mapstraction: {
 	},
 
 	getPixelRatio: function() {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
 	
 	mousePosition: function(element) {

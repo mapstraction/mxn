@@ -92,28 +92,34 @@ Mapstraction: {
 		map.setOptions(height,width);
 	},
 
+	// Code Health Warning
+	// Microsoft7 only supports (most of) the display controls as part of the Dashboard
+	// and this needs to be configured *before* the map is instantiated and displayed.
+	// So addControls, addSmallControls, addLargeControls and addMapTypeControls are
+	// effectively no-ops and so they don't throw the unsupported feature exception.
+	
 	addControls: function( args ) {
 		var map = this.maps[this.api];
 	
-		// TODO: Add provider code
+		//throw new Error('Mapstraction.addControls is not currently supported by provider ' + this.api);
 	},
 
 	addSmallControls: function() {
 		var map = this.maps[this.api];
 		
-		// TODO: Add provider code
+		//throw new Error('Mapstraction.addSmallControls is not currently supported by provider ' + this.api);
 	},
 
 	addLargeControls: function() {
 		var map = this.maps[this.api];
 		
-		// TODO: Add provider code
+		//throw new Error('Mapstraction.addLargeControls is not currently supported by provider ' + this.api);
 	},
 
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
 		
-		// TODO: Add provider code
+		//throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
@@ -148,7 +154,7 @@ Mapstraction: {
 	declutterMarkers: function(opts) {
 		var map = this.maps[this.api];
 		
-		// TODO: Add provider code
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 
 	addPolyline: function(polyline, old) {
@@ -207,9 +213,7 @@ Mapstraction: {
 		var sw = bbox.getSouthWest();
 		var zoom;
 		
-		// TODO: Add provider code
-		
-		return zoom;
+		throw new Error('Mapstraction.getZoomLevelForBoundingBox is not currently supported by provider ' + this.api);
 	},
 
 	setMapType: function(type) {
@@ -271,28 +275,15 @@ Mapstraction: {
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+		throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + this.api);
 	},
 
 	setImagePosition: function(id, oContext) {
-		var map = this.maps[this.api];
-		var topLeftPoint; var bottomRightPoint;
-
-		// TODO: Add provider code
-
-		//oContext.pixels.top = ...;
-		//oContext.pixels.left = ...;
-		//oContext.pixels.bottom = ...;
-		//oContext.pixels.right = ...;
+		throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + this.api);
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-		
+		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
@@ -338,15 +329,11 @@ Mapstraction: {
 	},
 
 	getPixelRatio: function() {
-		var map = this.maps[this.api];
-
-		// TODO: Add provider code	
+		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
 	
 	mousePosition: function(element) {
-		var map = this.maps[this.api];
-
-		// TODO: Add provider code	
+		throw new Error('Mapstraction.mousePosition is not currently supported by provider ' + this.api);
 	}
 },
 

@@ -153,7 +153,7 @@ Mapstraction: {
 	},
 	
 	declutterMarkers: function(opts) {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 
 	addPolyline: function(polyline, old) {
@@ -255,15 +255,15 @@ Mapstraction: {
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north) {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + this.api);
 	},
 
 	setImagePosition: function(id, oContext) {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + this.api);
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 
 	addTileLayer: function(tile_url, options) {
@@ -300,11 +300,11 @@ Mapstraction: {
 	},
 
 	getPixelRatio: function() {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
 	
 	mousePosition: function(element) {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.mousePosition is not currently supported by provider ' + this.api);
 	},
 
 	openBubble: function(point, content) {
@@ -418,7 +418,7 @@ Marker: {
 	},
 
 	update: function() {
-		throw 'Not implemented';
+		throw new Error('Marker.update is not currently supported by provider ' + this.api);
 	}
 	
 },

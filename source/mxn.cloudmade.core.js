@@ -229,7 +229,7 @@ mxn.register('cloudmade', {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 		},
 
 		addPolyline: function(polyline, old) {
@@ -328,7 +328,7 @@ mxn.register('cloudmade', {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + this.api);
 		},
 
 		setImagePosition: function(id, oContext) {
@@ -336,35 +336,35 @@ mxn.register('cloudmade', {
 			var map = this.maps[this.api];
 			var topLeftPoint; var bottomRightPoint;
 
-			throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + this.api);
 		},
 
 		addOverlay: function(url, autoCenterAndZoom) {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 		},
 
 		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + this.api);
 		},
 
 		toggleTileLayer: function(tile_url) {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			throw new Error('Mapstraction.toggleTileLayer is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.toggleTileLayer is not currently supported by provider ' + this.api);
 		},
 
 		getPixelRatio: function() {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
-			throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + api);
+			throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 		},
 
 		mousePosition: function(element) {
@@ -452,7 +452,7 @@ mxn.register('cloudmade', {
 		},
 
 		update: function() {
-			throw new Error('Marker.update is not currently supported by provider ' + api);
+			throw new Error('Marker.update is not currently supported by provider ' + this.api);
 		}
 	},
 

@@ -215,8 +215,8 @@ Mapstraction: {
 	
 	declutterMarkers: function(opts) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		// TODO: Add provider code
+
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 
 	addPolyline: function(polyline, old) {
@@ -273,9 +273,7 @@ Mapstraction: {
 		var sw = bbox.getSouthWest();
 		var zoom;
 		
-		// TODO: Add provider code
-		
-		return zoom;
+		throw new Error('Mapstraction.getZoomLevelForBoundingBox is not currently supported by provider ' + this.api);
 	},
 
 	setMapType: function(type) {
@@ -341,58 +339,44 @@ Mapstraction: {
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+
+		throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + this.api);
 	},
 
 	setImagePosition: function(id, oContext) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		var topLeftPoint; var bottomRightPoint;
 
-		// TODO: Add provider code
-
-		//oContext.pixels.top = ...;
-		//oContext.pixels.left = ...;
-		//oContext.pixels.bottom = ...;
-		//oContext.pixels.right = ...;
+		throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + this.api);
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-		
+
+		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+
+		throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + this.api);
 	},
 
 	toggleTileLayer: function(tile_url) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+
+		throw new Error('Mapstraction.toggleTileLayer is not currently supported by provider ' + this.api);
 	},
 
 	getPixelRatio: function() {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
 
-		// TODO: Add provider code	
+		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
 	
 	mousePosition: function(element) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
 
-		// TODO: Add provider code	
+		throw new Error('Mapstraction.mousePosition is not currently supported by provider ' + this.api);
 	}
 },
 
@@ -452,15 +436,15 @@ Marker: {
 	},
 	
 	hide: function() {
-		// TODO: Add provider code
+		throw new Error('Marker.hide is not currently supported by provider ' + this.api);
 	},
 
 	show: function() {
-		// TODO: Add provider code
+		throw new Error('Marker.show is not currently supported by provider ' + this.api);
 	},
 
 	update: function() {
-		// TODO: Add provider code
+		throw new Error('Marker.update is not currently supported by provider ' + this.api);
 	}
 	
 },
@@ -514,7 +498,6 @@ Polyline: {
 	hide: function() {
 		this.proprietary_polyline.visible = false;
 	}
-	
 }
 
 });

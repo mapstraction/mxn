@@ -272,9 +272,7 @@ Mapstraction: {
 	},
 	
 	declutterMarkers: function(opts) {
-		var map = this.maps[this.api];
-	
-		// TODO: Add provider code
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 	
 	addPolyline: function(polyline, old) {
@@ -393,36 +391,23 @@ Mapstraction: {
 	},
 
 	setImagePosition: function(id, oContext) {
-		var map = this.maps[this.api];
-		var topLeftPoint; var bottomRightPoint;
-	
-		// TODO: Add provider code
-	
-		//oContext.pixels.top = ...;
-		//oContext.pixels.left = ...;
-		//oContext.pixels.bottom = ...;
-		//oContext.pixels.right = ...;
+		throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + this.api);
 	},
 
 	addOverlay: function(url, autoCenterAndZoom) {
-		var map = this.maps[this.api];
-	
-		// TODO: Add provider code
+		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
-		var map = this.maps[this.api];
-		// TODO: Add provider code
+		throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + this.api);
 	},
 
 	toggleTileLayer: function(tile_url) {
-		var map = this.maps[this.api];
-		// TODO: Add provider code
+		throw new Error('Mapstraction.toggleTileLayer is not currently supported by provider ' + this.api);
 	},
 
 	getPixelRatio: function() {
-		var map = this.maps[this.api];
-		// TODO: Add provider code
+		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
 
 	mousePosition: function(element) {
@@ -462,7 +447,6 @@ LatLonPoint: {
 		this.lon = olpt.lon;
 		this.lat = olpt.lat;
 	}
-	
 },
 
 Marker: {
@@ -514,7 +498,7 @@ Marker: {
 	},
 	
 	update: function() {
-		// TODO: Add provider code
+		throw new Error('Mapstraction.update is not currently supported by provider ' + this.api);
 	}
 },
 
@@ -576,7 +560,6 @@ Polyline: {
 	hide: function() {
 		this.proprietary_polyline.style.display = "none";
 	}
-	
 }
 	
 });

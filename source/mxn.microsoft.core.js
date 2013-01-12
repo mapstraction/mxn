@@ -217,9 +217,8 @@ Mapstraction: {
 	
 	declutterMarkers: function(opts) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 
 	addPolyline: function(polyline, old) {
@@ -275,9 +274,7 @@ Mapstraction: {
 		var sw = bbox.getSouthWest();
 		var zoom;
 		
-		// TODO: Add provider code
-		
-		return zoom;
+		throw new Error('Mapstraction.getZoomLevelForBoundingBox is not currently supported by provider ' + this.api);
 	},
 
 	setMapType: function(type) {
@@ -336,22 +333,14 @@ Mapstraction: {
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
+
+		throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + this.api);
 	},
 
 	setImagePosition: function(id, oContext) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		var topLeftPoint; var bottomRightPoint;
 
-		// TODO: Add provider code
-
-		//	oContext.pixels.top = ...;
-		//	oContext.pixels.left = ...;
-		//	oContext.pixels.bottom = ...;
-		//	oContext.pixels.right = ...;
+		throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + this.api);
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
@@ -364,17 +353,20 @@ Mapstraction: {
 
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
 		this._fireQueuedEvents();
-		throw 'Not implemented';
+
+		throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + this.api);
 	},
 
 	toggleTileLayer: function(tile_url) {
 		this._fireQueuedEvents();
-		throw 'Not implemented';
+
+		throw new Error('Mapstraction.toggleTileLayer is not currently supported by provider ' + this.api);
 	},
 
 	getPixelRatio: function() {
 		this._fireQueuedEvents();
-		throw 'Not implemented';
+
+		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
 	
 	mousePosition: function(element) {
@@ -517,7 +509,6 @@ Polyline: {
 	hide: function() {
 		this.proprietary_polyline.Hide();
 	}
-	
 }
 
 });

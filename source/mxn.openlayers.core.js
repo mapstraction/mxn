@@ -310,7 +310,7 @@ mxn.register('openlayers', {
 		},
 
 		declutterMarkers: function(opts) {
-			throw 'Not supported';
+			throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 		},
 
 		addPolyline: function(polyline, old) {
@@ -438,7 +438,7 @@ mxn.register('openlayers', {
 		},
 
 		setImagePosition: function(id, oContext) {
-			// do nothing
+			throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + this.api);
 		},
 
 		addOverlay: function(url, autoCenterAndZoom) {
@@ -491,7 +491,7 @@ mxn.register('openlayers', {
 		getPixelRatio: function() {
 			var map = this.maps[this.api];
 
-			// TODO: Add provider code	
+			throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 		},
 
 		mousePosition: function(element) {

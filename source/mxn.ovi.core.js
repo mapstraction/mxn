@@ -234,7 +234,7 @@ Mapstraction: {
 	},
 	
 	declutterMarkers: function(opts) {
-		throw 'Not supported';
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 	
 	addPolyline: function(polyline, old) {
@@ -296,7 +296,8 @@ Mapstraction: {
 				map.set("baseMapType", map.TERRAIN);
 				break;
 			case mxn.Mapstraction.HYBRID:
-				throw 'Not implemented';
+				map.set("baseMapType", map.SATELLITE);
+				break;
 			case mxn.Mapstraction.SATELLITE:
 				map.set("baseMapType", map.SATELLITE);
 				break;
@@ -345,27 +346,27 @@ Mapstraction: {
 	},
 	
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + this.api);
 	},
 	
 	setImagePosition: function(id, oContext) {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.setImagePosition is not currently supported by provider ' + this.api);
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 	
 	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + this.api);
 	},
 	
 	toggleTileLayer: function(tile_url) {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.toggleTileLayer is not currently supported by provider ' + this.api);
 	},
 	
 	getPixelRatio: function() {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
 	
 	mousePosition: function(element) {
@@ -461,14 +462,14 @@ Marker: {
 	
 	openBubble: function() {
 		if (!this.map) {
-			throw 'This marker must be added to a map in order to manage a Bubble';
+			throw new Error('Marker.openBubble: This marker must be added to a map in order to manage a Bubble for provider ' + this.api);
 		}
 		this.proprietary_infobubble = this.map.getComponentById("InfoBubbles").addBubble(this.infoBubble, this.location.toProprietary('ovi'));
 	},
 	
 	closeBubble: function() {
 		if (!this.map) {
-			throw 'This marker must be added to a map in order to manage a Bubble';
+			throw new Error('Marker.closeBubble: This marker must be added to a map in order to manage a Bubble for provider ' + this.api);
 		}
 
 		if (this.map.getComponentById("InfoBubbles").bubbleExists(this.proprietary_infobubble)) {
@@ -486,7 +487,7 @@ Marker: {
 	},
 	
 	update: function() {
-		throw 'Not implemented';
+		throw new Error('Mapstraction.update is not currently supported by provider ' + this.api);
 	}
 	
 },
