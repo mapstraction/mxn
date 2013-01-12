@@ -304,7 +304,15 @@ Mapstraction: {
 	},
 	
 	mousePosition: function(element) {
-		throw new Error('Mapstraction.mousePosition is not currently supported by provider ' + this.api);
+		var map = this.maps[this.api];
+		var locDisp = document.getElementById(element);
+		if (locDisp !== null) {
+			map.on("mousemove", function(e) {
+				var loc = e.latlng.lat.toFixed(4) + '/' + e.latlng.lng.toFixed(4);
+				locDisp.innerHTML = loc;
+			});
+			locDisp.innerHTML = '0.0000 / 0.0000';
+		}
 	},
 
 	openBubble: function(point, content) {

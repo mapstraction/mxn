@@ -352,7 +352,15 @@ mxn.register('esri', {
 		},
 	
 		mousePosition: function(element) {
-			throw new Error('Mapstraction.mousePosition is not currently supported by provider ' + this.api);
+			var map = this.maps[this.api];
+			var locDisp = document.getElementById(element);
+			if (locDisp !== null) {
+				dojo.connect(map, "onMouseMove", function(evt){
+					var loc = e.x.toFixed(4) + '/' + e.y.toFixed(4);
+					locDisp.innerHTML = loc;
+				});
+				locDisp.innerHTML = '0.0000 / 0.0000';
+			}
 		},
 
 		openBubble: function(point, content) {
