@@ -223,7 +223,7 @@ Mapstraction: {
 				this.currentMapType = mxn.Mapstraction.SATELLITE;
 				break;
 			case mxn.Mapstraction.HYBRID:
-				throw 'Not implemented';
+				break;
 			default:
 				this.addTileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
 					name: "Roads",
@@ -231,6 +231,7 @@ Mapstraction: {
 					subdomains: [1,2,3,4]
 				});
 				this.currentMapType = mxn.Mapstraction.ROAD;
+				break;
 		}
 	},
 

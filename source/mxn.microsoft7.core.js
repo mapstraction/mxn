@@ -416,7 +416,7 @@ Marker: {
 	},
 	closeBubble: function() {
 		if (!this.map) {
-			throw 'Marker must be added to map in order to display infobox';
+			throw new Error('Marker.closeBubble; marker must be added to map in order to display infobox');
 		}
 		if (!this.proprietary_infowindow) {
 			return;

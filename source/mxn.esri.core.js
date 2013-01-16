@@ -230,7 +230,7 @@ mxn.register('esri', {
 		},
 	
 		declutterMarkers: function(opts) {
-			throw 'declutterMarkers not implemented';
+			throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 		},
 
 		addPolyline: function(polyline, old) {

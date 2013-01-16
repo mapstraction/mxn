@@ -383,11 +383,9 @@ Mapstraction: {
 		map.zoomToExtent(obounds);	
 	},
 
-	addImageOverlay: function(id, src, opacity, west, south, east,
-				  north, oContext) {
+	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
 		var map = this.maps[this.api];
-	
-		// TODO: Add provider code
+		throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + this.api);
 	},
 
 	setImagePosition: function(id, oContext) {

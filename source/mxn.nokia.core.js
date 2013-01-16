@@ -492,14 +492,14 @@ Marker: {
 	
 	openBubble: function() {
 		if (!this.map) {
-			throw 'This marker must be added to a map in order to manage a Bubble';
+			throw new Error('Marker.openBubble; this marker must be added to a map in order to manage a Bubble');
 		}
 		this.proprietary_infobubble = this.map.getComponentById("InfoBubbles").addBubble(this.infoBubble, this.location.toProprietary('nokia'));
 	},
 	
 	closeBubble: function() {
 		if (!this.map) {
-			throw 'This marker must be added to a map in order to manage a Bubble';
+			throw new Error('Marker.closeBubble; this marker must be added to a map in order to manage a Bubble');
 		}
 
 		if (this.map.getComponentById("InfoBubbles").bubbleExists(this.proprietary_infobubble)) {

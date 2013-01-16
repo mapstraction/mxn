@@ -647,7 +647,7 @@ mxn.register('openlayers', {
 		},
 
 		update: function() {
-			// TODO: Add provider code
+			throw new Error('Marker.update is not currently supported by provider ' + this.api);
 		}
 
 	},

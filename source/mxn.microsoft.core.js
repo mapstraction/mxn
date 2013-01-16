@@ -426,14 +426,14 @@ Marker: {
 
 	openBubble: function() {
 		if (!this.map) {
-			throw 'Marker must be added to map in order to display infobox';
+			throw new Error('Marker.openBubble; marker must be added to map in order to display infobox');
 		}
 		this.map.ShowInfoBox(this.proprietary_marker);
 	},
 	
 	closeBubble: function() {
 		if (!this.map) {
-			throw 'Marker must be added to map in order to display infobox';
+			throw new Error('Marker.openBubble; marker must be added to map in order to display infobox');
 		}
 		this.map.HideInfoBox();
 	},

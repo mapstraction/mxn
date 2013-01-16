@@ -487,7 +487,7 @@ Marker: {
 	},
 	
 	update: function() {
-		throw new Error('Mapstraction.update is not currently supported by provider ' + this.api);
+		throw new Error('Marker.update is not currently supported by provider ' + this.api);
 	}
 	
 },

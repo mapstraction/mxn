@@ -274,8 +274,7 @@ Mapstraction: {
 	},
 	
 	declutterMarkers: function(opts) {
-		var map = this.maps[this.api];
-		// TODO: Add provider code
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 
 	addPolyline: function(polyline, old) {
@@ -367,7 +366,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var gLatLngBounds = map.getBounds();
 		if (!gLatLngBounds) {
-			throw 'Bounds not available, map must be initialized';
+			throw 'Mapstraction.getBounds; bounds not available, map must be initialized';
 		}
 		var sw = gLatLngBounds.getSouthWest();
 		var ne = gLatLngBounds.getNorthEast();
@@ -394,7 +393,7 @@ Mapstraction: {
 	},
 
 	setImagePosition: function(id, oContext) {
-		// do nothing
+		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 	
 	addOverlay: function(url, autoCenterAndZoom) {
@@ -471,9 +470,7 @@ addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, ma
 	},
 
 	getPixelRatio: function() {
-		var map = this.maps[this.api];
-
-		// TODO: Add provider code	
+		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
 	
 	mousePosition: function(element) {
