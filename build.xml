@@ -10,7 +10,7 @@
 	<property name="source" location="source"/>
 	<property name="build.base" location="build"/>
 	<property name="build.major" value="2"/>
-	<property name="build.minor" value="0"/>
+	<property name="build.minor" value="1"/>
 	
 	<target name="build">
 		<!-- generate build number -->
