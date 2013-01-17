@@ -1,49 +1,115 @@
-mxn.register('mapquest', {	
+mxn.register('mapquest', {
 
 Geocoder: {
-	
-	init: function() {		
-		//set up the connection to the geocode server
-		var proxyServerName = "";
-		var proxyServerPort = "";
-		var proxyServerPath = "mapquest_proxy/JSReqHandler.php";
-		var serverName = "geocode.access.mapquest.com";
-		var serverPort = "80";
-		var serverPath = "mq";
-		
-		this.geocoders[this.api] = new MQExec(serverName, serverPath, serverPort, proxyServerName,
-			proxyServerPath, proxyServerPort );
-	},
-	
-	geocode: function(address){
-		var return_location = {};
-		var mapstraction_geodocer = this;
-		
-		var mqaddress = new MQAddress();
-		var gaCollection = new MQLocationCollection("MQGeoAddress");
-		
-		//populate the address object with the information from the form
-		mqaddress.setStreet(address.street);
-		mqaddress.setCity(address.locality);
-		mqaddress.setState(address.region);
-		mqaddress.setPostalCode(address.postalcode);
-		mqaddress.setCountry(address.country);
 
-		this.geocoders[this.api].geocode(mqaddress, gaCollection);
-		var geoAddr = gaCollection.get(0);
-		var mqpoint = geoAddr.getMQLatLng();
-		
-		return_location.street = geoAddr.getStreet();
-		return_location.locality = geoAddr.getCity();
-		return_location.region = geoAddr.getState();
-		return_location.country = geoAddr.getCountry();
-		return_location.point = new LatLonPoint(mqpoint.getLatitude(), mqpoint.getLongitude());
-		
-		this.callback(return_location);
+	init: function() {
+		var me = this;
+		MQA.withModule('geocoder', function() {});
 	},
-	
-	geocode_callback: function(response){
-		throw 'Not used';
+
+	geocode: function(address, rowlimit) {
+		var me = this;
+		me.row_limit = rowlimit || 1; //default to one result
+		var return_location = {};
+		var options = {};
+		options.maxResults = rowlimit;
+		options.thumbMaps = false;
+
+		/* Specifying Country
+		 * The geocoding target country is specified using the "adminArea1" or "country"
+		 * request parameter (Refer to the Locations documentation). Country designation
+		 * is currently not supported for single-line addressing. The United States is
+		 * assumed for all single-line addresses.
+		 */
+
+		MQA.Geocoder.geocode(address, options, null, function(results) {
+			me.geocode_callback(results);
+		});
+	},
+
+	geocode_callback: function(response) {
+		var results = response.results[0].locations;
+		var places = [];
+
+		for (i=0; i<results.length; i++) {
+			place = results[i];
+			var return_location = {};
+
+			switch ("Country")
+			{
+				case place.adminArea1Type:
+					return_location.country = place.adminArea1;
+					break;
+				case place.adminArea2Type:
+					return_location.country = place.adminArea2;
+					break;
+				case place.adminArea3Type:
+					return_location.country = place.adminArea3;
+					break;
+				case place.adminArea4Type:
+					return_location.country = place.adminArea4;
+					break;
+				case place.adminArea5Type:
+					return_location.country = place.adminArea5;
+					break;
+			}
+
+			switch ("State")
+			{
+				case place.adminArea1Type:
+					return_location.region = place.adminArea1;
+					break;
+				case place.adminArea2Type:
+					return_location.region = place.adminArea2;
+					break;
+				case place.adminArea3Type:
+					return_location.region = place.adminArea3;
+					break;
+				case place.adminArea4Type:
+					return_location.region = place.adminArea4;
+					break;
+				case place.adminArea5Type:
+					return_location.region = place.adminArea5;
+					break;
+			}
+
+			switch ("City")
+			{
+				case place.adminArea1Type:
+					return_location.locality = place.adminArea1;
+					break;
+				case place.adminArea2Type:
+					return_location.locality = place.adminArea2;
+					break;
+				case place.adminArea3Type:
+					return_location.locality = place.adminArea3;
+					break;
+				case place.adminArea4Type:
+					return_location.locality = place.adminArea4;
+					break;
+				case place.adminArea5Type:
+					return_location.locality = place.adminArea5;
+					break;
+			}
+
+			return_location.street = place.street;
+			return_location.postcode = place.postalCode;
+
+			return_location.point = new mxn.LatLonPoint(place.latLng.lat, place.latLng.lng);
+
+			places.push(return_location);
+		}
+
+		if (this.row_limit <= 1) {
+			this.callback(places[0]);
+		}
+		else {
+			if (places.length > this.row_limit) {
+				places.length = this.row_limit;
+			}
+			this.callback(places);
+		}
 	}
 }
+
 });
