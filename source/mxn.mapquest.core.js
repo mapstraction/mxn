@@ -376,8 +376,25 @@ Mapstraction: {
 	mousePosition: function(element) {
 		this._fireQueuedEvents();
 
-		throw new Error('Mapstraction.mousePosition is not currently supported by provider ' + this.api);
+		var locDisp = document.getElementById(element);
+		
+		if (locDisp !== null) {
+			var mapDiv = document.getElementById(this.element);
+			var map = this.maps[this.api];
+			var isIE = MQA.Util.getBrowserInfo().name == 'msie';
+			var offsetX = mapDiv.offsetLeft - mapDiv.scrollLeft;
+			var offsetY = mapDiv.offsetTop - mapDiv.scrollTop;
+		
+			locDisp.innerHTML = '0.0000 / 0.0000';
+			mapDiv.onmousemove = function(evt) {
+				var x = isIE ? evt.clientX : evt.pageX - offsetX;
+				var y = isIE ? evt.clientY : evt.pageY - offsetY;
+				var coords = map.pixToLL({x:x, y:y});
+				locDisp.innerHTML = coords.lat.toFixed(4) + '/' + coords.lng.toFixed(4);
+			};
+		}
 	}
+	
 },
 
 LatLonPoint: {
