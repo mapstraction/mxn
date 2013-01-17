@@ -48,8 +48,6 @@ Geocoder: {
 				this.error_callback("Nominatim didn't recognize this address.");
 				return;
 			}
-		} else {
-			var results = [results];
 		}
 
 		var place;
