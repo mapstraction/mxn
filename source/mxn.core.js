@@ -955,8 +955,8 @@ Mapstraction.prototype.addJSON = function(json) {
 				break;
 			case "Polygon":
 				var points = [];
-				for (i = 0; i < item.geometry.coordinates[0].length; i++) {
-					points.push(new LatLonPoint(item.geometry.coordinates[0][i][1], item.geometry.coordinates[0][i][0]));
+				for (var j = 0; j < item.geometry.coordinates[0].length; j++) {
+					points.push(new LatLonPoint(item.geometry.coordinates[0][j][1], item.geometry.coordinates[0][j][0]));
 				}
 				polyline = new Polyline(points);
 				this.addPolylineWithData(polyline,{
