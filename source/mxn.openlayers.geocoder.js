@@ -49,6 +49,9 @@ Geocoder: {
 				return;
 			}
 		}
+		else {
+			results = [results];
+		}
 
 		var place;
 		var places = [];
