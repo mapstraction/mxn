@@ -693,13 +693,14 @@ mxn.register('openlayers', {
 		},
 
 		show: function() {
-			delete this.proprietary_polyline.style.display;
+			this.proprietary_polyline.style.display = "block";
+			this.proprietary_polyline.layer.redraw();
 		},
 
 		hide: function() {
 			this.proprietary_polyline.style.display = "none";
+			this.proprietary_polyline.layer.redraw();
 		}
-
 	}
 
 });
