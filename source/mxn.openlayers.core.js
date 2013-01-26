@@ -693,13 +693,11 @@ mxn.register('openlayers', {
 		},
 
 		show: function() {
-			this.proprietary_polyline.style.display = "block";
-			this.proprietary_polyline.layer.redraw();
+			this.proprietary_polyline.layer.setVisibility(true);
 		},
 
 		hide: function() {
-			this.proprietary_polyline.style.display = "none";
-			this.proprietary_polyline.layer.redraw();
+			this.proprietary_polyline.layer.setVisibility(false);
 		}
 	}
 
