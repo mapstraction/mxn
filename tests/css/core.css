@@ -38,8 +38,8 @@ html, body, #map {
 
 #map {
 	position: relative;
-	width: 700px;
-	height: 300px;
+	width: 700px !important;
+	height: 300px !important;
 	float: left;
 	margin: 0 20px 20px 0
 }
