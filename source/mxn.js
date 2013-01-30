@@ -508,6 +508,16 @@ mxn.util = {
 			var op = args.shift();
 			working = op(working);
 		}
+	},
+	
+	/**
+	 * Sanitises and cleans a templated tile server URL, converting all uppercase template
+	 * references, such as {Z}, {X} or {Y} to their lowercase forms.
+	 * @param {String} url Source URL to sanitise
+	 * @returns {String} The sanitised URL
+	 */
+	sanitizeTileURL: function(url) {
+		return url.replace(/\{S\}/g, '{s}').replace(/\{Z\}/g, '{z}').replace(/\{X\}/g, '{x}').replace(/\{Y\}/g, '{y}');
 	}
 };
 
