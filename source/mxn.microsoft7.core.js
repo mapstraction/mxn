@@ -388,22 +388,11 @@ Marker: {
 		}
 		var mmarker = new Microsoft.Maps.Pushpin(this.location.toProprietary('microsoft7'), options); 
 
-		if (this.infoBubble){
-			var event_action = "click";
-			if (this.hover) {
-				event_action = "mouseover";
-			}
-			Microsoft.Maps.Events.addHandler(mmarker, event_action, function() {
-				mmarker.mapstraction_marker.openBubble();
-			});
-			Microsoft.Maps.Events.addHandler(this.map, 'viewchange', function () {
-				mmarker.mapstraction_marker.closeBubble();
-			});
-		}
 		return mmarker;
 	},
 
-	openBubble: function() {		
+	openBubble: function() {
+		console.log('openbubble : ' + this.infoBubble);
 		var infowindow = new Microsoft.Maps.Infobox(this.location.toProprietary('microsoft7'),
 			{
 				description: this.infoBubble
