@@ -36,8 +36,7 @@ Mapstraction: {
 		this.layers = {};
 		this.features = [];
 		this.maps[api] = map;
-		this.setMapType();
-		this.currentMapType = mxn.Mapstraction.ROAD;
+
 		this.controls =  {
 			pan: null,
 			zoom: null,
@@ -45,6 +44,38 @@ Mapstraction: {
 			scale: null,
 			map_type: null
 		};
+
+		// CODE HEALTH WARNING
+		// The MapQuest Open Aerial Tiles, via http://oatile1.mqcdn.com, is being obsoleted
+		// on 15/2/13.
+		// MapQuest OSM Tiles (mxn.Mapstraction.ROAD) are via:
+		//		http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg
+		// MapQuest Open Aerial Tiles (mxn.Mapstraction.SATELLITE) are now via:
+		//		http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg
+		//
+		// mxn.Mapstraction.HYBRID and mxn.Mapstraction.PHYSICAL remain unavailable via
+		// Leaflet support
+		//
+		// Also note that the MQ Open Aerial tiles are only available at zoom levels 0-11
+		// outside of the US.
+
+		this.road_tile = {
+			name: 'Roads',
+			attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
+			url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg'
+		};
+		this.satellite_tile = {
+			name: 'Satellite',
+			attribution: 'Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency',
+			url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg'
+		};
+		
+		var subdomains = [1, 2, 3, 4];
+		this.addTileLayer (this.satellite_tile.url, 1.0, this.satellite_tile.name, this.satellite_tile.attribution, 0, 18, true, subdomains);
+		this.addTileLayer (this.road_tile.url, 1.0, this.road_tile.name, this.road_tile.attribution, 0, 18, true, subdomains);
+
+		this.currentMapType = mxn.Mapstraction.ROAD;
+
 		this.loaded[api] = true;
 	},
 	
@@ -207,29 +238,23 @@ Mapstraction: {
 	setMapType: function(type) {
 		switch(type) {
 			case mxn.Mapstraction.ROAD:
-				this.addTileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
-					name: "Roads",
-					attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
-					subdomains: [1,2,3,4]
-				});
+				this.layers[this.road_tile.name].bringToFront();
 				this.currentMapType = mxn.Mapstraction.ROAD;
 				break;
+
 			case mxn.Mapstraction.SATELLITE:
-				this.addTileLayer('http://oatile{s}.mqcdn.com/naip/{z}/{x}/{y}.jpg', {
-					name: "Satellite",
-					attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
-					subdomains: [1,2,3,4]
-				});
+				this.layers[this.satellite_tile.name].bringToFront();
 				this.currentMapType = mxn.Mapstraction.SATELLITE;
 				break;
+
 			case mxn.Mapstraction.HYBRID:
 				break;
+			
+			case mxn.Mapstraction.PHYSICAL:
+				break;
+				
 			default:
-				this.addTileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
-					name: "Roads",
-					attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
-					subdomains: [1,2,3,4]
-				});
+				this.layers[this.road_tile.name].bringToFront();
 				this.currentMapType = mxn.Mapstraction.ROAD;
 				break;
 		}
@@ -267,7 +292,7 @@ Mapstraction: {
 		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 
-	addTileLayer: function(tile_url, options) {
+	/*addTileLayer: function(tile_url, options) {
 		var z_index = this.tileLayers.length || 0;
 		var layerName;
 		if (options && options.name) {
@@ -281,6 +306,32 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		map.addLayer(this.layers[layerName]);
 		this.tileLayers.push( [tile_url, this.layers[layerName], true, z_index] );
+	},*/
+	
+	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
+		var map = this.maps[this.api];
+		var z_index = this.tileLayers.length || 0;
+		var options = {
+			minZoom: min_zoom,
+			maxZoom: max_zoom,
+			name: label,
+			attribution: attribution,
+			opacity: opacity
+		};
+		if (typeof subdomains !== 'undefined') {
+			options.subdomains = subdomains;
+		}
+		var url = mxn.util.sanitizeTileURL(tile_url);
+		
+		this.layers[label] = new L.TileLayer(url, options);
+		map.addLayer(this.layers[label]);
+		this.tileLayers.push([tile_url, this.layers[label], true, z_index]);
+
+		if (this.controls.map_type !== null) {
+			this.controls.map_type.addBaseLayer(this.layers[label], label);
+		}
+
+		return this.layers[label];
 	},
 
 	toggleTileLayer: function(tile_url) {
