@@ -16,6 +16,14 @@ Mapstraction: {
 			"mapsize": false
 		};
 		
+		this.controls =  {
+			pan: null,
+			zoom: null,
+			overview: null,
+			scale: null,
+			map_type: null
+		};
+		
 		nokia_map = new nokia.maps.map.Display(element);
 		nokia_map.addComponent(new nokia.maps.map.component.InfoBubbles());
 		nokia_map.addComponent(new nokia.maps.map.component.Behavior());
@@ -127,15 +135,16 @@ Mapstraction: {
 		
 		if ('pan' in args && args.pan) {
 			cid = map.getComponentById('Behavior');
-			if (cid === null) {
-				map.addComponent(new nokia.maps.map.component.Behavior());
+			if (this.controls.pan === null) {
+				this.controls.pan = new nokia.maps.map.component.Behavior();
+				map.addComponent(this.controls.pan);
 			}
 		}
 
 		else {
-			cid = map.getComponentById('Behavior');
-			if (cid !== null) {
-				map.removeComponent(cid);
+			if (this.controls.pan !== null) {
+				map.removeComponent(this.controls.pan);
+				this.controls.pan = null;
 			}
 		}
 		
@@ -148,37 +157,38 @@ Mapstraction: {
 		}
 
 		else {
-			cid = map.getComponentById('ZoomBar');
-			if (cid !== null) {
-				map.removeComponent(cid);
+			if (this.controls.zoom !== null) {
+				map.removeComponent(this.controls.zoom);
+				this.controls.zoom = null;
 			}
 		}
 		
 		if ('overview' in args && args.overview) {
 			cid = map.getComponentById('Overview');
-			if (cid === null) {
-				map.addComponent(new nokia.maps.map.component.Overview());
+			if (this.controls.overview === null) {
+				this.controls.overview = new nokia.maps.map.component.Overview();
+				map.addComponent(this.controls.overview);
 			}
 		}
 
 		else {
-			cid = map.getComponentById('Overview');
-			if (cid !== null) {
-				map.removeComponent(cid);
+			if (this.controls.overview !== null) {
+				map.removeComponent(this.controls.overview);
+				this.controls.overview = null;
 			}
 		}
 		
 		if ('scale' in args && args.scale) {
-			cid = map.getComponentById('ScaleBar');
-			if (cid === null) {
-				map.addComponent(new nokia.maps.map.component.ScaleBar());
+			if (this.controls.scale === null) {
+				this.controls.scale = new nokia.maps.map.component.ScaleBar();
+				map.addComponent(this.controls.scale);
 			}
 		}
 
 		else {
-			cid = map.getComponentById('ScaleBar');
-			if (cid !== null) {
-				map.removeComponent(cid);
+			if (this.controls.scale !== null) {
+				map.removeComponent(this.controls.scale);
+				this.controls.scale = null;
 			}
 		}
 		
@@ -187,9 +197,9 @@ Mapstraction: {
 		}
 
 		else {
-			cid = map.getComponentById('TypeSelector');
-			if (cid !== null) {
-				map.removeComponent(cid);
+			if (this.controls.map_type !== null) {
+				map.removeComponent(this.controls.map_type);
+				this.controls.map_type = null;
 			}
 		}
 	},
@@ -198,9 +208,9 @@ Mapstraction: {
 	// style of Zoom controls so, for now, make them functionally equivalent
 	addSmallControls: function() {
 		var map = this.maps[this.api];
-		cid = map.getComponentById('ZoomBar');
-		if (cid === null) {
-			map.addComponent(new nokia.maps.map.component.ZoomBar());
+		if (this.controls.zoom === null) {
+			this.controls.zoom = new nokia.maps.map.component.ZoomBar();
+			map.addComponent(this.controls.zoom);
 		}
 	},
 	
@@ -210,9 +220,9 @@ Mapstraction: {
 	
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
-		cid = map.getComponentById('TypeSelector');
-		if (cid === null) {
-			map.addComponent(new nokia.maps.map.component.TypeSelector());
+		if (this.controls.map_type === null) {
+			this.controls.map_type = new nokia.maps.map.component.TypeSelector();
+			map.addComponent(this.controls.map_type);
 		}
 	},
 	
@@ -359,23 +369,34 @@ Mapstraction: {
 		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 	
-	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
+	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 		var map = this.maps[this.api];
 		var z_index = this.tileLayers.length || 0;
 		
 		var tileProviderOptions = {
-			getUrl: function(zoom, row, column){return tile_url.replace(/\{Z\}/gi, zoom).replace(/\{X\}/gi, column).replace(/\{Y\}/gi, row);}, // obligatory 
+			getUrl: function(zoom, row, column) {
+				var url = mxn.util.sanitizeTileURL(tile_url);
+				if (typeof subdomains !== 'undefined') {
+					url = mxn.util.getSubdomainTileURL(url, subdomains);
+				}
+				url = url.replace(/\{z\}/gi, zoom).replace(/\{x\}/gi, column).replace(/\{y\}/gi, row);
+				return url;
+			}, // obligatory 
 			max: max_zoom,  // max zoom level for overlay
 			min: min_zoom,  // min zoom level for overlay
 			opacity: opacity, // 0 = transparent overlay, 1 = opaque
 			alpha: true, // renderer to read alpha channel    
-			getCopyrights : function(area, zoom) {return [{ label: copyright_text, alt: copyright_text }];}// display copyright
+			getCopyrights : function(area, zoom) {
+				return [{
+					label: attribution,
+					alt: attribution
+				}];
+			}// display copyright
 		};	
 		
-		var Overlay =  new nokia.maps.map.provider.ImgTileProvider (tileProviderOptions);                
-		this.tileLayers.push( [tile_url, Overlay, true, z_index] );
-		
-		return map.overlays.add(Overlay);
+		var overlay =  new nokia.maps.map.provider.ImgTileProvider (tileProviderOptions);                
+		this.tileLayers.push( [tile_url, overlay, true, z_index] );
+		return map.overlays.add(overlay);
 	},
 	
 	toggleTileLayer: function(tile_url) {
