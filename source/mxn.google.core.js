@@ -347,9 +347,9 @@ Mapstraction: {
 		map.addOverlay(geoXML);
 	},
 
-	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
-		var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0, "copyleft");
-		var copyrightCollection = new GCopyrightCollection(copyright_text);
+	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
+		var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0, label);
+		var copyrightCollection = new GCopyrightCollection(attribution);
 		copyrightCollection.addCopyright(copyright);
 		var tilelayer = new GTileLayer(copyrightCollection, min_zoom, max_zoom);
 		tilelayer.isPng = function() {
@@ -359,15 +359,19 @@ Mapstraction: {
 			return opacity;
 		};
 		tilelayer.getTileUrl = function (a, b) {
-			url = tile_url;
+			var url = mxn.util.sanitizeTileURL(tile_url);
+			if (typeof subdomains !== 'undefined') {
+				url = mxn.util.getSubdomainTileURL(url, subdomains);
+			}
 			url = url.replace(/\{Z\}/gi,b);
 			url = url.replace(/\{X\}/gi,a.x);
 			url = url.replace(/\{Y\}/gi,a.y);
 			return url;
 		};
-		if(map_type) {
-			var tileLayerOverlay = new GMapType(this.tilelayers, new GMercatorProjection(19), copyright_text, {
-				errorMessage:"More "+copyright_text+" tiles coming soon"
+
+		if (map_type) {
+			var tileLayerOverlay = new GMapType(this.tilelayers, new GMercatorProjection(19), label, {
+				errorMessage:"More "+label+" tiles coming soon"
 			});		
 			this.maps[this.api].addMapType(tileLayerOverlay);
 		} else {
