@@ -404,12 +404,15 @@ Mapstraction: {
 		layer.setMap(map);
 	},
 
-addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
+addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 		var map = this.maps[this.api];
 		var z_index = this.tileLayers.length || 0;
 		var tilelayer = {
 			getTileUrl: function (coord, zoom) {
-				url = tile_url;
+				var url = mxn.util.sanitizeTileURL(tile_url);
+				if (typeof subdomains !== 'undefined') {
+					url = mxn.util.getSubdomainTileURL(url, subdomains);
+				}
 				var x = coord.x;
 				var maxX = Math.pow(2, zoom);
 				while (x < 0) {
@@ -428,9 +431,12 @@ addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, ma
 			minZoom: min_zoom,
 			maxZoom: max_zoom,
 			opacity: opacity,
-			name: copyright_text
+			name: label
 		};
+
 		var tileLayerOverlay = new google.maps.ImageMapType(tilelayer);
+		this.tileLayers.push( [tile_url, tileLayerOverlay, true, z_index] );
+
 		if (map_type) {
 			map.mapTypes.set('tile' + z_index, tileLayerOverlay);
 			var mapTypeIds = [
@@ -448,7 +454,7 @@ addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, ma
 		else {
 			map.overlayMapTypes.insertAt(z_index, tileLayerOverlay);
 		}
-		this.tileLayers.push( [tile_url, tileLayerOverlay, true, z_index] );
+		
 		return tileLayerOverlay;
 	},
 
