@@ -988,23 +988,26 @@ Mapstraction.prototype.addJSON = function(json) {
  *
  * @param {tile_url} template url of the tiles.
  * @param {opacity} opacity of the tile layer - 0 is transparent, 1 is opaque. (default=0.6)
+ * @param {label} The label to be used for the tile layer in the Map Type control
+ * @param {attribution} The attribution and/or copyright text to use for the tile layer
  * @param {copyright_text} copyright text to use for the tile layer. (default=Mapstraction)
  * @param {min_zoom} Minimum (furtherest out) zoom level that tiles are available (default=1)
  * @param {max_zoom} Maximum (closest) zoom level that the tiles are available (default=18)
  * @param {map_type} Should the tile layer be a selectable map type in the layers palette (default=false)
  */
-Mapstraction.prototype.addTileLayer = function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
+Mapstraction.prototype.addTileLayer = function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 	if(!tile_url) {
 		return;
 	}
 	
 	opacity = opacity || 0.6;
-	copyright_text = copyright_text || "Mapstraction";
+	label = label || "Mapstraction";
+	attribution = attribution || "Mapstraction";
 	min_zoom = min_zoom || 1;
 	max_zoom = max_zoom || 18;
 	map_type = map_type || false;
 
-	return this.invoker.go('addTileLayer', [ tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type] );
+	return this.invoker.go('addTileLayer', [ tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains] );
 };
 
 /**
