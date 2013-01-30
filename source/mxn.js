@@ -518,6 +518,36 @@ mxn.util = {
 	 */
 	sanitizeTileURL: function(url) {
 		return url.replace(/\{S\}/g, '{s}').replace(/\{Z\}/g, '{z}').replace(/\{X\}/g, '{x}').replace(/\{Y\}/g, '{y}');
+	},
+	
+	/**
+	 * Replaces the subdomain in a templated tile server URL with a randomly chosen element
+	 * from a choice of subdomains. Some tile servers automagically replaces instances of
+	 * {s} in templated URLs but for those that don't this helper function will do the job
+	 * @param {String} url Templated tile server URL
+	 * @param {Object} subdomains List of subdomains; can be supplied as a string or as an array
+	 * @returns {String} The modified template URL
+	 */
+	
+	getSubdomainTileURL: function (url, subdomains) {
+		var pos = url.search('{s}');
+		if (pos !== -1) {
+			var random_element = Math.floor(Math.random() * subdomains.length);
+			var domain;
+			if (typeof subdomains === 'string') {
+				domain = subdomains.substring(random_element, random_element + 1);
+			}
+			
+			else {
+				domain = subdomains[random_element];
+			}
+			
+			if (typeof domain !== 'undefined') {
+				return url.replace(/\{s\}/g, domain);
+			}
+		}
+
+		return url;
 	}
 };
 
