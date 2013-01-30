@@ -404,8 +404,8 @@ LatLonPoint: {
 	},
 
 	fromProprietary: function(mqPoint) {
-		this.lat = mqPoint.lat;
-		this.lon = mqPoint.lng;
+		this.lat = mqPoint.getLatitude();
+		this.lon = mqPoint.getLongitude();
 	}
 },
 
