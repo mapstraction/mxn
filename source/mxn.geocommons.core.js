@@ -200,7 +200,7 @@ mxn.register('geocommons', {
 			map.loadMap(match[1]);
 		},
 
-		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
+		addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 			var map = this.maps[this.api];
 
 			map.addLayer({source: "tile:" + tile_url, styles: {fill: {opacity: opacity || 1.0}}});
