@@ -292,22 +292,6 @@ Mapstraction: {
 		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 
-	/*addTileLayer: function(tile_url, options) {
-		var z_index = this.tileLayers.length || 0;
-		var layerName;
-		if (options && options.name) {
-			layerName = options.name;
-			delete options.name;
-		} else {
-			layerName = 'Tiles';
-		}
-		var lowerCaseXYZ_url = tile_url.replace(/\{Z\}/g, '{z}').replace(/\{X\}/g, '{x}').replace(/\{Y\}/g, '{y}');
-		this.layers[layerName] = new L.TileLayer(lowerCaseXYZ_url, options || {});
-		var map = this.maps[this.api];
-		map.addLayer(this.layers[layerName]);
-		this.tileLayers.push( [tile_url, this.layers[layerName], true, z_index] );
-	},*/
-	
 	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 		var map = this.maps[this.api];
 		var z_index = this.tileLayers.length || 0;
