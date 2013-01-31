@@ -461,12 +461,12 @@ mxn.register('openlayers', {
 			map.addLayer(kml);
 		},
 
-		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom, map_type) {
+		addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 			var map = this.maps[this.api];
 			var new_tile_url = tile_url.replace(/\{Z\}/gi,'${z}');
 			new_tile_url = new_tile_url.replace(/\{X\}/gi,'${x}');
 			new_tile_url = new_tile_url.replace(/\{Y\}/gi,'${y}');
-			var overlay = new OpenLayers.Layer.XYZ(copyright_text,
+			var overlay = new OpenLayers.Layer.XYZ(label,
 				new_tile_url,
 				{sphericalMercator: false, opacity: opacity}
 			);
