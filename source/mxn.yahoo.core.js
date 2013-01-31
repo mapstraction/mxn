@@ -252,7 +252,7 @@ Mapstraction: {
 		map.addOverlay(new YGeoRSS(url));
 	},
 	
-	addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
+	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 		throw 'Not implemented';
 	},
 
