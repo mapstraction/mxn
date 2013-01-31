@@ -339,7 +339,7 @@ mxn.register('esri', {
 			throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 		},
 
-		addTileLayer: function(tile_url, options) {
+		addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 			throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + this.api);
 		},
 
