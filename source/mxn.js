@@ -100,6 +100,7 @@ var mxn = window.mxn = /** @lends mxn */ {
 	/**
 	 * Registers a set of provider specific implementation functions.
 	 * @function
+	 * @private
 	 * @param {String} sApiId The API ID to register implementing functions for.
 	 * @param {Object} oApiImpl An object containing the API implementation.
 	 */
@@ -113,6 +114,7 @@ var mxn = window.mxn = /** @lends mxn */ {
 	/**
 	 * Adds a list of named proxy methods to the prototype of a 
 	 * specified constructor function.
+	 * @private
 	 * @function
 	 * @param {Function} func Constructor function to add methods to
 	 * @param {Array} aryMethods Array of method names to create
@@ -130,6 +132,9 @@ var mxn = window.mxn = /** @lends mxn */ {
 		}
 	},
 	
+	/**
+	 * @private
+	 */
 	checkLoad: function(funcDetails){
 		if(this.loaded[this.api] === false) {
 			var scope = this;
@@ -139,6 +144,9 @@ var mxn = window.mxn = /** @lends mxn */ {
 		return false;
 	},
 	
+	/**
+	 * @private
+	 */
 	deferUntilLoaded: function(fnCall) {
 		if(this.loaded[this.api] === false) {
 			var scope = this;
@@ -151,6 +159,7 @@ var mxn = window.mxn = /** @lends mxn */ {
 	/**
 	 * Bulk add some named events to an object.
 	 * @function
+	 * @private
 	 * @param {Object} oEvtSrc The event source object.
 	 * @param {String[]} aEvtNames Event names to add.
 	 */
@@ -169,6 +178,7 @@ var mxn = window.mxn = /** @lends mxn */ {
 /**
  * Instantiates a new Event 
  * @constructor
+ * @private
  * @param {String} sEvtName The name of the event.
  * @param {Object} oEvtSource The source object of the event.
  */
@@ -179,6 +189,7 @@ mxn.Event = function(sEvtName, oEvtSource){
 	}
 	/**
 	 * Add a handler to the Event.
+	 * @private
 	 * @param {Function} fn The handler function.
 	 * @param {Object} ctx The context of the handler function.
 	 */
@@ -187,6 +198,7 @@ mxn.Event = function(sEvtName, oEvtSource){
 	};
 	/**
 	 * Remove a handler from the Event.
+	 * @private
 	 * @param {Function} fn The handler function.
 	 * @param {Object} ctx The context of the handler function.
 	 */
@@ -199,12 +211,14 @@ mxn.Event = function(sEvtName, oEvtSource){
 	};
 	/**
 	 * Remove all handlers from the Event.
+	 * @private
 	 */
 	this.removeAllHandlers = function(){
 		handlers = [];
 	};
 	/**
 	 * Fires the Event.
+	 * @private
 	 * @param {Object} oEvtArgs Event arguments object to be passed to the handlers.
 	 */
 	this.fire = function(oEvtArgs){
@@ -219,6 +233,7 @@ mxn.Event = function(sEvtName, oEvtSource){
  * Creates a new Invoker, a class which helps with on-the-fly 
  * invocation of the correct API methods.
  * @constructor
+ * @private
  * @param {Object} aobj The core object whose methods will make cals to go()
  * @param {String} asClassName The name of the Mapstraction class to be invoked, normally the same name as aobj's constructor function
  * @param {Function} afnApiIdGetter The function on object aobj which will return the active API ID
@@ -235,6 +250,7 @@ mxn.Invoker = function(aobj, asClassName, afnApiIdGetter){
 	
 	/**
 	 * Invoke the API implementation of a specific method.
+	 * @private
 	 * @param {String} sMethodName The method name to invoke
 	 * @param {Array} args Arguments to pass on
 	 * @param {Object} oOptions Optional. Extra options for invocation
@@ -286,6 +302,7 @@ mxn.util = {
 			
 	/**
 	 * Merges properties of one object into another recursively.
+	 * @name mxn.util.merge
 	 * @param {Object} oRecv The object receiveing properties
 	 * @param {Object} oGive The object donating properties
 	 */
@@ -304,6 +321,7 @@ mxn.util = {
 	
 	/**
 	 * $m, the dollar function, elegantising getElementById()
+	 * @name mxn.util.$m
 	 * @return An HTML element or array of HTML elements
 	 */
 	$m: function() {
@@ -323,6 +341,7 @@ mxn.util = {
 
 	/**
 	 * loadScript is a JSON data fetcher
+	 * @name mxn.util.loadScript
 	 * @param {String} src URL to JSON file
 	 * @param {Function} callback Callback function
 	 */
@@ -350,7 +369,7 @@ mxn.util = {
 	},
 
 	/**
-	 *
+	 * @private
 	 * @param {Object} point
 	 * @param {Object} level
 	 */
@@ -368,6 +387,7 @@ mxn.util = {
 
 	/**
 	 * Load a stylesheet from a remote file.
+	 * @name mxn.util.loadStyle
 	 * @param {String} href URL to the CSS file
 	 */
 	loadStyle: function(href) {
@@ -381,6 +401,7 @@ mxn.util = {
 
 	/**
 	 * getStyle provides cross-browser access to css
+	 * @name mxn.util.getStyle
 	 * @param {Object} el HTML Element
 	 * @param {String} prop Style property name
 	 */
@@ -401,6 +422,7 @@ mxn.util = {
 	 * "A degree of longitude at the equator is 111.2km... For other latitudes,
 	 * multiply by cos(lat)"
 	 * assumes the earth is a sphere but good enough for our purposes
+	 * @name mxn.util.lonToMetres
 	 * @param {Float} lon
 	 * @param {Float} lat
 	 */
@@ -410,6 +432,7 @@ mxn.util = {
 
 	/**
 	 * Convert metres to longitude
+	 * @name mxn.util.metresToLon
 	 * @param {Object} m
 	 * @param {Object} lat
 	 */
@@ -419,6 +442,7 @@ mxn.util = {
 
 	/**
 	 * Convert kilometres to miles
+	 * @name mxn.util.KMToMiles
 	 * @param {Float} km
 	 * @returns {Float} miles
 	 */
@@ -428,6 +452,7 @@ mxn.util = {
 
 	/**
 	 * Convert miles to kilometres
+	 * @name mxn.util.MilesToKM
 	 * @param {Float} miles
 	 * @returns {Float} km
 	 */
@@ -441,7 +466,7 @@ mxn.util = {
 	// etc.
 
 	/**
-	 *
+	 * @name mxn.util.getDegreesFromGoogleZoomLevel
 	 * @param {Object} pixels
 	 * @param {Object} zoom
 	 */
@@ -450,7 +475,7 @@ mxn.util = {
 	},
 
 	/**
-	 *
+	 * @name mxn.util.getGoogleZoomLevelFromDegrees
 	 * @param {Object} pixels
 	 * @param {Object} degrees
 	 */
@@ -459,7 +484,7 @@ mxn.util = {
 	},
 
 	/**
-	 *
+	 * @name mxn.util.logN
 	 * @param {Object} number
 	 * @param {Object} base
 	 */
@@ -469,6 +494,7 @@ mxn.util = {
 			
 	/**
 	 * Returns array of loaded provider apis
+	 * @name mxn.util.getAvailableProviders
 	 * @returns {Array} providers
 	 */
 	getAvailableProviders : function () {
@@ -482,7 +508,8 @@ mxn.util = {
 	},
 	
 	/**
-	 * Formats a string, inserting values of subsequent parameters at specified 
+	 * Formats a string, inserting values of subsequent parameters at specified
+	 * @name mxn.util.stringFormat
 	 * locations. e.g. stringFormat('{0} {1}', 'hello', 'world');
 	 */
 	stringFormat: function(strIn){
@@ -499,6 +526,7 @@ mxn.util = {
 	 * Traverses an object graph using a series of map functions provided as arguments 
 	 * 2 to n. Map functions are only called if the working object is not undefined/null.
 	 * For usage see mxn.google.geocoder.js.
+	 * @name mxn.util.traverse
 	 */
 	traverse: function(start) {
 		var args = Array.prototype.slice.apply(arguments);
@@ -513,6 +541,7 @@ mxn.util = {
 	/**
 	 * Sanitises and cleans a templated tile server URL, converting all uppercase template
 	 * references, such as {Z}, {X} or {Y} to their lowercase forms.
+	 * @name mxn.util.sanitizeTileURL
 	 * @param {String} url Source URL to sanitise
 	 * @returns {String} The sanitised URL
 	 */
@@ -524,11 +553,11 @@ mxn.util = {
 	 * Replaces the subdomain in a templated tile server URL with a randomly chosen element
 	 * from a choice of subdomains. Some tile servers automagically replaces instances of
 	 * {s} in templated URLs but for those that don't this helper function will do the job
+	 * @name mxn.util.getSubdomainTileURL
 	 * @param {String} url Templated tile server URL
 	 * @param {Object} subdomains List of subdomains; can be supplied as a string or as an array
 	 * @returns {String} The modified template URL
 	 */
-	
 	getSubdomainTileURL: function (url, subdomains) {
 		var pos = url.search('{s}');
 		if (pos !== -1) {
@@ -552,9 +581,10 @@ mxn.util = {
 };
 
 /**
- * Class for converting between HTML and RGB integer color formats.
- * Accepts either a HTML color string argument or three integers for R, G and B.
+ * Helper class for converting between HTML and RGB integer color formats.
  * @constructor
+ * @param {variable} color Specify as either a single argument containing an HTML
+ * color string or three numeric arguments for R, G and B respectively.
  */
 mxn.util.Color = function() {
 	if(arguments.length == 3) {
@@ -571,24 +601,24 @@ mxn.util.Color.prototype.reHex = /^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
 /**
  * Set the color from the supplied HTML hex string.
- * @param {String} strHexColor A HTML hex color string e.g. '#00FF88'.
+ * @param {String} hexColor A HTML hex color string e.g. '#00FF88'.
  */
-mxn.util.Color.prototype.setHexColor = function(strHexColor) {
-	var match = strHexColor.match(this.reHex);
+mxn.util.Color.prototype.setHexColor = function(hexColor) {
+	var match = hexColor.match(this.reHex);
 	if(match) {
 		// grab the code - strips off the preceding # if there is one
-		strHexColor = match[1];
+		hexColor = match[1];
 	}
 	else {
 		throw 'Invalid HEX color format, expected #000, 000, #000000 or 000000';
 	}
 	// if a three character hex code was provided, double up the values
-	if(strHexColor.length == 3) {
-		strHexColor = strHexColor.replace(/\w/g, function(str){return str.concat(str);});
+	if(hexColor.length == 3) {
+		hexColor = hexColor.replace(/\w/g, function(str){return str.concat(str);});
 	}
-	this.red = parseInt(strHexColor.substr(0,2), 16);
-	this.green = parseInt(strHexColor.substr(2,2), 16);
-	this.blue = parseInt(strHexColor.substr(4,2), 16);
+	this.red = parseInt(hexColor.substr(0,2), 16);
+	this.green = parseInt(hexColor.substr(2,2), 16);
+	this.blue = parseInt(hexColor.substr(4,2), 16);
 };
 
 /**
