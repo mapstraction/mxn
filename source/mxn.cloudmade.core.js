@@ -346,7 +346,7 @@ mxn.register('cloudmade', {
 			throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 		},
 
-		addTileLayer: function(tile_url, opacity, copyright_text, min_zoom, max_zoom) {
+		addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 			this._fireQueuedEvents();
 			var map = this.maps[this.api];
 
