@@ -392,7 +392,6 @@ Marker: {
 	},
 
 	openBubble: function() {
-		console.log('openbubble : ' + this.infoBubble);
 		var infowindow = new Microsoft.Maps.Infobox(this.location.toProprietary('microsoft7'),
 			{
 				description: this.infoBubble
