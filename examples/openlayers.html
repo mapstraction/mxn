@@ -21,6 +21,7 @@
 		});
 		//map.addControls({pan: true, zoom: 'small'});
 		map.addControls({zoom: 'large', overview: true, scale: true, map_type: true, pan: true});
+		latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587);
 		map.setCenterAndZoom(latlon, 12);
 		
 		
@@ -232,6 +233,28 @@
 			map.addControls({});
 			map.addControls({scale: true});
 		});
+		$('#toner-add').click(function() {
+			var url = "http://tile.stamen.com/toner/{Z}/{X}/{Y}.png";
+			var opacity = 1;
+			var copyright = "Toner by Stamen";
+			var min_zoom = 1;
+			var max_zoom = 18;
+			var map_type = true;
+			
+			map.addTileLayer(url, opacity, copyright, min_zoom, max_zoom, map_type);
+			return false;
+		});
+		$('#watercolor-add').click(function() {
+			var url = "http://tile.stamen.com/watercolor/{Z}/{X}/{Y}.png";
+			var opacity = 1;
+			var copyright = "Watercolor by Stamen";
+			var min_zoom = 1;
+			var max_zoom = 18;
+			var map_type = true;
+			
+			map.addTileLayer(url, opacity, copyright, min_zoom, max_zoom, map_type);
+			return false;
+		});
 	});
 	</script>
 </head>
@@ -263,6 +286,8 @@
 					<li>Add a <a id="add-marker" href="#">standard marker</a> or <a id="remove-marker" href="#">remove it</a>.</li>
 					<li>Add a <a id="add-icon-marker" href="#">marker with a custom icon</a> or <a id="remove-icon-marker" href="#">remove it</a>.</li>
 					<li>Add a <a id="add-polyline" href="#">polyline</a> or <a id="remove-polyline" href="#">remove it</a>.</li>
+					<li>Add map tiles: <a id="toner-add" href="#">Stamen's Toner</a>, <a id="watercolor-add" href="#">Stamen's Watercolor</a>.</li>
+					
 				</ul>
 			</div>
 		</div>
