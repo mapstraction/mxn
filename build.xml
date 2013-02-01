@@ -9,8 +9,8 @@
 	<!-- set global properties for this build -->
 	<property name="source" location="source"/>
 	<property name="build.base" location="build"/>
-	<property name="build.major" value="2"/>
-	<property name="build.minor" value="1"/>
+	<property name="build.major" value="3"/>
+	<property name="build.minor" value="0"/>
 	
 	<target name="build">
 		<!-- generate build number -->
