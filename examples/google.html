@@ -13,6 +13,9 @@
 	var	polyline;
 	var icon_marker;
 	var marker;
+	var osm_url = "http://{S}.tile.openstreetmap.org/{Z}/{X}/{Y}.png";
+	var toner_url = "http://tile.stamen.com/toner/{Z}/{X}/{Y}.png";
+	var watercolor_url = "http://tile.stamen.com/watercolor/{Z}/{X}/{Y}.png";
 	
 	function initialize() {
 		map = new mxn.Mapstraction('map', 'google');
@@ -233,6 +236,36 @@
 			map.addControls({});
 			map.addControls({scale: true});
 		});
+		$('#osm-add').click(function() {
+			var opacity = 1;
+			var label = "OSM";
+			var attribution = 'CC-BY-SA © OpenStreetMap contributors';
+			var min_zoom = 1;
+			var max_zoom = 18;
+			var map_type = true;
+			
+			map.addTileLayer(osm_url, opacity, label, attribution, min_zoom, max_zoom, map_type, ['a', 'b', 'c']);
+		});
+		$('#toner-add').click(function() {
+			var opacity = 1;
+			var label = "Toner";
+			var attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.';
+			var min_zoom = 1;
+			var max_zoom = 18;
+			var map_type = true;
+			
+			map.addTileLayer(toner_url, opacity, label, attribution, min_zoom, max_zoom, map_type);
+		});
+		$('#watercolor-add').click(function() {
+			var opacity = 1;
+			var label = "Watercolor";
+			var attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.';
+			var min_zoom = 1;
+			var max_zoom = 18;
+			var map_type = true;
+			
+			map.addTileLayer(watercolor_url, opacity, label, attribution, min_zoom, max_zoom, map_type);
+		});
 	});
 	</script>
 </head>
@@ -264,6 +297,7 @@
 					<li>Add a <a id="add-marker" href="#">standard marker</a> or <a id="remove-marker" href="#">remove it</a>.</li>
 					<li>Add a <a id="add-icon-marker" href="#">marker with a custom icon</a> or <a id="remove-icon-marker" href="#">remove it</a>.</li>
 					<li>Add a <a id="add-polyline" href="#">polyline</a> or <a id="remove-polyline" href="#">remove it</a>.</li>
+					<li>Add <a id="osm-add" href="#">OSM</a>, <a id="toner-add" href="#">Toner</a>, <a id="watercolor-add" href="#">Watercolor</a> tiles.</li>
 				</ul>
 			</div>
 		</div>
