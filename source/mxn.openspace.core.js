@@ -62,7 +62,7 @@ Mapstraction: {
 				var point = this.getLonLatFromViewPortPx( evt.xy );
 				// convert to LatLonPoint
 				var llPoint = new mxn.LatLonPoint();
-				llPoint.fromProprietary(this.api, point);
+				llPoint.fromProprietary('openspace', point);
 				me.clickHandler( llPoint.lat, llPoint.lon );
 				return false;
 			}
@@ -415,12 +415,9 @@ Mapstraction: {
 		if (locDisp !== null) {
 			map.events.register('mousemove', map, function (e) {
 				var lonLat = map.getLonLatFromViewPortPx(e.xy);
-				var lon = lonLat.lon * (180.0 / 20037508.34);
-				var lat = lonLat.lat * (180.0 / 20037508.34);
-				lat = (180/Math.PI)*(2*Math.atan(Math.exp(lat*Math.PI/180))-(Math.PI/2));
-				var loc = numFormatFloat(lat,4) + ' / ' + numFormatFloat(lon,4);
-				   // numFormatFloat(X,4) simply formats floating point 'X' to
-				   // 4 dec places
+				var mouseLL = new mxn.LatLonPoint();
+				mouseLL.fromProprietary('openspace', lonLat);
+				var loc = Math.round(mouseLL.lat*10000)/10000 + ' / ' + Math.round(mouseLL.lon*10000)/10000;
 				locDisp.innerHTML = loc;
 			});
 		}
