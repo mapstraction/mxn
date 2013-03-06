@@ -392,27 +392,37 @@ Marker: {
 		}
 		if (me.iconUrl) {
 			thisIcon = thisIcon.extend({
-				iconUrl: me.iconUrl
+				options: {
+					iconUrl: me.iconUrl
+				}
 			});
 		}
 		if (me.iconSize) {
 			thisIcon = thisIcon.extend({
-				iconSize: new L.Point(me.iconSize[0], me.iconSize[1])
+				options: {
+					iconSize: new L.Point(me.iconSize[0], me.iconSize[1])
+				}
 			});
 		}
 		if (me.iconAnchor) {
 			thisIcon = thisIcon.extend({
-				iconAnchor: new L.Point(me.iconAnchor[0], me.iconAnchor[1])
+				options: {
+					iconAnchor: new L.Point(me.iconAnchor[0], me.iconAnchor[1])
+				}
 			});
 		}
 		if (me.iconShadowUrl) {
 			thisIcon = thisIcon.extend({
-				shadowUrl: me.iconShadowUrl
+				options: {
+					shadowUrl: me.iconShadowUrl
+				}
 			});
 		}
 		if (me.iconShadowSize) {
 			thisIcon = thisIcon.extend({
-				shadowSize: new L.Point(me.iconShadowSize[0], me.iconShadowSize[1])
+				options: {
+					shadowSize: new L.Point(me.iconShadowSize[0], me.iconShadowSize[1])
+				}
 			});
 		}
 		var iconObj = new thisIcon();
