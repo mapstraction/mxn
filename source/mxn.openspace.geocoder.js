@@ -36,7 +36,7 @@ Geocoder: {
 			geocode_request_object.address = query;
 			//If the query contains numbers then interpret it as a postcode perhaps?
 			var matches = query.match(/\d+/g);
-			if (matches != null) {
+			if (matches !== null) {
 				isPostCode = true;
 			}
 		}
