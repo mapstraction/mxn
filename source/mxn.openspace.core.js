@@ -417,7 +417,7 @@ Mapstraction: {
 				var lonLat = map.getLonLatFromViewPortPx(e.xy);
 				var mouseLL = new mxn.LatLonPoint();
 				mouseLL.fromProprietary('openspace', lonLat);
-				var loc = parseFloat(mouseLL.lat).toFixed(4) + ' / ' + parseFloat(mouseLL).toFixed(4);
+				var loc = parseFloat(mouseLL.lat).toFixed(4) + ' / ' + parseFloat(mouseLL.lon).toFixed(4);
 				locDisp.innerHTML = loc;
 			});
 		}
