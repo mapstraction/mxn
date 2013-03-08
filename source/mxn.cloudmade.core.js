@@ -374,7 +374,7 @@ mxn.register('cloudmade', {
 			var locDisp = document.getElementById(element);
 			if (locDisp !== null) {
 				CM.Event.addListener(map, 'mousemove', function(point) {
-					var loc = point.latLng.lat().toFixed(4) + ' / ' + point.latLng.lng().toFixed(4);
+					var loc = point._lat.toFixed(4) + ' / ' + point._lng.toFixed(4);
 					locDisp.innerHTML = loc;
 				});
 				locDisp.innerHTML = '0.0000 / 0.0000';
