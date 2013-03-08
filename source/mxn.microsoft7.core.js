@@ -20,7 +20,13 @@ Mapstraction: {
 			enableSearchLogo: false, // Remove the pointless Bing Search advert form the map's lower left, as this has nothing to do with the map
 			enableClickableLogo: false // Stop the Bing logo from being clickable, so no-one accidently clicks it and leaves the map
 			} );
-	   //Add Click Event - with IE7 workaround if needed
+		//Now get the update the microsoft key to be session key for geocoding use later without racking up api hits
+		this.maps[api].getCredentials(function(credentials) 
+			{ 
+				if(credentials !== null) { microsoft_key = credentials; } 
+			});
+			
+		//Add Click Event - with IE7 workaround if needed
 		if (element.addEventListener){
 			element.addEventListener('contextmenu', function (evt) { evt.preventDefault(); });
 		} else if (element.attachEvent){
