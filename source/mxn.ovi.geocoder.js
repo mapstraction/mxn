@@ -22,7 +22,13 @@ Geocoder: {
 	geocode: function(address, rowlimit){
 		var ovi_geocoder = this.geocoders[this.api];
 		this.row_limit = rowlimit || 1; //default to one result
-		ovi_geocoder.geocode(address);
+		
+		if (address instanceof mxn.LatLonPoint) {
+			ovi_geocoder.reverseGeocode(address);
+		}
+		else {
+			ovi_geocoder.geocode(address);
+		}
 	},
 
 	geocode_callback: function(response, status){
