@@ -62,8 +62,8 @@ Mapstraction: {
 		// to init, so don't check for queued events just yet.
 		//this._fireQueuedEvents();
 		if (this.options.enableScrollWheelZoom) {
+			var map = this.maps[this.api];
 			MQA.withModule('mousewheel', function() {
-				var map = this.maps[this.api];
 				map.enableMouseWheelZoom();
 			});
 		}
