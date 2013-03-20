@@ -82,15 +82,12 @@ Mapstraction: {
 	
 	applyOptions: function(){
 		var map = this.maps[this.api];
-		
-		var myOptions = map.getOptions();
-		if (!this.options.enableDragging) {
-			myOptions.disablePanning = true;
-		} 
-		if (!this.options.enableScrollWheelZoom) {
-			myOptions.disableZooming = true;
-		} 
-		map.setOptions(myOptions);
+		var opts = map.getOptions();
+
+		opts.disablePanning = !this.options.enableDragging;
+		opts.disableZooming = !this.options.enableScrollWheelZoom;
+
+		map.setOptions(opts);
 	},
 
 	resizeTo: function(width, height){	
