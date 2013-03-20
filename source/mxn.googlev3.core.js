@@ -89,15 +89,26 @@ Mapstraction: {
 				me.changeZoom.fire();
 			});
 		});
-
+		
 		// deal with map movement
+		var is_dragging = false;
+
+		google.maps.event.addListener(map, 'dragstart', function() {
+			is_dragging = true;
+		});
+
 		google.maps.event.addListener(map, 'dragend', function(){
 			me.moveendHandler(me);
 			me.endPan.fire();
+			is_dragging = false;
 		});
 		
 		google.maps.event.addListener(map, 'center_changed', function() {
-			me.endPan.fire();
+			if (!is_dragging) {
+				fireOnNextIdle.push(function() {
+					me.endPan.fire();
+				});
+			}
 		});
 		
 		// deal with initial tile loading
