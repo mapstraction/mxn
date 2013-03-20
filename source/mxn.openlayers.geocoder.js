@@ -23,7 +23,12 @@ Geocoder: {
 			if (!address.hasOwnProperty('address') || address.address === null || address.address === '') {
 				address.address = [ address.street, address.locality, address.region, address.country ].join(', ');
 			}
-			params.q = address.address;
+			if (address.hasOwnProperty('address')) {
+				params.q = address.address;
+			}
+			else {
+				params.q = address;
+			}
 			params.limit = me.row_limit;
 		}
 

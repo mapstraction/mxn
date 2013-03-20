@@ -56,7 +56,9 @@ Geocoder: {
 	geocode_callback: function(mapPoint){
 			var return_location = {};			
 			return_location.point = new mxn.LatLonPoint();
-			return_location.point.fromProprietary(this.api, mapPoint);
+			if (mapPoint !== null) {
+				return_location.point.fromProprietary(this.api, mapPoint);
+			}
 			this.callback(return_location);
 	}
 }

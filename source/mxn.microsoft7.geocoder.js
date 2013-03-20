@@ -53,7 +53,10 @@ Geocoder: {
 					point: new mxn.LatLonPoint(place.point.coordinates[0], place.point.coordinates[1])
 				};
 				
-				places.push(return_location);
+				// Remove sovereign entity
+				if (place.entityType != ('Sovereign') && place.entityType != ('CountryRegion')) {
+					places.push(return_location);
+				}
 			}
 
 			if (this.row_limit <= 1) {
