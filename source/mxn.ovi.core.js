@@ -25,7 +25,7 @@ Mapstraction: {
 		ovi_map.addListener('click', function(event){
 			coords = ovi_map.pixelToGeo(event.targetX, event.targetY);
 			me.click.fire({'location': new mxn.LatLonPoint(coords.latitude, coords.longitude)});
-		});
+		}, false);
 
 		// Handle endPan (via centre change) and zoom events
 		// the Ovi Maps API doesn't have a discrete event for each of these events
@@ -43,7 +43,7 @@ Mapstraction: {
 			if (event.data & event.MAPVIEWCHANGE_SIZE) {
 				eventStates.mapsize = true;
 			}
-		});
+		}, false);
 
 		ovi_map.addListener('mapviewchangeupdate', function(event){
 			if (event.data & event.MAPVIEWCHANGE_CENTER) {
@@ -55,7 +55,7 @@ Mapstraction: {
 			if (event.data & event.MAPVIEWCHANGE_SIZE) {
 				eventStates.mapsize = true;
 			}
-		});
+		}, false);
 
 		ovi_map.addListener('mapviewchangeend', function(event){
 			// The Ovi Maps API doesn't support a "map loaded" event, but both a
@@ -82,7 +82,7 @@ Mapstraction: {
 				eventStates.zoom = false;
 				me.changeZoom.fire();
 			}
-		});
+		}, false);
 
 		this.maps[api] = ovi_map;
 		this.loaded[api] = true;
@@ -378,7 +378,7 @@ Mapstraction: {
 			map.addListener('mousemove', function(event){
 				coords = map.pixelToGeo(event.targetX, event.targetY);
 				locDisp.innerHTML = coords.latitude.toFixed(4) + ' / ' + coords.longitude.toFixed(4);
-			});		
+			}, false);		
 			locDisp.innerHTML = '0.0000 / 0.0000';
 		}
 	}
@@ -393,13 +393,14 @@ LatLonPoint: {
 	fromProprietary: function(oviCoordinate) {
 		this.lat = oviCoordinate.latitude;
 		this.lon = oviCoordinate.longitude;
+		this.lng = this.lon;
 	}
 },
 
 Marker: {
 	
 	toProprietary: function() {
-		var properties = [];
+		var properties = {};
 		var self = this;
 		
 		if (this.iconAnchor) {
@@ -420,9 +421,9 @@ Marker: {
 			if (this.hover) {
 				event_action = "mouseover";
 			}
-			prop_marker.addListener(event_action, function() {
+			prop_marker.addListener(event_action, function(event) {
 				self.openBubble();
-			});
+			}, false);
 		}
 
 		if (this.draggable) {
@@ -448,6 +449,7 @@ Marker: {
 				if (bb.contains(new_coords)) {
 					self.location.lat = new_coords.latitude;
 					self.location.lon = new_coords.longitude;
+					self.location.lng = self.location.lon;
 				}
 				
 				if (prop_marker.get("restore_infobubble")) {
