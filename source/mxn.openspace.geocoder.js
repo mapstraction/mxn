@@ -44,22 +44,57 @@ Geocoder: {
 		//Is Query a postcode search?
 		if (isPostCode) {
 			this.geocoders[this.api].postcodeService.getLonLat(geocode_request_object.address, function(mapPoint) {
-				me.geocode_callback(mapPoint);
+				me.geocode_callback(mapPoint, 1);
 			});
 		} else {
 			this.geocoders[this.api].gazetteer.getLonLat(geocode_request_object.address, function(mapPoint) {
-				me.geocode_callback(mapPoint);
+				me.geocode_callback(mapPoint, me.row_limit);
 			});
 		}
 	},
 
-	geocode_callback: function(mapPoint){
-			var return_location = {};			
-			return_location.point = new mxn.LatLonPoint();
-			if (mapPoint !== null) {
-				return_location.point.fromProprietary(this.api, mapPoint);
+	geocode_callback: function(results, rowlimit) {
+		var place;
+		var places = [];
+
+		if (results.hasOwnProperty('lat')) {
+			//This is a single postcode result
+			place = {};
+			place.point = new mxn.LatLonPoint();
+			if (results !== null) { 
+				place.point.fromProprietary(this.api, results); 
+				places.push(place);
 			}
-			this.callback(return_location);
+		}
+
+		else {
+			for (i=0; i<results.length; i++) {
+				place = results[i];
+				if (place.type == "CITY" || place.type == "TOWN") {
+					var return_location = {};
+					return_location.street = '';
+					return_location.locality = place.name;
+					return_location.postcode = '';
+					return_location.region = place.county;
+					return_location.country = 'United Kingdom';
+
+					return_location.point = new mxn.LatLonPoint();
+					return_location.point.fromProprietary(this.api, place.location);
+
+					places.push(return_location);
+				}
+			}  
+		}    
+
+		if (rowlimit <= 1) {
+			this.callback(places[0]);
+		}
+		else {
+			if (places.length > rowlimit) {
+				places.length = rowlimit;
+			}
+			this.callback(places);
+		}
 	}
 }
 
