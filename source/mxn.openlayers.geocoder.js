@@ -74,7 +74,10 @@ Geocoder: {
 			if (place.address.country) {
 				return_location.country = place.address.country;
 			}
-			if (place.address.state) {
+			if (place.address.state_district) {
+				return_location.region = place.address.state_district;
+			}
+			else if (place.address.state) {
 				return_location.region = place.address.state;
 			}
 			if (place.address.city) {
