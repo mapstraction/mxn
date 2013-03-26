@@ -672,7 +672,7 @@ mxn.register('openlayers', {
 
 			var style = {
 				cursor         : 'pointer',
-				externalGraphic: this.iconUrl,
+				externalGraphic: this.icon,
 				graphicTitle   : this.labelText,
 				graphicHeight  : size.h,
 				graphicWidth   : size.w,
