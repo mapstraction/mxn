@@ -294,135 +294,19 @@ mxn.register('openlayers', {
 		addMarker: function(marker, old) {
 			var map = this.maps[this.api];
 			var pin = marker.toProprietary(this.api);
-
 			if (!this.layers.markers) {
-				var default_style = new OpenLayers.Style({
-					'cursor'       : 'pointer',
-					'graphicZIndex': 2
-				});
-				var select_style = default_style;
-				var style_map = new OpenLayers.StyleMap({
-					'default': default_style,
-					'select' : select_style
-				});
-				this.layers.markers = new OpenLayers.Layer.Vector('markers', {
-					// events            : null,
-					// isBaseLayer       : false,
-					// isFixed           : false,
-					// features          : [],
-					// filter            : null,
-					// selectedFeatures  : [],
-					// unrenderedFeatures: {},
-					reportError          : true,
-					// style             : {},
-					styleMap             : style_map,
-					// strategies        : [],
-					// protocol          : null,
-					// renderers         : [],
-					// renderer          : null,
-					// rendererOptions   : {},
-					rendererOptions      : {
-						yOrdering: true,
-						zIndexing: true
-					}
-					// geometryType      : 'OpenLayers.Geometry.Point',
-					// drawn             : false,
-					// ratio             : 1.0
-				});
+				this.layers.markers = new OpenLayers.Layer.Markers('markers');
 				map.addLayer(this.layers.markers);
-				this.controls.select = new OpenLayers.Control.SelectFeature(this.layers.markers, {
-					// events        : null,
-					// multipleKey   : 'altKey',
-					// toggleKey     : 'ctrlKey',
-					multiple         : true,
-					clickout         : true,
-					// toggle        : true,
-					hover            : false,
-					highlightOnly    : true,
-					// box           : true,
-					// onBeforeSelect: null,
-					onSelect         : function(feature) {
-						var marker = feature.mapstraction_marker;
-						// var shown = false;
-						// if (shown) {
-							// if (marker.popup != null) {
-								// marker.popup.hide();
-								// marker.map.removePopup(marker.popup);
-							// }
-							// shown = false;
-						// } else {
-							// if (marker.popup != null) {
-								// marker.map.addPopup(marker.popup);
-								// marker.popup.show();
-							// }
-							// shown = true;
-						// }
-						marker.click.fire.apply(marker);
-					},
-					// onUnselect    : null,
-					// scope         : {},
-					// geometryTypes : ['OpenLayers.Geometry.Point'],
-					// layer         : null,
-					// layers        : [],
-					// callbacks     : {},
-					// selectStyle   : {},
-					// renderIntent  : '',
-					// handlers      : {},
-					overFeature      : function(feature) {
-						var marker = feature.mapstraction_marker;
-						if (marker.hoverIconUrl) {
-							marker.setUrl(marker.hoverIconUrl);
-						}
-						if (marker.hover && !!marker.popup) {
-							marker.map.addPopup(marker.popup);
-							marker.popup.show();
-						}
-					},
-					outFeature       : function(feature) {
-						var marker = feature.mapstraction_marker;
-						if (!!marker.hoverIconUrl) {
-							var icon = marker.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
-							marker.setUrl(icon);
-						}
-						if (marker.hover && !!marker.popup) {
-							marker.popup.hide();
-							marker.map.removePopup(marker.popup);
-						}
-					},
-					autoActivate     : true
-				});
-				this.controls.drag = new OpenLayers.Control.DragFeature(this.layers.markers, {
-					// geometryTypes: ['OpenLayers.Geometry.Point'],
-					// onStart         : null,
-					// onDrag          : null,
-					// onComplete      : null,
-					// onEnter         : null,
-					// onLeave         : null,
-					documentDrag    : true,
-					// layer           : null,
-					// feature         : null,
-					// dragCallbacks   : {},
-					// featureCallbacks: {},
-					// lastPixel       : null,
-					autoActivate    : true
-				});
-				this.controls.drag.handlers.drag.stopDown  = false;
-				this.controls.drag.handlers.drag.stopUp    = false;
-				this.controls.drag.handlers.drag.stopClick = false;
-				this.controls.drag.handlers.feature.stopDown  = false;
-				this.controls.drag.handlers.feature.stopUp    = false;
-				this.controls.drag.handlers.feature.stopClick = false;
-
-				map.addControls([this.controls.select, this.controls.drag]);
 			}
-			this.layers.markers.addFeatures([pin]);
+			this.layers.markers.addMarker(pin);
 			return pin;
 		},
 
 		removeMarker: function(marker) {
 			var map = this.maps[this.api];
 			var pin = marker.proprietary_marker;
-			this.layers.markers.removeFeatures([pin]);
+			this.layers.markers.removeMarker(pin);
+			pin.destroy();
 		},
 
 		declutterMarkers: function(opts) {
@@ -649,56 +533,79 @@ mxn.register('openlayers', {
 
 		toProprietary: function() {
 			var size, anchor, popup;
-			if (this.iconSize) {
+			if(this.iconSize) {
 				size = new OpenLayers.Size(this.iconSize[0], this.iconSize[1]);
 			}
 			else {
-				size = new OpenLayers.Size(21, 25);
+				size = new OpenLayers.Size(21,25);
 			}
 
-			if (this.iconAnchor) {
+			if(this.iconAnchor) {
 				anchor = new OpenLayers.Pixel(-this.iconAnchor[0], -this.iconAnchor[1]);
 			}
 			else {
-				anchor = new OpenLayers.Pixel(-(size.w / 2), -size.h);
+				anchor = new OpenLayers.Pixel(-(size.w/2), -size.h);
 			}
 
-			if (this.iconUrl) {
+			if(this.iconUrl) {
 				this.icon = new OpenLayers.Icon(this.iconUrl, size, anchor);
 			}
 			else {
 				this.icon = new OpenLayers.Icon('http://openlayers.org/dev/img/marker-gold.png', size, anchor);
 			}
+			var marker = new OpenLayers.Marker(this.location.toProprietary("openlayers"), this.icon);
 
-			var style = {
-				cursor         : 'pointer',
-				externalGraphic: this.icon,
-				graphicTitle   : this.labelText,
-				graphicHeight  : size.h,
-				graphicWidth   : size.w,
-				graphicXOffset : anchor.x,
-				graphicYOffset : anchor.y,
-				graphicZIndex  : (!!this.attributes.zIndex ? this.attributes.zIndex : 2)//,
-				// title       : this.labelText
-			};
-
-			var marker = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(
-					this.location.toProprietary('openlayers').lon,
-					this.location.toProprietary('openlayers').lat),
-				null,
-				style);
-
-			if (this.infoBubble) {
-				this.popup = new OpenLayers.Popup.FramedCloud(null,
-					this.location.toProprietary('openlayers'),
-					new OpenLayers.Size(100, 100),
+			if(this.infoBubble) {
+				popup = new OpenLayers.Popup.FramedCloud(null,
+					this.location.toProprietary("openlayers"),
+					new OpenLayers.Size(100,100),
 					this.infoBubble,
 					this.icon,
-					true);
-				this.popup.autoSize = true;
+					true
+				);
+				var theMap = this.map;
+				if(this.hover) {
+					marker.events.register("mouseover", marker, function(event) {
+						theMap.addPopup(popup);
+						popup.show();
+					});
+					marker.events.register("mouseout", marker, function(event) {
+						popup.hide();
+						theMap.removePopup(popup);
+					});
+				}
+				else {
+					var shown = false;
+					marker.events.register("mousedown", marker, function(event) {
+						if (shown) {
+							popup.hide();
+							theMap.removePopup(popup);
+							shown = false;
+						} else {
+							theMap.addPopup(popup);
+							popup.show();
+							shown = true;
+						}
+					});
+				}
+				popup.autoSize = true;
+				this.popup = popup;
 			}
-			else {
-				this.popup = null;
+			
+			//fire click event for marker
+			marker.events.register("click",marker,function(event) {
+				marker.mapstraction_marker.click.fire();
+			});
+
+			if(this.hoverIconUrl) {
+				var icon = this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
+				var hovericon = this.hoverIconUrl;
+				marker.events.register("mouseover", marker, function(event) {
+					marker.setUrl(hovericon);
+				});
+				marker.events.register("mouseout", marker, function(event) {
+					marker.setUrl(icon);
+				});
 			}
 
 			if(this.infoDiv){
@@ -712,7 +619,7 @@ mxn.register('openlayers', {
 				// Need to create a new popup in case setInfoBubble has been called
 				this.popup = new OpenLayers.Popup.FramedCloud(null,
 					this.location.toProprietary("openlayers"),
-					new OpenLayers.Size(100, 100),
+					new OpenLayers.Size(100,100),
 					this.infoBubble,
 					this.icon,
 					true
