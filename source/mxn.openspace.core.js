@@ -22,23 +22,6 @@ Mapstraction: {
 			map_type: null
 		};
 
-		//FIX STUPID OPENSPACE BUG IN openspace Version 1.2 - is triggered by Mapstraction Core Tests when adding a marker with label text
-		if (typeof (OpenLayers.Marker.prototype.setDragMode) == "undefined")
-		{
-			OpenLayers.Marker.prototype.setDragMode = function(mode) {
-				if (this.eventObj) {
-					if (mode) {
-						this.events.unregister("mousedown", this.eventObj, this.eventFunc);
-					} 
-					else {
-						if (this.events.listeners.mousedown.length === 0) {
-							this.events.register("mousedown", this.eventObj, this.eventFunc);
-						}
-					}
-				}
-			};
-		}
-
 		// create the map with no controls and don't centre popup info window
 		map = new OpenSpace.Map(element,{
 			controls: [],
@@ -156,19 +139,9 @@ Mapstraction: {
 		if ('overview' in args) {
 			controls = map.getControlsByClass('OpenSpace.Control.OverviewMap');
 			if (controls.length === 0) {
-				// Yuck, yuck and more yuck. OpenSpace 1.2 with OpenLayers 2.8
-				// throws a TypeError exception with the message "Cannot read property
-				// '_eventCacheID' of null" if you try to add the OverviewMap control
-				// after calling an initial setCenterAndZoom
-				try {
-					control = new OpenSpace.Control.OverviewMap();
-					map.addControl(control);
-					control.maximizeControl();
-				}
-				
-				catch (e) {
-					//
-				}
+				control = new OpenSpace.Control.OverviewMap();
+				map.addControl(control);
+				control.maximizeControl();
 			}
 		}
 		
@@ -261,13 +234,16 @@ Mapstraction: {
 		var loc = marker.location.toProprietary(this.api);
 		var pin = map.createMarker(loc, null, marker.labelText);
 	
+		// Fire 'click' event for Marker ...
+		pin.events.register('click', marker, function(event) {
+			marker.click.fire();
+		});
 		return pin;
 	},
 
 	removeMarker: function(marker) {
 		var map = this.maps[this.api];
 		
-		//map.removeMarker(marker.toProprietary(this.api));
 		map.removeMarker(marker.proprietary_marker);
 	},
 	
@@ -280,15 +256,12 @@ Mapstraction: {
 		var pl = polyline.toProprietary(this.api);
 
 		map.getVectorLayer().addFeatures([pl]);
-		//this.poly_layer.addFeatures([pl]);
-		//map.addLayer(this.poly_layer);
 
 		return pl;
 	},
 
 	removePolyline: function(polyline) {
 		var map = this.maps[this.api];
-		//var pl = polyline.toProprietary(this.api);
 		var pl = polyline.proprietary_polyline;
 
 		map.removeFeatures([pl]);
@@ -476,7 +449,6 @@ Marker: {
 
 	openBubble: function() {
 		this.map.openInfoWindow(this.proprietary_marker.icon, this.location.toProprietary(this.api), this.infoBubble, new OpenLayers.Size(300, 100));
-		//this.map.openInfoWindow(this.proprietary_marker.icon, this.location.toProprietary(this.api), this.infoBubble);
 		this.map.infoWindow.autoSize = true;
 	},
 	
