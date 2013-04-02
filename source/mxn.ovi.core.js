@@ -460,7 +460,7 @@ Marker: {
 		}
 
 		prop_marker.addListener('click', function (event) {
-				prop_marker.mapstraction_marker.click.fire();
+				prop_marker.mapstraction_marker.click.fire(event);
 			}, false);
 
 		return prop_marker;

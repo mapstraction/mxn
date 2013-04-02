@@ -370,7 +370,7 @@ mxn.register('openlayers', {
 					// handlers      : {},
 					overFeature      : function(feature) {
 						var marker = feature.mapstraction_marker;
-						if (marker.hoverIconUrl) {
+						if (!!marker.hoverIconUrl) {
 							marker.setUrl(marker.hoverIconUrl);
 						}
 						if (marker.hover && !!marker.popup) {
@@ -381,8 +381,8 @@ mxn.register('openlayers', {
 					outFeature       : function(feature) {
 						var marker = feature.mapstraction_marker;
 						if (!!marker.hoverIconUrl) {
-							var icon = marker.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
-							marker.setUrl(icon);
+							var iconUrl = marker.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png';
+							marker.setUrl(iconUrl);
 						}
 						if (marker.hover && !!marker.popup) {
 							marker.popup.hide();
@@ -406,9 +406,9 @@ mxn.register('openlayers', {
 					// lastPixel       : null,
 					autoActivate    : true
 				});
-				this.controls.drag.handlers.drag.stopDown  = false;
-				this.controls.drag.handlers.drag.stopUp    = false;
-				this.controls.drag.handlers.drag.stopClick = false;
+				this.controls.drag.handlers.drag.stopDown     = false;
+				this.controls.drag.handlers.drag.stopUp       = false;
+				this.controls.drag.handlers.drag.stopClick    = false;
 				this.controls.drag.handlers.feature.stopDown  = false;
 				this.controls.drag.handlers.feature.stopUp    = false;
 				this.controls.drag.handlers.feature.stopClick = false;
@@ -560,12 +560,12 @@ mxn.register('openlayers', {
 		addOverlay: function(url, autoCenterAndZoom) {
 			var map = this.maps[this.api];
 			var kml = new OpenLayers.Layer.GML("kml", url,{
-				'format': OpenLayers.Format.KML,
+				'format'       : OpenLayers.Format.KML,
 				'formatOptions': new OpenLayers.Format.KML({
-					'extractStyles': true,
+					'extractStyles'    : true,
 					'extractAttributes': true
 				}),
-				'projection': new OpenLayers.Projection('EPSG:4326')
+				'projection'   : new OpenLayers.Projection('EPSG:4326')
 			});
 			if (autoCenterAndZoom) {
 				var setExtent = function() {
@@ -640,6 +640,7 @@ mxn.register('openlayers', {
 			var lat = (olPoint.lat / 20037508.34) * 180;
 			lat = 180/Math.PI * (2 * Math.atan(Math.exp(lat * Math.PI / 180)) - Math.PI / 2);
 			this.lon = lon;
+			this.lng = this.lon;
 			this.lat = lat;
 		}
 
@@ -648,7 +649,7 @@ mxn.register('openlayers', {
 	Marker: {
 
 		toProprietary: function() {
-			var size, anchor, style, marker;
+			var size, anchor, style, marker, position;
 			if (!!this.iconSize) {
 				size = new OpenLayers.Size(this.iconSize[0], this.iconSize[1]);
 			}
@@ -683,24 +684,24 @@ mxn.register('openlayers', {
 				// title       : this.labelText
 			};
 
-			marker = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(
-				this.location.toProprietary('openlayers').lon,
-				this.location.toProprietary('openlayers').lat),
+			position = this.location.toProprietary('openlayers');
+			marker = new OpenLayers.Feature.Vector(
+			 new OpenLayers.Geometry.Point(position.lon,	position.lat),
 				null,
 				style);
 
 			if (!!this.infoBubble) {
 				this.popup = new OpenLayers.Popup.FramedCloud(
 					null,
-					this.location.toProprietary('openlayers'),
+					position,
 					new OpenLayers.Size(100, 100),
 					this.infoBubble,
 					this.icon,
-					true,
-					function() {});
+					true);
 				this.popup.autoSize = true;
 				this.popup.panMapIfOutOfView = true;
 				this.popup.fixedRelativePosition = false;
+				this.popup.feature = marker;
 			}
 			else {
 				this.popup = null;
@@ -721,8 +722,11 @@ mxn.register('openlayers', {
 					new OpenLayers.Size(100, 100),
 					this.infoBubble,
 					this.icon,
-					true,
-					function() {});
+					true);
+				this.popup.autoSize = true;
+				this.popup.panMapIfOutOfView = true;
+				this.popup.fixedRelativePosition = false;
+				this.popup.feature = this.propriety_marker;
 			}
 
 			if (!!this.popup) {
@@ -734,6 +738,7 @@ mxn.register('openlayers', {
 			if (!!this.popup) {
 				this.popup.hide();
 				this.map.removePopup(this.popup);
+				this.popup = null;
 			}
 		},
 
@@ -756,11 +761,11 @@ mxn.register('openlayers', {
 			var coords = [];
 			var ring;
 			var style = {
-				strokeColor: this.color,
+				strokeColor  : this.color,
 				strokeOpacity: this.opacity,
-				strokeWidth: this.width,
-				fillColor: this.fillColor,
-				fillOpacity: this.opacity
+				strokeWidth  : this.width,
+				fillColor    : this.fillColor,
+				fillOpacity  : this.opacity
 			};
 
 			for (var i = 0, length = this.points.length ; i< length; i++){
