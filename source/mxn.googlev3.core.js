@@ -574,7 +574,7 @@ Marker: {
 
 		var marker = new google.maps.Marker(options);
 
-		if (this.infoBubble) {
+		if (!this.defaultHandler && this.infoBubble) {
 			var event_action = "click";
 			if (this.hover) {
 				event_action = "mouseover";
