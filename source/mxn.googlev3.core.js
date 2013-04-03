@@ -628,6 +628,7 @@ Marker: {
 			});
 			google.maps.event.addListener(infowindow, 'closeclick', function(closedWindow) {
 				marker.closeBubble();
+				marker.closeInfoBubble.fire( { 'marker': this } );
 			});
 		}
 		else {
