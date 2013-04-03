@@ -1519,6 +1519,7 @@ var Marker = mxn.Marker = function(point) {
 	this.onmap = false;
 	this.proprietary_marker = false;
 	this.attributes = [];
+	this.defaultHandler = true;
 	this.invoker = new mxn.Invoker(this, 'Marker', function(){return this.api;});
 	mxn.addEvents(this, [ 
 		'openInfoBubble',	// Info bubble opened
@@ -1625,6 +1626,7 @@ Marker.prototype.setLabel = function(labelText) {
  *	openBubble: 'if specified, calls <code>mxn.Marker.openBubble()</code>',
  *	closeBubble: 'if specified, calls <code>mxn.Marker.closeBubble()</code>',
  *	groupName: 'marker group name, see <code>mxn.Marker.setGroupName()</code>'
+ *	defaultHandler: 'controls default marker handler; see <code>mxn.Marker.defaultHandler()</code>',
  * };
  * </pre>
  *
@@ -1680,6 +1682,9 @@ Marker.prototype.addData = function(options){
 					break;
 				case 'groupName':
 					this.setGroupName(options.groupName);
+					break;
+				case 'defaultHandler':
+					this.defaultHandler(options.defaultHandler);
 					break;
 				default:
 					// don't have a specific action for this bit of
@@ -1787,6 +1792,19 @@ Marker.prototype.setHover = function(hover) {
  */
 Marker.prototype.setGroupName = function(groupName) {
 	this.groupName = groupName;
+};
+
+/**
+ * Controls whether this marker installs a default click or hover handler. 
+ * @param {boolean} handlerState. If <code>true</code> and 
+ * hover is also <code>true</code>, a mouseover event will open the marker's infoBubble,
+ * if specified. If <code>true</code> and hover is <code>false</code>, a click event will
+ * open the marker's infoBubble. If <code>false</code>, no default event handler will be
+ * installed for this marker.
+ * @see mxn.Marker.addData
+ */
+Marker.prototype.defaultHandler = function(handlerState) {
+	this.defaultHandler = handlerState;
 };
 
 /**
