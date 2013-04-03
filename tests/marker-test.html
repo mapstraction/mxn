@@ -36,6 +36,7 @@
 		for (var i=0; i<coords.length; i++) {
 			markers[i] = new mxn.Marker(coords[i]);
 			markers[i].setInfoBubble('marker ' + (i + 1));
+			markers[i].setDefaultHandler(false);
 			markers[i].click.addHandler(click_handler);
 			map.addMarker(markers[i]);
 		}

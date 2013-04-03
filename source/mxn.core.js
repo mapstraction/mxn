@@ -1803,7 +1803,7 @@ Marker.prototype.setGroupName = function(groupName) {
  * installed for this marker.
  * @see mxn.Marker.addData
  */
-Marker.prototype.defaultHandler = function(handlerState) {
+Marker.prototype.setDefaultHandler = function(handlerState) {
 	this.defaultHandler = handlerState;
 };
 
