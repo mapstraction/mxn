@@ -79,8 +79,24 @@ Mapstraction: {
 	
 	applyOptions: function(){
 		var map = this.maps[this.api];
+		var navigators = map.getControlsByClass('OpenLayers.Control.Navigation');
 	
-		// TODO: Add provider code
+		if (navigators.length > 0) {
+			var navigator = navigators[0];
+			if (this.options.enableScrollWheelZoom) {
+				navigator.enableZoomWheel();
+			}
+			else {
+				navigator.disableZoomWheel();
+			}
+			
+			if (this.options.enableDragging) {
+				navigator.activate();
+			}
+			else {
+				navigator.deactivate();
+			}
+		}
 	},
 	
 	resizeTo: function(width, height){

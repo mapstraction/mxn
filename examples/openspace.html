@@ -17,10 +17,11 @@
 	
 	function initialize() {
 		map = new mxn.Mapstraction('map', 'openspace');
-		//map.addControls({pan: true, zoom: 'small'});
 		map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
 		latlon = new mxn.LatLonPoint(52.6959, 1.6846);
 		map.setCenterAndZoom(latlon, 12);
+
+		map.setOption('enableScrollWheelZoom', true);
 		
 		map.load.addHandler(function(en, es, ea) {
 			logEvent ('Map loaded');
