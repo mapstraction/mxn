@@ -340,10 +340,12 @@ Mapstraction: {
 		var locDisp = document.getElementById(element);
 		if (locDisp !== null) {
 			Microsoft.Maps.Events.addHandler(map, 'mousemove', function (e) {
-				var point = new Microsoft.Maps.Point(e.getX(), e.getY());
-				var coords = e.target.tryPixelToLocation(point);
-				var loc = coords.latitude.toFixed(4) + '/' + coords.longitude.toFixed(4);
-				locDisp.innerHTML = loc;
+				if (typeof (e.target.tryPixelToLocation) != 'undefined') {
+					var point = new Microsoft.Maps.Point(e.getX(), e.getY());
+					var coords = e.target.tryPixelToLocation(point);
+					var loc = coords.latitude.toFixed(4) + '/' + coords.longitude.toFixed(4);
+					locDisp.innerHTML = loc;
+				}
 			});
 			locDisp.innerHTML = '0.0000 / 0.0000';
 		}
