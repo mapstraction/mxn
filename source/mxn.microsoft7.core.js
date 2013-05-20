@@ -393,6 +393,27 @@ Marker: {
 		}
 		var mmarker = new Microsoft.Maps.Pushpin(this.location.toProprietary('microsoft7'), options); 
 
+		var that = this;
+		Microsoft.Maps.Events.addHandler(mmarker, 'mouseover', function(){
+			if (that.hover && that.infoBubble) 
+				{
+					that.openBubble();
+
+					if (!that.infowindow_mouseleave){
+						that.infowindow_mouseleave = Microsoft.Maps.Events.addHandler(that.proprietary_infowindow, 'mouseleave', function(){
+							if (that.infoBubble && that.proprietary_infowindow) 
+								{
+									that.closeBubble();
+									if (that.infowindow_mouseleave) {
+										Microsoft.Maps.Events.removeHandler(that.infowindow_mouseleave);
+										that.infowindow_mouseleave = null;
+										}
+								}
+							}); 
+						}
+				}
+		});
+		
 		return mmarker;
 	},
 
