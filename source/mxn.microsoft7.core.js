@@ -32,19 +32,7 @@ Mapstraction: {
 		} else if (element.attachEvent){
 			element.attachEvent('contextmenu', function (evt) { evt.preventDefault(); });
 		}
-		Microsoft.Maps.Events.addHandler(this.maps[api], 'rightclick', function(event) {
-			var map = me.maps[me.api];
-			var _x = event.getX();
-			var _y = event.getY();
-			var pixel = new Microsoft.Maps.Point(_x, _y);
-			var ll = map.tryPixelToLocation(pixel);
-			var _event = {
-					'location': new mxn.LatLonPoint(ll.latitude, ll.longitude),
-					'position': {x:_x, y:_y},
-					'button': 'right'
-				};
-			me.click.fire(_event);
-		});
+
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'click', function(event){
 			var map = me.maps[me.api];
 			event.originalEvent.preventDefault();
@@ -64,15 +52,9 @@ Mapstraction: {
 				me.click.fire(_event);
 			}
 		});
-		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', function(event){
-			me.changeZoom.fire();
-		});
-		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', function(event){
-			me.endPan.fire();
-		});
-		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchange', function(event){
-			me.endPan.fire();
-		});
+
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', me.changeZoom.fire);
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', me.endPan.fire);    
 	
 		var loadListener = Microsoft.Maps.Events.addHandler(this.maps[api], 'tiledownloadcomplete', function(event) {
 			me.load.fire();
