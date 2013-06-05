@@ -35,7 +35,9 @@ Mapstraction: {
 
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'click', function(event){
 			var map = me.maps[me.api];
-			event.originalEvent.preventDefault();
+			if (event.originalEvent.preventDefault) {
+		        event.originalEvent.preventDefault();
+		    }
 			if (event.targetType == 'pushpin') {
 				event.target.mapstraction_marker.click.fire();
 			}
