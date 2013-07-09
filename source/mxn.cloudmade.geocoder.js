@@ -9,7 +9,6 @@ Geocoder: {
 	geocode: function(query, rowlimit){
 		var me = this;
 		var reverseGeocode = false;
-		me.row_limit = rowlimit || 1; //default to one result
 		var geocode_request_object = {};
 		if (typeof(query) == 'object') {
 			// query is a LatLonPoint object (reverse geocode)
@@ -59,10 +58,6 @@ Geocoder: {
 				places.push(return_location);
 			}
 
-			if (this.row_limit <= 1) {
-				this.callback(places[0]);
-			}
-			
 			this.callback(places);
 		}
 	}

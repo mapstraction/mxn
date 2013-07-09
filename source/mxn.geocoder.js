@@ -30,19 +30,20 @@ var Geocoder = mxn.Geocoder = function (api, callback, error_callback, row_limit
 };
 
 mxn.addProxyMethods(Geocoder, [
-	
-	/**
-	 * Geocodes the provided address.
-	 * @name mxn.Geocoder#geocode
-	 * @function
-	 * @param {Object} address Address hash, keys are: street, locality, region, country.
-	 * @param {Int} Row_Limit to limit returned results, defaults to 1 to support previous Mapstraction 2.0 API definition.
-	 */
-	'geocode',
-	
 	'geocode_callback'
-
 ]);
+
+/**
+* Geocodes the provided address.
+* @name mxn.Geocoder#geocode
+* @function
+* @param {Object} address Address hash, keys are: street, locality, region, country.
+* @param {Int} Row_Limit to limit returned results, defaults to 1 to support previous Mapstraction 2.0 API definition.
+*/
+Geocoder.prototype.geocode = function(address, row_limit) {
+	row_limit = row_limit || 1; //default to 1 result
+	this.invoker.go('geocode', [address, row_limit]);
+};
 
 /**
  * Change the geocoding API in use

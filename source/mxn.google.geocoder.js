@@ -6,20 +6,24 @@ Geocoder: {
 		this.geocoders[this.api] = new GClientGeocoder();
 	},
 	
-	geocode: function(address){
+	geocode: function(address, rowlimit){
 		var me = this;
 
 		if (!address.hasOwnProperty('address') || address.address === null || address.address === '') {
-			address.address = [ address.street, address.locality, address.region, address.country ].join(', ');
-		}
+			address.address = [ address.street, address.locality, address.region, address.country ].join(', ');	
+		}		
 		
 		if (address.hasOwnProperty('lat') && address.hasOwnProperty('lon')) {
 			var latlon = address.toProprietary(this.api);
 			this.geocoders[this.api].getLocations(latlon, function(response) {
 				me.geocode_callback(response);
 			});
-		} else {
+		} else if (address.hasOwnProperty('address')) {
 			this.geocoders[this.api].getLocations(address.address, function(response) {
+				me.geocode_callback(response);
+			});
+		} else {
+			this.geocoders[this.api].getLocations(address, function(response) {
 				me.geocode_callback(response);
 			});
 		}
@@ -66,7 +70,7 @@ Geocoder: {
 			
 			return_location.point = new mxn.LatLonPoint(place.Point.coordinates[1],	place.Point.coordinates[0]);
 			
-			this.callback(return_location);
+			this.callback([return_location]); //returns as an array of 1 - FIX so uses rowlimit or leave to be deprecated in sept 2013
 		}
 	}
 }

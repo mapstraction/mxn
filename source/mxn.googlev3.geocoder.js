@@ -7,7 +7,6 @@ Geocoder: {
 
 	geocode: function(query, rowlimit){
 		var me = this;
-		me.row_limit = rowlimit || 1; //default to one result
 		var geocode_request_object = {};
 		if (typeof(query) == 'object') {
 			// query is a LatLonPoint object (reverse geocode)
@@ -26,11 +25,11 @@ Geocoder: {
 		}
 
 		this.geocoders[this.api].geocode(geocode_request_object, function(results, status) {
-			me.geocode_callback(results, status);
+			me.geocode_callback(results, status, rowlimit);
 		});
 	},
 
-	geocode_callback: function(results, status){
+	geocode_callback: function(results, status, rowlimit){
 		if (status != google.maps.GeocoderStatus.OK) {
 			this.error_callback(status);
 		} 
@@ -88,15 +87,10 @@ Geocoder: {
 				places.push(return_location);
 			}
 
-			if (this.row_limit <= 1) {
-				this.callback(places[0]);
+			if (places.length > rowlimit) {
+				places.length = rowlimit;
 			}
-			else {
-				if (places.length > this.row_limit) {
-					places.length = this.row_limit;
-				}
-				this.callback(places);
-			}
+			this.callback(places);
 		}
 	}
 }

@@ -13,7 +13,6 @@ Geocoder: {
 	geocode: function(query, rowlimit){
 		var me = this;
 		var isPostCode = false;
-		me.row_limit = rowlimit || 1; //default to one result
 		var geocode_request_object = {};
 		if (typeof(query) == 'object') {
 			// query is a LatLonPoint object (reverse geocode)
@@ -27,7 +26,7 @@ Geocoder: {
 			}
 			// query is an address object
 			else{
-				geocode_request_object.address = query.locality||query.region ; //use locality if pesent or just region
+				geocode_request_object.address = query.locality||query.region ; //use locality if present or just region
 			}
 		}
 
@@ -47,8 +46,8 @@ Geocoder: {
 				me.geocode_callback(mapPoint, 1);
 			});
 		} else {
-			this.geocoders[this.api].gazetteer.getLonLat(geocode_request_object.address, function(mapPoint) {
-				me.geocode_callback(mapPoint, me.row_limit);
+			this.geocoders[this.api].gazetteer.getLocations(geocode_request_object.address, function(results) {
+				me.geocode_callback(results, rowlimit);
 			});
 		}
 	},
@@ -70,7 +69,7 @@ Geocoder: {
 		else {
 			for (i=0; i<results.length; i++) {
 				place = results[i];
-				if (place.type == "CITY" || place.type == "TOWN") {
+				if (place.type == "CITY" || place.type == "TOWN" || place.type == "OTHER SETTLEMENT") {
 					var return_location = {};
 					return_location.street = '';
 					return_location.locality = place.name;
@@ -86,15 +85,10 @@ Geocoder: {
 			}  
 		}    
 
-		if (rowlimit <= 1) {
-			this.callback(places[0]);
+		if (places.length > rowlimit) {
+			places.length = rowlimit;
 		}
-		else {
-			if (places.length > rowlimit) {
-				places.length = rowlimit;
-			}
-			this.callback(places);
-		}
+		this.callback(places);
 	}
 }
 

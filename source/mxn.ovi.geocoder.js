@@ -21,7 +21,7 @@ Geocoder: {
 
 	geocode: function(address, rowlimit){
 		var ovi_geocoder = this.geocoders[this.api];
-		this.row_limit = rowlimit || 1; //default to one result
+		this.rowlimit = rowlimit;
 		
 		if (address instanceof mxn.LatLonPoint) {
 			ovi_geocoder.reverseGeocode(address);
@@ -119,16 +119,10 @@ Geocoder: {
 				places.push(return_location);
 			}
 
-			if (this.row_limit <= 1) {
-				this.callback(places[0]);
+			if (places.length > this.rowlimit) {
+				places.length = this.rowlimit;
 			}
-
-			else {
-				if (places.length > this.row_limit) {
-					places.length = this.row_limit;
-				}
-				this.callback(places);
-			}
+			this.callback(places);
 		}
 	}
 }

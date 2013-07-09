@@ -6,8 +6,6 @@ Geocoder: {
 
 	geocode: function(address, rowlimit) {
 		var me = this;
-		me.row_limit = rowlimit || 1; //default to one result
-
 		var url = 'http://nominatim.openstreetmap.org/';
 		var params = {
 			'addressdetails': 1,
@@ -29,7 +27,7 @@ Geocoder: {
 			else {
 				params.q = address;
 			}
-			params.limit = me.row_limit;
+			params.limit = rowlimit;
 		}
 
 		OpenLayers.Request.GET({
@@ -41,13 +39,13 @@ Geocoder: {
 				} else if (response.status != 200) {
 					me.error_callback(response.statusText);
 				} else {
-					me.geocode_callback(JSON.parse(response.responseText), me.row_limit);
+					me.geocode_callback(JSON.parse(response.responseText));
 				}
 			}
 		});
 	},
 
-	geocode_callback: function(results, rowlimit) {
+	geocode_callback: function(results) {
 		if (results instanceof Array) {
 			if (!results.length) {
 				this.error_callback("Nominatim didn't recognize this address.");
@@ -116,15 +114,7 @@ Geocoder: {
 			places.push(return_location);
 		}
 
-		if (rowlimit <= 1) {
-			this.callback(places[0]);
-		}
-		else {
-			if (places.length > rowlimit) {
-				places.length = rowlimit;
-			}
-			this.callback(places);
-		}
+		this.callback(places);
 	}
 }
 
