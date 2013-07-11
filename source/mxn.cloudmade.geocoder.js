@@ -32,7 +32,7 @@ Geocoder: {
 			}
 		}
 
-		//add optios to set the max results: resultsNumber
+		//add options to set the max results: resultsNumber
 		var options = {resultsNumber: rowlimit};
 		this.geocoders[this.api].getLocations(reverseGeocode ? geocode_request_object : geocode_request_object.address, function(results) {
 			me.geocode_callback(results);
