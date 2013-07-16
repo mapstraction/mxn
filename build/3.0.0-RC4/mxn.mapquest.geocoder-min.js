@@ -1,0 +1,17 @@
+/*
+MAPSTRACTION   v3.0.20   http://www.mapstraction.com
+
+The BSD 3-Clause License (http://www.opensource.org/licenses/BSD-3-Clause)
+
+Copyright (c) 2013 Tom Carden, Steve Coast, Mikel Maron, Andrew Turner, Henri Bergius, Rob Moran, Derek Fowler, Gary Gale
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Neither the name of the Mapstraction nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+mxn.register("mapquest",{Geocoder:{init:function(){var a=this;MQA.withModule("geocoder",function(){})},geocode:function(b,c){var e=this;e.row_limit=c||1;var a={};var d={};d.maxResults=c;d.thumbMaps=false;MQA.Geocoder.geocode(b,d,null,function(f){e.geocode_callback(f)})},geocode_callback:function(b){var d=b.results[0].locations;var c=[];for(i=0;i<d.length;i++){place=d[i];var a={};switch("Country"){case place.adminArea1Type:a.country=place.adminArea1;break;case place.adminArea2Type:a.country=place.adminArea2;break;case place.adminArea3Type:a.country=place.adminArea3;break;case place.adminArea4Type:a.country=place.adminArea4;break;case place.adminArea5Type:a.country=place.adminArea5;break}switch("State"){case place.adminArea1Type:a.region=place.adminArea1;break;case place.adminArea2Type:a.region=place.adminArea2;break;case place.adminArea3Type:a.region=place.adminArea3;break;case place.adminArea4Type:a.region=place.adminArea4;break;case place.adminArea5Type:a.region=place.adminArea5;break}switch("City"){case place.adminArea1Type:a.locality=place.adminArea1;break;case place.adminArea2Type:a.locality=place.adminArea2;break;case place.adminArea3Type:a.locality=place.adminArea3;break;case place.adminArea4Type:a.locality=place.adminArea4;break;case place.adminArea5Type:a.locality=place.adminArea5;break}a.street=place.street;a.postcode=place.postalCode;a.point=new mxn.LatLonPoint(place.latLng.lat,place.latLng.lng);c.push(a)}if(this.row_limit<=1){this.callback(c[0])}else{if(c.length>this.row_limit){c.length=this.row_limit}this.callback(c)}}}});

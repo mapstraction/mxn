@@ -1,0 +1,17 @@
+/*
+MAPSTRACTION   v3.0.20   http://www.mapstraction.com
+
+The BSD 3-Clause License (http://www.opensource.org/licenses/BSD-3-Clause)
+
+Copyright (c) 2013 Tom Carden, Steve Coast, Mikel Maron, Andrew Turner, Henri Bergius, Rob Moran, Derek Fowler, Gary Gale
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Neither the name of the Mapstraction nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+mxn.register("ovi",{Geocoder:{init:function(){var b=this;var a;if(typeof ovi.mapsapi.search.Manager==="undefined"){throw new Error(api+" map script not imported")}a=new ovi.mapsapi.search.Manager();a.addObserver("state",function(d,c,e){if(e=="finished"||e=="failed"){b.geocode_callback(d.locations,e)}});this.geocoders[this.api]=a},geocode:function(b,c){var a=this.geocoders[this.api];this.row_limit=c||1;if(b instanceof mxn.LatLonPoint){a.reverseGeocode(b)}else{a.geocode(b)}},geocode_callback:function(d,e){var c=this.geocoders[this.api];if(e=="failed"){var l=c.getErrorCause();var m="";if(l.type){m=l.type;if(l.subtype){m+=", "+l.subtype}if(l.message){m+=", "+l.message}}else{m="Geocoding failure"}this.error_callback(m)}else{if(e=="finished"){var b=[];for(i=0;i<d.length;i++){place=d[i];var h={};var f=[];var a=[];var g=[];h.street="";h.locality="";h.postcode="";h.region="";h.country="";var k=place.address;var j=place.displayPosition;if(k.street){f.push(k.street)}if(k.houseNumber){f.unshift(k.houseNumber)}if(k.city){a.push(k.city)}if(k.district){a.unshift(k.district)}if(k.postalCode){h.postcode=k.postalCode}if(k.state){g.unshift(k.state)}if(k.county){g.push(k.county)}if(k.country){h.country=k.country}if(h.street===""&&f.length>0){h.street=f.join(" ")}if(h.locality===""&&a.length>0){h.locality=a.join(", ")}if(h.region===""&&g.length>0){h.region=g.join(", ")}h.point=new mxn.LatLonPoint(j.latitude,j.longitude);b.push(h)}if(this.row_limit<=1){this.callback(b[0])}else{if(b.length>this.row_limit){b.length=this.row_limit}this.callback(b)}}}}}});
