@@ -193,6 +193,12 @@ Mapstraction: {
 
 	setCenterAndZoom: function(point, zoom) { 
 		this._fireQueuedEvents();
+		
+		// The order of setting zoom and center is critical and peculiar to the way in which
+		// the MapQuest API seems to work (which is based on trial, error and reverse engineering)
+		//
+		// Or .. to quote @gilesc50 "don’t mess with this, its deliberately nuts"
+		
 		this.setZoom(zoom);
 		this.setCenter(point);
 	},
