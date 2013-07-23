@@ -193,8 +193,8 @@ Mapstraction: {
 
 	setCenterAndZoom: function(point, zoom) { 
 		this._fireQueuedEvents();
-		this.setCenter(point);
 		this.setZoom(zoom);
+		this.setCenter(point);
 	},
 	
 	addMarker: function(marker, old) {
