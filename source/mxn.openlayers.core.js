@@ -330,7 +330,7 @@ mxn.register('openlayers', {
 					// ratio             : 1.0
 				});
 				map.addLayer(this.layers.markers);
-				this.controls.select = new OpenLayers.Control.SelectFeature(this.layers.markers, {
+				select = new OpenLayers.Control.SelectFeature(this.layers.markers, {
 					// events        : null,
 					// multipleKey   : 'altKey',
 					// toggleKey     : 'ctrlKey',
@@ -342,22 +342,8 @@ mxn.register('openlayers', {
 					// box           : true,
 					// onBeforeSelect: null,
 					onSelect         : function(feature) {
-						var marker = feature.mapstraction_marker;
-						// var shown = false;
-						// if (shown) {
-							// if (marker.popup != null) {
-								// marker.popup.hide();
-								// marker.map.removePopup(marker.popup);
-							// }
-							// shown = false;
-						// } else {
-							// if (marker.popup != null) {
-								// marker.map.addPopup(marker.popup);
-								// marker.popup.show();
-							// }
-							// shown = true;
-						// }
-						marker.click.fire.apply(marker);
+						feature.mapstraction_marker.click.fire();
+						select.unselect(feature);
 					},
 					// onUnselect    : null,
 					// scope         : {},
@@ -391,7 +377,7 @@ mxn.register('openlayers', {
 					},
 					autoActivate     : true
 				});
-				this.controls.drag = new OpenLayers.Control.DragFeature(this.layers.markers, {
+				drag = new OpenLayers.Control.DragFeature(this.layers.markers, {
 					// geometryTypes: ['OpenLayers.Geometry.Point'],
 					// onStart         : null,
 					// onDrag          : null,
@@ -406,14 +392,23 @@ mxn.register('openlayers', {
 					// lastPixel       : null,
 					autoActivate    : true
 				});
-				this.controls.drag.handlers.drag.stopDown     = false;
-				this.controls.drag.handlers.drag.stopUp       = false;
-				this.controls.drag.handlers.drag.stopClick    = false;
-				this.controls.drag.handlers.feature.stopDown  = false;
-				this.controls.drag.handlers.feature.stopUp    = false;
-				this.controls.drag.handlers.feature.stopClick = false;
-
-				map.addControls([this.controls.select, this.controls.drag]);
+				drag.handlers.drag.stopDown     = false;
+				drag.handlers.drag.stopUp       = false;
+				drag.handlers.drag.stopClick    = false;
+				drag.handlers.feature.stopDown  = false;
+				drag.handlers.feature.stopUp    = false;
+				drag.handlers.feature.stopClick = false;
+				drag.onStart = function(feature,pixel) {
+					if (feature.mapstraction_marker.draggable !== true) {
+						drag.handlers.drag.deactivate();
+					}
+				};
+				
+				map.addControls([select, drag]);
+				
+				//Not actually needed, as not referenced anywhere else, but just for completeness:
+				this.controls.drag = drag;
+				this.controls.select = select;
 			}
 			this.layers.markers.addFeatures([pin]);
 			return pin;
