@@ -330,7 +330,7 @@ mxn.register('openlayers', {
 					// ratio             : 1.0
 				});
 				map.addLayer(this.layers.markers);
-				this.controls.select = new OpenLayers.Control.SelectFeature(this.layers.markers, {
+				select = new OpenLayers.Control.SelectFeature(this.layers.markers, {
 					// events        : null,
 					// multipleKey   : 'altKey',
 					// toggleKey     : 'ctrlKey',
@@ -343,6 +343,7 @@ mxn.register('openlayers', {
 					// onBeforeSelect: null,
 					onSelect         : function(feature) {
 						feature.mapstraction_marker.click.fire();
+						select.unselect(feature);
 					},
 					// onUnselect    : null,
 					// scope         : {},
@@ -402,9 +403,12 @@ mxn.register('openlayers', {
 						drag.handlers.drag.deactivate();
 					}
 				};
-				this.controls.drag = drag;
 				
-				map.addControls([this.controls.select, this.controls.drag]);
+				map.addControls([select, drag]);
+				
+				//Not actually needed, as not referenced anywhere else, but just for completeness:
+				this.controls.drag = drag;
+				this.controls.select = select;
 			}
 			this.layers.markers.addFeatures([pin]);
 			return pin;
