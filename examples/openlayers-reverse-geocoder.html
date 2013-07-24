@@ -18,11 +18,11 @@
 	var geocoder;
 
 	function geocode_return(geocoded_location) {
-		$('#country').val(geocoded_location.country);
-		$('#region').val(geocoded_location.region);
-		$('#locality').val(geocoded_location.locality);
+		$('#country').val(geocoded_location[0].country);
+		$('#region').val(geocoded_location[0].region);
+		$('#locality').val(geocoded_location[0].locality);
 		// add a marker
-		var marker = new mxn.Marker(geocoded_location.point);
+		var marker = new mxn.Marker(geocoded_location[0].point);
 		mapstraction.addMarker(marker,true);
 	}
 

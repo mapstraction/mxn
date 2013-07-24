@@ -8,7 +8,7 @@ Geocoder: {
 		// TODO: Add provider code
 	},
 	
-	geocode: function(address){
+	geocode: function(address, rowlimit){
 		var mapstraction_geocoder = this;		
 		
 		// TODO: Add provider code

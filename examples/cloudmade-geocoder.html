@@ -19,14 +19,6 @@
 	var geocoder;
 
 	function geocode_return(geocoded_locations) {
-		if (typeof(geocoded_locations.point) == "object") //ie we only got 1 result back the way it used to work
-		{
-			geocoded_locations_array = {};
-			geocoded_locations_array[0] = geocoded_locations;
-			geocoded_locations = geocoded_locations_array;
-			geocoded_locations.length = 1;
-		}
-
 		mapstraction.removeAllMarkers();
 		for (i=0; i<geocoded_locations.length; i++)
 		{

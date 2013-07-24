@@ -9,7 +9,6 @@ Geocoder: {
 
 	geocode: function(address, rowlimit) {
 		var me = this;
-		me.row_limit = rowlimit || 1; //default to one result
 		var return_location = {};
 		var options = {};
 		options.maxResults = rowlimit;
@@ -100,15 +99,10 @@ Geocoder: {
 			places.push(return_location);
 		}
 
-		if (this.row_limit <= 1) {
-			this.callback(places[0]);
+		if (places.length > this.row_limit) {
+			places.length = this.row_limit;
 		}
-		else {
-			if (places.length > this.row_limit) {
-				places.length = this.row_limit;
-			}
-			this.callback(places);
-		}
+		this.callback(places);
 	}
 }
 

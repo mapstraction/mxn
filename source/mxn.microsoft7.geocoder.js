@@ -6,7 +6,7 @@ Geocoder: {
 	},
 
 	geocode: function(query, rowlimit) {
-		this.row_limit = rowlimit || 1; //default to one result
+		this.row_limit = rowlimit;
 		var _address = '';
 		var is_reverse = false;
 		if (typeof(query) == 'object') {
@@ -19,8 +19,8 @@ Geocoder: {
 				_address = [ query.street, query.locality, query.region, query.country ].join(',');
 			}
 		}
-		// query is an address string
-		else{
+		else {
+			// query is an address string
 			_address = query;
 		}
 
@@ -59,15 +59,10 @@ Geocoder: {
 				}
 			}
 
-			if (this.row_limit <= 1) {
-				this.callback(places[0]);
-			}
-			else {
-				if (places.length > this.row_limit) {
+			if (places.length > this.row_limit) {
 					places.length = this.row_limit;
 				}
-				this.callback(places);
-			}
+			this.callback(places);
 		}
 	}
 }

@@ -1,8 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Mapstraction Examples - microsoft7 Geocoder</title>
-<script charset="UTF-8" type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>		
-<script src="../source/mxn.js?(microsoft7,[geocoder])" type="text/javascript"></script>
+<title>Mapstraction Examples - Google V2 Geocoder</title>
+	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=AIzaSyCtAzkdmKoW0M91zkoMAO032bpSMnk1Ro4" type="text/javascript" charset="utf-8"></script>	
+<script src="../source/mxn.js?(google,[geocoder])" type="text/javascript"></script>
 <style type="text/css">
 
 	#mapdiv {
@@ -17,7 +17,6 @@
 
 	var mapstraction;
 	var geocoder;
-	var microsoft_key = "AlneHdcKOFDot4FjwyuLH8ZSUIz5rv_X22vULKa7H5ia0JnsxiykdO8y-dgLQMU6";
 
 	function geocode_return(geocoded_locations) {
 		mapstraction.removeAllMarkers();
@@ -40,7 +39,7 @@
 	function initialize() {
 
 		// create mxn object
-		mapstraction = new mxn.Mapstraction('mapdiv','microsoft7');
+		mapstraction = new mxn.Mapstraction('mapdiv','google');
 
 		mapstraction.addControls({
 			pan: true,
@@ -53,7 +52,7 @@
 		mapstraction.setCenterAndZoom(latlon, 10);
 		mapstraction.mousePosition('position');
 		
-		geocoder = new mxn.Geocoder('microsoft7',geocode_return);
+		geocoder = new mxn.Geocoder('google',geocode_return);
 		
 		// add a marker
 		var marker = new mxn.Marker(latlon);

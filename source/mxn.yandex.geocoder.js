@@ -5,7 +5,7 @@ Geocoder: {
 	init: function() {		
 	},
 	
-	geocode: function(address){
+	geocode: function(address, rowlimit){
 		var me = this;
 		
 		if (!address.hasOwnProperty('address') || address.address === null || address.address === '') {
@@ -22,6 +22,12 @@ Geocoder: {
 			if (address.street) {
 				parts.push(address.street);
 			}
+
+			if (parts.length === 0){
+				parts.push(address);
+			}
+			
+			address = [];
 			address.address = parts.join(', ');
 	     }
 
@@ -29,10 +35,10 @@ Geocoder: {
 			me.error_callback('Empty address passed to geocoder.');
 			return;
 		}
-		var geocoder = new YMaps.Geocoder(address.address, { results: 1 });
+		var geocoder = new YMaps.Geocoder(address.address, { results: rowlimit });
 		YMaps.Events.observe(geocoder, geocoder.Events.Load, function (response) {
 			if (response.found > 0) {
-				me.geocode_callback(response.get(0));
+				me.geocode_callback(response._objects);
 			} else {
 				me.error_callback(response);
 			}
@@ -44,38 +50,46 @@ Geocoder: {
 	},
 	
 	geocode_callback: function(response){
-		var location = { street: '', locality: '', region: '', country: '' };
+		var places = [];
+	 
+		for (i=0; i<response.length; i++) {
+			var geoObject = response[i];
 
-		var locLev = response.AddressDetails;
-		if (locLev.Country) {
-			locLev = locLev.Country;
-			location.country = locLev.CountryName;
-		}
-		if (locLev.AdministrativeArea) {
-			locLev = locLev.AdministrativeArea;
-			location.region = locLev.AdministrativeAreaName;
-		}
-		if (locLev.Locality) {
-			locLev = locLev.Locality;
-			location.locality = locLev.LocalityName;
-		}
-		var street = [];
-		if (locLev.Thoroughfare) {
-			locLev = locLev.Thoroughfare;
-			street.push(locLev.ThoroughfareName);
-		}
-		if (locLev.Premise) {
-			locLev = locLev.Premise;
-			street.push(locLev.PremiseNumber);
-		}
-		if (street.length > 0) {
-			location.street = street.join(', ');
-		}
+			var location = { street: '', locality: '', region: '', country: '' };
 
-		var point = response.getGeoPoint();
-		location.point = new mxn.LatLonPoint(point.getY(), point.getX());
+			var locLev = geoObject.AddressDetails;
+			if (locLev.Country) {
+				locLev = locLev.Country;
+				location.country = locLev.CountryName;
+			}
+			if (locLev.AdministrativeArea) {
+				locLev = locLev.AdministrativeArea;
+				location.region = locLev.AdministrativeAreaName;
+			}
+			if (locLev.Locality) {
+				locLev = locLev.Locality;
+				location.locality = locLev.LocalityName;
+			}
+			var street = [];
+			if (locLev.Thoroughfare) {
+				locLev = locLev.Thoroughfare;
+				street.push(locLev.ThoroughfareName);
+			}
+			if (locLev.Premise) {
+				locLev = locLev.Premise;
+				street.push(locLev.PremiseNumber);
+			}
+			if (street.length > 0) {
+				location.street = street.join(', ');
+			}
+
+			var point = geoObject.getGeoPoint();
+			location.point = new mxn.LatLonPoint(point.getY(), point.getX());
 		
-		this.callback(location);
+			places.push(location);
+		}
+		
+		this.callback(places);
 	}
 }
 });
