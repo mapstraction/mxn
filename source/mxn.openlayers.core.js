@@ -738,11 +738,12 @@ mxn.register('openlayers', {
 		},
 
 		hide: function() {
-			this.proprietary_marker.display(false);
+			this.proprietary_marker.layer.setVisibility(false);
+			
 		},
 
 		show: function() {
-			this.proprietary_marker.display(true);
+			this.proprietary_marker.layer.setVisibility(true);
 		},
 
 		update: function() {
