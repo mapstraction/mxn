@@ -1,0 +1,92 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Mapstraction Examples - CloudMade Geocoder</title>
+<script src="http://tile.cloudmade.com/wml/latest/web-maps-lite.js" type="text/javascript" charset="utf-8"></script>
+<script src="../source/mxn.js?(cloudmade,[geocoder])" type="text/javascript"></script>
+<style type="text/css">
+
+	#mapdiv {
+		height: 400px;
+		position: relative;
+		width: !important;
+	}
+
+</style> 
+
+<script type="text/javascript">
+	var cloudmade_key = "64e8dbb9c85b48bb828c9da95d933852";
+	var mapstraction;
+	var geocoder;
+
+	function geocode_return(geocoded_locations) {
+		mapstraction.removeAllMarkers();
+		for (i=0; i<geocoded_locations.length; i++)
+		{
+			// create a marker positioned at a lat/lon
+			var geocode_marker = new mxn.Marker(geocoded_locations[i].point);
+			geocode_marker.setIcon('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=' + i + '|FF1CAE|000000');
+			geocode_marker.setIconSize([21,34]);
+			geocode_marker.setIconAnchor([11,34]);
+			var address = geocoded_locations[i].locality + ", " + geocoded_locations[i].region + ", " + geocoded_locations[i].country;
+			geocode_marker.setInfoBubble(address);
+			
+			// display marker
+			mapstraction.addMarker(geocode_marker);
+		}	
+		mapstraction.autoCenterAndZoom()
+	}
+
+	function initialize() {
+
+		// create mxn object
+		mapstraction = new mxn.Mapstraction('mapdiv','cloudmade');
+
+		mapstraction.addControls({
+			pan: true,
+			zoom: 'small',
+			map_type: true
+		});
+
+		var latlon = new mxn.LatLonPoint(48.33, -4.77);
+
+		mapstraction.setCenterAndZoom(latlon, 10);
+		mapstraction.mousePosition('position');
+		
+		geocoder = new mxn.Geocoder('cloudmade',geocode_return);
+		
+		// add a marker
+		var marker = new mxn.Marker(latlon);
+		mapstraction.addMarker(marker,true);
+		
+	}
+
+	function user_submit() {
+		var address = document.getElementById('address').value;
+		var limit = document.getElementById('limit').value;
+		geocoder.geocode(address, limit);
+	}
+	
+	
+//]]>
+</script> 
+
+</head>
+<body onload="initialize();">
+	<center>
+		<table border='1' width='50%'>
+			<tr>
+				<td><div id="mapdiv"></div></td>
+			</tr>
+			<tr>
+				<td>
+					<input type="text" id="address" name="address" value="Brest" size="35"/>
+					<a href="#" onclick="user_submit(); return false;">Geocode</a>
+					but limit the number of results to: 
+					<input type="text" id="limit" name="limit" value="3" size="1"/>					
+				</td>
+			</tr>
+		</table>
+		<div id="position"></div>	
+	</center>
+</body> 
+</html>

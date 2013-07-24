@@ -1,58 +1,86 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Mapstraction Examples</title>
-	<script type="text/javascript" charset="utf-8" src="http://maker.codiv.dev.fortiusone.local/javascripts/embed.js"></script>  
-	<script src="../source/mxn.js" type="text/javascript"></script>
-	<script src="../source/mxn.core.js" type="text/javascript"></script>
-	<script src="../source/mxn.geocommons.core.js" type="text/javascript"></script>  
-    <style type="text/css">
-    #mapstraction {
-        height: 400px;
-        width: 500px;
-    }
-    </style> 
+	<title>Mapstraction V3 Examples</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
 </head>
 <body>
-
-            <div id="mapstraction" style="position:relative;  height: 400px; width:100%"></div>
-            <script type="text/javascript">
-            // initialise the map with your choice of API
-            var mapstraction = new mxn.Mapstraction('mapstraction','geocommons');
-            mapstraction.addOverlay("4")
-            </script> 
-        <div class="">
-	<script type="text/javascript" charset="utf-8">
-
-			getCenter = function() {
-				var center = mapstraction.getCenter();
-				alert(center.lat + " " + center.lon);
-			}
-			alertBounds = function() { 
-				var bounds = mapstraction.getBounds();
-				var sw = bounds.getSouthWest();
-				var ne = bounds.getNorthEast();
-				alert(sw.lat + " " + sw.lon + " " + ne.lat + " " + ne.lon);
-			}
-
-</script> 
-<h2>Demo Functions</h2>
-<ul>
-  <li><a href="javascript:mapstraction.setBounds( new mxn.BoundingBox(51.9,-4.3,52.25,-3.75) );">click me to set bounds</a>.</li>
-  <li><a href="javascript:alertBounds();">click me to get bounds</a> </li>
-  <li><a href="javascript:mapstraction.setZoom( mapstraction.getZoom()-1 );">click me to decrement zoom</a>.</li>
-  <li><a href="javascript:mapstraction.setZoom( mapstraction.getZoom()+1 );">click me to increment zoom</a>.</li>
-  <li><a href="javascript:alert('zoom is ' + mapstraction.getZoom());">click me to get zoom</a>.</li>
-  <li><a href="javascript:getCenter();">click me to getCenter</a>.</li>
-  <li><a href="javascript:mapstraction.setCenter(new mxn.LatLonPoint(52,0));">click me to setCenter</a>.</li>
-  <li><a href="javascript:mapstraction.setCenter(new mxn.LatLonPoint(38.404196,-123.008194), {pan: true});">click me to pan to center</a>.</li>
-  <li><a href="javascript:mapstraction.addControls({zoom:true, layers:true});">click me to add controls</a>.</li>
-  <li><a href="javascript:mapstraction.addControls({});">click me to remove controls</a>.</li>
-  <li><a href="javascript:mapstraction.addControls({legend:true});">click me to open legend controls</a>.</li>
-  <li><a href="javascript:mapstraction.resizeTo('100px','200px');">click me to resize</a>.</li>
-</ul> 
-        </div>
-
+	<h1>Mapstraction v3 Examples</h1>
+	<div id="container">
+		<ul>
+			<li><a href="all.html" target="_blank">All maps providers; centred on London</a></li>
+			<li>CloudMade</li>
+			<ul>
+				<li><a href="cloudmade-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="cloudmade.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>ESRI</li>
+			<ul>
+				<li><a href="esri-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="esri.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>Google v2</li>
+			<ul>
+				<li><a href="google-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="google.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>Google v3</li>
+			<ul>
+				<li><a href="googlev3-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="googlev3.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>Leaflet</li>
+			<ul>
+				<li><a href="leaflet-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="leaflet.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>MapQuest</li>
+			<ul>
+				<li><a href="mapquest-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="mapquest.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>MapQuest Open</li>
+			<ul>
+				<li><a href="openmq-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="openmq.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>Microsoft Bing v6</li>
+			<ul>
+				<li><a href="microsoft-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="microsoft.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>Microsoft Bing v7</li>
+			<ul>
+				<li><a href="microsoft7-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="microsoft7.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>Nokia HERE</li>
+			<ul>
+				<li><a href="nokia-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="nokia.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>Nokia Ovi</li>
+			<ul>
+				<li><a href="ovi-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="ovi.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>OpenLayers</li>
+			<ul>
+				<li><a href="openlayers-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="openlayers.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>Ordnance Survey OpenSpace</li>
+			<ul>
+				<li><a href="openspace-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="openspace.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+			<li>Yandex</li>
+			<ul>
+				<li><a href="yandex-basic.html" target="_blank">Basic Example</a></li>
+				<li><a href="yandex.html" target="_blank">Full Feature Example</a></li>
+			</ul>
+		</ul>
+	</div>
 </body>
 </html>
-

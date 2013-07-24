@@ -14,6 +14,9 @@ if(typeof(Enumerator) == 'undefined'){
 		this.item = function(){
 			return ary[current];
 		};
+		this.getCurrent = function() {
+			return current;
+		}
 	}
 }
 
@@ -28,7 +31,7 @@ window.RunTests = function(ops, actionElm, infoElm) {
 	
 	var e = new Enumerator(ops);
 	var intervalID;
-	
+
 	function doNextAction(){
 		if(e.atEnd()){
 			clearInterval(intervalID);
@@ -39,7 +42,7 @@ window.RunTests = function(ops, actionElm, infoElm) {
 				a.action();
 			}
 			catch(err){
-				infoElm.innerHTML = 'ERROR: ' + err;
+				infoElm.innerHTML += 'ERROR: ' + err;
 				infoElm.style.backgroundColor = '#FCC';
 				clearInterval(intervalID);
 				throw err;
@@ -58,7 +61,8 @@ window.Dump = function(obj) {
 		return '(' + obj.lat.toFixed(5) + ','+ obj.lon.toFixed(5) +')';
 	}
 	else if (obj instanceof mxn.BoundingBox) {
-		return 'SW' + Dump(obj.sw) + '<br/>NE' + Dump(obj.ne);
+		return 'SW' + Dump(obj.sw) + '<br/>NE' + Dump(obj.ne) + '<br/>SE ' + Dump(obj.se) + '<br/>NW ' + Dump(obj.nw);
+		
 	}
 	throw 'Not recognised';
 };

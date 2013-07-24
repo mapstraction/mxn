@@ -1,12 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>Mapstraction Example - Leaflet</title>
+	<title>Mapstraction Example - OpenLayers</title>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 	<script src="http://code.jquery.com/jquery-1.8.2.min.js" type="text/javascript"></script>
-	<link href="http://leaflet.cloudmade.com/dist/leaflet.css" media="all" rel="stylesheet" type="text/css" />
-	<script src="http://leaflet.cloudmade.com/dist/leaflet.js" type="text/javascript"></script>
-	<script src="../source/mxn.js?(leaflet)" type="text/javascript"></script>
+	<script type="text/javascript" src="http://dev.openlayers.org/releases/OpenLayers-2.9.1/OpenLayers.js"></script>
+	<script src="../source/mxn.js?(openlayers)" type="text/javascript"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
 	<script type="text/javascript">
 	
@@ -14,18 +13,15 @@
 	var	polyline;
 	var icon_marker;
 	var marker;
-	var osm_url = "http://{S}.tile.openstreetmap.org/{Z}/{X}/{Y}.png";
-	var toner_url = "http://tile.stamen.com/toner/{Z}/{X}/{Y}.png";
-	var watercolor_url = "http://tile.stamen.com/watercolor/{Z}/{X}/{Y}.png";
 	
 	function initialize() {
-		map = new mxn.Mapstraction('map', 'leaflet');
+		map = new mxn.Mapstraction('map', 'openlayers');
 		map.load.addHandler(function(en, es, ea) {
 			logEvent ('Map loaded');
 		});
 		//map.addControls({pan: true, zoom: 'small'});
 		map.addControls({zoom: 'large', overview: true, scale: true, map_type: true, pan: true});
-		latlon = new mxn.LatLonPoint(51.50730, -0.12763);
+		latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587);
 		map.setCenterAndZoom(latlon, 12);
 		
 		
@@ -237,44 +233,27 @@
 			map.addControls({});
 			map.addControls({scale: true});
 		});
-		$('#osm-add').click(function() {
-			var opacity = 1;
-			var label = "OSM";
-			var attribution = 'CC-BY-SA © OpenStreetMap contributors';
-			var min_zoom = 1;
-			var max_zoom = 18;
-			var map_type = true;
-			
-			map.addTileLayer(osm_url, opacity, label, attribution, min_zoom, max_zoom, map_type, ['a', 'b', 'c']);
-		});
-		$('#osm-toggle').click(function() {
-			map.toggleTileLayer(osm_url);
-		});
 		$('#toner-add').click(function() {
+			var url = "http://tile.stamen.com/toner/{Z}/{X}/{Y}.png";
 			var opacity = 1;
-			var label = "Toner";
-			var attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.';
+			var copyright = "Toner by Stamen";
 			var min_zoom = 1;
 			var max_zoom = 18;
 			var map_type = true;
 			
-			map.addTileLayer(toner_url, opacity, label, attribution, min_zoom, max_zoom, map_type);
-		});
-		$('#toner-toggle').click(function() {
-			map.toggleTileLayer(toner_url);
+			map.addTileLayer(url, opacity, copyright, min_zoom, max_zoom, map_type);
+			return false;
 		});
 		$('#watercolor-add').click(function() {
+			var url = "http://tile.stamen.com/watercolor/{Z}/{X}/{Y}.png";
 			var opacity = 1;
-			var label = "Watercolor";
-			var attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.';
+			var copyright = "Watercolor by Stamen";
 			var min_zoom = 1;
 			var max_zoom = 18;
 			var map_type = true;
 			
-			map.addTileLayer(watercolor_url, opacity, label, attribution, min_zoom, max_zoom, map_type);
-		});
-		$('#watercolor-toggle').click(function() {
-			map.toggleTileLayer(watercolor_url);
+			map.addTileLayer(url, opacity, copyright, min_zoom, max_zoom, map_type);
+			return false;
 		});
 	});
 	</script>
@@ -307,8 +286,8 @@
 					<li>Add a <a id="add-marker" href="#">standard marker</a> or <a id="remove-marker" href="#">remove it</a>.</li>
 					<li>Add a <a id="add-icon-marker" href="#">marker with a custom icon</a> or <a id="remove-icon-marker" href="#">remove it</a>.</li>
 					<li>Add a <a id="add-polyline" href="#">polyline</a> or <a id="remove-polyline" href="#">remove it</a>.</li>
-					<li>Add <a id="osm-add" href="#">OSM</a>, <a id="toner-add" href="#">Toner</a>, <a id="watercolor-add" href="#">Watercolor</a> tiles.</li>
-					<li>Toggle <a id="osm-toggle" href="#">OSM</a>, <a id="toner-toggle" href="#">Toner</a>, <a id="watercolor-toggle" href="#">Watercolor</a> tiles.</li>
+					<li>Add map tiles: <a id="toner-add" href="#">Stamen's Toner</a>, <a id="watercolor-add" href="#">Stamen's Watercolor</a>.</li>
+					
 				</ul>
 			</div>
 		</div>

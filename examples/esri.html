@@ -1,33 +1,30 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>Mapstraction Example - Leaflet</title>
+	<title>Mapstraction Example - ESRI</title>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-	<script src="http://code.jquery.com/jquery-1.8.2.min.js" type="text/javascript"></script>
-	<link href="http://leaflet.cloudmade.com/dist/leaflet.css" media="all" rel="stylesheet" type="text/css" />
-	<script src="http://leaflet.cloudmade.com/dist/leaflet.js" type="text/javascript"></script>
-	<script src="../source/mxn.js?(leaflet)" type="text/javascript"></script>
+	<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" media="all" rel="stylesheet" type="text/css" />
+	<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/dojo/dijit/themes/claro/claro.css" media="all" rel="stylesheet" type="text/css" />
+	<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.2" type="text/javascript"></script>
+	<script src="../source/mxn.js?(esri)" type="text/javascript"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
 	<script type="text/javascript">
-	
+
 	var map;
 	var	polyline;
 	var icon_marker;
 	var marker;
-	var osm_url = "http://{S}.tile.openstreetmap.org/{Z}/{X}/{Y}.png";
-	var toner_url = "http://tile.stamen.com/toner/{Z}/{X}/{Y}.png";
-	var watercolor_url = "http://tile.stamen.com/watercolor/{Z}/{X}/{Y}.png";
 	
 	function initialize() {
-		map = new mxn.Mapstraction('map', 'leaflet');
+		map = new mxn.Mapstraction('map', 'esri');
+		//map.addControls({pan: true, zoom: 'small'});
+		map.addControls({zoom: true, overview: true, scale: true, map_type: true, pan: true});
+		
 		map.load.addHandler(function(en, es, ea) {
 			logEvent ('Map loaded');
+			latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587);
+			map.setCenterAndZoom(latlon, 12);
 		});
-		//map.addControls({pan: true, zoom: 'small'});
-		map.addControls({zoom: 'large', overview: true, scale: true, map_type: true, pan: true});
-		latlon = new mxn.LatLonPoint(51.50730, -0.12763);
-		map.setCenterAndZoom(latlon, 12);
-		
 		
 		map.click.addHandler(function(en, es, ea) {
 			var point = ea.location;
@@ -65,7 +62,7 @@
 	}
 	
 	addIconMarker = function() {
-		var iconURL = "http://api.maps.nokia.com/en/playground/examples/maps/res/markerHouse.png";
+		var iconURL = "http://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png";
 		// add a marker
 		icon_marker = new mxn.Marker(map.getCenter());
 		icon_marker.setIcon(iconURL);
@@ -113,174 +110,135 @@
 		return false;
 	}
 	
-	$(document).ready(function() {
+	dojo.addOnLoad(function() {
 		initialize();
 
-		$('#set-bounds').click(function() {
+		dojo.query('#set-bounds').onclick(function() {
 			var bb = new mxn.BoundingBox(51.9,-4.3,52.25,-3.75);
 			map.setBounds(bb);
 			logInfo ('Bounds set to ' + bb.toString(4));
 			
 			return false;
 		});
-		$('#get-bounds').click(function(){
+		dojo.query('#get-bounds').onclick(function(){
 			logInfo ('Current bounds are ' + map.getBounds().toString(4));
 			return false;
 		});
-		$('#decrement-zoom').click(function(){
+		dojo.query('#decrement-zoom').onclick(function(){
 			map.setZoom(map.getZoom() - 1);
 			logInfo ('Zoom decremented, new zoom level is ' + map.getZoom());
 			return false;
 		});
-		$('#increment-zoom').click(function(){
+		dojo.query('#increment-zoom').onclick(function(){
 			map.setZoom(map.getZoom() + 1);
 			logInfo ('Zoom incremented, new zoom level is ' + map.getZoom());
 			return false;
 		});
-		$('#get-zoom').click(function(){
+		dojo.query('#get-zoom').onclick(function(){
 			logInfo ('Current zoom level is ' + map.getZoom());
 			return false;
 		});
 
-		$('#get-center').click(function(){
+		dojo.query('#get-center').onclick(function(){
 			var disp = document.getElementById('info');
 			disp.innerHTML += "\n" + "Current center is " + map.getCenter().toString(4);
 			disp.scrollTop = disp.scrollHeight - disp.clientHeight;
 			return false;
 		});
-		$('#set-center').click(function(){
+		dojo.query('#set-center').onclick(function(){
 			map.setCenter(new mxn.LatLonPoint(53.94, 48.96));
 			return false;
 		});
-		$('#pan-center').click(function(){
+		dojo.query('#pan-center').onclick(function(){
 			map.setCenter(new mxn.LatLonPoint(38.404196,-123.008194), {pan: true});
 			return false;
 		});
 		
-		$('#set-road').click(function(){
+		dojo.query('#set-road').onclick(function(){
 			map.setMapType(mxn.Mapstraction.ROAD);
 			return false;
 		});
-		$('#set-satellite').click(function(){
+		dojo.query('#set-satellite').onclick(function(){
 			map.setMapType(mxn.Mapstraction.SATELLITE);
 			return false;
 		});
-		$('#set-hybrid').click(function(){
+		dojo.query('#set-hybrid').onclick(function(){
 			map.setMapType(mxn.Mapstraction.HYBRID);
 			return false;
 		});
-		$('#set-physical').click(function(){
+		dojo.query('#set-physical').onclick(function(){
 			map.setMapType(mxn.Mapstraction.PHYSICAL);
 			return false;
 		});
-		$('#add-icon-marker').click(function(){
+		dojo.query('#add-icon-marker').onclick(function(){
 			addIconMarker();
 			return false;
 		});
-		$('#remove-icon-marker').click(function(){
+		dojo.query('#remove-icon-marker').onclick(function(){
 			map.removeMarker(icon_marker);
 			return false;
 		});
-		$('#add-marker').click(function(){
+		dojo.query('#add-marker').onclick(function(){
 			addMarker();
 			return false;
 		});
-		$('#remove-marker').click(function(){
+		dojo.query('#remove-marker').onclick(function(){
 			map.removeMarker(marker);
 			return false;
 		});
-		$('#add-polyline').click(function(){
+		dojo.query('#add-polyline').onclick(function(){
 			addPolyline();
 			return false;
 		});
-		$('#remove-polyline').click(function(){
+		dojo.query('#remove-polyline').onclick(function(){
 			map.removePolyline(polyline);
 			return false;
 		});
-		$('#resize-small').click(function(){
-			width = $(window).width() / 2 + "px";
+		dojo.query('#resize-small').onclick(function(){
+			width = dojo.window.getBox().w / 2 + "px";
 			height = "200px";
 			map.resizeTo(width,height);
 			return false;
 		});
-		$('#resize-restore').click(function(){
-			width = $(window).width() + "px";
+		dojo.query('#resize-restore').onclick(function(){
+			width = dojo.window.getBox().w + "px";
 			height = "400px";
 			map.resizeTo(width,height);
 			return false;
 		});
-		$('#add-controls').click(function(){
+		dojo.query('#add-controls').onclick(function(){
 			map.addControls({zoom: 'large', overview: true, scale: true, map_type: true, pan: true});
 			return false;
 		});
-		$('#hide-controls').click(function(){
+		dojo.query('#hide-controls').onclick(function(){
 			map.addControls({});
 			return false;
 		});
-		$('#add-small-controls').click(function() {
+		dojo.query('#add-small-controls').onclick(function() {
 			map.addControls({});
 			map.addSmallControls();
 		});
-		$('#add-large-controls').click(function() {
+		dojo.query('#add-large-controls').onclick(function() {
 			map.addControls({});
 			map.addLargeControls();
 		});
-		$('#add-type-controls').click(function() {
+		dojo.query('#add-type-controls').onclick(function() {
 			map.addControls({});
 			map.addMapTypeControls();
 		});
-		$('#add-overview-controls').click(function() {
+		dojo.query('#add-overview-controls').onclick(function() {
 			map.addControls({});
 			map.addControls({overview: true});
 		});
-		$('#add-scale-controls').click(function() {
+		dojo.query('#add-scale-controls').onclick(function() {
 			map.addControls({});
 			map.addControls({scale: true});
 		});
-		$('#osm-add').click(function() {
-			var opacity = 1;
-			var label = "OSM";
-			var attribution = 'CC-BY-SA © OpenStreetMap contributors';
-			var min_zoom = 1;
-			var max_zoom = 18;
-			var map_type = true;
-			
-			map.addTileLayer(osm_url, opacity, label, attribution, min_zoom, max_zoom, map_type, ['a', 'b', 'c']);
-		});
-		$('#osm-toggle').click(function() {
-			map.toggleTileLayer(osm_url);
-		});
-		$('#toner-add').click(function() {
-			var opacity = 1;
-			var label = "Toner";
-			var attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.';
-			var min_zoom = 1;
-			var max_zoom = 18;
-			var map_type = true;
-			
-			map.addTileLayer(toner_url, opacity, label, attribution, min_zoom, max_zoom, map_type);
-		});
-		$('#toner-toggle').click(function() {
-			map.toggleTileLayer(toner_url);
-		});
-		$('#watercolor-add').click(function() {
-			var opacity = 1;
-			var label = "Watercolor";
-			var attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.';
-			var min_zoom = 1;
-			var max_zoom = 18;
-			var map_type = true;
-			
-			map.addTileLayer(watercolor_url, opacity, label, attribution, min_zoom, max_zoom, map_type);
-		});
-		$('#watercolor-toggle').click(function() {
-			map.toggleTileLayer(watercolor_url);
-		});
 	});
+	//]]>
 	</script>
 </head>
-<body>
-</body>
+<body class="claro">
 	<div id="map"></div>
 	<div id="container">
 		<div class="box">
@@ -302,13 +260,12 @@
 					<li><a id="add-type-controls" href="#">Click me to add map type controls</a>.</li>
 					<li><a id="add-overview-controls" href="#">Click me to add map overview controls</a>.</li>
 					<li><a id="add-scale-controls" href="#">Click me to add map scale controls</a>.</li>
+					
 					<li>Resize map <a id="resize-restore" href="#">original size</a> or <a id="resize-small" href="#">half size</a>.</li>
 					<li>Set basemap to: <a id="set-road" href="#">road</a>, <a id="set-satellite" href="#">satellite</a>, <a id="set-hybrid" href="#">hybrid</a> or <a id="set-physical" href="#">physical</a>.</li>
 					<li>Add a <a id="add-marker" href="#">standard marker</a> or <a id="remove-marker" href="#">remove it</a>.</li>
 					<li>Add a <a id="add-icon-marker" href="#">marker with a custom icon</a> or <a id="remove-icon-marker" href="#">remove it</a>.</li>
 					<li>Add a <a id="add-polyline" href="#">polyline</a> or <a id="remove-polyline" href="#">remove it</a>.</li>
-					<li>Add <a id="osm-add" href="#">OSM</a>, <a id="toner-add" href="#">Toner</a>, <a id="watercolor-add" href="#">Watercolor</a> tiles.</li>
-					<li>Toggle <a id="osm-toggle" href="#">OSM</a>, <a id="toner-toggle" href="#">Toner</a>, <a id="watercolor-toggle" href="#">Watercolor</a> tiles.</li>
 				</ul>
 			</div>
 		</div>
@@ -321,4 +278,5 @@
 			<textarea id="events" placeholder="API Events"></textarea>
 		</div>
 	</div>
+</body>
 </html>

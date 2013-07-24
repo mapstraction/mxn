@@ -20,7 +20,7 @@
 		function successCallback(response) {
 			infoElm.innerHTML += [
 				'<strong>Response:</strong>',
-				'Point: ' + Dump(response.point),
+				'Point: ' + Dump(response[0].point),
 				'Street: ' + response.street,
 				'Locality: ' + response.locality,
 				'Region: ' + response.region,
@@ -28,7 +28,7 @@
 		}	
 		
 		function errorCallback(err) {
-			infoElm.innerHTML += 'Error: ' + Dump(response.point);
+			infoElm.innerHTML += 'Error: ' + err;
 		}
 		
 		var geo = new mxn.Geocoder('googlev3', successCallback, errorCallback);
@@ -37,7 +37,7 @@
 			{ 
 				desc: 'Center map', 
 				action: function(){
-					geo.geocode({address: '1600 Amphitheatre Pky, Mountain View, CA'});
+					geo.geocode('1600 Amphitheatre Pky, Mountain View, CA');
 				} 
 			},
 			
