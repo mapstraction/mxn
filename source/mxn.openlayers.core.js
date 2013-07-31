@@ -738,12 +738,13 @@ mxn.register('openlayers', {
 		},
 
 		hide: function() {
-			this.proprietary_marker.layer.setVisibility(false);
-			
+			delete this.proprietary_marker.style.display;
+			this.proprietary_marker.layer.redraw();		
 		},
 
 		show: function() {
-			this.proprietary_marker.layer.setVisibility(true);
+			this.proprietary_marker.style.display = 'true';
+			this.proprietary_marker.layer.redraw();
 		},
 
 		update: function() {
@@ -792,11 +793,13 @@ mxn.register('openlayers', {
 		},
 
 		show: function() {
-			this.proprietary_polyline.layer.setVisibility(true);
-		},
+			delete this.proprietary_polyline.style.display;
+			this.proprietary_polyline.layer.redraw();		
+			},
 
 		hide: function() {
-			this.proprietary_polyline.layer.setVisibility(false);
+			this.proprietary_polyline.style.display = 'none';
+			this.proprietary_polyline.layer.redraw();		
 		}
 	}
 

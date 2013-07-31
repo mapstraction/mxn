@@ -443,6 +443,19 @@
 				}
 			},
 			{
+				desc: 'Hide one marker',
+				action: function(){
+					m.markers[0].hide();
+				}
+			},			
+			{
+				desc: 'Show one marker',
+				action: function(){
+					m.markers[0].show();
+				}
+			},			
+			
+			{
 				desc: 'Add line',
 				action: function(){
 					var pl;
@@ -466,6 +479,49 @@
 					}
 					pl.color = '#00DD55';
 					m.addPolyline(pl);
+				}
+			},
+			{
+				desc: 'Add 2nd Polyline',
+				action: function() {
+					var shp;
+					switch (provider) {
+						case 'openspace':
+						shp = new mxn.Polyline([
+							new mxn.LatLonPoint(51.564, -0.534),
+							new mxn.LatLonPoint(51.690, -0.231),
+							new mxn.LatLonPoint(51.596, 0.040),
+							new mxn.LatLonPoint(51.390, 0.191),
+							new mxn.LatLonPoint(51.264, -0.131),
+							new mxn.LatLonPoint(51.311, -0.429),
+							new mxn.LatLonPoint(51.430, -0.533)
+						]);
+							break;
+						default:
+							shp = new mxn.Polyline([
+								new mxn.LatLonPoint(37.805, -122.480),
+								new mxn.LatLonPoint(37.678, -121.800),
+								new mxn.LatLonPoint(37.238, -121.962),
+								new mxn.LatLonPoint(37.462, -122.444)
+							]);
+							break;
+					}
+					shp.width = 3;
+					shp.color = '#0077FF';
+					shp.opacity = 0.6;
+					m.addPolyline(shp);
+				}
+			},			
+			{
+				desc: 'Hide one polyline',
+				action: function(){
+					m.polylines[0].hide();
+				}
+			},			
+			{
+				desc: 'Show one polyline',
+				action: function(){
+					m.polylines[0].show();
 				}
 			},
 			{
