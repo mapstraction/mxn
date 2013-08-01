@@ -3,7 +3,8 @@ mxn.register('cartociudad', {
 Geocoder: {
 	
 	init: function() {		
-		this.geocoders[this.api] = new metodosCartociudad();
+		throw new Error('The Cartociudad Maps geocoder API is now obsolete and no longer supported by Mapstraction');
+		//this.geocoders[this.api] = new metodosCartociudad();
 	},
 	
 	geocode: function(address){
