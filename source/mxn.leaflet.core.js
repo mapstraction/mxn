@@ -281,7 +281,9 @@ Mapstraction: {
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north) {
-		throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + this.api);
+		var map = this.maps[this.api];
+		var imageBounds = [[west, south], [east, north]];
+		L.imageOverlay(src, imageBounds).addTo(map);
 	},
 
 	setImagePosition: function(id, oContext) {

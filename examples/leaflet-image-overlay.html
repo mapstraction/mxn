@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Mapstraction Basic Example - Leaflet</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<script src="http://code.jquery.com/jquery-1.8.2.min.js" type="text/javascript"></script>
+	<link href="http://leaflet.cloudmade.com/dist/leaflet.css" media="all" rel="stylesheet" type="text/css" />
+	<script src="http://leaflet.cloudmade.com/dist/leaflet.js" type="text/javascript"></script>
+	<script src="../source/mxn.js?(leaflet)" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
+	<script type="text/javascript">
+
+	var map;
+	
+	function initialize() {
+		map = new mxn.Mapstraction('map', 'leaflet');
+		latlon = new mxn.LatLonPoint(40.75,-74.17);
+		map.setCenterAndZoom(latlon, 12);
+		
+		var imageUrl = 'http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg';
+		
+		//map.addImageOverlay('over','http://localhost:8084/volcano/img/Peligros.png', 100, -78.616842, -1.599628, -78.335597, -1.250992);
+		map.addImageOverlay('over',imageUrl, 100, 40.712216, -74.22655, 40.773941, -74.12544);
+	}
+	
+	$(document).ready(function() {
+		initialize();
+	});
+	</script>
+</head>
+<body>
+</body>
+	<div id="map"></div>
+	</div>
+</html>
