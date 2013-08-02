@@ -1,10 +1,9 @@
-<html xmlns="http://www.w3.org/1999/xhtml">
+x<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Mapstraction Examples - Yandex2 Geocoder</title>
-	<script type="text/javascript" src="http://dev.openlayers.org/releases/OpenLayers-2.9.1/OpenLayers.js"></script>
 <script src="http://api-maps.yandex.ru/2.0/?load=package.full&lang=en-US"
             type="text/javascript"></script>" type="text/javascript" charset="utf-8"></script>
-<script src="../source/mxn.js?(openlayers, yandex2,[geocoder])" type="text/javascript"></script>
+<script src="../source/mxn.js?(yandex2,[geocoder])" type="text/javascript"></script>
 <style type="text/css">
 
 	#mapdiv {
@@ -41,7 +40,7 @@
 	function initialize() {
 
 		// create mxn object
-		mapstraction = new mxn.Mapstraction('mapdiv','openlayers');
+		mapstraction = new mxn.Mapstraction('mapdiv','yandex2');
 
 		mapstraction.addControls({
 			pan: true,
