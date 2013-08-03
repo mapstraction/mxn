@@ -20,10 +20,6 @@ mxn.register('openlayers', {
 			var map = new OpenLayers.Map(
 				element.id,
 				{
-					maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34),
-					maxResolution: 156543,
-					numZoomLevels: 18,
-					units: 'm',
 					projection: 'EPSG:900913',
 					controls: [
 						new OpenLayers.Control.Navigation(),
@@ -32,41 +28,16 @@ mxn.register('openlayers', {
 					]
 				}
 			);
-		
+				
 			// initialize layers map (this was previously in mxn.core.js)
 			this.layers = {};
 
-			this.layers.osm = new OpenLayers.Layer.TMS(
-				'OpenStreetMap',
-				[
-					"http://a.tile.openstreetmap.org/",
-					"http://b.tile.openstreetmap.org/",
-					"http://c.tile.openstreetmap.org/"
-				],
-				{ 
-					type:'png',
-					getURL: function (bounds) {
-						var res = this.map.getResolution();
-						var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-						var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
-						var z = this.map.getZoom();
-						var limit = Math.pow(2, z);
-						if (y < 0 || y >= limit) {
-							return null;
-						} else {
-							x = ((x % limit) + limit) % limit;
-							var path = z + "/" + x + "/" + y + "." + this.type;
-							var url = this.url;
-							if (url instanceof Array) {
-								url = this.selectUrl(path, url);
-							}
-							return url + path;
-						}
-					},
-					displayOutsideMaxExtent: true
-				}
-			);
-					
+			// create OSM layer using all 3 hostnames
+			this.layers.osm = new OpenLayers.Layer.OSM("OpenStreetMap",
+			  ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+			   "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+			   "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]);
+		
 			// deal with click
 			map.events.register('click', map, function(evt){
 				var lonlat = map.getLonLatFromViewPortPx(evt.xy);
