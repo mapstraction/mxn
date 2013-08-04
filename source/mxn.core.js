@@ -428,31 +428,21 @@ Mapstraction.prototype.swap = function(element, api) {
 
 	this.api = api;
 	this.onload[api] = [];
+
+	init.apply(this);
 	
-	if (!this.maps.hasOwnProperty(this.api)) {
-		init.apply(this);
-
-		for (var i = 0; i < this.markers.length; i++) {
-			this.addMarker(this.markers[i], true);
-		}
-
-		for (var j = 0; j < this.polylines.length; j++) {
-			this.addPolyline( this.polylines[j], true);
-		}
-
-		this.setCenterAndZoom(center,zoom);		
-	}
-	else {
-
-		//sync the view
-		this.setCenterAndZoom(center,zoom);
-
-		//TODO synchronize the markers and polylines too
-		// (any overlays created after api instantiation are not sync'd)
+	for (var i = 0; i < this.markers.length; i++) {
+		this.addMarker(this.markers[i], true);
 	}
 
+	for (var j = 0; j < this.polylines.length; j++) {
+		this.addPolyline( this.polylines[j], true);
+	}
+
+	//TODO synchronize any overlays created after api instantiation are not sync'd
+	
+	this.setCenterAndZoom(center,zoom);		
 	this.addControls(this.addControlsArgs);
-
 };
 
 /**
