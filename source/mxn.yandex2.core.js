@@ -484,7 +484,7 @@ Marker: {
 		this.proprietary_marker.properties.set({
 			balloonContentHeader: this.labelText || '',
 			//balloonContentFooter: 'footer',
-			balloonContentBody: this.infoBubble,
+			balloonContentBody: this.infoBubble
 		});
 		
 		this.proprietary_marker.balloon.open();
