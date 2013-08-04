@@ -30,7 +30,8 @@
 		'openmq',
 		'openspace',
 		'ovi',
-		'yandex'
+		'yandex',
+		'yandex2'
 	];
 	
 	var provider;
@@ -128,6 +129,10 @@
 
 			case 'yandex':
 				document.write('<script src="http://api-maps.yandex.ru/1.1/index.xml?key=AMVH-VABAAAAEdVkcQIAOS-fmBYJfLFV-YDg7ZCPjwVQycUAAAAAAAAAAADwTFcvgPirz7OV75IX_Gsopsw7jA==" type="text/javascript"><\/script >');
+				break;
+
+			case 'yandex2':
+				document.write('<script src="http://api-maps.yandex.ru/2.0/?load=package.full&lang=en-US" type="text/javascript" charset="utf-8"><\/script>');
 				break;
 				
 			case 'googlev3':
@@ -688,6 +693,7 @@
 				<li><a href="core.html?provider=openspace">OS OpenSpace</a></li>
 				<li><a href="core.html?provider=ovi">Ovi</a></li>
 				<li><a href="core.html?provider=yandex">Yandex</a></li>
+				<li><a href="core.html?provider=yandex2">Yandex2</a></li>
 			</ul>
 		</div>
 		<div id="box-wrapper">
@@ -723,7 +729,8 @@
 			<a href="?provider=openmq">openmq</a>,
 			<a href="?provider=openspace">openspace</a>,
 			<a href="?provider=ovi">ovi</a>,
-			<a href="?provider=yandex">yandex</a>.
+			<a href="?provider=yandex">yandex</a>,
+			<a href="?provider=yandex2">yandex2</a>.
 		</p>
 	</div>
 </body>
