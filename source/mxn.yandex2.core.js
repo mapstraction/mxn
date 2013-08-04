@@ -41,7 +41,9 @@ Mapstraction: {
 				});
 
 				me.loaded[api] = true;
-				me.load.fire();
+				
+				//doing the load.fire directly it runs too fast and we dont get a chance to register the handler in the core tests, so had to add a delay.
+				setTimeout(function(){me.load.fire();},50);
 			}	
 		
 		);
