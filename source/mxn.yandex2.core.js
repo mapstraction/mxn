@@ -492,11 +492,15 @@ Marker: {
 	},
 	
 	hide: function() {
-		this.proprietary_marker._$iconContainer.addClass("ymaps-display-none");
+		this.proprietary_marker.options.set({
+			visible: false
+		});
 	},
 
 	show: function() {
-		this.proprietary_marker._$iconContainer.removeClass("ymaps-display-none");
+		this.proprietary_marker.options.set({
+			visible: true
+		});
 	},
 
 	update: function() {
@@ -534,11 +538,15 @@ Polyline: {
 	},
 	
 	hide: function() {
-		this.proprietary_polyline._container._$container.addClass("ymaps-display-none");
+		this.proprietary_polyline.options.set({
+			visible: false
+		});	
 	},
 
 	show: function() {
-		this.proprietary_polyline._container._$container.removeClass("ymaps-display-none");
+		this.proprietary_polyline.options.set({
+			visible: true
+		});	
 	}
 }
 
