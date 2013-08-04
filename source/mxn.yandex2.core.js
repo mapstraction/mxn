@@ -422,42 +422,43 @@ LatLonPoint: {
 Marker: {
 	
 	toProprietary: function() {
+		var properties = {
+		};
+
 		var options = {
-			hideIcon: false,
 			draggable: this.draggable
 		};
-		
+
+		if (this.labelText) {
+			properties.iconContent = this.labelText;
+			if (properties.iconContent.length > 1) {
+				options.preset = 'twirl#blueStretchyIcon';
+			}
+		}
+
 		if (this.iconUrl) {
-			options.iconImageHref = this.iconUrl;
-		}	
+			if (this.iconUrl[0] === '#') {
+				// See http://api.yandex.ru/maps/doc/jsapi/2.x/ref/reference/option.presetStorage.xml for all the predefined icons
+				options.preset = 'twirl' + this.iconUrl;
+			} else {
+				options.iconImageHref = this.iconUrl;
+			}
+		}
+		if (this.iconSize) {
+			options.iconImageSize = [this.iconSize[0], this.iconSize[1]];
+		}
 		if (this.iconShadowUrl) {
 			options.iconShadowImageHref = this.iconShadowUrl;
 		}
 		if (this.iconShadowSize) {
 			options.iconShadowImageSize = [this.iconShadowSize[0], this.iconShadowSize[1]];
-		}			
-
+		}
 		if (this.iconAnchor) {
 			options.iconOffset = [this.iconAnchor[0], this.iconAnchor[1]];
 		}
-	
-		if (this.labelText) {
-			options.iconContent = this.labelText; 
-		}
+
+		var ymarker = new ymaps.Placemark(this.location.toProprietary('yandex2'), properties, options);
 		
-		var ymarker = new ymaps.Placemark(this.location.toProprietary('yandex2'), options);
-		
-		if (this.iconUrl) {
-			var postoptions = {
-				iconImageHref: this.iconUrl
-			};
-			
-			if (this.iconSize) {
-				postoptions.iconImageSize = [this.iconSize[0], this.iconSize[1]];
-			}
-			
-			ymarker.options.set(postoptions);
-		}		
 		
 		if (this.hoverIconUrl) {
 			var me = this;
@@ -481,7 +482,9 @@ Marker: {
 
 	openBubble: function() {
 		this.proprietary_marker.properties.set({
-			balloonContent: this.infoBubble
+			balloonContentHeader: this.labelText || '',
+			//balloonContentFooter: 'footer',
+			balloonContentBody: this.infoBubble,
 		});
 		
 		this.proprietary_marker.balloon.open();
