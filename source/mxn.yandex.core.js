@@ -93,15 +93,14 @@ Mapstraction: {
 		}
 
 		if ('zoom' in args) {
-			if (args.zoom || args.zoom == 'small') {
+			if (args.zoom === true || args.zoom == 'small') {
 				this.addSmallControls();
 			}
-			
+
 			else if (args.zoom == 'large') {
 				this.addLargeControls();
 			}
-		}
-		
+		}		
 		else {
 			if (this.controls.zoom !== null) {
 				map.removeControl(this.controls.zoom);
