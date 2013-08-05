@@ -154,6 +154,8 @@
 		END_PAN: {name: 'endPan', value: false},
 		CHANGE_ZOOM: {name: 'changeZoom', value: false},
 		MARKER_ADDED: {name: 'markerAdded', value: false},
+		MARKER_INFOBUBBLE_OPENED: {name: 'InfoBubbleOpened', value: false}, 
+		MARKER_INFOBUBBLE_CLOSED: {name: 'InfoBubbleClosed', value: false},
 		MARKER_REMOVED: {name: 'markerRemoved', value: false},
 		POLYLINE_ADDED: {name: 'polylineAdded', value: false},
 		POLYLINE_REMOVED: {name: 'polylineRemoved', value: false}
@@ -257,6 +259,18 @@
 		
 		var markerEventHandler = function(sEvtName, oEvtSource, oEvtArgs){
 			logEvent('Marker event: ' + sEvtName + ' - ' + oEvtSource.labelText);
+			
+			switch (sEvtName) {
+				case 'openInfoBubble':
+					events.MARKER_INFOBUBBLE_OPENED.value = true;
+				break;
+				case 'closeInfoBubble':
+					events.MARKER_INFOBUBBLE_CLOSED.value = true;
+				break;
+
+				default:
+					break;
+			}
 		};
 				
 		var ops = [

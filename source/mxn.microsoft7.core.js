@@ -421,6 +421,7 @@ Marker: {
 		}
 		this.proprietary_infowindow.setOptions({visible:false});
 		this.map.entities.remove(this.proprietary_infowindow);
+		this.closeInfoBubble.fire( { 'marker': this } );
 	},
 	hide: function() {
 		this.proprietary_marker.setOptions({visible: false});

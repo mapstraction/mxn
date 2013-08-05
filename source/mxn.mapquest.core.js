@@ -446,6 +446,7 @@ Marker: {
 			else {
 				// close
 			}
+			this.openInfoBubble.fire( { 'marker': this } );
 		}
 	},
 
@@ -456,6 +457,7 @@ Marker: {
 		else {
 			this.proprietary_marker.toggleInfoWindow ();
 		}
+		this.closeInfoBubble.fire( { 'marker': this } );
 	},
 	
 	hide: function() {

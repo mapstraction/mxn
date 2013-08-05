@@ -525,11 +525,13 @@ Marker: {
 	openBubble: function() {
 		var gpin = this.proprietary_marker;
 		gpin.openInfoWindowHtml(this.infoBubble);
+		this.openInfoBubble.fire( { 'marker': this } );
 	},
 	
 	closeBubble: function() {
 		var gpin = this.proprietary_marker;
 		gpin.closeInfoWindow();
+		this.closeInfoBubble.fire( { 'marker': this } );
 	},
 
 	hide: function() {

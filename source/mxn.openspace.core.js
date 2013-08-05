@@ -466,10 +466,12 @@ Marker: {
 	openBubble: function() {
 		this.map.openInfoWindow(this.proprietary_marker.icon, this.location.toProprietary(this.api), this.infoBubble, new OpenLayers.Size(300, 100));
 		this.map.infoWindow.autoSize = true;
+		this.openInfoBubble.fire( { 'marker': this } );
 	},
 	
 	closeBubble: function() {
 		this.map.closeInfoWindow();
+		this.closeInfoBubble.fire( { 'marker': this } );		
 	},
 
 	hide: function() {

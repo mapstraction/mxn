@@ -434,11 +434,13 @@ mxn.register('cloudmade', {
 		openBubble: function() {		
 			var pin = this.proprietary_marker;
 			pin.openInfoWindow(this.infoBubble);
+			this.openInfoBubble.fire( { 'marker': this } );
 		},
 
 		closeBubble: function() {
 			var pin = this.proprietary_marker;
 			pin.closeInfoWindow();
+			this.closeInfoBubble.fire( { 'marker': this } );
 		},
 		
 		hide: function() {

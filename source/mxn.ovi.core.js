@@ -471,6 +471,7 @@ Marker: {
 			throw new Error('Marker.openBubble: This marker must be added to a map in order to manage a Bubble for provider ' + this.api);
 		}
 		this.proprietary_infobubble = this.map.getComponentById("InfoBubbles").addBubble(this.infoBubble, this.location.toProprietary('ovi'));
+		this.openInfoBubble.fire( { 'marker': this } );
 	},
 	
 	closeBubble: function() {
@@ -482,6 +483,7 @@ Marker: {
 			this.map.getComponentById("InfoBubbles").removeBubble(this.proprietary_infobubble);
 		}
 		this.proprietary_infobubble = null;
+		this.closeInfoBubble.fire( { 'marker': this } );
 	},
 	
 	hide: function() {

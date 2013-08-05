@@ -490,10 +490,12 @@ Marker: {
 		});
 		
 		this.proprietary_marker.balloon.open();
+		this.openInfoBubble.fire({'marker': this});
 	},
 	
 	closeBubble: function() {
 		this.proprietary_marker.balloon.close();
+		this.closeInfoBubble.fire({'marker': this});
 	},
 	
 	hide: function() {

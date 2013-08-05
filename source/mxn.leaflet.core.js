@@ -360,11 +360,13 @@ Mapstraction: {
 		marker.bindPopup(content);
 		map.addLayer(marker);
 		marker.openPopup();
+		this.openInfoBubble.fire( { 'marker': this } );		
 	},
 
 	closeBubble: function() {
 		var map = this.maps[this.api];
 		map.closePopup();
+		this.closeInfoBubble.fire( { 'marker': this } );		
 	}
 },
 

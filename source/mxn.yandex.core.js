@@ -524,10 +524,12 @@ Marker: {
 
 	openBubble: function() {
 		this.proprietary_marker.openBalloon();
+		this.openInfoBubble.fire({'marker': this});
 	},
 	
 	closeBubble: function() {
 		this.proprietary_marker.closeBalloon();
+		this.closeInfoBubble.fire( { 'marker': this } );
 	},
 	
 	hide: function() {

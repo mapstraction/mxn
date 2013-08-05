@@ -698,6 +698,7 @@ mxn.register('openlayers', {
 			if (!!this.popup) {
 				this.map.addPopup(this.popup, true);
 			}
+			this.openInfoBubble.fire( { 'marker': this } );
 		},
 
 		closeBubble: function() {
@@ -706,6 +707,7 @@ mxn.register('openlayers', {
 				this.map.removePopup(this.popup);
 				this.popup = null;
 			}
+			this.closeInfoBubble.fire( { 'marker': this } );
 		},
 
 		hide: function() {

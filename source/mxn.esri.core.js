@@ -432,13 +432,14 @@ mxn.register('esri', {
 				map.infoWindow.setContent(this.infoBubble);			
 				map.infoWindow.show(pin.geometry,map.getInfoWindowAnchor(pin.geometry));
 			}
+			this.openInfoBubble.fire( { 'marker': this } );
 		},
 	
 		closeBubble: function() {
 			var pin = this.proprietary_marker;
 			var map = this.mapstraction.maps[this.api];
 			map.infoWindow.hide();
-
+			this.closeInfoBubble.fire( { 'marker': this } );
 		},
 
 		hide: function() {

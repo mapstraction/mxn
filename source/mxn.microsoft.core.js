@@ -429,6 +429,7 @@ Marker: {
 			throw new Error('Marker.openBubble; marker must be added to map in order to display infobox');
 		}
 		this.map.ShowInfoBox(this.proprietary_marker);
+		this.openInfoBubble.fire( { 'marker': this } );		
 	},
 	
 	closeBubble: function() {
@@ -436,6 +437,7 @@ Marker: {
 			throw new Error('Marker.openBubble; marker must be added to map in order to display infobox');
 		}
 		this.map.HideInfoBox();
+		this.closeInfoBubble.fire( { 'marker': this } );
 	},
 
 	hide: function() {
