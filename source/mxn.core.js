@@ -936,7 +936,11 @@ Mapstraction.prototype.setImagePosition = function(id) {
 Mapstraction.prototype.addJSON = function(json) {
 	var features;
 	if (typeof(json) == "string") {
-		features = eval('(' + json + ')');
+		if (window.JSON && window.JSON.parse) {
+			features = window.JSON.parse(json);
+		} else {
+			features = eval('(' + json + ')');
+		}
 	} else {
 		features = json;
 	}
