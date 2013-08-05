@@ -443,13 +443,11 @@ mxn.register('esri', {
 		},
 
 		hide: function() {
-			var map = this.mapstraction.maps[this.api];
-			map.removeLayer(this.proprietary_marker);
+			this.proprietary_marker.hide();
 		},
 
 		show: function() {
-			var map = this.mapstraction.maps[this.api];
-			map.addLayer(this.proprietary_marker);
+			this.proprietary_marker.show();
 		},
 	
 		isHidden: function() {
@@ -510,11 +508,11 @@ mxn.register('esri', {
 		},
 	
 		show: function() {
-			this.map.add(this.proprietary_polyline);
+			this.proprietary_polyline.show();
 		},
 
 		hide: function() {
-			this.map.remove(this.proprietary_polyline);
+			this.proprietary_polyline.hide();
 		}
 	}
 });
