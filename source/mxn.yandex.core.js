@@ -372,7 +372,7 @@ Mapstraction: {
 			var layerID = Math.round(Math.random()*Date.now()).toString(); // silly hash function
 			YMaps.Layers.add(layerID, newLayer);
 			var newType = new YMaps.MapType([layerID],
-				copyright_text,
+				attribution,
 				{ 
 					textColor: "#706f60",
 					minZoom:   min_zoom,
