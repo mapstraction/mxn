@@ -459,11 +459,11 @@ Marker: {
 	},
 	
 	hide: function() {
-		throw new Error('Marker.hide is not currently supported by provider ' + this.api);
+		this.proprietary_marker.setVisible(false);
 	},
 
 	show: function() {
-		throw new Error('Marker.show is not currently supported by provider ' + this.api);
+		this.proprietary_marker.setVisible(true);
 	},
 
 	update: function() {
