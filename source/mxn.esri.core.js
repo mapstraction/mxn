@@ -67,7 +67,7 @@ mxn.register('esri', {
 			if (this.options.enableScrollWheelZoom) {
 				this.maps[this.api].enableScrollWheelZoom();
 			} else {
-				this.maps[this.api].disableScrollWheelZoom()
+				this.maps[this.api].disableScrollWheelZoom();
 			}
 			
 			if (this.options.enableDragging) {
@@ -130,8 +130,6 @@ mxn.register('esri', {
 			} else {
 				if (this.controls.map_type !== null) {
 					domStyle.set("outerbasemapMenu", "display", "none"); //hide it
-					//this.controls.map_type.destroy();
-					//this.controls.map_type = null;
 				}
 			}
 		
@@ -153,7 +151,7 @@ mxn.register('esri', {
 			if (this.controls.map_type === null) {
 				if (typeof esri.dijit.BasemapGallery !== 'undefined') {
 	
-					var innerhtml = "<button id='dropdownButton' label='Basemaps' style='text-align: center;border: 2px solid #666666;background-color: #FFFFFF;color: #666666;' data-dojo-type='dijit.form.DropDownButton'><div data-dojo-type='dijit.Menu' id='basemapMenu'></div></button>"
+					var innerhtml = "<button id='dropdownButton' label='Basemaps' style='text-align: center;border: 2px solid #666666;background-color: #FFFFFF;color: #666666;' data-dojo-type='dijit.form.DropDownButton'><div data-dojo-type='dijit.Menu' id='basemapMenu'></div></button>";
 					var outerbasemapMenu = domConstruct.create('div', { style:"position:absolute; right:50px; top:10px; z-Index:99;", innerHTML: innerhtml, id:"outerbasemapMenu" }, win.body(), "first");
 					
 					dojo.parser.parse();
@@ -193,9 +191,10 @@ mxn.register('esri', {
 												break;
 											}
 										})
-									  })
+									  });
 									
 									ch.placeAt(dijit.byId('basemapMenu'), 'last');
+									break;
 								default:
 									break;
 							}
@@ -292,7 +291,7 @@ mxn.register('esri', {
 						if (type === mxn.Mapstraction.SATELLITE) {
 							basemapGallery.select(basemap.id);
 							}
-						break
+						break;
 					case 'Topographic':
 						if (type === mxn.Mapstraction.PHYSICAL) {
 							basemapGallery.select(basemap.id);
@@ -305,8 +304,8 @@ mxn.register('esri', {
 						break;
 					default:
 						break;
-				} 
-			})
+				}
+			});
 											
 			this.currentMapType = type;
 		},
@@ -343,7 +342,7 @@ mxn.register('esri', {
 
 		addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 			var map = this.maps[this.api];
-			var esri_tile_url = tile_url.replace(/\{Z\}/gi, '\{level\}').replace(/\{X\}/gi, '\{col\}').replace(/\{Y\}/gi, '\{row\}').replace(/\{S\}/gi, '\{subDomain\}');
+			var esri_tile_url = tile_url.replace(/\{Z\}/gi, '{level}').replace(/\{X\}/gi, '{col}').replace(/\{Y\}/gi, '{row}').replace(/\{S\}/gi, '{subDomain}');
 			var newlayer = new WebTiledLayer(esri_tile_url, {
 			  "copyright": attribution,
 			  "id": label,
