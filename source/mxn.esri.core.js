@@ -1,21 +1,31 @@
+//the require makes sure we have loaded all the modules we need.
+require([
+	"esri/map", 
+	"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/layers/WebTiledLayer",
+	"esri/graphic", "esri/dijit/OverviewMap", "esri/dijit/Scalebar", "esri/dijit/BasemapGallery",
+	"dijit/form/Button", "dijit/Menu",
+	"dojo/_base/Color", "dojo/dom", "dojo/on", "dojo/dom-construct", "dojo/_base/window", "dojo/dom-style", "dojo/domReady!"
+  ], function(
+			Map, 
+			SimpleMarkerSymbol, SimpleLineSymbol, WebTiledLayer,
+			Graphic, OverviewMap, Scalebar, BasemapGallery,
+			Button, Menu,
+			Color, dom, on, domConstruct, win, domStyle
+		  ) {
 mxn.register('esri', {
 
 	Mapstraction: {
 	
 		init: function(element, api) {
-			var me = this;
-			dojo.require("esri.map");
-			dojo.require("esri.layers.FeatureLayer");
-			dojo.require("esri.dijit.BasemapGallery");
-			dojo.require('dijit.layout.BorderContainer');
-			dojo.require('dijit.layout.ContentPane');
-			dojo.require("esri.dijit.OverviewMap");
-			dojo.require("esri.dijit.Scalebar");
-
-			if (typeof esri.Map === 'undefined') {
-				throw new Error(api + ' map script not imported');
+			if (esri.version < 3.4) {
+				throw new Error(api + ' map script version not high enough found  ' + esri.version);
 			}
-
+			
+			var me = this;
+			var map;
+			
+			this.layers = {};
+			this.features = [];		
 			this.controls =  {
 				pan: null,
 				zoom: null,
@@ -24,82 +34,48 @@ mxn.register('esri', {
 				map_type: null
 			};
 
-			var map = new esri.Map(element.id, {
-				wrapAround180: true
+			this.maps[api] = map = new Map(element.id, {
+			  basemap: "streets",
+			  center: [-25.312, 34.307],
+			  zoom: 3,
+			  wrapAround180: true,
+			  spatialReference: 4326
 			});
-			dojo.connect(map, "onLoad",function() {
-				dojo.connect(map, "onClick", function(evt){
-					var pt = esri.geometry.webMercatorToGeographic(evt.mapPoint);
-					me.click.fire({location: new mxn.LatLonPoint(pt.y, pt.x)});
-				});
-				dojo.connect(map, "onMouseDown", function(evt){
-					map.onPanStart.apply(map.extent, evt.mapPoint);
-				});
-				dojo.connect(map, "onMouseDragStart", function(evt){
-					map.onPanStart.apply(map.extent, evt.mapPoint);
-				});
-				dojo.connect(map, "onMouseDragEnd", function(evt){
-					map.centerAt(evt.mapPoint);
-					me.endPan.fire();
-				});
-				dojo.connect(map.graphics, "onClick", function(evt) {
-					// FIXME: esri - need to over-ride the Marker.setInfoBubble method to set the graphics content
-					var g = evt.graphic;
-					map.infoWindow.setContent(g.getContent());
-					map.infoWindow.setTitle(g.getTitle());
-					map.infoWindow.show(evt.screenPoint,map.getInfoWindowAnchor(evt.screenPoint));
-				});
+			
+			map.on("load", function() {					
+				me.controls.overview = new esri.dijit.OverviewMap({map: map});			
+				me.controls.overview.startup();	
+				me.controls.scale = new Scalebar({
+						map: map,
+						attachTo: "bottom-left"
+					});
 
-				dojo.connect(map, 'onZoomEnd', function(evt) {
-					me.changeZoom.fire();
-				});
-			
-				dojo.connect(map, 'onPanEnd', function(evt) {
-					me.endPan.fire();
-				});
-			
 				me.load.fire();
-				// var basemap = new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer");
-				// map.addLayer(basemap);
+				me.loaded[api] = true;				
 			});
-
-			// map.addEventListener('moveend', function(){
-			// 	me.endPan.fire();
-			// }); 
-			//map.on("click", function(e) {
-			//	console.log("map clicked");
-			// 	me.click.fire({'location': new mxn.LatLonPoint(e.latlng.lat, e.latlng.lng)});
-			 //});
-			// map.on("popupopen", function(e) {
-			// 	if (e.popup._source.mxnMarker) {
-			// 		e.popup._source.mxnMarker.openInfoBubble.fire({'bubbleContainer': e.popup._container});
-			// 	}
-			// });
-			// map.on("popupclose", function(e) {
-			// 	if (e.popup._source.mxnMarker) {
-			// 		e.popup._source.mxnMarker.closeInfoBubble.fire({'bubbleContainer': e.popup._container});
-			// 	}
-			// });
-	
-			this.layers = {};
-			this.features = [];
-			this.maps[api] = map;
-			this.setMapType();
-			//this.currentMapType = mxn.Mapstraction.SATELLITE;
-			this.loaded[api] = true;
-			// for(p in this.options){
-			// 	console.log( p + ": " + this.options[p]);
-			// }
+			
+			map.on("zoom-end", function() {
+				me.changeZoom.fire();
+			});
+			
+			map.on("pan-end", function() {
+				me.endPan.fire();
+			});
 		},
 	
 		applyOptions: function(){
-			// FIXME: esri - 'applyOptions not implemented' (ajturner)
-
 			if (this.options.enableScrollWheelZoom) {
-				// this.maps[this.api].enableScrollWheelZoom();
+				this.maps[this.api].enableScrollWheelZoom();
 			} else {
-				// this.maps[this.api].disableScrollWheelZoom();
+				this.maps[this.api].disableScrollWheelZoom()
 			}
+			
+			if (this.options.enableDragging) {
+				this.maps[this.api].enablePan();
+			} else {
+				this.maps[this.api].disablePan();
+			}
+			
 			return;
 		},
 
@@ -107,81 +83,58 @@ mxn.register('esri', {
 			this.currentElement.style.width = width;
 			this.currentElement.style.height = height;
 			this.maps[this.api].resize();
+			//TODO: recentre on original centre and fit
 		},
 
 		addControls: function(args) {
-			/* args = { 
-			 *     pan:      true,
-			 *     zoom:     'large' || 'small',
-			 *     overview: true,
-			 *     scale:    true,
-			 *     map_type: true,
-			 * }
-			 */
-
 			var map = this.maps[this.api];
 
 			if ('pan' in args && args.pan) {
 				map.showPanArrows();
-			}
-		
-			else {
+			} else {
 				map.hidePanArrows();
 			}
 
 			if ('zoom' in args && (args.zoom == 'small' || args.zoom == 'large')) {
 				this.addSmallControls();
-			}
-		
-			else {
+			} else {
 				map.hideZoomSlider();
 			}
 		
 			if ('overview' in args && args.overview) {
-				if (this.controls.overview === null) {
-					if (typeof esri.dijit.OverviewMap !== 'undefined') {
-						this.controls.overview = new esri.dijit.OverviewMap(
-							{
-								map: map,
-								visible: true
-							}
-						);
-						this.controls.overview.startup();
-					}
-				}
-			}
-		
-			else {
 				if (this.controls.overview !== null) {
-					this.controls.overview.destroy();
-					this.controls.overview = null;
+					this.controls.overview.show();
+				}
+			}else {
+				if (this.controls.overview !== null) {
+					this.controls.overview.hide();
 				}
 			}
 		
 			if ('scale' in args && args.scale) {
-				if (this.controls.scale === null) {
-					if (typeof esri.dijit.Scalebar !== 'undefined') {
-						this.controls.scale = new esri.dijit.Scalebar( { map: map });
-					}
-				}
-			}
-
-			else {
 				if (this.controls.scale !== null) {
-					this.controls.scale.destroy();
-					this.controls.scale = null;
+					this.controls.scale.show();
+				} 
+			} else {
+				if (this.controls.scale !== null) {
+					this.controls.scale.hide();
 				}
 			}
 		
 			if ('map_type' in args && args.map_type) {
-				this.addMapTypeControls();
-			}
-		
-			else {
-				if (this.controls.overview !== null) {
-					this.controls.overview.destroy();
+				if (this.controls.map_type === null) {
+					this.addMapTypeControls();
+				} else {
+					domStyle.set("outerbasemapMenu", "display", "block"); //make sure it is showing
+				}
+			} else {
+				if (this.controls.map_type !== null) {
+					domStyle.set("outerbasemapMenu", "display", "none"); //hide it
+					//this.controls.map_type.destroy();
+					//this.controls.map_type = null;
 				}
 			}
+		
 		},
 
 		addSmallControls: function() {
@@ -195,16 +148,65 @@ mxn.register('esri', {
 
 		addMapTypeControls: function() {
 			var map = this.maps[this.api];
+			var me = this;
 
-			if (this.controls.overview === null) {
+			if (this.controls.map_type === null) {
 				if (typeof esri.dijit.BasemapGallery !== 'undefined') {
-					this.controls.overview = new esri.dijit.BasemapGallery({
+	
+					var innerhtml = "<button id='dropdownButton' label='Basemaps' style='text-align: center;border: 2px solid #666666;background-color: #FFFFFF;color: #666666;' data-dojo-type='dijit.form.DropDownButton'><div data-dojo-type='dijit.Menu' id='basemapMenu'></div></button>"
+					var outerbasemapMenu = domConstruct.create('div', { style:"position:absolute; right:50px; top:10px; z-Index:99;", innerHTML: innerhtml, id:"outerbasemapMenu" }, win.body(), "first");
+					
+					dojo.parser.parse();
+					domStyle.set("outerbasemapMenu", "display", "none"); //hide it until its ready in the right place
+					
+					var basemapGallery = this.controls.map_type = new esri.dijit.BasemapGallery({
 						showArcGISBasemaps: true,
 						map: map
-						}, "basemapGallery");
+						});
 
-					this.controls.overview.startup();
+					basemapGallery.on("load", function() {
+						dojo.forEach(basemapGallery.basemaps, function(basemap) {            
+							//Add a menu item for each basemap, when the menu items are selected
+							switch(basemap.title) {
+								case 'Streets':
+								case 'Imagery':
+								case 'Topographic':
+								case 'Imagery with Labels':
+									var ch = new dijit.MenuItem({
+										label: basemap.title,
+										onClick: dojo.hitch(this, function() {
+											basemapGallery.select(basemap.id);
+											switch(basemap.title) {
+											case 'Streets':
+												me.currentMapType = mxn.Mapstraction.ROAD;
+												break;
+											case 'Imagery':
+												me.currentMapType = mxn.Mapstraction.SATELLITE;
+												break;
+											case 'Topographic':
+												me.currentMapType = mxn.Mapstraction.PHYSICAL;
+												break;
+											case 'Imagery with Labels':
+												me.currentMapType = mxn.Mapstraction.HYBRID;
+												break;											
+										  	default:
+												break;
+											}
+										})
+									  })
+									
+									ch.placeAt(dijit.byId('basemapMenu'), 'last');
+								default:
+									break;
+							}
+
+						  });
+						dojo.place(dojo.byId('outerbasemapMenu'),dojo.byId('map_container'), 'first');
+						domStyle.set("outerbasemapMenu", "display", "block");
+					});
 				}
+			} else {
+				domStyle.set("outerbasemapMenu", "display", "block"); //make sure it is showing
 			}
 		},
 
@@ -275,38 +277,38 @@ mxn.register('esri', {
 		},
 
 		setMapType: function(type) {
-			var map = this.maps[this.api], baseMapLayer, baseMapUrl, i;
-			if (! map){
+			var basemapGallery = this.controls.map_type;
+			if (! basemapGallery){
 				return;
-			}
-		
-			for (i = 0; i < map.layerIds.length; i++){
-				if (map.getLayer(map.layerIds[i]) instanceof esri.layers.ArcGISTiledMapServiceLayer){
-					baseMapLayer = map.getLayer(map.layerIds[i]);
-					break;
-				}
-			}
-
-			if (baseMapLayer){
-				map.removeLayer(baseMapLayer);
-			}
-
-			switch(type) {
-				case mxn.Mapstraction.ROAD:
-					map.addLayer(new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer"),0);
-					this.currentMapType = mxn.Mapstraction.ROAD;
-					break;
-				case mxn.Mapstraction.SATELLITE:
-					map.addLayer(new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer"),0);
-					this.currentMapType = mxn.Mapstraction.SATELLITE;
-					break;
-				case mxn.Mapstraction.HYBRID:
-					map.addLayer(new esri.layers.ArcGISTiledMapServiceLayer("http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer"),0);
-					break;
-				default:
-					this.setMapType(mxn.Mapstraction.ROAD);
-					break;
-			}
+			}			
+			dojo.forEach(basemapGallery.basemaps, function(basemap) {            
+				switch(basemap.title) {
+					case 'Streets':
+						if (type === mxn.Mapstraction.ROAD) {
+							basemapGallery.select(basemap.id);
+							}					
+						break;
+					case 'Imagery':
+						if (type === mxn.Mapstraction.SATELLITE) {
+							basemapGallery.select(basemap.id);
+							}
+						break
+					case 'Topographic':
+						if (type === mxn.Mapstraction.PHYSICAL) {
+							basemapGallery.select(basemap.id);
+							}					
+						break;
+					case 'Imagery with Labels':
+						if (type === mxn.Mapstraction.HYBRID) {
+							basemapGallery.select(basemap.id);
+							}					
+						break;
+					default:
+						break;
+				} 
+			})
+											
+			this.currentMapType = type;
 		},
 
 		getMapType: function() {
@@ -321,9 +323,9 @@ mxn.register('esri', {
 
 		setBounds: function(bounds){
 			var map = this.maps[this.api];
-			var sw = bounds.getSouthWest().toProprietary(this.api);
-			var ne = bounds.getNorthEast().toProprietary(this.api);
-			var newBounds = new esri.geometry.Extent(sw.x,sw.y,ne.x,ne.y);
+			var sw = bounds.getSouthWest();
+			var ne = bounds.getNorthEast();
+			var newBounds = new esri.geometry.Extent(sw.lon,sw.lat,ne.lon,ne.lat, new esri.SpatialReference({ wkid: 4326 }));
 			map.setExtent(newBounds, true); 
 		},
 
@@ -340,7 +342,15 @@ mxn.register('esri', {
 		},
 
 		addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-			throw new Error('Mapstraction.addTileLayer is not currently supported by provider ' + this.api);
+			var map = this.maps[this.api];
+			var esri_tile_url = tile_url.replace(/\{Z\}/gi, '\{level\}').replace(/\{X\}/gi, '\{col\}').replace(/\{Y\}/gi, '\{row\}').replace(/\{S\}/gi, '\{subDomain\}');
+			var newlayer = new WebTiledLayer(esri_tile_url, {
+			  "copyright": attribution,
+			  "id": label,
+			  "subDomains": subdomains
+			});
+			map.addLayer(newlayer);
+			newlayer.setOpacity(opacity);
 		},
 
 		toggleTileLayer: function(tile_url) {
@@ -361,16 +371,6 @@ mxn.register('esri', {
 				});
 				locDisp.innerHTML = '0.0000 / 0.0000';
 			}
-		},
-
-		openBubble: function(point, content) {
-			var map = this.maps[this.api];
-			map.showInfoWindow(marker);
-		},
-
-		closeBubble: function() {
-			var map = this.maps[this.api];
-			map.hideInfoWindow();
 		}
 	},
 
@@ -390,8 +390,8 @@ mxn.register('esri', {
 	
 		toProprietary: function() {
 			var me = this;
-			var iconUrl = (this.iconUrl) ? this.iconUrl : "http://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png";
-			var thisIcon = new esri.symbol.PictureMarkerSymbol(iconUrl,25,25);
+			var iconUrl2 = this.iconUrl || "http://static.arcgis.com/images/Symbols/Shapes/BluePin1LargeB.png";
+			var thisIcon = new esri.symbol.PictureMarkerSymbol(iconUrl2,25,25);
 
 			if (me.iconSize) {
 				thisIcon.setWidth(me.iconSize[0]);
@@ -430,13 +430,12 @@ mxn.register('esri', {
 
 			if (this.infoBubble) {
 				map.infoWindow.setContent(this.infoBubble);			
-				map.infoWindow.show(pin.geometry,map.getInfoWindowAnchor(pin.geometry));
+				map.infoWindow.show(pin.geometry);
 			}
 			this.openInfoBubble.fire( { 'marker': this } );
 		},
 	
 		closeBubble: function() {
-			var pin = this.proprietary_marker;
 			var map = this.mapstraction.maps[this.api];
 			map.infoWindow.hide();
 			this.closeInfoBubble.fire( { 'marker': this } );
@@ -471,10 +470,10 @@ mxn.register('esri', {
 			var path = null;
 			var fill = null;
 			var i;
-			var style = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, this.fillColor || "#FFFFFF", this.width || 3);
+			var style = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color(this.color || "#FFFFFF"), this.width || 3);
 
 			for (i = 0, length = this.points.length ; i < length; i+=1){
-				coords.push(this.points[i].toProprietary(this.api));
+				coords.push([this.points[i].lon,this.points[i].lat]);
 			}
 
 			if (this.closed) {
@@ -496,7 +495,7 @@ mxn.register('esri', {
 				polycolor_rgba = [polycolor.red, polycolor.green, polycolor.blue, this.opacity];
 
 				path = new esri.geometry.Polygon(new esri.SpatialReference({wkid:4326}));
-				style = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, style, new dojo.Color(polycolor_rgba));
+				style = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, style, new dojo.Color(polycolor_rgba));	
 				path.addRing(coords);
 			} else {
 				path = new esri.geometry.Polyline(new esri.SpatialReference({wkid:4326}));
@@ -515,4 +514,5 @@ mxn.register('esri', {
 			this.proprietary_polyline.hide();
 		}
 	}
+});
 });
