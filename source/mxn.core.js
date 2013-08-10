@@ -35,7 +35,7 @@ var init = function() {
  * <li><code>ovi</code> - Nokia Ovi</li>
  * <li><code>yahoo</code> - <strong><em>Yahoo (obsoleted)</em></strong></li>
  * <li><code>yandex</code> - Yandex</li>
- * <li><code>yandex2</code> - Yandex v2</li>
+ * <li><code>yandexv2</code> - Yandex v2</li>
  * </ul>
  * @name mxn.Mapstraction
  * @constructor
