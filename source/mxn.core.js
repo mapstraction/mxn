@@ -1181,7 +1181,7 @@ Mapstraction.prototype.applyFilter = function(o, f) {
 			}
 			break;
 		case 'eq':
-			if (o.getAttribute( f[0] ) == f[2]) {
+			if (o.getAttribute( f[0] ) != f[2]) {
 				vis = false;
 			}
 			break;
