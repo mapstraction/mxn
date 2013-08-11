@@ -3,6 +3,9 @@ mxn.register('cloudmade', {
 	Mapstraction: {
 
 		init: function(element, api) {
+			throw new Error('The cloudmade Maps  API is now obsolete and no longer supported by Mapstraction, as Leaflet now supercedes it.');
+			/*		
+		
 			var me = this;
 			
 			if (typeof CM.Map === 'undefined') {
@@ -69,6 +72,7 @@ mxn.register('cloudmade', {
 			// level before any other operation is called on the map. Surely a WTF moment.
 			this.maps[api].setCenter(new CM.LatLng(0, 0), 12);
 			this.loaded[api] = true;
+			*/
 		},
 
 		applyOptions: function(){

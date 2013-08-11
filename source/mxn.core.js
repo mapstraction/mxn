@@ -20,7 +20,6 @@ var init = function() {
  * are supported by Mapstraction:</p>
  *
  * <ul>
- * <li><code>cloudmade</code> - CloudMade</li>
  * <li><code>esri</code> - ESRI ArcGIS</li>
  * <li><code>google</code> - Google v2</li>
  * <li><code>googlev3</code> - Google v3</li>

@@ -3,8 +3,8 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<script type="text/javascript">
-		var provider = 'cloudmade';
-		var label = 'CloudMade'
+		var provider = 'esri';
+		var label = 'ESRI ArcGIS'
 		var map;
 		
 		(function() {
@@ -15,13 +15,6 @@
 			}
 
 			switch (provider) {
-				case 'cloudmade':
-					document.writeln('<script type="text/javascript" src="http://tile.cloudmade.com/wml/latest/web-maps-lite.js"><\/script>');
-					document.writeln('<script type="text/javascript">');
-					document.writeln('var cloudmade_key = "64e8dbb9c85b48bb828c9da95d933852";');
-					document.writeln('<\/script>');
-					break;
-
 				case 'esri':
 					label = 'ESRI ArcGIS';
 					document.writeln ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css" media="all" rel="stylesheet" type="text/css" \/>');
@@ -169,7 +162,6 @@
 	<div id="map">
 	</div>
 	<p id="provider-selection">
-		<a href="?provider=cloudmade">cloudmade</a>,
 		<a href="?provider=esri">esri</a>,
 		<a href="?provider=google">google</a>,
 		<a href="?provider=googlev3">googlev3</a>,
