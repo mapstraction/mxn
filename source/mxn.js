@@ -11,7 +11,351 @@
 // <script src="mxn.js" ...
 // no scripts will be loaded at all and it is then up to you to load the scripts independently
 (function() {
+	var autoload = {
+		'esri': {
+			'meta': null,
+			'style': [
+				{
+					'src': 'http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css',
+					'conditional': null
+				},
+				{
+					'src': 'http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/dojo/dijit/themes/claro/claro.css',
+					'conditional': null
+				}
+			],
+			'script': [
+				{
+					'src': 'http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.2',
+					'auth': false,
+					'auth-type': null
+				}
+			]
+		},
+		'google': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'http://maps.google.com/maps?file=api&v=2&key={%1}',
+					'auth': true,
+					'auth-type': 'url'
+				}
+			]
+		},
+		'googlev3': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'https://maps.googleapis.com/maps/api/js?key={%1}&sensor=false',
+					'auth': true,
+					'auth-type': 'url'
+				}
+			]
+		},
+		'leaflet': {
+			'meta': null,
+			'style': [
+				{
+					'src': 'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css',
+					'conditional': null
+				},
+				{
+					'src': 'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css',
+					'conditional': 'if lte IE 8'
+				}
+			],
+			'script': [
+				{
+					'src': 'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js',
+					'auth': false,
+					'auth-type': null
+				}
+			]
+		},
+		'mapquest': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'http://www.mapquestapi.com/sdk/js/v7.0.s/mqa.toolkit.js?key={%1}',
+					'auth': true,
+					'auth-type': 'url'
+				}
+			]
+		},
+		'microsoft': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3&mkt=en-us',
+					'auth': false,
+					'auth-type': null
+				}
+			]
+		},
+		'microsoft7': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0',
+					'auth': false,
+					'auth-type': null
+				}
+			]
+		},
+		'nokia': {
+			'meta': '<meta http-equiv="X-UA-Compatible" content="IE=7; IE=EmulateIE9" />',
+			'style': null,
+			'script': [
+				{
+					'src': 'http://api.maps.nokia.com/2.2.4/jsl.js',
+					'auth': true,
+					'auth-type': 'js'
+				}
+			]
+		},
+		'openlayers': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'http://dev.openlayers.org/releases/OpenLayers-2.12/OpenLayers.js',
+					'auth': false,
+					'auth-type': null
+				}
+			]
+		},
+		'openmq': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'http://open.mapquestapi.com/sdk/js/v7.0.s/mqa.toolkit.js',
+					'auth': false,
+					'auth-type': null
+				}
+			]
+		},
+		'openspace': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key={%1}',
+					'auth': true,
+					'auth-type': 'url'
+				}
+			]
+			
+		},
+		'ovi': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'http://api.maps.ovi.com/jsl.js',
+					'auth': false,
+					'auth-type': null
+				}
+			]
+		},
+		'yandex': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'http://api-maps.yandex.ru/1.1/index.xml?key={%1}',
+					'auth': true,
+					'auth-type': 'url'
+				}
+			]
+		},
+		'yandex2': {
+			'meta': null,
+			'style': null,
+			'script': [
+				{
+					'src': 'http://api-maps.yandex.ru/2.0/?load=package.full&lang=en-US',
+					'auth': false,
+					'auth-type': null
+				}
+			]
+		}
+	};
+	
+	var tags = document.getElementsByTagName('script');
 	var providers = null;
+	var modules = 'core';
+	var script_base = null;
+	var auto_meta = [];
+	var auto_styles = [];
+	var auto_scripts = [];
+	var auto_auth = [];
+	var core_scripts = [];
+
+	for (var i=0; i<tags.length; i++) {
+		var match = tags[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?(.*)$/);
+		if (match !== null) {
+			script_base = match[1];
+			if (match[3]) {
+				var settings = match[3].split(',[');
+				providers = settings[0].replace(']', '');
+				
+				if (settings[1]) {
+					modules += ',' + settings[1];
+				}
+			}
+			break;
+		}
+	}
+	
+	if (providers === null || providers == 'none') {
+		return;
+	}
+	
+	providers = providers.replace(/ /g, '').split(',');
+	modules = modules.replace(/ /g, '').split(',');
+
+	var num_modules = modules.length;
+	var num_providers = providers.length;
+	var src = '';
+	
+	for (var m=0; m<num_modules; m++) {
+		if (modules[m] !== 'autoload') {
+			src = script_base + 'mxn.' + modules[m] + '.js';
+			core_scripts.push(make_script_tag(src));
+		}
+		for (var p=0; p<num_providers; p++) {
+			if (modules[m] === 'autoload') {
+				if (autoload.hasOwnProperty(providers[p])) {
+					var auto = autoload[providers[p]];
+					
+					if (auto.hasOwnProperty('meta') && auto['meta'] !== null) {
+						auto_meta.push(auto['meta']);
+					}
+					
+					if (auto.hasOwnProperty('style') && auto['style'] !== null) {
+						for (var i in auto['style']) {
+							auto_styles.push(make_style_tag(auto['style'][i]['src'], auto['style'][i]['conditional']));
+						}
+					}
+					
+					if (auto.hasOwnProperty('script') && auto['script'] !== null) {
+						for (var i in auto['script']) {
+							var src = auto['script'][i]['src'];
+							if (auto['script'][i]['auth'] === true) {
+								if (auto['script'][i]['auth-type'] === 'url') {
+									src = make_auth_url(providers[p], src);
+								}
+								
+								else if (auto['script'][i]['auth-type'] === 'js') {
+									auto_auth.push(make_auth_js(providers[p]));
+								}
+							}
+							auto_scripts.push(make_script_tag(src));
+						}
+					}
+				}
+			}
+			
+			else {
+				src = script_base + 'mxn.' + providers[p] + '.' + modules[m] + '.js';
+				core_scripts.push(make_script_tag(src));
+			}
+		}
+	}
+	
+	if (auto_meta.length !== 0) {
+		document.write(auto_meta.join(''));
+	}
+	if (auto_styles.length !== 0) {
+		document.write(auto_styles.join(''));
+	}
+	if (auto_scripts.length !== 0) {
+		document.write(auto_scripts.join(''));
+	}
+	if (auto_auth.length !== 0) {
+		document.write(auto_auth.join(''));
+	}
+	if (core_scripts.length !== 0) {
+		document.write(core_scripts.join(''));
+	}
+	
+	function make_auth_url(provider, src) {
+		switch (provider) {
+			case 'google':
+				src = src.replace('{%1}', google_key);
+				break;
+
+			case 'googlev3':
+				src = src.replace('{%1}', googlev3_key);
+				break;
+
+			case 'mapquest':
+				src = src.replace('{%1}', mapquest_key);
+				break;
+
+			case 'openspace':
+				src = src.replace('{%1}', openspace_key);
+				break;
+
+			case 'yandex':
+				src = src.replace('{%1}', yandex_key);
+				break;
+				
+			default:
+				break;
+		}
+		
+		return src;
+	}
+	
+	function make_auth_js(provider) {
+		var auth = '<script type="text/javascript">';
+		switch (provider) {
+			case 'nokia':
+				auth += '\nnokia.Settings.set("appID", "' + nokia_app_id + '");';
+				auth += '\nnokia.Settings.set("authenticationToken", "' + nokia_auth_token + '");';
+				break;
+				
+			default:
+				break;
+		}
+		auth += '\n</script>';
+		
+		return auth;
+	}
+	
+	function make_script_tag(src) {
+		var tag = '<script type="text/javascript" src="';
+		
+		tag += src;
+		tag += '"></script>';
+		
+		return tag;
+	}
+	
+	function make_style_tag(src, condition) {
+		var tag = '';
+		
+		if (condition) {
+			tag += '<!--[' + condition + ']>\n';
+		}
+		
+		tag += '<link rel="stylesheet" type="text/css" href="' + src + '" />';
+		
+		if (condition) {
+			tag += '\n<![endif]-->';
+		}
+		
+		return tag;
+	}
+
+	/*var providers = null;
 	var modules = 'core';
 	var scriptBase;
 	var scripts = document.getElementsByTagName('script');
@@ -48,7 +392,7 @@
 			scriptsAry.push(scriptTagStart + providers[j] + '.' + modules[i] + scriptTagEnd);
 		}
 	}
-	document.write(scriptsAry.join(''));
+	document.write(scriptsAry.join(''));*/
 })();
 
 (function(){

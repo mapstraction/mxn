@@ -1,0 +1,45 @@
+<html>
+<head>
+	<title>Autoload Test</title>
+	<script type="text/javascript">
+	var googlev3_key = 'AIzaSyDW21lnrSsBk4OyHUDmBQ7su9di3yMaO7I';
+	var nokia_app_id = 'FbgYuugcrj8Taq6JjmUK';
+	var nokia_auth_token = 'Yy2i2n98kaWj69qysOmcYg';
+	</script>
+	<script type="text/javascript" src="../source/mxn.js?(googlev3,leaflet,nokia,[autoload])"></script>
+	<style type="text/css">
+	.map {
+		width: 100%;
+		height: 33%;
+	}
+	</style>
+</head>
+<body>
+	<div id="googlev3_map" class="map"></div>
+	<div id="nokia_map" class="map"></div>
+	<div id="leaflet_map" class="map"></div>
+	
+	<script type="text/javascript">
+		var maps = {};
+		var providers = ['googlev3', 'nokia', 'leaflet'];
+		
+		for (var i in providers) {
+			var id = providers[i] + '_map';
+			maps[providers[i]] = new mxn.Mapstraction(id, providers[i]);
+			setup_map(maps[providers[i]]);
+		}
+		
+		function setup_map(map) {
+			map.addControls({
+				zoom: true,
+				overview: true,
+				scale: true,
+				map_type: true,
+				pan: true
+			});
+			latlon = new mxn.LatLonPoint(51.50730, -0.12763);
+			map.setCenterAndZoom(latlon, 12);
+		}
+	</script>
+</body>
+</html>
