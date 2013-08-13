@@ -259,7 +259,7 @@ mxn.register('openlayers', {
 		setCenterAndZoom: function(point, zoom) { 
 			var map = this.maps[this.api];
 			var pt = point.toProprietary(this.api);
-			map.setCenter(point.toProprietary(this.api), zoom);
+			map.setCenter(pt, zoom);
 		},
 
 		addMarker: function(marker, old) {
