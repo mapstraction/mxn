@@ -214,9 +214,6 @@ mxn.register('openlayers', {
 
 		addSmallControls: function() {
 			var map = this.maps[this.api];
-			this.addControlsArgs.pan = false;
-			this.addControlsArgs.scale = false;						
-			this.addControlsArgs.zoom = 'small';
 
 			if (this.controls.zoom !== null) {
 				this.controls.zoom.deactivate();
