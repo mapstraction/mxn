@@ -542,13 +542,23 @@ mxn.register('openlayers', {
 
 		addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 			var map = this.maps[this.api];
-			var new_tile_url = tile_url.replace(/\{Z\}/gi,'${z}');
-			new_tile_url = new_tile_url.replace(/\{X\}/gi,'${x}');
-			new_tile_url = new_tile_url.replace(/\{Y\}/gi,'${y}');
-			var overlay = new OpenLayers.Layer.XYZ(label,
-				new_tile_url,
-				{sphericalMercator: false, opacity: opacity}
-			);
+			var new_tile_url = tile_url.replace(/\{Z\}/gi,'${z}').replace(/\{X\}/gi,'${x}').replace(/\{Y\}/gi,'${y}');
+			
+			if (typeof subdomains !== 'undefined') {
+				//make a new array of each subdomain.
+				var domain = [];
+				for(i = 0; i < subdomains.length; i++)
+				{
+					domain.push(mxn.util.getSubdomainTileURL(new_tile_url, subdomains[i]));
+				}
+			}	
+			
+			var overlay = new OpenLayers.Layer.OSM("OpenCycleMap", domain || new_tile_url);	
+			
+			if(!opacity) {
+				overlay.addOptions({opacity: opacity});
+			}
+			
 			if(!map_type) {
 				overlay.addOptions({displayInLayerSwitcher: false, isBaseLayer: false});
 			}

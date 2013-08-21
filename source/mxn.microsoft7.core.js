@@ -279,6 +279,10 @@ Mapstraction: {
 
 		 var newtileobj = {
 			getTileUrl: function(tile){
+				if (typeof subdomains !== 'undefined') {
+					tile_url = mxn.util.getSubdomainTileURL(tile_url, subdomains);
+				}
+			
 				return tile_url.replace(/\{Z\}/gi, tile.levelOfDetail).replace(/\{X\}/gi, tile.x).replace(/\{Y\}/gi, tile.y);
 			}
 		 };

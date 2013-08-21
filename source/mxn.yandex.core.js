@@ -361,8 +361,12 @@ Mapstraction: {
 	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 		var map = this.maps[this.api];
 		var dataSource = new YMaps.TileDataSource(tile_url, true, true);
-		dataSource.getTileUrl = function (t, s) { 
-			return this._tileUrlTemplate.replace(/\{X\}/gi,t.x).replace(/\{Y\}/gi,t.y).replace(/\{Z\}/gi,s); 
+		dataSource.getTileUrl = function (t, s) {
+			var tile_url = this._tileUrlTemplate.replace(/\{X\}/gi,t.x).replace(/\{Y\}/gi,t.y).replace(/\{Z\}/gi,s); 
+			if (typeof subdomains !== 'undefined') {
+				tile_url = mxn.util.getSubdomainTileURL(tile_url, subdomains);
+			}		
+			return tile_url;
 		};
 		var newLayer = new YMaps.Layer(dataSource);
 		newLayer._$element.css('opacity', opacity);

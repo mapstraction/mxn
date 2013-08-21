@@ -353,7 +353,17 @@ Mapstraction: {
 
 	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 		var map = this.maps[this.api];	
-		var newLayer = new ymaps.Layer(tile_url.replace(/\{X\}/gi,'%x').replace(/\{Y\}/gi,'%y').replace(/\{Z\}/gi,'%z'));
+		var newLayer = new ymaps.Layer();
+		//tile layer accounting for subdomains
+		newLayer.getTileUrl = function (tileNumber, z) {
+			var domainurl = tile_url;
+			if (typeof subdomains !== 'undefined') {
+				domainurl = mxn.util.getSubdomainTileURL(tile_url, subdomains);
+			}	
+			
+			return domainurl.replace(/\{X\}/gi, tileNumber[0]).replace(/\{Y\}/gi, tileNumber[1]).replace(/\{Z\}/gi,z);
+		};
+		
 		// Copyrights
 		newLayer.getCopyrights = function () {
 			var promise = new ymaps.util.Promise();
