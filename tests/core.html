@@ -26,6 +26,7 @@
 		'microsoft7',
 		'nokia',
 		'openlayers',
+		'openlayersv3',		
 		'openmq',
 		'openspace',
 		'ovi',
@@ -101,6 +102,10 @@
 
 			case 'openlayers':
 				document.write( '<script type="text/javascript" src="http://dev.openlayers.org/releases/OpenLayers-2.9.1/OpenLayers.js"><\/script>' );
+				break;
+
+			case 'openlayersv3':
+				document.write( '<script type="text/javascript" src="http://ol3js.org/en/master/build/ol-simple.js"><\/script>' );
 				break;
 				
 			case 'openmq':
@@ -684,6 +689,7 @@
 				<li><a href="core.html?provider=microsoft7">Microsoft v7</a></li>
 				<li><a href="core.html?provider=nokia">Nokia</a></li>
 				<li><a href="core.html?provider=openlayers">OpenLayers</a></li>
+				<li><a href="core.html?provider=openlayersv3">OpenLayers v3</a></li>
 				<li><a href="core.html?provider=openspace">OS OpenSpace</a></li>
 				<li><a href="core.html?provider=ovi">Ovi</a></li>
 				<li><a href="core.html?provider=yandex">Yandex</a></li>
@@ -716,6 +722,7 @@
 			<a href="?provider=microsoft7">microsoft7</a>,
 			<a href="?provider=nokia">nokia</a>,
 			<a href="?provider=openlayers">openlayers</a>,
+			<a href="?provider=openlayersv3">openlayersv3</a>,
 			<a href="?provider=openmq">openmq</a>,
 			<a href="?provider=openspace">openspace</a>,
 			<a href="?provider=ovi">ovi</a>,
