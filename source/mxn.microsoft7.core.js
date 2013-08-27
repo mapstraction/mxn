@@ -379,6 +379,10 @@ Marker: {
 		{
 			options.text = this.label;
 		}
+		if (this.htmlContent) {
+            options.htmlContent = this.htmlContent;
+        }
+		
 		var mmarker = new Microsoft.Maps.Pushpin(this.location.toProprietary('microsoft7'), options); 
 
 		var that = this;
