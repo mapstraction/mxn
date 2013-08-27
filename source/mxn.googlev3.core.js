@@ -531,6 +531,16 @@ Marker: {
 		}
 		var gAnchorPoint = new google.maps.Point(ax,ay);
 
+		if (this.htmlContent) {
+			//Check that RichMarker has been loaded
+			if (typeof RichMarker === 'undefined') {
+				throw new Error(this.api + ' htmlContent support in markers requires RichMarker.js to be loaded, but it was not not found.');
+			}
+
+			options.content = this.htmlContent;
+			options.flat = true; //set the marker to flat to avoid an auto shadow
+		}
+		
 		if (this.iconUrl) {
  			options.icon = new google.maps.MarkerImage(
 				this.iconUrl,
@@ -572,7 +582,7 @@ Marker: {
 		options.position = this.location.toProprietary(this.api);
 		options.map = this.map;
 
-		var marker = new google.maps.Marker(options);
+		var marker = this.htmlContent ? new RichMarker(options) : new google.maps.Marker(options);
 
 		if (this.infoBubble) {
 			var event_action = "click";
