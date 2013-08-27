@@ -522,8 +522,8 @@ mxn.register('openlayersv3', {
 			this.proprietary_marker.setGeometry(point);
 			
 			var options = {
-				  url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png',
-				}
+				  url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png'
+			};
 
 			if (this.iconAnchor) { //not supported in ol3 yet
 				options.xOffset = this.iconAnchor[0];
