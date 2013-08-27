@@ -542,19 +542,13 @@ mxn.register('openlayersv3', {
 			  ]);
 					
 			if (!!this.infoBubble) {
-			/*
-				this.popup = new ol.Popup.FramedCloud(
-					null,
-					position,
-					new ol.Size(100, 100),
-					this.infoBubble,
-					this.icon,
-					true);
-				this.popup.autoSize = true;
-				this.popup.panMapIfOutOfView = true;
-				this.popup.fixedRelativePosition = false;
-				this.popup.feature = marker;
-				*/
+				var popup = new ol.Overlay({
+				  map: this.map
+				  //element: document.createTextElement(this.infoBubble)
+				});
+
+				//popup.setPosition(point);
+				this.popup = popup;
 			}
 			else {
 				this.popup = null;
