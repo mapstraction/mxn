@@ -41,7 +41,7 @@ mxn.register('openlayersv3', {
 	
 			// deal with click
 			map.on(['click'], function(evt) {
-				var lonlat = map.getLonLatFromViewPortPx(evt.xy);
+				var lonlat = evt.getCoordinate();
 				var point = new mxn.LatLonPoint();
 				point.fromProprietary(api, lonlat);
 				me.click.fire({'location': point });
