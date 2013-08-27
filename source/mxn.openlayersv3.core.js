@@ -248,119 +248,11 @@ mxn.register('openlayersv3', {
 			var pin = marker.toProprietary(this.api);
 
 			if (!this.layers.markers) {
-				var default_style = new ol.Style({
-					'cursor'       : 'pointer',
-					'graphicZIndex': 2
-				});
-				var select_style = default_style;
-				var style_map = new ol.StyleMap({
-					'default': default_style,
-					'select' : select_style
-				});
-				this.layers.markers = new ol.Layer.Vector('markers', {
-					// events            : null,
-					// isBaseLayer       : false,
-					// isFixed           : false,
-					// features          : [],
-					// filter            : null,
-					// selectedFeatures  : [],
-					// unrenderedFeatures: {},
-					reportError          : true,
-					// style             : {},
-					styleMap             : style_map,
-					// strategies        : [],
-					// protocol          : null,
-					// renderers         : [],
-					// renderer          : null,
-					// rendererOptions   : {},
-					rendererOptions      : {
-						yOrdering: true,
-						zIndexing: true
-					}
-					// geometryType      : 'ol.Geometry.Point',
-					// drawn             : false,
-					// ratio             : 1.0
+				this.layers.markers = new ol.layer.Vector({
+					source: new ol.source.Vector({data: null}),
+					projection: ol.proj.get('EPSG:4326')			
 				});
 				map.addLayer(this.layers.markers);
-				select = new ol.control.SelectFeature(this.layers.markers, {
-					// events        : null,
-					// multipleKey   : 'altKey',
-					// toggleKey     : 'ctrlKey',
-					multiple         : true,
-					clickout         : true,
-					// toggle        : true,
-					hover            : false,
-					highlightOnly    : true,
-					// box           : true,
-					// onBeforeSelect: null,
-					onSelect         : function(feature) {
-						feature.mapstraction_marker.click.fire();
-						select.unselect(feature);
-					},
-					// onUnselect    : null,
-					// scope         : {},
-					// geometryTypes : ['ol.Geometry.Point'],
-					// layer         : null,
-					// layers        : [],
-					// callbacks     : {},
-					// selectStyle   : {},
-					// renderIntent  : '',
-					// handlers      : {},
-					overFeature      : function(feature) {
-						var marker = feature.mapstraction_marker;
-						if (!!marker.hoverIconUrl) {
-							marker.setUrl(marker.hoverIconUrl);
-						}
-						if (marker.hover && !!marker.popup) {
-							marker.map.addPopup(marker.popup);
-							marker.popup.show();
-						}
-					},
-					outFeature       : function(feature) {
-						var marker = feature.mapstraction_marker;
-						if (!!marker.hoverIconUrl) {
-							var iconUrl = marker.iconUrl || 'http://ol.org/dev/img/marker-gold.png';
-							marker.setUrl(iconUrl);
-						}
-						if (marker.hover && !!marker.popup) {
-							marker.popup.hide();
-							marker.map.removePopup(marker.popup);
-						}
-					},
-					autoActivate     : true
-				});
-				drag = new ol.control.DragFeature(this.layers.markers, {
-					// geometryTypes: ['ol.Geometry.Point'],
-					// onStart         : null,
-					// onDrag          : null,
-					// onComplete      : null,
-					// onEnter         : null,
-					// onLeave         : null,
-					documentDrag    : true,
-					// layer           : null,
-					// feature         : null,
-					// dragCallbacks   : {},
-					// featureCallbacks: {},
-					// lastPixel       : null,
-					autoActivate    : true
-				});
-				drag.handlers.drag.stopDown     = false;
-				drag.handlers.drag.stopUp       = false;
-				drag.handlers.drag.stopClick    = false;
-				drag.handlers.feature.stopDown  = false;
-				drag.handlers.feature.stopUp    = false;
-				drag.handlers.feature.stopClick = false;
-				drag.onStart = function(feature,pixel) {
-					if (feature.mapstraction_marker.draggable !== true) {
-						drag.handlers.drag.deactivate();
-					}
-				};
-				
-				map.addControls([select, drag]);
-				
-				//Not actually needed, as not referenced anywhere else, but just for completeness:
-				this.controls.drag = drag;
-				this.controls.select = select;
 			}
 			this.layers.markers.addFeatures([pin]);
 			return pin;
@@ -623,50 +515,32 @@ mxn.register('openlayersv3', {
 	Marker: {
 
 		toProprietary: function() {	
-			var size, anchor, style, marker, position;
-			/*if (!!this.iconSize) {
-				size = new ol.Size(this.iconSize[0], this.iconSize[1]);
-			}
-			else {
-				size = new ol.Size(21, 25);
-			}
+			position = this.location.toProprietary('openlayersv3');		
+			point = new ol.geom.Point(position);		
 
-			if (!!this.iconAnchor) {
-				anchor = new ol.Pixel(-this.iconAnchor[0], -this.iconAnchor[1]);
-			}
-			else {
-				anchor = new ol.Pixel(-(size.w / 2), -size.h);
-			}
-
-			if (!!this.iconUrl) {
-				this.icon = new ol.Icon(this.iconUrl, size, anchor);
-			}
-			else {
-				this.icon = new ol.Icon('http://ol.org/dev/img/marker-gold.png', size, anchor);
-			} 
-
-			style = {
-				cursor         : 'pointer',
-				externalGraphic: ((!!this.iconUrl) ? this.iconUrl : 'http://ol.org/dev/img/marker-gold.png'),
-				graphicTitle   : ((!!this.labelText) ? this.labelText : ''),
-				graphicHeight  : size.h,
-				graphicWidth   : size.w,
-				graphicOpacity : 1.0,
-				graphicXOffset : anchor.x,
-				graphicYOffset : anchor.y,
-				graphicZIndex  : (!!this.attributes.zIndex ? this.attributes.zIndex : 2)//,
-				// title       : this.labelText
-			};
+			this.proprietary_marker = new ol.Feature({});
+			this.proprietary_marker.setGeometry(point);
 			
+			var options = {
+				  url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png',
+				}
 
-		*/
-			position = this.location.toProprietary('openlayersv3');
-			marker = new ol.Overlay({
-					map: map,
-					position: position
-					//, element: document.createTextElement('X marks the spot')
-					});		
-
+			if (this.iconAnchor) { //not supported in ol3 yet
+				options.xOffset = this.iconAnchor[0];
+				options.yOffset = this.iconAnchor[1];
+			}
+				
+			if (this.iconSize) {
+				options.width = this.iconSize[0];
+				options.height = this.iconSize[1];
+			}
+			
+			this.proprietary_marker.setSymbolizers([
+				new ol.style.Icon({
+				  url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png'
+				})
+			  ]);
+					
 			if (!!this.infoBubble) {
 			/*
 				this.popup = new ol.Popup.FramedCloud(
@@ -686,10 +560,11 @@ mxn.register('openlayersv3', {
 				this.popup = null;
 			}
 
-			return marker;
+			return this.proprietary_marker;
 		},
 
 		openBubble: function() {		
+			/*
 			if (!!this.infoBubble) {
 				// Need to create a new popup in case setInfoBubble has been called
 				this.popup = new ol.Popup.FramedCloud(
@@ -709,6 +584,7 @@ mxn.register('openlayersv3', {
 				this.map.addPopup(this.popup, true);
 			}
 			this.openInfoBubble.fire( { 'marker': this } );
+			*/
 		},
 
 		closeBubble: function() {
@@ -764,15 +640,17 @@ mxn.register('openlayersv3', {
 				ring = new ol.geom.LineString(coords);
 			}
 		
-			this.proprietary_polyline = new ol.Feature({'foo': 'bar'});
+			this.proprietary_polyline = new ol.Feature({});
 			this.proprietary_polyline.setGeometry(ring);
 			this.proprietary_polyline.setSymbolizers([
-				new ol.style.Polygon({
+				new ol.style.Stroke({
 					strokeColor: this.color,
 					strokeOpacity: this.opacity,
-					strokeWidth  : this.width,
+					strokeWidth  : this.width}),
+				new ol.style.Fill({
 					fillColor    : this.fillColor,
 					fillOpacity  : this.opacity})
+					
 			]);
 			return this.proprietary_polyline;
 		},
