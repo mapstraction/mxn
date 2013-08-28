@@ -2,7 +2,7 @@ mxn.register('openmq', {
 
 Mapstraction: {
 	
-	init: function(element, api) {
+	init: function(element, api, properties) {
 		var me = this;
 		
 		if (typeof MQA.TileMap === 'undefined') {

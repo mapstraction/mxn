@@ -2,7 +2,7 @@ mxn.register('googlev3', {
 
 Mapstraction: {
 	
-	init: function(element, api){		
+	init: function(element, api, properties){		
 		var me = this;
 		
 		if (typeof google.maps.Map === 'undefined') {

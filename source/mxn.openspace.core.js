@@ -2,7 +2,7 @@ mxn.register('openspace', {
 
 Mapstraction: {
 
-	init: function(element, api) {
+	init: function(element, api, properties) {
 		var me = this;
 		var map;
 		

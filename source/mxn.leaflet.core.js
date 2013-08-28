@@ -2,7 +2,7 @@ mxn.register('leaflet', {
 
 Mapstraction: {
 	
-	init: function(element, api) {
+	init: function(element, api, properties) {
 		if (typeof L.Map === 'undefined') {
 			throw new Error(api + ' map script not imported');
 		}

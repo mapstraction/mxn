@@ -1,7 +1,7 @@
 mxn.register('yahoo', {	
 
 Mapstraction: {
-	init: function(element,api) {
+	init: function(element, api, properties) {
 		throw new Error('The Yahoo! Maps API is now obsolete and no longer supported by Mapstraction');
 
 		/*var me = this;

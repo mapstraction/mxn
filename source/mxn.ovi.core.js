@@ -2,7 +2,7 @@ mxn.register('ovi', {
 
 Mapstraction: {
 
-	init: function(element, api) {
+	init: function(element, api, properties) {
 		var me = this;
 		var ovi_map;
 		var mapLoaded = false;

@@ -1,7 +1,7 @@
 mxn.register('microsoft7', {
 
 Mapstraction: {
-	init: function(element, api) {
+	init: function(element, api, properties) {
 		var me = this;
 
 		if (typeof Microsoft.Maps === 'undefined') {

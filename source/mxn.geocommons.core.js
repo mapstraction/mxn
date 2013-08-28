@@ -2,7 +2,7 @@ mxn.register('geocommons', {
 
 	Mapstraction: {
 
-		init: function(element, api) {
+		init: function(element, api, properties) {
 			var me = this;
 
 			if (typeof F1.Maker.Map === 'undefined') {

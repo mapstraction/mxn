@@ -2,7 +2,7 @@ mxn.register('esri', {
 
 	Mapstraction: {
 	
-		init: function(element, api) {
+		init: function(element, api, properties) {
 			var me = this;
 			dojo.require("esri.map");
 			dojo.require("esri.layers.FeatureLayer");

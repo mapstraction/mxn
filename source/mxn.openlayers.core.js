@@ -2,7 +2,7 @@ mxn.register('openlayers', {
 
 	Mapstraction: {
 
-		init: function(element, api){
+		init: function(element, api, properties){
 			var me = this;
 			
 			if (typeof OpenLayers.Map === 'undefined') {

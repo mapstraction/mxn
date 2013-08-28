@@ -1,7 +1,7 @@
 mxn.register('nokia', {
 
 Mapstraction: {
-	init: function(element, api) {
+	init: function(element, api, properties) {
 		var me = this;
 		var	nokia_map;
 		var	mapLoaded = false;
