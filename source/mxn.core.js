@@ -11,7 +11,7 @@ var $m = mxn.util.$m;
  * @private
  */
 var init = function() {
-	this.invoker.go('init', [ this.currentElement, this.api ]);
+	this.invoker.go('init', [ this.currentElement, this.api, this.properties ]);
 	this.applyOptions();
 };
 
@@ -37,16 +37,36 @@ var init = function() {
  * <li><code>yandex</code> - Yandex</li>
  * <li><code>yandex2</code> - Yandex v2</li>
  * </ul>
+ * <p>The <code>properties</code> object can contain one or more of the following members:</p>
+ *
+ * <pre>
+ * var properties = {
+ *	'controls': {
+ *		'pan': null,		// set to true to add pan control
+ *		'zoom': null,		// set to 'large' or 'small' to add zoom control
+ *		'overview': null,	// set to true to add overview control
+ *		'scale': null		// set to true to add scale control
+ *	},
+ *	'center': null,			// set to desired map centre, one of mxn.LatLonPoint or [lat, lon]
+ *	'zoom': null			// set to desired initial zoom level
+ *	'map_type': null		// set to one of mxn.Mapstraction.[ROAD|PHYSICAL|HYBRID|SATELLITE]
+ * };
+ * </pre>
+ *
  * @name mxn.Mapstraction
  * @constructor
  * @param {string} element The HTML element to replace with a map.
  * @param {string} api The API ID of the mapping API to use; if omitted, the first loaded provider implementation is used.
- * @param {boolean} [debug] optional parameter to turn on debug support; this uses alert panels for unsupported actions.
+ * @param {object} [properties] options properties object to customize the default map controls, centre, zoom leve and map type.
  * @exports Mapstraction as mxn.Mapstraction
  */
-var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
+
+var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 	if (!api){
 		api = mxn.util.getAvailableProviders()[0];
+	}
+	if (!properties) {
+		properties = null;
 	}
 	
 	/**
@@ -92,6 +112,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, debug) {
 	 */
 	this.polylines = [];
 	
+	this.properties = properties;
 	this.images = [];
 	this.controls = [];	
 	this.loaded = {};
@@ -457,17 +478,6 @@ Mapstraction.prototype.isLoaded = function(api){
 };
 
 /**
- * Set the debugging on or off - shows alert panels for functions that don't exist in Mapstraction
- * @param {boolean} [debug] Specify <code>true</code> to turn on debugging or <code>false</code> to turn it off
- */
-Mapstraction.prototype.setDebug = function(debug){
-	if(debug !== null) {
-		this.debug = debug;
-	}
-	return this.debug;
-};
-
-/**
  * Set the api call deferment on or off - When it's on, mxn.invoke will queue up provider API calls until
  * runDeferred is called, at which time everything in the queue will be run in the order it was added. 
  * @param {boolean} set deferred to true to turn on deferment
@@ -708,9 +718,7 @@ Mapstraction.prototype.declutterMarkers = function(opts) {
 		case '  dummy':
 			break;
 		default:
-			if(this.debug) {
-				throw new Error(this.api + ' not supported by Mapstraction.declutterMarkers');
-			}
+			throw new Error(this.api + ' not supported by Mapstraction.declutterMarkers');
 	}
 };
 
