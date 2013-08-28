@@ -24,9 +24,63 @@ Mapstraction: {
 			map_type: null
 		};
 		
-		nokia_map = new nokia.maps.map.Display(element);
-		nokia_map.addComponent(new nokia.maps.map.component.InfoBubbles());
-		nokia_map.addComponent(new nokia.maps.map.component.Behavior());
+		var props = {
+			components: [
+				new nokia.maps.map.component.InfoBubbles(),
+				new nokia.maps.map.component.Behavior()
+			]
+		};
+		if (typeof properties !== 'undefined' && properties !== null) {
+			if (properties.hasOwnProperty('controls')) {
+				var controls = properties.controls;
+				// Skip 'pan' as we've already added the Behavior component by default
+				if ('zoom' in controls) {
+					if (controls.zoom || controls.zoom === 'large' || controls.zoom === 'small') {
+						props.components.push(new nokia.maps.map.component.ZoomBar());
+					}
+				}
+				if ('overview' in controls && controls.overview) {
+					props.components.push(new nokia.maps.map.component.Overview());
+				}
+				if ('scale' in controls && controls.scale) {
+					props.components.push(new nokia.maps.map.component.ScaleBar());
+				}
+				if ('map_type' in controls && controls.map_type) {
+					props.components.push(new nokia.maps.map.component.TypeSelector());
+				}
+			}
+
+			if (properties.hasOwnProperty('center')) {
+				var point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
+				props.center = point.toProprietary(this.api);
+				
+			}
+			if (properties.hasOwnProperty('zoom')) {
+				props.zoomLevel = properties.zoom;
+			}
+			if (properties.hasOwnProperty('map_type')) {
+				switch (properties.map_type) {
+					case mxn.Mapstraction.ROAD:
+						props.baseMapType = nokia.maps.map.Display.NORMAL;
+						break;
+					case mxn.Mapstraction.PHYSICAL:
+						props.baseMapType = nokia.maps.map.Display.TERRAIN;
+						break;
+					case mxn.Mapstraction.HYBRID:
+						props.baseMapType = nokia.maps.map.Display.SATELLITE;
+						break;
+					case mxn.Mapstraction.SATELLITE:
+						props.baseMapType = nokia.maps.map.Display.SATELLITE_PLAIN;
+						break;
+					default:
+						props.baseMapType = nokia.maps.map.Display.NORMAL;
+						break;
+				}
+			}
+		}
+		nokia_map = new nokia.maps.map.Display(element, props);
+		//nokia_map.addComponent(new nokia.maps.map.component.InfoBubbles());
+		//nokia_map.addComponent(new nokia.maps.map.component.Behavior());
 
 		// Handle click event
 		nokia_map.addListener('click', function(event) {
@@ -327,14 +381,16 @@ Mapstraction: {
 		var type = map.baseMapType;
 		
 		switch (type) {
-			case map.NORMAL:
+			case nokia.maps.map.Display.NORMAL:
 				return mxn.Mapstraction.ROAD;
-			case map.TERRAIN:
+			case nokia.maps.map.Display.TERRAIN:
 				return mxn.Mapstraction.PHYSICAL;
-			case map.SATELLITE:
+			case nokia.maps.map.Display.SATELLITE:
+				return mxn.Mapstraction.HYBRID;
+			case nokia.maps.map.Display.SATELLITE_PLAIN:
 				return mxn.Mapstraction.SATELLITE;
 			default:
-				return null;
+				return mxn.Mapstraction.ROAD;
 		}	// end-switch ()
 	},
 	
