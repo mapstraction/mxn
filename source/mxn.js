@@ -11,6 +11,75 @@
 // <script src="mxn.js" ...
 // no scripts will be loaded at all and it is then up to you to load the scripts independently
 (function() {
+	function make_auth_url(provider, src) {
+		switch (provider) {
+			case 'google':
+				src = src.replace('{%1}', google_key);
+				break;
+
+			case 'googlev3':
+				src = src.replace('{%1}', googlev3_key);
+				break;
+
+			case 'mapquest':
+				src = src.replace('{%1}', mapquest_key);
+				break;
+
+			case 'openspace':
+				src = src.replace('{%1}', openspace_key);
+				break;
+
+			case 'yandex':
+				src = src.replace('{%1}', yandex_key);
+				break;
+				
+			default:
+				break;
+		}
+		
+		return src;
+	}
+	
+	function make_auth_js(provider) {
+		if (provider === 'nokia') {
+			var auth = '<script type="text/javascript">';
+			auth += '\nnokia.Settings.set("appID", "' + nokia_app_id + '");';
+			auth += '\nnokia.Settings.set("authenticationToken", "' + nokia_auth_token + '");';
+			auth += '\n</script>';
+
+			return auth;
+		}
+		
+		else {
+			return null;
+		}
+	}
+	
+	function make_script_tag(src) {
+		var tag = '<script type="text/javascript" src="';
+		
+		tag += src;
+		tag += '"></script>';
+		
+		return tag;
+	}
+	
+	function make_style_tag(src, condition) {
+		var tag = '';
+		
+		if (condition) {
+			tag += '<!--[' + condition + ']>\n';
+		}
+		
+		tag += '<link rel="stylesheet" type="text/css" href="' + src + '" />';
+		
+		if (condition) {
+			tag += '\n<![endif]-->';
+		}
+		
+		return tag;
+	}
+
 	var autoload = {
 		'esri': {
 			'meta': null,
@@ -196,8 +265,9 @@
 	var auto_scripts = [];
 	var auto_auth = [];
 	var core_scripts = [];
+	var i;
 
-	for (var i=0; i<tags.length; i++) {
+	for (i=0; i<tags.length; i++) {
 		var match = tags[i].src.replace(/%20/g , '').match(/^(.*?)mxn\.js(\?\(\[?(.*?)\]?\))?(.*)$/);
 		if (match !== null) {
 			script_base = match[1];
@@ -234,29 +304,34 @@
 				if (autoload.hasOwnProperty(providers[p])) {
 					var auto = autoload[providers[p]];
 					
-					if (auto.hasOwnProperty('meta') && auto['meta'] !== null) {
-						auto_meta.push(auto['meta']);
+					if (auto.hasOwnProperty('meta') && auto.meta !== null) {
+						auto_meta.push(auto.meta);
 					}
 					
-					if (auto.hasOwnProperty('style') && auto['style'] !== null) {
-						for (var i in auto['style']) {
-							auto_styles.push(make_style_tag(auto['style'][i]['src'], auto['style'][i]['conditional']));
+					if (auto.hasOwnProperty('style') && auto.style !== null) {
+						for (i in auto.style) {
+							if (auto.style.hasOwnProperty(i)) {
+								auto_styles.push(make_style_tag(auto.style[i].src,
+									auto.style[i].conditional));
+							}
 						}
 					}
 					
-					if (auto.hasOwnProperty('script') && auto['script'] !== null) {
-						for (var i in auto['script']) {
-							var src = auto['script'][i]['src'];
-							if (auto['script'][i]['auth'] === true) {
-								if (auto['script'][i]['auth-type'] === 'url') {
-									src = make_auth_url(providers[p], src);
+					if (auto.hasOwnProperty('script') && auto.script !== null) {
+						for (i in auto.script) {
+							if (auto.script[i].hasOwnProperty('src')) {
+								src = auto.script[i].src;
+								if (auto.script[i].auth === true) {
+									if (auto.script[i].auth-type === 'url') {
+										src = make_auth_url(providers[p], src);
+									}
+
+									else if (auto.script[i].auth-type === 'js') {
+										auto_auth.push(make_auth_js(providers[p]));
+									}
 								}
-								
-								else if (auto['script'][i]['auth-type'] === 'js') {
-									auto_auth.push(make_auth_js(providers[p]));
-								}
+								auto_scripts.push(make_script_tag(src));
 							}
-							auto_scripts.push(make_script_tag(src));
 						}
 					}
 				}
@@ -283,76 +358,6 @@
 	}
 	if (core_scripts.length !== 0) {
 		document.write(core_scripts.join(''));
-	}
-	
-	function make_auth_url(provider, src) {
-		switch (provider) {
-			case 'google':
-				src = src.replace('{%1}', google_key);
-				break;
-
-			case 'googlev3':
-				src = src.replace('{%1}', googlev3_key);
-				break;
-
-			case 'mapquest':
-				src = src.replace('{%1}', mapquest_key);
-				break;
-
-			case 'openspace':
-				src = src.replace('{%1}', openspace_key);
-				break;
-
-			case 'yandex':
-				src = src.replace('{%1}', yandex_key);
-				break;
-				
-			default:
-				break;
-		}
-		
-		return src;
-	}
-	
-	function make_auth_js(provider) {
-		var auth = '<script type="text/javascript">';
-		switch (provider) {
-			case 'nokia':
-				auth += '\nnokia.Settings.set("appID", "' + nokia_app_id + '");';
-				auth += '\nnokia.Settings.set("authenticationToken", "' + nokia_auth_token + '");';
-				break;
-				
-			default:
-				break;
-		}
-		auth += '\n</script>';
-		
-		return auth;
-	}
-	
-	function make_script_tag(src) {
-		var tag = '<script type="text/javascript" src="';
-		
-		tag += src;
-		tag += '"></script>';
-		
-		return tag;
-	}
-	
-	function make_style_tag(src, condition) {
-		var tag = '';
-		
-		if (condition) {
-			tag += '<!--[' + condition + ']>\n';
-		}
-		
-		tag += '<link rel="stylesheet" type="text/css" href="' + src + '" />';
-		
-		if (condition) {
-			tag += '\n<![endif]-->';
-		}
-		
-		return tag;
 	}
 
 	/*var providers = null;
