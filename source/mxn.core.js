@@ -45,7 +45,8 @@ var init = function() {
  *		'pan': null,		// set to true to add pan control
  *		'zoom': null,		// set to 'large' or 'small' to add zoom control
  *		'overview': null,	// set to true to add overview control
- *		'scale': null		// set to true to add scale control
+ *		'scale': null,		// set to true to add scale control
+ *		'map_type': null	// set to true to add map type control
  *	},
  *	'center': null,			// set to desired map centre, one of mxn.LatLonPoint or [lat, lon]
  *	'zoom': null			// set to desired initial zoom level
