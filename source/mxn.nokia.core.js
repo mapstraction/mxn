@@ -26,38 +26,55 @@ Mapstraction: {
 		
 		var props = {
 			components: [
-				new nokia.maps.map.component.InfoBubbles(),
-				new nokia.maps.map.component.Behavior()
+				new nokia.maps.map.component.InfoBubbles()
 			]
 		};
 		if (typeof properties !== 'undefined' && properties !== null) {
 			if (properties.hasOwnProperty('controls')) {
 				var controls = properties.controls;
-				// Skip 'pan' as we've already added the Behavior component by default
+
+				if ('pan' in controls && controls.pan) {
+					this.controls.pan = new nokia.maps.map.component.Behavior();
+					props.components.push(this.controls.pan);
+				}
+				
 				if ('zoom' in controls) {
 					if (controls.zoom || controls.zoom === 'large' || controls.zoom === 'small') {
-						props.components.push(new nokia.maps.map.component.ZoomBar());
+						this.controls.zoom = new nokia.maps.map.component.ZoomBar();
+						props.components.push(this.controls.zoom);
 					}
 				}
+
 				if ('overview' in controls && controls.overview) {
-					props.components.push(new nokia.maps.map.component.Overview());
+					this.controls.overview = new nokia.maps.map.component.Overview();
+					props.components.push(this.controls.overview);
 				}
+
 				if ('scale' in controls && controls.scale) {
-					props.components.push(new nokia.maps.map.component.ScaleBar());
+					this.controls.scale = new nokia.maps.map.component.ScaleBar();
+					props.components.push(this.controls.scale);
 				}
+
 				if ('map_type' in controls && controls.map_type) {
-					props.components.push(new nokia.maps.map.component.TypeSelector());
+					this.controls.map_type = new nokia.maps.map.component.TypeSelector();
+					props.components.push(this.controls.map_type);
 				}
 			}
 
 			if (properties.hasOwnProperty('center')) {
-				var point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
-				props.center = point.toProprietary(this.api);
-				
+				if (Object.prototype.toString.call(properties.center) === '[object Array]') {
+					var point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
+					props.center = point.toProprietary(this.api);
+				}
+				else {
+					props.center = properties.center.toProprietary(this.api);
+				}
 			}
+
 			if (properties.hasOwnProperty('zoom')) {
 				props.zoomLevel = properties.zoom;
 			}
+
 			if (properties.hasOwnProperty('map_type')) {
 				switch (properties.map_type) {
 					case mxn.Mapstraction.ROAD:
@@ -78,9 +95,8 @@ Mapstraction: {
 				}
 			}
 		}
+		
 		nokia_map = new nokia.maps.map.Display(element, props);
-		//nokia_map.addComponent(new nokia.maps.map.component.InfoBubbles());
-		//nokia_map.addComponent(new nokia.maps.map.component.Behavior());
 
 		// Handle click event
 		nokia_map.addListener('click', function(event) {
