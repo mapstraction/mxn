@@ -2,7 +2,7 @@ mxn.register('{{api_id}}', {
 
 Mapstraction: {
 	
-	init: function(element, api) {		
+	init: function(element, api, properties) {		
 		var me = this;
 		
 		if (typeof map-provider-namespace === 'undefined') {
