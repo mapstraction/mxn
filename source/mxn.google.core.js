@@ -57,7 +57,7 @@ Mapstraction: {
 		me.load.fire();
 	},
 	
-	getVersion() {
+	getVersion: function() {
 		return '2';
 	},
 

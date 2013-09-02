@@ -121,7 +121,7 @@ Mapstraction: {
 		this.loaded[api] = true;
 	},
 	
-	getVersion() {
+	getVersion: function() {
 		return google.maps.version;
 	},
 	
