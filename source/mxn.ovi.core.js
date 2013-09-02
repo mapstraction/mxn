@@ -87,6 +87,10 @@ Mapstraction: {
 		this.maps[api] = ovi_map;
 		this.loaded[api] = true;
 	},
+
+	getVersion: function() {
+		return ovi.mapsapi.build;
+	},
 	
 	applyOptions: function() {
 		var map = this.maps[this.api];

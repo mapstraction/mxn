@@ -76,6 +76,10 @@ Mapstraction: {
 		});
 	},
 	
+	getVersion: function() {
+		return VEMap.GetVersion();
+	},
+	
 	applyOptions: function(){
 		// applyOptions is called by mxn.core.js immediate after the provider specific call
 		// to init, so don't check for queued events just yet.

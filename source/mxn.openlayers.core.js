@@ -77,6 +77,10 @@ mxn.register('openlayers', {
 			this.loaded[api] = true;
 		},
 
+		getVersion: function() {
+			return OpenLayers.VERSION_NUMBER;
+		},
+
 		applyOptions: function(){
 			var map = this.maps[this.api],
 				navigators = map.getControlsByClass( 'OpenLayers.Control.Navigation' ),

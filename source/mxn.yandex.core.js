@@ -44,6 +44,10 @@ Mapstraction: {
 		this.loaded[api] = true;
 	},
 	
+	getVersion: function() {
+		return '1.1';
+	},
+	
 	applyOptions: function(){
 		var map = this.maps[this.api];
 		

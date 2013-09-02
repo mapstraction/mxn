@@ -57,6 +57,10 @@ Mapstraction: {
 		me.load.fire();
 	},
 	
+	getVersion() {
+		return '2';
+	},
+
 	applyOptions: function(){
 		var map = this.maps[this.api];
 		

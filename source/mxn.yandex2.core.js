@@ -49,6 +49,10 @@ Mapstraction: {
 		);
 	},
 	
+	getVersion: function() {
+		return '2.2';
+	},
+	
 	applyOptions: function(){
 		var map = this.maps[this.api];
 		

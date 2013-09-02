@@ -91,6 +91,10 @@ mxn.register('esri', {
 			// 	console.log( p + ": " + this.options[p]);
 			// }
 		},
+		
+		getVersion: function() {
+			return esri.version;
+		},
 	
 		applyOptions: function(){
 			// FIXME: esri - 'applyOptions not implemented' (ajturner)

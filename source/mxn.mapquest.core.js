@@ -57,6 +57,13 @@ Mapstraction: {
 		});
 	},
 	
+	getVersion: function() {
+		// Code Health Warning: MapQuest puts MQTOOLKIT_VERSION into the global namespace;
+		// this could prove fun if including both MapQuest (proprietary) and MapQuest (open)
+		// APIs into the same source file but specifying differing versions of both API. Yuck.
+		return MQTOOLKIT_VERSION;
+	},
+	
 	applyOptions: function(){
 		// applyOptions is called by mxn.core.js immediate after the provider specific call
 		// to init, so don't check for queued events just yet.

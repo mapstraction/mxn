@@ -215,7 +215,15 @@ Mapstraction.HYBRID = 3;
 Mapstraction.PHYSICAL = 4;
 
 // methods that have no implementation in mapstraction core
-mxn.addProxyMethods(Mapstraction, [ 
+mxn.addProxyMethods(Mapstraction, [
+	/**
+	 * Returns the version of the active Map provider
+	 * @name mxn.Mapstraction#getVersion
+	 * @function
+	 * return {string} the current, active, Map provider's version
+	 */
+	'getVersion',
+	
 	/**
 	 * Adds a large map panning control and zoom buttons to the map
 	 * @name mxn.Mapstraction#addLargeControls

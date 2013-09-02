@@ -79,6 +79,10 @@ Mapstraction: {
 		this.loaded[api] = true;
 	},
 	
+	getVersion: function() {
+		return L.version;
+	},
+	
 	applyOptions: function(){
 		if (this.options.enableScrollWheelZoom) {
 			this.maps[this.api].scrollWheelZoom.enable();

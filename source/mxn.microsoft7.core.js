@@ -64,6 +64,10 @@ Mapstraction: {
 		});
 	},
 	
+	getVersion: function() {
+		return Microsoft.Maps.Map.getVersion();
+	},
+	
 	applyOptions: function(){
 		var map = this.maps[this.api];
 		var opts = map.getOptions();

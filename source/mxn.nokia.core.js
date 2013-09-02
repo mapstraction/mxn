@@ -172,6 +172,10 @@ Mapstraction: {
 		this.loaded[api] = true;
 	},
 	
+	getVersion: function() {
+		return nokia.maps.build;
+	},
+	
 	applyOptions: function() {
 		var map = this.maps[this.api];
 	    if (this.options.enableScrollWheelZoom) {

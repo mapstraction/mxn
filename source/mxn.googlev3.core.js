@@ -121,6 +121,10 @@ Mapstraction: {
 		this.loaded[api] = true;
 	},
 	
+	getVersion() {
+		return google.maps.version;
+	},
+	
 	applyOptions: function(){
 		var map = this.maps[this.api];
 		var myOptions = [];

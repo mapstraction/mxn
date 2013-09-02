@@ -77,6 +77,10 @@ Mapstraction: {
 		this.loaded[api] = true;
 	},
 	
+	getVersion: function() {
+		return OpenSpace.VERSION_NUMBER;
+	},
+	
 	applyOptions: function(){
 		var map = this.maps[this.api];
 		var navigators = map.getControlsByClass('OpenLayers.Control.Navigation');
