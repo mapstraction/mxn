@@ -277,8 +277,15 @@
 		};
 				
 		var ops = [
-			{ 
-				desc: 'Center map', 
+			{
+				desc: 'Get API version',
+				action: function() {
+					var version = m.getVersion();
+					logInfo('API Version "' + version + '" for "' + provider + '" loaded');
+				}
+			},
+			{
+				desc: 'Center map',
 				action: function(){
 					var point;
 					var zoom;
