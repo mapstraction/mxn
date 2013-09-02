@@ -460,6 +460,10 @@ Marker: {
 	
 		var marker = new OpenLayers.Marker(this.location.toProprietary(this.api), icon, this.labelText, new OpenLayers.Size(300,100));
 		
+		if (this.htmlContent) {
+             pin.icon.imageDiv.innerHTML = this.htmlContent;
+		}
+		
 		return marker;
 	},
 
