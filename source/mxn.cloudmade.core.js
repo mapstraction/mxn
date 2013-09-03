@@ -5,7 +5,7 @@ mxn.register('cloudmade', {
 		init: function(element, api, properties) {
 			throw new Error('The CloudMade Web Maps API is now obsolete and no longer supported by Mapstraction');
 
-			var me = this;
+			/*var me = this;
 			
 			if (typeof CM.Map === 'undefined') {
 				throw new Error(api + ' map script not imported');
@@ -70,7 +70,7 @@ mxn.register('cloudmade', {
 			// CloudMade insists that setCenter is called with a valid lat/long and a zoom
 			// level before any other operation is called on the map. Surely a WTF moment.
 			this.maps[api].setCenter(new CM.LatLng(0, 0), 12);
-			this.loaded[api] = true;
+			this.loaded[api] = true;*/
 		},
 
 		applyOptions: function(){

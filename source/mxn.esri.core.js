@@ -34,7 +34,6 @@ mxn.register('esri', {
 				throw new Error(api + ' map script version not high enough found  ' + esri.version);
 			}
 			
-			var me = this;
 			var map;
 			
 			this.layers = {};

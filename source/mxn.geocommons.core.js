@@ -5,7 +5,7 @@ mxn.register('geocommons', {
 		init: function(element, api, properties) {
 			throw new Error('The GeoCommons Maps API is now obsolete and no longer supported by Mapstraction');
 
-			var me = this;
+			/*var me = this;
 
 			if (typeof F1.Maker.Map === 'undefined') {
 				throw new Error(api + ' map script not imported');
@@ -36,8 +36,7 @@ mxn.register('geocommons', {
 				onFeatureSelected: function() {
 					me.click.fire();
 				}
-			});
-			
+			});*/
 		},
 
 		applyOptions: function(){
