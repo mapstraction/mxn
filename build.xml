@@ -40,6 +40,7 @@
 				<fileset dir="${build.dir}" includes="*.js"/>
 			</path>
 			<sequential>
+				<echo>@{file}</echo>
 				<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
 					<arg value="tools/jslint/jslint.js"/>
 					<arg value="@{file}"/>
