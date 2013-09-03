@@ -3,6 +3,8 @@ mxn.register('cloudmade', {
 	Mapstraction: {
 
 		init: function(element, api, properties) {
+			throw new Error('The CloudMade Web Maps API is now obsolete and no longer supported by Mapstraction');
+
 			var me = this;
 			
 			if (typeof CM.Map === 'undefined') {

@@ -17,7 +17,6 @@
 	nokia.Settings.set ("authenticationToken", "Yy2i2n98kaWj69qysOmcYg");
 
 	var supportedProviders = [
-		//'cloudmade',
 		'esri',
 		'google',
 		'googlev3',
@@ -66,22 +65,11 @@
 		}
 
 		switch ( provider ) {
-			//case 'cloudmade':
-				//document.write('<script type="text/javascript" src="http://tile.cloudmade.com/wml/latest/web-maps-lite.js"><\/script>');
-				//document.write('<script type="text/javascript">');
-				//document.write('var cloudmade_key = "64e8dbb9c85b48bb828c9da95d933852";');
-				//document.write('<\/script>');
-				//break;
-
 			case 'esri':
 				document.write ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css" media="all" rel="stylesheet" type="text/css" \/>');
 				document.write ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css" media="all" rel="stylesheet" type="text/css" \/>');
 				document.write ('<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.5" type="text/javascript"><\/script>');
 				break;
-				
-			//case 'geocommons':
-				//document.write('<script type="text/javascript" src="http://geocommons.com/javascripts/f1.api.js"><\/script>');
-				//break;
 
 			case 'google':
 				document.write( '<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=AIzaSyCtAzkdmKoW0M91zkoMAO032bpSMnk1Ro4"><\/script>' );
@@ -700,13 +688,7 @@
 		<div>
 			<h3>Providers</h3>
 			<ul id="providers" >
-				<!--
-				<li><a href="core.html?provider=cloudmade">CloudMade</a></li>
-				-->
 				<li><a href="core.html?provider=esri">ESRI</a></li>
-				<!--
-				<li><a href="core.html?provider=geocommons">GeoCommons / GeoIQ</a></li>
-				-->
 				<li><a href="core.html?provider=google">Google v2</a></li>
 				<li><a href="core.html?provider=googlev3">Google v3</a></li>
 				<li><a href="core.html?provider=leaflet">Leaflet</a></li>
@@ -739,14 +721,7 @@
 			</div>
 		</div>
 		<p id="provider-selection">
-			<!--
-			<a href="core.html?provider=cloudmade&auto=true">Auto-run all provider core tests</a> or run with provider: <a href="?provider=cloudmade">cloudmade</a>,
-			<a href="?provider=esri">esri</a>,
-			-->
 			<a href="core.html?provider=esri&auto=true">Auto-run all provider core tests</a> or run with provider: <a href="?provider=esri">esri</a>,
-			<!--
-			<a href="?provider=geocommons">geocommons</a>,
-			-->
 			<a href="?provider=google">google</a>,
 			<a href="?provider=googlev3">googlev3</a>,
 			<a href="?provider=leaflet">leaflet</a>,
