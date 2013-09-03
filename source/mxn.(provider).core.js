@@ -11,6 +11,10 @@ Mapstraction: {
 		
 		// TODO: Add provider code
 	},
+
+	getVersion: function() {
+		// TODO: Add provider code
+	},
 	
 	applyOptions: function(){
 		var map = this.maps[this.api];
