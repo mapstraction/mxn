@@ -61,7 +61,7 @@ Mapstraction: {
 				}
 			}
 
-			if (properties.hasOwnProperty('center')) {
+			if (properties.hasOwnProperty('center') && null !== properties.center) {
 				if (Object.prototype.toString.call(properties.center) === '[object Array]') {
 					var point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
 					props.center = point.toProprietary(this.api);
@@ -71,11 +71,11 @@ Mapstraction: {
 				}
 			}
 
-			if (properties.hasOwnProperty('zoom')) {
+			if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
 				props.zoomLevel = properties.zoom;
 			}
 
-			if (properties.hasOwnProperty('map_type')) {
+			if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
 				switch (properties.map_type) {
 					case mxn.Mapstraction.ROAD:
 						props.baseMapType = nokia.maps.map.Display.NORMAL;
@@ -93,6 +93,26 @@ Mapstraction: {
 						props.baseMapType = nokia.maps.map.Display.NORMAL;
 						break;
 				}
+			}
+			
+			// Code Health Warning
+			// If properties.controls.pan is true, then the Behavior component will already
+			// have been added, which wraps (amongst others) Drag, MouseWheel, DoubleClick
+			// and DoubleTap. But these can also be set individually via properties.dragging,
+			// properties.scroll_wheel and properties.double_click respectively, in cases where
+			// properties.controls.pan is not set.
+			
+			if (properties.hasOwnPropery('dragging') && properties.dragging) {
+				props.components.push(new nokia.maps.map.component.panning.Drag());
+			}
+
+			if (properties.hasOwnProperty('scroll_wheel') && properties.scroll_wheel) {
+				props.components.push(new nokia.maps.map.component.zoom.MouseWheel());
+			}
+			
+			if (properties.hasOwnProperty('double_click') && properties.double_click) {
+				props.components.push(new nokia.maps.map.component.zoom.DoubleClick());
+				props.components.push(new nokia.maps.map.component.zoom.DoubleTap());
 			}
 		}
 		
