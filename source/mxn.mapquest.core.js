@@ -1,3 +1,10 @@
+if (typeof MQA.TileMap === 'undefined') {
+	throw new Error(api + ' map script not imported');
+}
+
+MQA.withModule('htmlpoi', 'shapes', function() {
+			// Force Early Loading all modules that can't be loaded on-demand
+		
 mxn.register('mapquest', {	
 
 Mapstraction: {
@@ -8,18 +15,6 @@ Mapstraction: {
 		if (typeof MQA.TileMap === 'undefined') {
 			throw new Error(api + ' map script not imported');
 		}
-
-		MQA.withModule('htmlpoi', function() {
-			// Loading all modules that can't be loaded on-demand
-			// [This space left intentionally blank]			
-			console.log('htmlpoi loaded');
-		});	
-		
-		MQA.withModule('shapes', function() {
-			// Loading all modules that can't be loaded on-demand
-			// [This space left intentionally blank]
-			console.log('shapes loaded');
-		});
 		
 		this._fireOnNextCall = [];
 		this._fireQueuedEvents =  function() {
@@ -542,5 +537,8 @@ Polyline: {
 		this.proprietary_polyline.visible = false;
 	}
 }
+
+});
+
 
 });
