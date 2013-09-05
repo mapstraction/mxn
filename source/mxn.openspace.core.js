@@ -254,6 +254,11 @@ Mapstraction: {
 		pin.events.register('click', marker, function(event) {
 			marker.click.fire();
 		});
+		
+		if (marker.htmlContent) {
+			pin.icon.imageDiv.innerHTML = marker.htmlContent;
+		}
+
 		return pin;
 	},
 
