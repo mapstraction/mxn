@@ -9,6 +9,18 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		MQA.withModule('htmlpoi', function() {
+			// Loading all modules that can't be loaded on-demand
+			// [This space left intentionally blank]			
+			console.log('htmlpoi loaded');
+		});	
+		
+		MQA.withModule('shapes', function() {
+			// Loading all modules that can't be loaded on-demand
+			// [This space left intentionally blank]
+			console.log('shapes loaded');
+		});
+		
 		this._fireOnNextCall = [];
 		this._fireQueuedEvents =  function() {
 			var fireListCount = me._fireOnNextCall.length;
@@ -35,11 +47,6 @@ Mapstraction: {
 			map_type: null
 		};
 
-		MQA.withModule('shapes', function() {
-			// Loading all modules that can't be loaded on-demand
-			// [This space left intentionally blank]
-		});
-	
 		MQA.EventManager.addListener(map, 'click', function(e) {
 			me.click.fire();
 		});
@@ -207,9 +214,9 @@ Mapstraction: {
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
 		var pin = marker.toProprietary(this.api);
-		
+			
 		map.addShape(pin);
-		
+
 		return pin;
 	},
 
@@ -418,23 +425,34 @@ LatLonPoint: {
 Marker: {
 	
 	toProprietary: function() {
-		var pt = this.location.toProprietary(this.api);
-		var mk = new MQA.Poi(pt);
-		
-		if (this.iconUrl) {
-			var icon = new MQA.Icon(this.iconUrl, this.iconSize[0], this.iconSize[1]);
-			mk.setIcon(icon);
-		}
-		
-		if (this.infoBubble) {
-			mk.setInfoContentHTML(this.infoBubble);
-		}
-		
-		MQA.EventManager.addListener(mk, 'click', function() {
-			mk.mapstraction_marker.click.fire();
-		});
-		
-		return mk;
+			var pt = this.location.toProprietary(this.api);
+			var mk = null;
+			
+			if (this.htmlContent) {
+					var poi=new MQA.HtmlPoi( {lat:40.735383, lng:-73.984655} );
+					
+					/*MQA.HtmlPois will have their upper left corner placed with the lat/lng provided in the 
+					constructor. Use setHTML to provide valid HTML for your POI, xOffset, yOffset and a     CSS class name for your div.*/ 
+					poi.setHtml(this.htmlContent, 0, 0, 'mqa_htmlpoi');
+			} 
+			else {
+				mk = new MQA.Poi(pt);
+				 
+				if (this.iconUrl) {
+					var icon = new MQA.Icon(this.iconUrl, this.iconSize[0], this.iconSize[1]);
+					mk.setIcon(icon);
+				}			 
+			}
+					
+			if (this.infoBubble) {
+				mk.setInfoContentHTML(this.infoBubble);
+			}
+			
+			MQA.EventManager.addListener(mk, 'click', function() {
+				mk.mapstraction_marker.click.fire();
+			});
+			
+			return mk;
 	},
 
 	openBubble: function() {
