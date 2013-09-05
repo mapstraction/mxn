@@ -388,48 +388,63 @@ Marker: {
 	toProprietary: function() {
 		var me = this;
 		var thisIcon = null;
-		if (L.Icon.hasOwnProperty("Default")) {
-			thisIcon = L.Icon.Default;
+		var iconObj = null;
+		
+		if (me.htmlContent) {
+			var options = {};
+			options.html = me.htmlContent;
+			options.className =  ''; //to override the default white square class
+			
+			if (me.iconAnchor) {
+				options.iconAnchor = new L.Point(me.iconAnchor[0], me.iconAnchor[1]);
+			}
+			iconObj = new L.divIcon(options); //Annoyingly extend doesn't work on divIcon.
 		}
 		else {
-			thisIcon = L.Icon;
+			if (L.Icon.hasOwnProperty("Default")) {
+				thisIcon = L.Icon.Default;
+			}
+			else {
+				thisIcon = L.Icon;
+			}
+			if (me.iconUrl) {
+				thisIcon = thisIcon.extend({
+					options: {
+						iconUrl: me.iconUrl
+					}
+				});
+			}
+			if (me.iconSize) {
+				thisIcon = thisIcon.extend({
+					options: {
+						iconSize: new L.Point(me.iconSize[0], me.iconSize[1])
+					}
+				});
+			}
+			if (me.iconAnchor) {
+				thisIcon = thisIcon.extend({
+					options: {
+						iconAnchor: new L.Point(me.iconAnchor[0], me.iconAnchor[1])
+					}
+				});
+			}
+			if (me.iconShadowUrl) {
+				thisIcon = thisIcon.extend({
+					options: {
+						shadowUrl: me.iconShadowUrl
+					}
+				});
+			}
+			if (me.iconShadowSize) {
+				thisIcon = thisIcon.extend({
+					options: {
+						shadowSize: new L.Point(me.iconShadowSize[0], me.iconShadowSize[1])
+					}
+				});
+			}
+			iconObj = new thisIcon();
 		}
-		if (me.iconUrl) {
-			thisIcon = thisIcon.extend({
-				options: {
-					iconUrl: me.iconUrl
-				}
-			});
-		}
-		if (me.iconSize) {
-			thisIcon = thisIcon.extend({
-				options: {
-					iconSize: new L.Point(me.iconSize[0], me.iconSize[1])
-				}
-			});
-		}
-		if (me.iconAnchor) {
-			thisIcon = thisIcon.extend({
-				options: {
-					iconAnchor: new L.Point(me.iconAnchor[0], me.iconAnchor[1])
-				}
-			});
-		}
-		if (me.iconShadowUrl) {
-			thisIcon = thisIcon.extend({
-				options: {
-					shadowUrl: me.iconShadowUrl
-				}
-			});
-		}
-		if (me.iconShadowSize) {
-			thisIcon = thisIcon.extend({
-				options: {
-					shadowSize: new L.Point(me.iconShadowSize[0], me.iconShadowSize[1])
-				}
-			});
-		}
-		var iconObj = new thisIcon();
+		
 		var marker = new L.Marker(
 			this.location.toProprietary('leaflet'),
 			{ icon: iconObj }
