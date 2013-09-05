@@ -381,6 +381,7 @@ Marker: {
 		}
 		if (this.htmlContent) {
             options.htmlContent = this.htmlContent;
+			//TODO: options.anchor = mAnchorPoint;  should be setting this here, but it makes things worse in the html markers example
         }
 		
 		var mmarker = new Microsoft.Maps.Pushpin(this.location.toProprietary('microsoft7'), options); 
