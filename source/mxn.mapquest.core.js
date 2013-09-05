@@ -428,7 +428,7 @@ Marker: {
 					
 					/*MQA.HtmlPois will have their upper left corner placed with the lat/lng provided in the 
 					constructor. Use setHTML to provide valid HTML for your POI, xOffset, yOffset and a     CSS class name for your div.*/ 
-					mk.setHtml(this.htmlContent, 0, 0, 'mqa_htmlpoi');
+					mk.setHtml(this.htmlContent, 0, 0, 'none');
 			} 
 			else {
 				mk = new MQA.Poi(pt);
