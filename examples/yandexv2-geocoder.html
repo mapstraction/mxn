@@ -1,9 +1,9 @@
 x<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Mapstraction Examples - Yandex2 Geocoder</title>
+<title>Mapstraction Examples - yandexv2 Geocoder</title>
 <script src="http://api-maps.yandex.ru/2.0/?load=package.full&lang=en-US"
             type="text/javascript"></script>" type="text/javascript" charset="utf-8"></script>
-<script src="../source/mxn.js?(yandex2,[geocoder])" type="text/javascript"></script>
+<script src="../source/mxn.js?(yandexv2,[geocoder])" type="text/javascript"></script>
 <style type="text/css">
 
 	#mapdiv {
@@ -40,7 +40,7 @@ x<html xmlns="http://www.w3.org/1999/xhtml">
 	function initialize() {
 
 		// create mxn object
-		mapstraction = new mxn.Mapstraction('mapdiv','yandex2');
+		mapstraction = new mxn.Mapstraction('mapdiv','yandexv2');
 
 		mapstraction.addControls({
 			pan: true,
@@ -53,7 +53,7 @@ x<html xmlns="http://www.w3.org/1999/xhtml">
 		mapstraction.setCenterAndZoom(latlon, 10);
 		mapstraction.mousePosition('position');
 		
-		geocoder = new mxn.Geocoder('yandex2',geocode_return);
+		geocoder = new mxn.Geocoder('yandexv2',geocode_return);
 		
 		// add a marker
 		var marker = new mxn.Marker(latlon);

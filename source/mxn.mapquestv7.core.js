@@ -1,3 +1,10 @@
+if (typeof MQA.TileMap === 'undefined') {
+	throw new Error(api + ' map script not imported');
+}
+
+MQA.withModule('htmlpoi', 'shapes', function() {
+			// Force Early Loading all modules that can't be loaded on-demand
+		
 mxn.register('mapquestv7', {	
 
 Mapstraction: {
@@ -35,11 +42,6 @@ Mapstraction: {
 			map_type: null
 		};
 
-		MQA.withModule('shapes', function() {
-			// Loading all modules that can't be loaded on-demand
-			// [This space left intentionally blank]
-		});
-	
 		MQA.EventManager.addListener(map, 'click', function(e) {
 			me.click.fire();
 		});
@@ -425,23 +427,35 @@ LatLonPoint: {
 Marker: {
 	
 	toProprietary: function() {
-		var pt = this.location.toProprietary(this.api);
-		var mk = new MQA.Poi(pt);
-		
-		if (this.iconUrl) {
-			var icon = new MQA.Icon(this.iconUrl, this.iconSize[0], this.iconSize[1]);
-			mk.setIcon(icon);
-		}
-		
-		if (this.infoBubble) {
-			mk.setInfoContentHTML(this.infoBubble);
-		}
-		
-		MQA.EventManager.addListener(mk, 'click', function() {
-			mk.mapstraction_marker.click.fire();
-		});
-		
-		return mk;
+			var pt = this.location.toProprietary(this.api);
+			var mk = null;
+			
+			if (this.htmlContent) {
+					mk = new MQA.HtmlPoi(pt);
+					
+					/*MQA.HtmlPois will have their upper left corner placed with the lat/lng provided in the 
+					constructor. Use setHTML to provide valid HTML for your POI, xOffset, yOffset and a     CSS class name for your div.*/ 
+					var offset = this.iconAnchor ? this.iconAnchor : [0,0];
+					mk.setHtml(this.htmlContent, -offset[0], -offset[1], 'none');
+			} 
+			else {
+				mk = new MQA.Poi(pt);
+				 
+				if (this.iconUrl) {
+					var icon = new MQA.Icon(this.iconUrl, this.iconSize[0], this.iconSize[1]);
+					mk.setIcon(icon);
+				}			 
+			}
+					
+			if (this.infoBubble) {
+				mk.setInfoContentHTML(this.infoBubble);
+			}
+			
+			MQA.EventManager.addListener(mk, 'click', function() {
+				mk.mapstraction_marker.click.fire();
+			});
+			
+			return mk;
 	},
 
 	openBubble: function() {
@@ -531,5 +545,7 @@ Polyline: {
 		this.proprietary_polyline.visible = false;
 	}
 }
+
+});
 
 });

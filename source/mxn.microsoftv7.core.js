@@ -407,6 +407,10 @@ Mapstraction: {
 
 		 var newtileobj = {
 			getTileUrl: function(tile){
+				if (typeof subdomains !== 'undefined') {
+					tile_url = mxn.util.getSubdomainTileURL(tile_url, subdomains);
+				}
+			
 				return tile_url.replace(/\{Z\}/gi, tile.levelOfDetail).replace(/\{X\}/gi, tile.x).replace(/\{Y\}/gi, tile.y);
 			}
 		 };
@@ -503,7 +507,12 @@ Marker: {
 		{
 			options.text = this.label;
 		}
-		var mmarker = new Microsoft.Maps.Pushpin(this.location.toProprietary(this.api), options); 
+		if (this.htmlContent) {
+            options.htmlContent = this.htmlContent;
+			options.anchor = mAnchorPoint;
+        }
+		
+		var mmarker = new Microsoft.Maps.Pushpin(this.location.toProprietary(this.api), options);  
 
 		var that = this;
 		Microsoft.Maps.Events.addHandler(mmarker, 'mouseover', function(){

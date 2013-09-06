@@ -34,7 +34,7 @@ var init = function() {
  * <li><code>ovi</code> - Nokia Ovi</li>
  * <li><code>yahoo</code> - <strong><em>Yahoo (obsoleted)</em></strong></li>
  * <li><code>yandex</code> - Yandex</li>
- * <li><code>yandex2</code> - Yandex v2</li>
+ * <li><code>yandexv2</code> - Yandex v2</li>
  * </ul>
  * <p>The <code>properties</code> object can contain one or more of the following members:</p>
  *
@@ -1161,7 +1161,7 @@ Mapstraction.prototype.applyFilter = function(o, f) {
 			}
 			break;
 		case 'eq':
-			if (o.getAttribute( f[0] ) == f[2]) {
+			if (o.getAttribute( f[0] ) != f[2]) {
 				vis = false;
 			}
 			break;
