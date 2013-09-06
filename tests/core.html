@@ -17,20 +17,17 @@
 	nokia.Settings.set ("authenticationToken", "Yy2i2n98kaWj69qysOmcYg");
 
 	var supportedProviders = [
-		'esri',
-		'google',
+		'esriv3',
+		'herev2',
 		'googlev3',
-		'leaflet',
-		'mapquest',
-		'microsoft',
-		'microsoft7',
-		'nokia',
-		'openlayers',
-		'openmq',
-		'openspace',
-		'ovi',
-		'yandex',
-		'yandex2'
+		'leafletv0',
+		'mapquestv7',
+		'microsoftv7',
+		'openlayersv2',
+		'openmapquestv2',
+		'openspacev4',
+		'yandexv1',
+		'yandexv2'
 	];
 	
 	var provider;
@@ -65,17 +62,21 @@
 		}
 
 		switch ( provider ) {
-			case 'esri':
+			case 'esriv3':
 				document.write ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css" media="all" rel="stylesheet" type="text/css" \/>');
 				document.write ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css" media="all" rel="stylesheet" type="text/css" \/>');
 				document.write ('<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.5" type="text/javascript"><\/script>');
 				break;
 
-			case 'google':
-				document.write( '<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=AIzaSyCtAzkdmKoW0M91zkoMAO032bpSMnk1Ro4"><\/script>' );
+			case 'herev2':
+				// already loaded
 				break;
 
-			case 'leaflet':
+			case 'googlev3':
+				// already loaded
+				break;
+
+			case 'leafletv0':
 				document.write('<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" \/>');
 				document.write('<!--[if lte IE 8]>');
 			    document.write('<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" \/>');
@@ -83,57 +84,45 @@
 				document.write('<script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"><\/script>');
 				break;
 
-			case 'mapquest':
+			case 'mapquestv7':
 				document.write('<script src="http://www.mapquestapi.com/sdk/js/v7.0.s/mqa.toolkit.js?key=Fmjtd%7Cluub29uy25%2Crs%3Do5-96zl9y" type="text/javascript"><\/script>');
 				break;
 				
-			case 'microsoft':
-				document.write('<script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.3&mkt=en-us"><\/script>');
-				break;
-
-			case 'microsoft7':
+			case 'microsoftv7':
 				document.write('<script charset="UTF-8" type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"><\/script>');
 				document.write('<script type="text/javascript">');
-				document.write('var microsoft_key = "AlneHdcKOFDot4FjwyuLH8ZSUIz5rv_X22vULKa7H5ia0JnsxiykdO8y-dgLQMU6";');
+				document.write('var microsoftv7_key = "AlneHdcKOFDot4FjwyuLH8ZSUIz5rv_X22vULKa7H5ia0JnsxiykdO8y-dgLQMU6";');
 				document.write('<\/script>');
 				break;
 
-			case 'nokia':
-				// already loaded
-				break;
 
-			case 'openlayers':
+			case 'openlayersv2':
 				document.write( '<script type="text/javascript" src="http://dev.openlayers.org/releases/OpenLayers-2.9.1/OpenLayers.js"><\/script>' );
 				break;
 				
-			case 'openmq':
+			case 'openmapquestv7':
 				document.write('<script src="http://open.mapquestapi.com/sdk/js/v7.0.s/mqa.toolkit.js"><\/script>');
 				break;
 				
-			case 'openspace':
+			case 'openspacev4':
 				document.write('<script type="text/javascript" src="http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key=CEEFBE51588492CBE0405F0ACA6010B1"><\/script>');
 				break;
 
-			case 'ovi':
-				document.write('<script src="http://api.maps.ovi.com/jsl.js" type="text/javascript" charset="utf-8"><\/script>');
-				break;
-
-			case 'yandex':
+			case 'yandexv1':
 				document.write('<script src="http://api-maps.yandex.ru/1.1/index.xml?key=AMVH-VABAAAAEdVkcQIAOS-fmBYJfLFV-YDg7ZCPjwVQycUAAAAAAAAAAADwTFcvgPirz7OV75IX_Gsopsw7jA==" type="text/javascript"><\/script >');
 				break;
 
-			case 'yandex2':
+			case 'yandexv2':
 				document.write('<script src="http://api-maps.yandex.ru/2.0/?load=package.full&lang=en-US" type="text/javascript" charset="utf-8"><\/script>');
 				break;
 				
-			case 'googlev3':
 			default:
 				// already loaded
 				break;
 		}
 
-		var providers = 'googlev3, nokia';
-		if (provider != 'googlev3' && provider != 'nokia') {
+		var providers = 'googlev3, herev2';
+		if (provider != 'googlev3' && provider != 'herev2') {
 			providers = provider + ',' + providers;
 		}
 		document.write('<script type="text/javascript" src="../source/mxn.js?(' + providers + ')"><\/script>');
@@ -278,7 +267,7 @@
 					var point;
 					var zoom;
 					switch (provider) {
-						case 'openspace':
+						case 'openspacev4':
 							point = new mxn.LatLonPoint(52.6959, 1.6846);
 							zoom = 12;
 							break;
@@ -295,7 +284,7 @@
 				action: function(){
 					var point;
 					switch (provider) {
-						case 'openspace':
+						case 'openspacev4':
 							point = new mxn.LatLonPoint(51.4269, -0.3339);
 							break;
 						default:
@@ -323,7 +312,7 @@
 				action: function(){
 					var zoom;
 					switch (provider) {
-						case 'openspace':
+						case 'openspacev4':
 							zoom = 9;
 							break;
 						default:
@@ -340,7 +329,7 @@
 					var mkr;
 					var label;
 					switch (provider) {
-						case 'openspace':
+						case 'openspacev4':
 							label = 'Twickenham Rugby Stadium';
 							point = new mxn.LatLonPoint(51.45599, -0.34146);
 							break;
@@ -407,7 +396,7 @@
 				action: function(){
 					var point;
 					switch (provider) {
-						case 'openspace':
+						case 'openspacev4':
 							point = new mxn.LatLonPoint(51.40995, -0.33627);
 							break;
 						default:
@@ -441,7 +430,7 @@
 				action: function(){
 					var marker;
 					switch (provider) {
-						case 'openspace':
+						case 'openspacev4':
 							point = new mxn.LatLonPoint(50.54157, -4.93825);
 							break;
 						default:
@@ -477,7 +466,7 @@
 				action: function(){
 					var pl;
 					switch (provider) {
-						case 'openspace':
+						case 'openspacev4':
 							pl = new mxn.Polyline([
 								new mxn.LatLonPoint(51.40995, -0.33627),
 								new mxn.LatLonPoint(51.4545, -2.5879),
@@ -503,7 +492,7 @@
 				action: function() {
 					var shp;
 					switch (provider) {
-						case 'openspace':
+						case 'openspacev4':
 						shp = new mxn.Polyline([
 							new mxn.LatLonPoint(51.564, -0.534),
 							new mxn.LatLonPoint(51.690, -0.231),
@@ -647,16 +636,14 @@
 			{
 				desc: 'Swap API',
 				action: function(){
-					if (provider == 'googlev3' || provider == 'google') {
-						m.swap('map', 'nokia');
+					if (provider == 'googlev3') {
+						m.swap('map', 'herev2');
 					}
 					else {
 						m.swap('map', 'googlev3');
 					}
 				}
 			},
-			
-			
 			
 			{
 				desc: 'Done.',
@@ -688,20 +675,17 @@
 		<div>
 			<h3>Providers</h3>
 			<ul id="providers" >
-				<li><a href="core.html?provider=esri">ESRI</a></li>
-				<li><a href="core.html?provider=google">Google v2</a></li>
+				<li><a href="core.html?provider=esriv3">ESRI v3</a></li>
 				<li><a href="core.html?provider=googlev3">Google v3</a></li>
-				<li><a href="core.html?provider=leaflet">Leaflet</a></li>
-				<li><a href="core.html?provider=mapquest">MapQuest</a></li>
-				<li><a href="core.html?provider=openmq">MapQuest Open</a></li>
-				<li><a href="core.html?provider=microsoft">Microsoft v6</a></li>
-				<li><a href="core.html?provider=microsoft7">Microsoft v7</a></li>
-				<li><a href="core.html?provider=nokia">Nokia</a></li>
-				<li><a href="core.html?provider=openlayers">OpenLayers</a></li>
-				<li><a href="core.html?provider=openspace">OS OpenSpace</a></li>
-				<li><a href="core.html?provider=ovi">Ovi</a></li>
-				<li><a href="core.html?provider=yandex">Yandex</a></li>
-				<li><a href="core.html?provider=yandex2">Yandex2</a></li>
+				<li><a href="core.html?provider=herev2">HERE v2</a></li>
+				<li><a href="core.html?provider=leafletv0">Leaflet</a></li>
+				<li><a href="core.html?provider=mapquestv7">MapQuest v7</a></li>
+				<li><a href="core.html?provider=microsoftv7">Microsoft v7</a></li>
+				<li><a href="core.html?provider=openlayersv2">OpenLayers v2</a></li>
+				<li><a href="core.html?provider=openmapquestv7">Open MapQuest v7</a></li>
+				<li><a href="core.html?provider=openspacev4">OS OpenSpace v4</a></li>
+				<li><a href="core.html?provider=yandexv1">Yandex v1</a></li>
+				<li><a href="core.html?provider=yandexv2">Yandex v2</a></li>
 			</ul>
 		</div>
 		<div id="box-wrapper">
@@ -721,20 +705,17 @@
 			</div>
 		</div>
 		<p id="provider-selection">
-			<a href="core.html?provider=esri&auto=true">Auto-run all provider core tests</a> or run with provider: <a href="?provider=esri">esri</a>,
-			<a href="?provider=google">google</a>,
+			<a href="core.html?provider=esriv3&auto=true">Auto-run all provider core tests</a> or run with provider: <a href="?provider=esriv3">esriv3</a>,
 			<a href="?provider=googlev3">googlev3</a>,
-			<a href="?provider=leaflet">leaflet</a>,
-			<a href="?provider=mapquest">mapquest</a>,
-			<a href="?provider=microsoft">microsoft</a>,
-			<a href="?provider=microsoft7">microsoft7</a>,
-			<a href="?provider=nokia">nokia</a>,
-			<a href="?provider=openlayers">openlayers</a>,
-			<a href="?provider=openmq">openmq</a>,
-			<a href="?provider=openspace">openspace</a>,
-			<a href="?provider=ovi">ovi</a>,
-			<a href="?provider=yandex">yandex</a>,
-			<a href="?provider=yandex2">yandex2</a>.
+			<a href="?provider=herev2">herev2</a>,
+			<a href="?provider=leafletv0">leafletv0</a>,
+			<a href="?provider=mapquestv7">mapquestv7</a>,
+			<a href="?provider=microsoftv7">microsoftv7</a>,
+			<a href="?provider=openlayersv2">openlayersv2</a>,
+			<a href="?provider=openmapquestv7">openmqv7</a>,
+			<a href="?provider=openspacev4">openspacev4</a>,
+			<a href="?provider=yandexv1">yandexv1</a>,
+			<a href="?provider=yandexv2">yandexv2</a>.
 		</p>
 	</div>
 </body>
