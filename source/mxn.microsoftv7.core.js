@@ -1,4 +1,4 @@
-mxn.register('microsoft7', {
+mxn.register('microsoftv7', {
 
 Mapstraction: {
 	init: function(element, api, properties) {
@@ -8,29 +8,151 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		var options = {
+			credentials: microsoftv7_key,
+			enableClickableLogo: false,
+			enableSearchLogo: false,
+			showDashboard: false,
+			showMapTypeSelector: false,
+			showScalebar: false
+		};
+		var disable = {
+			double_click: false,
+			scroll_wheel: false
+		};
+		
+		if (typeof properties !== 'undefined' && properties !== null) {
+			if (properties.hasOwnProperty('controls')) {
+				var controls = properties.controls;
+				var show_dashboard = false;
+				
+				if ('pan' in controls && controls.pan) {
+					options.showDashboard = true;
+				}
+				
+				if ('zoom' in controls && controls.zoom || controls.zoom === 'small' || controls.zoom === 'large') {
+					options.showDashboard = true;
+				}
+				
+				// The overview/mini-map control isn't supported in the Bing v7 API. No, really.
+				// See below for a rant.
+				// TODO: Investigate possibility of implementing a custom overview map, see
+				// http://pietschsoft.com/post/2010/12/19/Bing-Maps-Ajax-7-Add-a-Simple-Mini-Map
+				// http://bingmapsv7modules.codeplex.com/wikipage?title=Mini-Map%20Module
+				
+				/*if ('overview' in controls) {
+					
+				}*/
+				
+				if ('scale' in controls && controls.scale) {
+					options.showScalebar = true;
+					options.showDashboard = true;
+				}
+				
+				if ('map_type' in controls && controls.map_type) {
+					options.showMapTypeSelector = true;
+					options.showDashboard = true;
+				}
+			}
+			
+			if (properties.hasOwnProperty('center') && null !== properties.center) {
+				var point;
+				if (Object.prototype.toString.call(properties.center) === '[object Array]') {
+					point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
+				}
+				
+				else {
+					point = properties.center;
+				}
+				options.center = point.toProprietary(this.api);
+			}
+			
+			if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
+				options.zoom = properties.zoom;
+			}
+			
+			if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
+				switch (properties.map_type) {
+					case mxn.Mapstraction.ROAD:
+						options.mapTypeId = Microsoft.Maps.MapTypeId.road;
+						break;
+					case mxn.Mapstraction.PHYSICAL:
+						options.mapTypeId = Microsoft.Maps.MapTypeId.road;
+						break;
+					case mxn.Mapstraction.HYBRID:
+						options.mapTypeId = Microsoft.Maps.MapTypeId.birdseye;
+						break;
+					case mxn.Mapstraction.SATELLITE:
+						options.mapTypeId = Microsoft.Maps.MapTypeId.aerial;
+						options.labelOverlay = Microsoft.Maps.LabelOverlay.hidden;
+						break;
+					default:
+						options.mapTypeId = Microsoft.Maps.MapTypeId.road;
+						break;
+				}
+			}
+			
+			if (properties.hasOwnProperty('dragging')) {
+				options.disableUserInput = true;
+			}
+
+			if (properties.hasOwnProperty('scroll_wheel')) {
+				disable.scroll_wheel = true;
+			}
+
+			if (properties.hasOwnProperty('double_click')) {
+				disable.double_click = true;
+			}
+		}
 		// The design decisions behind the Microsoft/Bing v7 API are simply jaw dropping.
 		// Want to show/hide the dashboard or show/hide the scale bar? Nope. You can only
 		// do that when you're creating the map object. Once you've done that the map controls
 		// stay "as-is" unless you want to tear down the map and redisplay it. And as for the
 		// overview "mini-map", that's not supported at all and you have to write your own.
 		// See http://msdn.microsoft.com/en-us/library/gg427603.aspx for the whole sorry tale.
+		
+		// Code Health Warning
+		// The documentation for the Microsoft.Maps.Map constructor says you can either
+		// pass a MapOptions *or* a ViewOptions object as the 2nd constructor argument.
+		// (http://msdn.microsoft.com/en-us/library/gg427609.aspx)
+		// Despite this; it appears that if you aggregate the properties of MapOptions and
+		// ViewOptions into a single object and pass this, it all automagically works.
 
-		this.maps[api] = new Microsoft.Maps.Map(element, { 
-			credentials: microsoft_key,
-			enableSearchLogo: false, // Remove the pointless Bing Search advert form the map's lower left, as this has nothing to do with the map
-			enableClickableLogo: false // Stop the Bing logo from being clickable, so no-one accidently clicks it and leaves the map
-			} );
+		this.maps[api] = new Microsoft.Maps.Map(element, options); 
+
 		//Now get the update the microsoft key to be session key for geocoding use later without racking up api hits
 		this.maps[api].getCredentials(function(credentials) 
 			{ 
 				if(credentials !== null) { microsoft_key = credentials; } 
 			});
 			
+		// Disable scroll wheel/mouse wheel interaction if specified in the
+		// constructor properties
+
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'mousewheel', function(event) {
+			if (event.targetType == 'map') {
+				event.handled = true;
+			}
+		});
+		
+		// Disable double-click to zoom if specified in the constructor
+		// properties
+
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'dblclick', function(event) {
+			event.handled = true;
+		});
+
 		//Add Click Event - with IE7 workaround if needed
-		if (element.addEventListener){
-			element.addEventListener('contextmenu', function (evt) { evt.preventDefault(); });
-		} else if (element.attachEvent){
-			element.attachEvent('contextmenu', function (evt) { evt.preventDefault(); });
+		if (element.addEventListener) {
+			element.addEventListener('contextmenu', function(event) {
+				event.preventDefault();
+			});
+		}
+		
+		else if (element.attachEvent) {
+			element.attachEvent('contextmenu', function(event) {
+				evt.preventDefault();
+			});
 		}
 
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'click', function(event){
@@ -38,9 +160,11 @@ Mapstraction: {
 			if (event.originalEvent.preventDefault) {
 		        event.originalEvent.preventDefault();
 		    }
+
 			if (event.targetType == 'pushpin') {
 				event.target.mapstraction_marker.click.fire();
 			}
+
 			else {
 				var _x = event.getX();
 				var _y = event.getY();
@@ -379,7 +503,7 @@ Marker: {
 		{
 			options.text = this.label;
 		}
-		var mmarker = new Microsoft.Maps.Pushpin(this.location.toProprietary('microsoft7'), options); 
+		var mmarker = new Microsoft.Maps.Pushpin(this.location.toProprietary(this.api), options); 
 
 		var that = this;
 		Microsoft.Maps.Events.addHandler(mmarker, 'mouseover', function(){
@@ -406,7 +530,7 @@ Marker: {
 	},
 
 	openBubble: function() {
-		var infowindow = new Microsoft.Maps.Infobox(this.location.toProprietary('microsoft7'),
+		var infowindow = new Microsoft.Maps.Infobox(this.location.toProprietary(this.api),
 			{
 				description: this.infoBubble
 			});

@@ -1,4 +1,4 @@
-mxn.register('leaflet', {
+mxn.register('leafletv0', {
 
 Mapstraction: {
 	
@@ -435,7 +435,7 @@ Marker: {
 		}
 		var iconObj = new thisIcon();
 		var marker = new L.Marker(
-			this.location.toProprietary('leaflet'),
+			this.location.toProprietary(this.api),
 			{ icon: iconObj }
 		);
 		(function(me, marker) {
@@ -491,7 +491,7 @@ Polyline: {
 		var coords = [];
 
 		for (var i = 0,  length = this.points.length ; i< length; i++){
-			coords.push(this.points[i].toProprietary('leaflet'));
+			coords.push(this.points[i].toProprietary(this.api));
 		}
 
 		var polyOptions = {

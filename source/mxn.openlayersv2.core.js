@@ -1,4 +1,4 @@
-mxn.register('openlayers', {	
+mxn.register('openlayersv2', {	
 
 	Mapstraction: {
 
@@ -587,7 +587,7 @@ mxn.register('openlayers', {
 				map.events.register('mousemove', map, function (evt) {
 					var lonlat = map.getLonLatFromViewPortPx(evt.xy);
 					var point = new mxn.LatLonPoint();
-					point.fromProprietary('openlayers', lonlat);
+					point.fromProprietary(this.api, lonlat);
 					var loc = point.lat.toFixed(4) + ' / ' + point.lon.toFixed(4);
 					locDisp.innerHTML = loc;
 				});
@@ -654,7 +654,7 @@ mxn.register('openlayers', {
 				// title       : this.labelText
 			};
 
-			position = this.location.toProprietary('openlayers');
+			position = this.location.toProprietary(this.api);
 			marker = new OpenLayers.Feature.Vector(
 			 new OpenLayers.Geometry.Point(position.lon,	position.lat),
 				null,

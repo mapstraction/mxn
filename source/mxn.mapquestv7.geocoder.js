@@ -1,4 +1,4 @@
-mxn.register('mapquest', {
+mxn.register('mapquestv7', {
 
 Geocoder: {
 

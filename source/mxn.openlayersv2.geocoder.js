@@ -1,4 +1,4 @@
-mxn.register('openlayers', {
+mxn.register('openlayersv2', {
 
 Geocoder: {
 	init: function() {

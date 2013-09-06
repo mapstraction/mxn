@@ -1,4 +1,4 @@
-mxn.register('mapquest', {	
+mxn.register('openmapquestv7', {	
 
 Mapstraction: {
 	
@@ -23,7 +23,7 @@ Mapstraction: {
 		
 		var options = {
 			elt: element,
-			mtype: 'map'
+			mtype: 'osm'
 		};
 
 		var map = new MQA.TileMap(options);
@@ -56,7 +56,7 @@ Mapstraction: {
 			me.load.fire();
 		});
 	},
-	
+
 	getVersion: function() {
 		// Code Health Warning: MapQuest puts MQTOOLKIT_VERSION into the global namespace;
 		// this could prove fun if including both MapQuest (proprietary) and MapQuest (open)
@@ -69,8 +69,8 @@ Mapstraction: {
 		// to init, so don't check for queued events just yet.
 		//this._fireQueuedEvents();
 		if (this.options.enableScrollWheelZoom) {
-			var map = this.maps[this.api];
 			MQA.withModule('mousewheel', function() {
+				var map = this.maps[this.api];
 				map.enableMouseWheelZoom();
 			});
 		}
@@ -200,12 +200,12 @@ Mapstraction: {
 
 	setCenterAndZoom: function(point, zoom) { 
 		this._fireQueuedEvents();
-
+		
 		// The order of setting zoom and center is critical and peculiar to the way in which
 		// the MapQuest API seems to work (which is based on trial, error and reverse engineering)
 		//
 		// Or .. to quote @gilesc50 "don’t mess with this, its deliberately nuts"
-
+		
 		this.setZoom(zoom);
 		this.setCenter(point);
 	},
@@ -235,11 +235,11 @@ Mapstraction: {
 	addPolyline: function(polyline, old) {
 		this._fireQueuedEvents();
 		var map = this.maps[this.api];
-		var mapquest_polyline = polyline.toProprietary(this.api);
+		var openmq_polyline = polyline.toProprietary(this.api);
 
-		map.addShape(mapquest_polyline);
+		map.addShape(openmq_polyline);
 		
-		return mapquest_polyline;
+		return openmq_polyline;
 	},
 
 	removePolyline: function(polyline) {
@@ -295,19 +295,19 @@ Mapstraction: {
 		
 		switch (type) {
 			case mxn.Mapstraction.SATELLITE:
-				map.setMapType('sat');
+				map.setMapType('osmsat');
 				break;
 			case mxn.Mapstraction.HYBRID:
 				map.setMapType('hyb');
 				break;
 			case mxn.Mapstraction.PHYSICAL:
-				map.setMapType('map');
+				map.setMapType('osm');
 				break;
 			case mxn.Mapstraction.ROAD:
-				map.setMapType('map');
-				break;
+				map.setMapType('osm');
+				break;						
 			default:
-				map.setMapType('map');
+				map.setMapType('osm');
 				break;
 		}
 	},
@@ -318,11 +318,11 @@ Mapstraction: {
 		
 		var type = map.getMapType();
 		switch(type) {
-			case 'sat':
+			case 'osmsat':
 				return mxn.Mapstraction.SATELLITE;
 			case 'hyb':
 				return mxn.Mapstraction.HYBRID;
-			case 'map':
+			case 'osm':
 				return mxn.Mapstraction.ROAD;
 			default:
 				return mxn.Mapstraction.ROAD;
@@ -407,7 +407,6 @@ Mapstraction: {
 			};
 		}
 	}
-	
 },
 
 LatLonPoint: {
@@ -417,8 +416,8 @@ LatLonPoint: {
 	},
 
 	fromProprietary: function(mqPoint) {
-		this.lat = mqPoint.getLatitude();
-		this.lon = mqPoint.getLongitude();
+		this.lat = mqPoint.lat;
+		this.lon = mqPoint.lng;
 	}
 },
 
@@ -453,8 +452,8 @@ Marker: {
 			else {
 				// close
 			}
-			this.openInfoBubble.fire( { 'marker': this } );
 		}
+		this.openInfoBubble.fire( { 'marker': this } );
 	},
 
 	closeBubble: function() {
@@ -478,7 +477,6 @@ Marker: {
 	update: function() {
 		throw new Error('Marker.update is not currently supported by provider ' + this.api);
 	}
-	
 },
 
 Polyline: {

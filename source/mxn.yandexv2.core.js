@@ -1,4 +1,4 @@
-mxn.register('yandex2', {
+mxn.register('yandexv2', {
 
 Mapstraction: {
 
@@ -463,7 +463,7 @@ Marker: {
 			options.iconOffset = [this.iconAnchor[0], this.iconAnchor[1]];
 		}
 
-		var ymarker = new ymaps.Placemark(this.location.toProprietary('yandex2'), properties, options);
+		var ymarker = new ymaps.Placemark(this.location.toProprietary(this.api), properties, options);
 		
 		
 		if (this.hoverIconUrl) {
@@ -516,7 +516,7 @@ Marker: {
 
 	update: function() {
 		point = new mxn.LatLonPoint();
-		point.fromProprietary('yandex2', this.proprietary_marker.getGeoPoint());
+		point.fromProprietary(this.api, this.proprietary_marker.getGeoPoint());
 		this.location = point;
 	}
 },
@@ -527,7 +527,7 @@ Polyline: {
 		var ypoints = [];
 		
 		for (var i = 0,  length = this.points.length ; i< length; i++){
-			ypoints.push(this.points[i].toProprietary('yandex2'));
+			ypoints.push(this.points[i].toProprietary(this.api));
 		}
 		
 		var options = {

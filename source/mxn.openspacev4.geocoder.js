@@ -1,4 +1,4 @@
-mxn.register('openspace', {
+mxn.register('openspacev4', {
 
 Geocoder: {
 

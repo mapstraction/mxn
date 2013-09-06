@@ -1,4 +1,4 @@
-mxn.register('yandex2', {
+mxn.register('yandexv2', {
 
 Geocoder: {
 	init: function() {

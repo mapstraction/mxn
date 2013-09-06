@@ -1,4 +1,4 @@
-mxn.register('microsoft7', {
+mxn.register('microsoftv7', {
 
 Geocoder: {
 	init: function() {

@@ -1,4 +1,4 @@
-mxn.register('openspace', {
+mxn.register('openspacev4', {
 
 Mapstraction: {
 
@@ -45,7 +45,7 @@ Mapstraction: {
 				var point = this.getLonLatFromViewPortPx( evt.xy );
 				// convert to LatLonPoint
 				var llPoint = new mxn.LatLonPoint();
-				llPoint.fromProprietary('openspace', point);
+				llPoint.fromProprietary(this.api, point);
 				me.clickHandler( llPoint.lat, llPoint.lon );
 				return false;
 			}
@@ -359,9 +359,9 @@ Mapstraction: {
 		var osne = new OpenSpace.MapPoint( olbox[2], olbox[3] );
 		// convert to LatLonPoints
 		var sw = new mxn.LatLonPoint();
-		sw.fromProprietary('openspace', ossw);
+		sw.fromProprietary(this.api, ossw);
 		var ne = new mxn.LatLonPoint();
-		ne.fromProprietary('openspace', osne);
+		ne.fromProprietary(this.api, osne);
 		return new mxn.BoundingBox(sw.lat, sw.lon, ne.lat, ne.lon);
 	},
 
@@ -409,7 +409,7 @@ Mapstraction: {
 			map.events.register('mousemove', map, function (e) {
 				var lonLat = map.getLonLatFromViewPortPx(e.xy);
 				var mouseLL = new mxn.LatLonPoint();
-				mouseLL.fromProprietary('openspace', lonLat);
+				mouseLL.fromProprietary(this.api, lonLat);
 				var loc = parseFloat(mouseLL.lat).toFixed(4) + ' / ' + parseFloat(mouseLL.lon).toFixed(4);
 				locDisp.innerHTML = loc;
 			});

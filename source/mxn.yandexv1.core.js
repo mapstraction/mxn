@@ -1,4 +1,4 @@
-mxn.register('yandex', {
+mxn.register('yandexv1', {
 
 Mapstraction: {
 
@@ -488,7 +488,7 @@ Marker: {
 			options.style = style;
 		}
 		
-		var ymarker = new YMaps.Placemark(this.location.toProprietary('yandex'), options);
+		var ymarker = new YMaps.Placemark(this.location.toProprietary(this.api), options);
 		
 		if (this.hoverIconUrl) {
 			var me = this;
@@ -518,7 +518,7 @@ Marker: {
 		}
 		
 		YMaps.Events.observe(ymarker, ymarker.Events.DragEnd, function(ymarker) {
-			var latLon = new mxn.LatLonPoint().fromProprietary('yandex', ymarker.getGeoPoint());
+			var latLon = new mxn.LatLonPoint().fromProprietary(this.api, ymarker.getGeoPoint());
 			this.mapstraction_marker.location = latLon;
 			this.mapstraction_marker.dragend.fire(latLon);
 		});
@@ -546,7 +546,7 @@ Marker: {
 
 	update: function() {
 		point = new mxn.LatLonPoint();
-		point.fromProprietary('yandex', this.proprietary_marker.getGeoPoint());
+		point.fromProprietary(this.api, this.proprietary_marker.getGeoPoint());
 		this.location = point;
 	}
 },
@@ -557,7 +557,7 @@ Polyline: {
 		var ypoints = [];
 		
 		for (var i = 0,  length = this.points.length ; i< length; i++){
-			ypoints.push(this.points[i].toProprietary('yandex'));
+			ypoints.push(this.points[i].toProprietary(this.api));
 		}
 		
 		var options = {

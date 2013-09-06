@@ -12,7 +12,7 @@ require([
 			Button, Menu,
 			Color, dom, on, domConstruct, win, domStyle
 		  ) {
-mxn.register('esri', {
+mxn.register('esriv3', {
 
 	Mapstraction: {
 	

@@ -1,4 +1,4 @@
-mxn.register('yandex', {
+mxn.register('yandexv1', {
 
 Geocoder: {
 	

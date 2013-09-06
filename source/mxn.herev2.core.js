@@ -1,4 +1,4 @@
-mxn.register('nokia', {
+mxn.register('herev2', {
 
 Mapstraction: {
 	init: function(element, api, properties) {
@@ -62,13 +62,15 @@ Mapstraction: {
 			}
 
 			if (properties.hasOwnProperty('center') && null !== properties.center) {
+				var point;
 				if (Object.prototype.toString.call(properties.center) === '[object Array]') {
-					var point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
-					props.center = point.toProprietary(this.api);
+					point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
 				}
+				
 				else {
-					props.center = properties.center.toProprietary(this.api);
+					point = properties.center;
 				}
+				props.center = point.toProprietary(this.api);
 			}
 
 			if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
@@ -560,7 +562,7 @@ Marker: {
 		this.proprietary_infobubble = null;
 
 		var	prop_marker = new nokia.maps.map.Marker(
-				self.location.toProprietary('nokia'),
+				self.location.toProprietary(this.api),
 				properties);
 
 		if (this.infoBubble) {
@@ -617,7 +619,7 @@ Marker: {
 		if (!this.map) {
 			throw new Error('Marker.openBubble; this marker must be added to a map in order to manage a Bubble');
 		}
-		this.proprietary_infobubble = this.map.getComponentById("InfoBubbles").addBubble(this.infoBubble, this.location.toProprietary('nokia'));
+		this.proprietary_infobubble = this.map.getComponentById("InfoBubbles").addBubble(this.infoBubble, this.location.toProprietary(this.api));
 		this.openInfoBubble.fire( { 'marker': this } );		
 	},
 	
@@ -667,7 +669,7 @@ Polyline: {
 		var	coords = [];
 		
 		for (var i=0, length=this.points.length; i<length; i++) {
-			coords.push(this.points[i].toProprietary('nokia'));
+			coords.push(this.points[i].toProprietary(this.api));
 		}
 		
 		if (this.closed) {
