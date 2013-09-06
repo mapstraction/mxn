@@ -65,6 +65,9 @@ var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 	if (!api){
 		api = mxn.util.getAvailableProviders()[0];
 	}
+	
+	api = mxn.util.translateProvider(api);
+	
 	if (!properties) {
 		properties = null;
 	}
@@ -689,45 +692,7 @@ Mapstraction.prototype.declutterMarkers = function(opts) {
 		return;
 	}
 
-	var map = this.maps[this.api];
-
-	switch(this.api)
-	{
-		//	case 'yahoo':
-		//
-		//	  break;
-		//	case 'google':
-		//
-		//	  break;
-		//	case 'openstreetmap':
-		//
-		//	  break;
-		//	case 'microsoft':
-		//
-		//	  break;
-		//	case 'openlayers':
-		//
-		//	  break;
-		case 'multimap':
-			/*
-			 * Multimap supports quite a lot of decluttering options such as whether
-			 * to use an accurate of fast declutter algorithm and what icon to use to
-			 * represent a cluster. Using all this would mean abstracting all the enums
-			 * etc so we're only implementing the group name function at the moment.
-			 */
-			map.declutterGroup(opts.groupName);
-			break;
-		//	case 'mapquest':
-		//
-		//	  break;
-		//	case 'map24':
-		//
-		//	  break;
-		case '  dummy':
-			break;
-		default:
-			throw new Error(this.api + ' not supported by Mapstraction.declutterMarkers');
-	}
+	throw new Error(this.api + ' not supported by Mapstraction.declutterMarkers');
 };
 
 /**
@@ -1011,7 +976,6 @@ Mapstraction.prototype.addJSON = function(json) {
 				markers.push(polyline);
 				break;
 			default:
-		// console.log("Geometry: " + features.items[i].geometry.type);
 		}
 	}
 	return markers;
