@@ -247,18 +247,13 @@ Mapstraction: {
 	
 	addMarker: function(marker, old) {
 		var map = this.maps[this.api];
-		var loc = marker.location.toProprietary(this.api);
-		var pin = map.createMarker(loc, null, marker.labelText);
-	
+		var pin = marker.toProprietary(this.api);
+
 		// Fire 'click' event for Marker ...
 		pin.events.register('click', marker, function(event) {
 			marker.click.fire();
 		});
 		
-		if (marker.htmlContent) {
-			pin.icon.imageDiv.innerHTML = marker.htmlContent;
-		}
-
 		return pin;
 	},
 
@@ -441,32 +436,32 @@ LatLonPoint: {
 Marker: {
 	
 	toProprietary: function() {
+		var loc = this.location.toProprietary(this.api);
 		var size, anchor, icon;
+		
 		if(this.iconSize) {
-			size = new OpenLayers.Size(this.iconSize[0],
-					   this.iconSize[1]);
+			size = new OpenLayers.Size(this.iconSize[0],this.iconSize[1]);
 		}
 		else {
 			size = new OpenLayers.Size(20,25);
 		}
 	
 		if(this.iconAnchor) {
-			anchor = new OpenLayers.Pixel(this.iconAnchor[0],
-					  this.iconAnchor[1]);
+			anchor = new OpenLayers.Pixel(-this.iconAnchor[0],-this.iconAnchor[1]);
 		}
 		else {
-			// FIXME: hard-coding the anchor point
+			//hard-coding the anchor point, if none provided
 			anchor = new OpenLayers.Pixel(-(size.w/2), -size.h);
 		}
 	
 		if(this.iconUrl) {
 			icon = new OpenSpace.Icon(this.iconUrl, size, anchor);
 		}
-	
-		var marker = new OpenLayers.Marker(this.location.toProprietary(this.api), icon, this.labelText, new OpenLayers.Size(300,100));
-		
+
+		var marker = this.map.createMarker(loc, icon);
+				
 		if (this.htmlContent) {
-             pin.icon.imageDiv.innerHTML = this.htmlContent;
+             marker.icon.imageDiv.innerHTML = this.htmlContent;
 		}
 		
 		return marker;
