@@ -5,10 +5,12 @@
 	var googlev3_key = 'AIzaSyDW21lnrSsBk4OyHUDmBQ7su9di3yMaO7I';
 	var nokia_app_id = 'FbgYuugcrj8Taq6JjmUK';
 	var nokia_auth_token = 'Yy2i2n98kaWj69qysOmcYg';
+	var microsoftv7_key = "AlneHdcKOFDot4FjwyuLH8ZSUIz5rv_X22vULKa7H5ia0JnsxiykdO8y-dgLQMU6";
 	</script>
-	<script type="text/javascript" src="../source/mxn.js?(googlev3,leaflet,nokia,[autoload])"></script>
+	<script type="text/javascript" src="../source/mxn.js?(googlev3,leaflet,nokia,microsoft,[autoload])"></script>
 	<style type="text/css">
 	.map {
+		position: relative;
 		width: 100%;
 		height: 33%;
 	}
@@ -18,10 +20,10 @@
 	<div id="googlev3_map" class="map"></div>
 	<div id="nokia_map" class="map"></div>
 	<div id="leaflet_map" class="map"></div>
-	
+	<div id="microsoft_map" class="map"></div>
 	<script type="text/javascript">
 		var maps = {};
-		var providers = ['googlev3', 'nokia', 'leaflet'];
+		var providers = ['googlev3', 'nokia', 'leaflet', 'microsoft'];
 		
 		for (var i in providers) {
 			var id = providers[i] + '_map';
