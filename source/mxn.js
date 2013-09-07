@@ -789,6 +789,24 @@ mxn.Providers = {
 			}
 		]
 	},
+	'openlayersv3': {
+		'type': 'master',
+		'state': 'active',
+		'meta': null,
+		'style': [
+			{
+				'src': 'http://ol3js.org/en/master/build/ol.css',
+				'conditional': null
+			},
+		],
+		'script': [
+			{
+				'src': 'http://ol3js.org/en/master/build/ol.js',
+				'auth': false,
+				'authType': null
+			}
+		],
+	},
 	'openlayers': {
 		'type': 'alias',
 		'refers': 'openlayersv2'
