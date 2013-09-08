@@ -797,7 +797,7 @@ mxn.Providers = {
 			{
 				'src': 'http://ol3js.org/en/master/build/ol.css',
 				'conditional': null
-			},
+			}
 		],
 		'script': [
 			{
@@ -805,7 +805,7 @@ mxn.Providers = {
 				'auth': false,
 				'authType': null
 			}
-		],
+		]
 	},
 	'openlayers': {
 		'type': 'alias',
