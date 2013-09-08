@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
+
+<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css" media="all" rel="stylesheet" type="text/css" />'
+	<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css" media="all" rel="stylesheet" type="text/css" />
+	<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.5" type="text/javascript"></script>
+	<script src="../source/mxn.js?(esri)" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css"/>
+	
+	<script type="text/javascript">
+		var map;
+
+		window.onload = function() {
+			//document.body.className = 'claro';
+			map = new mxn.Mapstraction('map', 'esriv3');
+			map.load.addHandler(function() {
+				//When the esri map is ready run the setup for the map and the controls
+				require([
+					"esri/map", 
+					"esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/layers/WebTiledLayer",
+					"esri/graphic", "esri/dijit/OverviewMap", "esri/dijit/Scalebar", "esri/dijit/BasemapGallery",
+					"dijit/form/Button", "dijit/Menu",
+					"dojo/_base/Color", "dojo/dom", "dojo/on", "dojo/dom-construct", "dojo/_base/window", "dojo/dom-style", "dojo/domReady!"
+					  ], function() {initMap()});
+			});
+		};
+		
+		function initMap() {
+			map.addControls({
+				pan:	 true,
+				zoom:	 'large',
+				overview: true,
+				scale: true,
+				map_type: true
+			});
+			var point = new mxn.LatLonPoint(51.984954,-0.220926);
+			map.setCenterAndZoom(point, 13);
+			
+			var marker = new mxn.Marker(point);
+			map.addMarker(marker);
+			
+			var point2 = new mxn.LatLonPoint(51.977056,-0.271225);
+			var marker2 = new mxn.Marker(point2);
+			marker2.iconAnchor = [25,82]; 
+			map.addMarker(marker2);
+			
+			var point3 = new mxn.LatLonPoint(51.965555,-0.236421);
+			var marker3 = new mxn.Marker(point3);
+			map.addMarker(marker3);
+		}
+	</script>
+	<style type="text/css">
+		/* Note !important on div sizing for Bing/Microsoft v6.3 */
+		#map {
+			position: relative;
+			width: 900px !important;
+			height: 450px !important;
+			float: left;
+			margin: 0 20px 20px 0;
+		}
+	</style>
+</head>
+<body>
+	<div id="map">
+	</div>
+</body>
+</html>
