@@ -17,6 +17,8 @@ Mapstraction: {
 			map_type: false
 		};
 		
+		this.map_type = new mxn.MapType();
+		
 		var options = {
 			disableDefaultUI: true,
 			disableDoubleClickZoom: true,
@@ -116,23 +118,7 @@ Mapstraction: {
 			}
 			
 			if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
-				switch (properties.map_type) {
-					case mxn.Mapstraction.ROAD:
-						options.mapTypeId = google.maps.MapTypeId.ROADMAP;
-						break;
-					case mxn.Mapstraction.PHYSICAL:
-						options.mapTypeId = google.maps.MapTypeId.TERRAIN;
-						break;
-					case mxn.Mapstraction.HYBRID:
-						options.mapTypeId = google.maps.MapTypeId.HYBRID;
-						break;
-					case mxn.Mapstraction.SATELLITE:
-						options.mapTypeId = google.maps.MapTypeId.SATELLITE;
-						break;
-					default:
-						options.mapTypeId = google.maps.MapTypeId.ROADMAP;
-						break;
-				}
+				options.mapTypeId = this.map_type.toProprietary(this.api, properties.map_type);
 			}
 			
 			if (properties.hasOwnProperty('dragging')) {
@@ -454,39 +440,13 @@ Mapstraction: {
 
 	setMapType: function(type) {
 		var map = this.maps[this.api];
-		switch(type) {
-			case mxn.Mapstraction.ROAD:
-				map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-				break;
-			case mxn.Mapstraction.SATELLITE:
-				map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-				break;
-			case mxn.Mapstraction.HYBRID:
-				map.setMapTypeId(google.maps.MapTypeId.HYBRID);
-				break;
-			case mxn.Mapstraction.PHYSICAL:
-				map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-				break;
-			default:
-				map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
-		}	 
+		map.setMapTypeId(this.map_type.toProprietary(this.api, type));
 	},
 
 	getMapType: function() {
 		var map = this.maps[this.api];
-		var type = map.getMapTypeId();
-		switch(type) {
-			case google.maps.MapTypeId.ROADMAP:
-				return mxn.Mapstraction.ROAD;
-			case google.maps.MapTypeId.SATELLITE:
-				return mxn.Mapstraction.SATELLITE;
-			case google.maps.MapTypeId.HYBRID:
-				return mxn.Mapstraction.HYBRID;
-			case google.maps.MapTypeId.TERRAIN:
-				return mxn.Mapstraction.PHYSICAL;
-			default:
-				return null;
-		}
+
+		return this.map_type.fromProprietary(this.api, map.getMapTypeId());
 	},
 
 	getBounds: function () {
@@ -615,6 +575,46 @@ addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom
 				locDisp.innerHTML = loc;
 			});
 			locDisp.innerHTML = '0.0000 / 0.0000';
+		}
+	}
+},
+
+MapType: {
+	toProprietary: function(type) {
+		switch(type) {
+			case mxn.Mapstraction.ROAD:
+				return google.maps.MapTypeId.ROADMAP;
+
+			case mxn.Mapstraction.SATELLITE:
+				return google.maps.MapTypeId.SATELLITE;
+
+			case mxn.Mapstraction.HYBRID:
+				return google.maps.MapTypeId.HYBRID;
+
+			case mxn.Mapstraction.PHYSICAL:
+				return google.maps.MapTypeId.TERRAIN;
+
+			default:
+				return google.maps.MapTypeId.ROADMAP;
+		}	 
+	},
+	
+	fromProprietary: function(type) {
+		switch(type) {
+			case google.maps.MapTypeId.ROADMAP:
+				return mxn.Mapstraction.ROAD;
+
+			case google.maps.MapTypeId.SATELLITE:
+				return mxn.Mapstraction.SATELLITE;
+
+			case google.maps.MapTypeId.HYBRID:
+				return mxn.Mapstraction.HYBRID;
+
+			case google.maps.MapTypeId.TERRAIN:
+				return mxn.Mapstraction.PHYSICAL;
+
+			default:
+				return mxn.Mapstraction.ROAD;
 		}
 	}
 },
@@ -782,7 +782,7 @@ Marker: {
 
 	update: function() {
 		var point = new mxn.LatLonPoint();
-		point.fromProprietary('googlev3', this.proprietary_marker.getPosition());
+		point.fromProprietary(this.api, this.proprietary_marker.getPosition());
 		this.location = point;
 	}
 	
@@ -794,7 +794,7 @@ Polyline: {
 		var coords = [];
 
 		for (var i = 0, length = this.points.length; i < length; i++) {
-			coords.push(this.points[i].toProprietary('googlev3'));
+			coords.push(this.points[i].toProprietary(this.api));
 		}
 		
 		var polyOptions = {

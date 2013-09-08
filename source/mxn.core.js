@@ -1214,6 +1214,44 @@ Mapstraction.prototype.getMap = function() {
 	return this.maps[this.api];
 };
 
+//////////////////////////////
+//
+//   MapType
+//
+/////////////////////////////
+
+/**
+ * Defines a built-in map tile type.
+ * @name mxn.MapType
+ * @constructor
+ * @exports MapType as mxn.MapType
+ */
+
+var MapType = mxn.MapType = function() {
+	this.invoker = new mxn.Invoker(this, 'MapType');
+};
+
+mxn.addProxyMethods(MapType, [
+	/**
+	 * Convert the current map tile type from a proprietary map type to a Mapstraction map type.
+	 * @name mxn.MapType#fromProprietary
+	 * @function
+	 * @param {string} api The API ID of the proprietary map type.
+	 * @param {number} type The proprietary map type.
+	 * @return The corresponding Mapstraction map type.
+	 */
+	'fromProprietary',
+
+	/**
+	 * Convert a Mapstraction map type to the corresponding proprietary map type.
+	 * @name mxn.MapType#toProprietary
+	 * @function
+	 * @param {string} api The API ID of the proprietary map type.
+	 * @param {number} type The Mapstraction map type.
+	 * @return The corresponding proprietary map type.
+	 */
+	'toProprietary'
+], true);
 
 //////////////////////////////
 //
