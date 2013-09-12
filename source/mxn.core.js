@@ -420,15 +420,7 @@ mxn.addProxyMethods(Mapstraction, [
 	 * @function
 	 * @param {Number} zoom The (native to the map) level zoom the map to.
 	 */
-	'setZoom',
-	
-	/**
-	 * Turns a tile layer on or off
-	 * @name mxn.Mapstraction#toggleTileLayer
-	 * @function
-	 * @param {tile_url} url of the tile layer that was created.
-	 */
-	'toggleTileLayer'
+	'setZoom'
 ]);
 
 /**
@@ -1009,47 +1001,6 @@ Mapstraction.prototype.addJSON = function(json) {
 		}
 	}
 	return markers;
-};
-
-/**
- * <p>Adds a Tile Layer to the map.</p>
- * 
- * <p>Requires providing a templated tile URL. Use <code>{S}</code>, <code>{Z}</code>, <code>{X}</code>, and <code>{Y}</code> to specify where the parameters
- * should go in the URL. <code>{S}</code> is the (optional) subdomain to be used in the URL. <code>{Z}</code> is the zoom level.
- * <code>{X}</code> and <code>{Y}</code> are the longitude and latitude of the tile.</p>
- *
- * <p>Sample templated tile URLs are :-</p>
- *
- * <ul>
- * <li>OpenStreetMap - <code>http://{S}.tile.openstreetmap.org/{Z}/{X}/{Y}.png</code></li>
- * <li>Stamen Toner - <code>http://tile.stamen.com/toner/{Z}/{X}/{Y}.png</code></li>
- * <li>MapQuest OSM - <code>http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg</code></li>
- * <li>MapQuest Open Aerial - <code>http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg</code></li>
- * </ul>
- *
- * @param {string} tile_url Template URL of the tiles.
- * @param {number} opacity Opacity of the tile layer - 0 is transparent, 1 is opaque. (default=0.6)
- * @param {string} label The label to be used for the tile layer in the Map Type control
- * @param {string} attribution The attribution and/or copyright text to use for the tile layer
- * @param {Int} min_zoom Minimum (furthest out) zoom level that tiles are available (default=1)
- * @param {Int} max_zoom Maximum (closest in) zoom level that the tiles are available (default=18)
- * @param {boolean} map_type Should the tile layer be a selectable map type in the layers palette (default=false)
- * @param {String|Array} subdomains List of subdomains that the tile server in <code>tile_url</code> refers to. Can be specified as a string "abc" or as an array [1, 2, 3]
- * @return {Object} The tile layer object
- */
-Mapstraction.prototype.addTileLayer = function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-	if(!tile_url) {
-		return;
-	}
-	
-	opacity = opacity || 0.6;
-	label = label || "Mapstraction";
-	attribution = attribution || "Mapstraction";
-	min_zoom = min_zoom || 1;
-	max_zoom = max_zoom || 18;
-	map_type = map_type || false;
-
-	return this.invoker.go('addTileLayer', [tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains] );
 };
 
 /**
