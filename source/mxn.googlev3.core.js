@@ -491,7 +491,7 @@ Mapstraction: {
 		layer.setMap(map);
 	},
 
-addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
+	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 		var map = this.maps[this.api];
 		var z_index = this.tileLayers.length || 0;
 		var tilelayer = {
@@ -560,6 +560,14 @@ addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom
 				}
 			}
 		}
+	},
+	
+	addBaseMap: function(baseMap) {
+		return baseMap.toProprietary(this.api);
+	},
+	
+	addOverlayMap: function(overlayMap) {
+		return overlayMap.toProprietary(this.api);
 	},
 
 	getPixelRatio: function() {
@@ -833,6 +841,178 @@ Polyline: {
 
 	hide: function() {
 		this.proprietary_polyline.setVisible(false);
+	}
+},
+
+BaseMap: {
+	hide: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An BaseMap must be added to the map before calling hide()');
+		}
+
+		if (this.mapstraction.baseMaps[this.index].visible) {
+			this.mapstraction.baseMaps[this.index].visible = false;
+
+			var map_ids = [
+				google.maps.MapTypeId.ROADMAP,
+				google.maps.MapTypeId.HYBRID,
+				google.maps.MapTypeId.SATELLITE,
+				google.maps.MapTypeId.TERRAIN
+			];
+
+			for (var id in this.mapstraction.baseMaps) {
+				if (this.mapstraction.baseMaps[id].visible) {
+					map_ids.push(this.mapstraction.baseMaps[id].label);
+				}
+			}
+
+			this.map.setOptions({
+				mapTypeControlOptions: {
+					mapTypeIds: map_ids
+				}
+			});
+			this.map.mapTypes.set(this.label, null);
+
+			if (this.map.getMapTypeId() === this.label) {
+				this.map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+			}
+		}
+		
+		this.baseMapHidden.fire({
+			'baseMap': this
+		});
+	},
+	
+	show: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An BaseMap must be added to the map before calling show()');
+		}
+
+		if (!this.mapstraction.baseMaps[this.index].visible) {
+			this.mapstraction.baseMaps[this.index].visible = true;
+
+			var map_ids = [
+				google.maps.MapTypeId.ROADMAP,
+				google.maps.MapTypeId.HYBRID,
+				google.maps.MapTypeId.SATELLITE,
+				google.maps.MapTypeId.TERRAIN
+			];
+
+			for (var id in this.mapstraction.baseMaps) {
+				if (this.mapstraction.baseMaps[id].visible) {
+					map_ids.push(this.mapstraction.baseMaps[id].label);
+				}
+			}
+
+			this.map.setOptions({
+				mapTypeControlOptions: {
+					mapTypeIds: map_ids
+				}
+			});
+			this.map.mapTypes.set(this.label, this.proprietary_tilemap);
+			this.map.setMapTypeId(this.label);
+
+			this.baseMapShown.fire({
+				'baseMap': this
+			});
+
+		}
+	},
+	
+	toProprietary: function() {
+		var self = this;
+		var tile_options = {
+			getTileUrl: function (coord, zoom) {
+				var url = mxn.util.sanitizeTileURL(self.url);
+				if (typeof self.subdomains !== 'undefined') {
+					url = mxn.util.getSubdomainTileURL(url, self.subdomains);
+				}
+				var x = coord.x;
+				var maxX = Math.pow(2, zoom);
+				while (x < 0) {
+					x += maxX;
+				}
+				while (x >= maxX) {
+					x -= maxX;
+				}
+				url = url.replace(/\{Z\}/gi, zoom);
+				url = url.replace(/\{X\}/gi, x);
+				url = url.replace(/\{Y\}/gi, coord.y);
+				return url;
+			},
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true,
+			minZoom: self.minZoom,
+			maxZoom: self.maxZoom,
+			opacity: self.opacity,
+			name: self.label
+		};
+		
+		return new google.maps.ImageMapType(tile_options);
+	}
+},
+
+OverlayMap: {
+	hide: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An OverlayMap must be added to the map before calling hide()');
+		}
+
+		if (this.mapstraction.overlayMaps[this.index].visible) {
+			this.map.overlayMapTypes.setAt(this.index, null);
+			this.mapstraction.overlayMaps[this.index].visible = false;
+			
+			this.overlayMapHidden.fire({
+				'overlayMap': this
+			});
+		}
+	},
+	
+	show: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An OverlayMap must be added to the map before calling show()');
+		}
+
+		if (!this.mapstraction.overlayMaps[this.index].visible) {
+			this.map.overlayMapTypes.setAt(this.index, this.proprietary_tilemap);
+			this.mapstraction.overlayMaps[this.index].visible = true;
+			
+			this.overlayMapShown.fire({
+				'overlayMap': this
+			});
+		}
+	},
+	
+	toProprietary: function() {
+		var self = this;
+		var tile_options = {
+			getTileUrl: function (coord, zoom) {
+				var url = mxn.util.sanitizeTileURL(self.url);
+				if (typeof self.subdomains !== 'undefined') {
+					url = mxn.util.getSubdomainTileURL(url, self.subdomains);
+				}
+				var x = coord.x;
+				var maxX = Math.pow(2, zoom);
+				while (x < 0) {
+					x += maxX;
+				}
+				while (x >= maxX) {
+					x -= maxX;
+				}
+				url = url.replace(/\{Z\}/gi, zoom);
+				url = url.replace(/\{X\}/gi, x);
+				url = url.replace(/\{Y\}/gi, coord.y);
+				return url;
+			},
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true,
+			minZoom: self.minZoom,
+			maxZoom: self.maxZoom,
+			opacity: self.opacity,
+			name: self.label
+		};
+		
+		return new google.maps.ImageMapType(tile_options);
 	}
 }
 

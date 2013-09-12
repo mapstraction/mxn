@@ -98,6 +98,22 @@ var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 	 * @type {Array}
 	 */
 	this.tileLayers = [];	
+
+	/**
+	 * Array of all BaseMap layers that have been added to the map.
+	 * @name mxn.Mapstraction#baseMaps
+	 * @property
+	 * @type {Array}
+	 */
+	this.baseMaps = [];
+
+	/**
+	 * Array of all OverlayMap layers that have been added to the map.
+	 * @name mxn.Mapstraction#boverlayMaps
+	 * @property
+	 * @type {Array}
+	 */
+	this.overlayMaps = [];
 		
 	/**
 	 * The array of currently loaded <code>mxn.Marker</code> objects.
@@ -203,7 +219,21 @@ var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 		 * @name mxn.Mapstraction#polylineRemoved
 		 * @event
 		 */
-		'polylineRemoved'
+		'polylineRemoved',
+		
+		/**
+		 * BaseMap is added {baseMap: BaseMap}
+		 * @name mxn.Mapstraction#baseMapAdded
+		 * @event
+		 */
+		'baseMapAdded',
+		
+		/**
+		 * OverlayMap is added {overlayMap: OverlayMap}
+		 * @name mxn.Mapstraction#overlayMapAdded
+		 * @event
+		 */
+		'overlayMapAdded'
 	]);
 	
 	// finally initialize our proper API map
@@ -1019,7 +1049,99 @@ Mapstraction.prototype.addTileLayer = function(tile_url, opacity, label, attribu
 	max_zoom = max_zoom || 18;
 	map_type = map_type || false;
 
-	return this.invoker.go('addTileLayer', [ tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains] );
+	return this.invoker.go('addTileLayer', [tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains] );
+};
+
+/**
+ * Adds and shows a Mapstraction overlay map to the map
+ * @name mxn.Mapstraction#addOverlayMap
+ * @function
+ * @param {overlayMap} A Mapstraction <code>OverlayMap</code> object.
+ */
+
+Mapstraction.prototype.addOverlayMap = function(overlayMap) {
+	overlayMap.mapstraction = this;
+	overlayMap.api = this.api;
+	overlayMap.map = this.maps[this.api]; 
+
+	for (var i in this.overlayMaps) {
+		if (this.overlayMaps.hasOwnProperty(i)) {
+			var overlay = this.overlayMaps[i];
+			if (overlay.url === overlayMap.url && overlay.label === overlayMap.label) {
+				overlayMap.show();
+				return overlayMap;
+			}
+		}
+	}
+	
+	if (overlayMap.proprietary_tilemap === null) {
+		overlayMap.proprietary_tilemap = this.invoker.go('addOverlayMap', arguments);
+		overlayMap.index = this.overlayMaps.length || 0;
+		
+		this.overlayMaps.push({
+			label: overlayMap.label,
+			url: overlayMap.url,
+			tileObject: overlayMap.proprietary_tilemap,
+			visible: false,
+			index: overlayMap.index
+		});
+
+		this.overlayMapAdded.fire({
+			'overlayMap': overlayMap
+		});
+		
+		//this.invoker.go('show', arguments);
+		overlayMap.show();
+		return overlayMap;
+	}
+
+	return overlayMap;
+};
+
+/**
+ * Adds and shows a Mapstraction base map to the map, adding it to the Map Type control,
+ * if present.
+ * @name mxn.Mapstraction#addBaseMap
+ * @function
+ * @param {baseMap} A Mapstraction <code>BaseMap</code> object.
+ */
+
+Mapstraction.prototype.addBaseMap = function(baseMap) {
+	baseMap.mapstraction = this;
+	baseMap.api = this.api;
+	baseMap.map = this.maps[this.api]; 
+
+	for (var i in this.baseMaps) {
+		if (this.baseMaps.hasOwnProperty(i)) {
+			var base = this.baseMaps[i];
+			if (base.url === baseMap.url && base.label === baseMap.label) {
+				baseMap.show();
+				return baseMap;
+			}
+		}
+	}
+	
+	if (baseMap.proprietary_tilemap === null) {
+		baseMap.proprietary_tilemap = this.invoker.go('addBaseMap', arguments);
+		baseMap.index = this.baseMaps.length || 0;
+
+		this.baseMaps.push({
+			label: baseMap.label,
+			url: baseMap.url,
+			tileObject: baseMap.proprietary_tilemap,
+			visible: false,
+			index: baseMap.index
+		});
+		
+		this.baseMapAdded.fire({
+			'baseMap': baseMap
+		});
+		
+		baseMap.show();
+		return baseMap;
+	}
+
+	return baseMap;
 };
 
 /**
@@ -2081,5 +2203,215 @@ Radius.prototype.getPolyline = function(radius, color) {
 	return line;
 };
 
+//////////////////////////////
+//
+//  BaseMap
+//
+///////////////////////////////
 
+/**
+ * <p>Creates a standalone Mapstraction base map, which can be selected for display in addition
+ * to the built in Mapstraction map types. When added to the map, a base map is automatically
+ * added to the Mapstraction Map Type control, if present.</p>
+ *
+ * <p>Creating a BaseMap requires providing a templated map tile server URL. Use the following
+ * template codes to specify where the parameters should be substituted in the templated URL.
+ * <ul>
+ * <li><code>{S}</code> is the (optional) subdomain to be used in the URL.</li>
+ * <li><code>{Z}</code> is the zoom level.</li>
+ * <li><code>{X}</code> is the longitude of the tile.</li>
+ * <li><code>{Y}</code> is the latitude of the tile.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>Some examples of templated tile server URLs are ...	
+ * <ul>
+ * <li>OpenStreetMap - <code>http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png</code></li>
+ * <li>Stamen Toner - <code>http://tile.stamen.com/toner/{z}/{z}/{y}.png</code></li>
+ * <li>MapQuest OSM - <code>http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg</code></li>
+ * <li>MapQuest Open Aerial - <code>http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg</code></li>
+ * </ul>
+ * </p>
+ * 
+ * @name mxn.BaseMap
+ * @constructor
+ * @param {string} url Template URL of the tiles (required).
+ * @param {string} label The label to be used for the tile layer in the Map Type control (required).
+ * @param {string} attribution The attribution and/or copyright text to use for the tile layer (optional, default=<code>null</code>).
+ * @param {number} opacity Opacity of the tile layer - 0 is transparent, 1 is opaque (optional, default=0.6).
+ * @param {Int} minZoom Minimum (furthest out) zoom level that tiles are available (optional, default=1).
+ * @param {Int} maxZoom Maximum (closest in) zoom level that the tiles are available (optional, default=18).
+ * @param {String|Array} subdomains List of subdomains that the tile server in <code>url</code> refers to. Can be specified as a string, <code>abc</code> or as an array, <code>[1, 2, 3]</code> (optional).
+ * @return {Object} The base map object
+ * @exports BaseMap as mxn.BaseMap
+ */
+
+var BaseMap = mxn.BaseMap = function(url, label, attribution, opacity, minZoom, maxZoom, subdomains) {
+	this.api = null;
+	this.url = url;
+	this.label = label;
+	
+	this.attribution = attribution || null;
+	this.opacty = opacity || 1.0;
+	this.minZoom = minZoom ? Number(minZoom) : 1;
+	this.maxZoom = maxZoom ? Number(maxZoom) : 18;
+	this.subdomains = subdomains || null;
+	
+	this.index = null;
+	this.proprietary_tilemap = null;
+
+	this.invoker = new mxn.Invoker(this, 'BaseMap', function() {
+		return this.api;
+	});
+	
+	mxn.addEvents(this, [
+		/**
+		 * BaseMap is shown and added to the Map Type control (if present) <code>{baseMap: BaseMap}</code>
+		 * @name mxn.BaseMap#baseMapShown
+		 * @event
+		 */
+		'baseMapShown',
+		
+		/**
+		 * BaseMap is hidden and removed from the Map Type control (if present) <code>{baseMap: BaseMap}</code>
+		 * @name mxn.BaseMap#baseMapHidden
+		 * @event
+		 */
+		'baseMapHidden'
+	]);
+};
+
+mxn.addProxyMethods(BaseMap, [
+	/**
+	 * Hides a previously added or shown BaseMap, removing it from the Map Type control, if present.
+	 * @name mxn.BaseMap#show
+	 * @function
+	 * @param {string} api The API ID of the proprietary BaseMap
+	 */
+	'hide',
+
+	/**
+	 * Shows a previously added or hidden BaseMap, adding it to the Map Type control, if present.
+	 * @name mxn.BaseMap#hide
+	 * @function
+	 * @param {string} api The API ID of the proprietary BaseMap
+	 */
+	'show',
+	
+	/**
+	 * Converts the current BaseMap to a proprietary instance for the API specified by the <code>api</code> argument.
+	 * @name mxn.BaseMap#toProprietary
+	 * @function
+	 * @param {string} api The API ID of the proprietary BaseMap
+	 * @returns {Object} A Proprietary BaseMap object
+	 */
+	'toProprietary'
+	]);
+
+//////////////////////////////
+//
+//  OverlayMap
+//
+///////////////////////////////
+
+/**
+ * <p>Creates a Mapstraction overlay map, which can be displayed on top of the currently
+ * selected Mapstraction base map. Unlike base maps, overlay maps remain in view, on top
+ * of the currently selected base map until they are hidden. Overlay maps are not added
+ * to the Mapstraction Map Type control.</p>
+ *
+ * <p>Creating an OverlayMap requires providing a templated map tile server URL. Use the following
+ * template codes to specify where the parameters should be substituted in the templated URL.
+ * <ul>
+ * <li><code>{S}</code> is the (optional) subdomain to be used in the URL.</li>
+ * <li><code>{Z}</code> is the zoom level.</li>
+ * <li><code>{X}</code> is the longitude of the tile.</li>
+ * <li><code>{Y}</code> is the latitude of the tile.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>Some examples of templated tile server URLs are ...	
+ * <ul>
+ * <li>OpenStreetMap - <code>http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png</code></li>
+ * <li>Stamen Toner - <code>http://tile.stamen.com/toner/{z}/{z}/{y}.png</code></li>
+ * <li>MapQuest OSM - <code>http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg</code></li>
+ * <li>MapQuest Open Aerial - <code>http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg</code></li>
+ * </ul>
+ * </p>
+ * 
+ * @name mxn.OverlayMap
+ * @constructor
+ * @param {string} url Template URL of the tiles (required).
+ * @param {string} label The label to be used for the tile layer in the Map Type control (required).
+ * @param {string} attribution The attribution and/or copyright text to use for the tile layer (optional, default=<code>null</code>).
+ * @param {number} opacity Opacity of the tile layer - 0 is transparent, 1 is opaque (optional, default=0.6).
+ * @param {Int} minZoom Minimum (furthest out) zoom level that tiles are available (optional, default=1).
+ * @param {Int} maxZoom Maximum (closest in) zoom level that the tiles are available (optional, default=18).
+ * @param {String|Array} subdomains List of subdomains that the tile server in <code>url</code> refers to. Can be specified as a string, <code>abc</code> or as an array, <code>[1, 2, 3]</code> (optional).
+ * @return {Object} The overlay map object
+ * @exports OverlayMap as mxn.OverlayMap
+ */
+
+var OverlayMap = mxn.OverlayMap = function(url, label, attribution, opacity, minZoom, maxZoom, subdomains) {
+	this.api = null;
+	this.url = url;
+	this.label = label;
+	
+	this.attribution = attribution || null;
+	this.opacty = opacity || 1.0;
+	this.minZoom = minZoom ? Number(minZoom) : 1;
+	this.maxZoom = maxZoom ? Number(maxZoom) : 18;
+	this.subdomains = subdomains || null;
+	
+	this.index = null;
+	this.proprietary_tilemap = null;
+
+	this.invoker = new mxn.Invoker(this, 'OverlayMap', function() {
+		return this.api;
+	});
+	
+	mxn.addEvents(this, [
+		/**
+		 * OverlayMap is shown {overlayMap: OverlayMap}
+		 * @name mxn.OverlayMap#overlayMapShown
+		 * @event
+		 */
+		'overlayMapShown',
+		
+		/**
+		 * OverlayMap is hidden {overlayMap: OverlayMap}
+		 * @name mxn.OverlayMap#overlayMapHidden
+		 * @event
+		 */
+		'overlayMapHidden'
+	]);
+};
+
+mxn.addProxyMethods(OverlayMap, [
+	/**
+	 * Hides a previously added or shown OverlayMap.
+	 * @name mxn.OverlayMap#show
+	 * @function
+	 * @param {string} api The API ID of the proprietary OverlayMap
+	 */
+	'hide',
+
+	/**
+	 * Shows a previously added or hidden OverlayMap.
+	 * @name mxn.OverlayMap#hide
+	 * @function
+	 * @param {string} api The API ID of the proprietary OverlayMap
+	 */
+	'show',
+
+	/**
+	 * Converts the current OverlayMap to a proprietary instance for the API specified by the <code>api</code> argument.
+	 * @name mxn.OverlayMap#toProprietary
+	 * @function
+	 * @param {string} api The API ID of the proprietary OverlayMap
+	 * @returns {Object} A Proprietary Overlayap object
+	 */
+	'toProprietary'
+	]);
+	
 })();
