@@ -1004,7 +1004,8 @@ Mapstraction.prototype.addJSON = function(json) {
 };
 
 /**
- * Adds and shows a Mapstraction overlay map to the map
+ * Adds a Mapstraction overlay map to the map. Once added the overlap map can be made visible
+ * by calling the <code>show()</code> method.
  * @name mxn.Mapstraction#addOverlayMap
  * @function
  * @param {overlayMap} A Mapstraction <code>OverlayMap</code> object.
@@ -1041,8 +1042,6 @@ Mapstraction.prototype.addOverlayMap = function(overlayMap) {
 			'overlayMap': overlayMap
 		});
 		
-		//this.invoker.go('show', arguments);
-		overlayMap.show();
 		return overlayMap;
 	}
 
@@ -1051,7 +1050,7 @@ Mapstraction.prototype.addOverlayMap = function(overlayMap) {
 
 /**
  * Adds and shows a Mapstraction base map to the map, adding it to the Map Type control,
- * if present.
+ * if present. Once added the base map can be made visible by calling the <code>show()</code> method.
  * @name mxn.Mapstraction#addBaseMap
  * @function
  * @param {baseMap} A Mapstraction <code>BaseMap</code> object.
@@ -1066,7 +1065,7 @@ Mapstraction.prototype.addBaseMap = function(baseMap) {
 		if (this.baseMaps.hasOwnProperty(i)) {
 			var base = this.baseMaps[i];
 			if (base.url === baseMap.url && base.label === baseMap.label) {
-				baseMap.show();
+				//baseMap.show();
 				return baseMap;
 			}
 		}
@@ -1088,7 +1087,7 @@ Mapstraction.prototype.addBaseMap = function(baseMap) {
 			'baseMap': baseMap
 		});
 		
-		baseMap.show();
+		//baseMap.show();
 		return baseMap;
 	}
 
