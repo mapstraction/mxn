@@ -9,6 +9,30 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		var baseMaps = [
+			{
+				mxnType: mxn.Mapstraction.ROAD,
+				providerType: google.maps.MapTypeId.ROADMAP,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.SATELLITE,
+				providerType: google.maps.MapTypeId.SATELLITE,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.HYBRID,
+				providerType: google.maps.MapTypeId.HYBRID,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.PHYSICAL,
+				providerType: google.maps.MapTypeId.TERRAIN,
+				nativeType: true
+			}
+		];
+		this.initBaseMaps(baseMaps);
+
 		this.controls = {
 			pan: false,
 			zoom: false,
@@ -16,8 +40,6 @@ Mapstraction: {
 			scale: false,
 			map_type: false
 		};
-		
-		this.map_type = new mxn.MapType();
 		
 		var options = {
 			disableDefaultUI: true,
@@ -118,7 +140,12 @@ Mapstraction: {
 			}
 			
 			if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
-				options.mapTypeId = this.map_type.toProprietary(this.api, properties.map_type);
+				for (i=0; i<this.defaultBaseMaps.length; i++) {
+					if (this.defaultBaseMaps[i].mxnType === properties.map_type) {
+						options.mapTypeId = this.defaultBaseMaps[i].providerType;
+						break;
+					}
+				}
 			}
 			
 			if (properties.hasOwnProperty('dragging')) {
@@ -438,15 +465,45 @@ Mapstraction: {
 		return map.getZoom();
 	},
 
-	setMapType: function(type) {
+	setMapType: function(mapType) {
 		var map = this.maps[this.api];
-		map.setMapTypeId(this.map_type.toProprietary(this.api, type));
+		var i;
+
+		for (i=0; i<this.defaultBaseMaps.length; i++) {
+			if (this.defaultBaseMaps[i].mxnType === mapType) {
+				map.setMapTypeId(this.defaultBaseMaps[i].providerType);
+				return;
+			}
+		}
+
+		for (i=0; i<this.customBaseMaps.length; i++) {
+			if (this.customBaseMaps[i].label === mapType) {
+				map.setMapTypeId(this.customBaseMaps[i].label);
+				return;
+			}
+		}
+
+		throw new Error(this.api + ': unable to find definition for map type ' + mapType);
 	},
 
 	getMapType: function() {
 		var map = this.maps[this.api];
+		var mapType = map.getMapTypeId();
+		var i;
+		
+		for (i=0; i<this.defaultBaseMaps.length; i++) {
+			if (this.defaultBaseMaps[i].providerType === mapType) {
+				return this.defaultBaseMaps[i].mxnType;
+			}
+		}
 
-		return this.map_type.fromProprietary(this.api, map.getMapTypeId());
+		for (i=0; i<this.customBaseMaps.length; i++) {
+			if (this.customBaseMaps[i].label === mapType) {
+				return mapType;
+			}
+		}
+		
+		return mxn.Mapstraction.UKNOWN;
 	},
 
 	getBounds: function () {
@@ -492,7 +549,12 @@ Mapstraction: {
 	},
 	
 	addBaseMap: function(baseMap) {
-		return baseMap.toProprietary(this.api);
+		var map = this.maps[this.api];
+		var tileMap = baseMap.toProprietary(this.api);
+		
+		map.mapTypes.set(baseMap.properties.label, tileMap);
+		
+		return tileMap;
 	},
 	
 	addOverlayMap: function(overlayMap) {
@@ -774,13 +836,13 @@ Polyline: {
 },
 
 BaseMap: {
-	hide: function() {
+	addControl: function() {
 		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': An BaseMap must be added to the map before calling hide()');
+			throw new Error(this.api + ': A BaseMap must be added to the map before calling addControl()');
 		}
 
-		if (this.mapstraction.baseMaps[this.index].visible) {
-			this.mapstraction.baseMaps[this.index].visible = false;
+		if (!this.mapstraction.customBaseMaps[this.index].inControl) {
+			this.mapstraction.customBaseMaps[this.index].inControl = true;
 
 			var map_ids = [
 				google.maps.MapTypeId.ROADMAP,
@@ -789,9 +851,9 @@ BaseMap: {
 				google.maps.MapTypeId.TERRAIN
 			];
 
-			for (var id in this.mapstraction.baseMaps) {
-				if (this.mapstraction.baseMaps[id].visible) {
-					map_ids.push(this.mapstraction.baseMaps[id].label);
+			for (var id in this.mapstraction.customBaseMaps) {
+				if (this.mapstraction.customBaseMaps[id].inControl) {
+					map_ids.push(this.mapstraction.customBaseMaps[id].label);
 				}
 			}
 
@@ -800,61 +862,58 @@ BaseMap: {
 					mapTypeIds: map_ids
 				}
 			});
-			this.map.mapTypes.set(this.label, null);
+			
+			this.baseMapControlAdded.fire({
+				'baseMap': this
+			});
+		}
+	},
 
-			if (this.map.getMapTypeId() === this.label) {
+	removeControl: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An BaseMap must be added to the map before calling removeControl()');
+		}
+
+		if (this.mapstraction.customBaseMaps[this.index].inControl) {
+			this.mapstraction.customBaseMaps[this.index].inControl = false;
+
+			var map_ids = [
+				google.maps.MapTypeId.ROADMAP,
+				google.maps.MapTypeId.HYBRID,
+				google.maps.MapTypeId.SATELLITE,
+				google.maps.MapTypeId.TERRAIN
+			];
+
+			for (var id in this.mapstraction.customBaseMaps) {
+				if (this.mapstraction.customBaseMaps[id].visible) {
+					map_ids.push(this.mapstraction.customBaseMaps[id].label);
+				}
+			}
+
+			this.map.setOptions({
+				mapTypeControlOptions: {
+					mapTypeIds: map_ids
+				}
+			});
+			this.map.mapTypes.set(this.properties.label, null);
+
+			if (this.map.getMapTypeId() === this.properties.label) {
 				this.map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 			}
 		}
 		
-		this.baseMapHidden.fire({
+		this.baseMapControlRemoved.fire({
 			'baseMap': this
 		});
-	},
-	
-	show: function() {
-		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': An BaseMap must be added to the map before calling show()');
-		}
-
-		if (!this.mapstraction.baseMaps[this.index].visible) {
-			this.mapstraction.baseMaps[this.index].visible = true;
-
-			var map_ids = [
-				google.maps.MapTypeId.ROADMAP,
-				google.maps.MapTypeId.HYBRID,
-				google.maps.MapTypeId.SATELLITE,
-				google.maps.MapTypeId.TERRAIN
-			];
-
-			for (var id in this.mapstraction.baseMaps) {
-				if (this.mapstraction.baseMaps[id].visible) {
-					map_ids.push(this.mapstraction.baseMaps[id].label);
-				}
-			}
-
-			this.map.setOptions({
-				mapTypeControlOptions: {
-					mapTypeIds: map_ids
-				}
-			});
-			this.map.mapTypes.set(this.label, this.proprietary_tilemap);
-			this.map.setMapTypeId(this.label);
-
-			this.baseMapShown.fire({
-				'baseMap': this
-			});
-
-		}
 	},
 	
 	toProprietary: function() {
 		var self = this;
 		var tile_options = {
 			getTileUrl: function (coord, zoom) {
-				var url = mxn.util.sanitizeTileURL(self.url);
-				if (typeof self.subdomains !== 'undefined') {
-					url = mxn.util.getSubdomainTileURL(url, self.subdomains);
+				var url = mxn.util.sanitizeTileURL(self.properties.url);
+				if (self.properties.options.subdomains !== null) {
+					url = mxn.util.getSubdomainTileURL(url, self.properties.options.subdomains);
 				}
 				var x = coord.x;
 				var maxX = Math.pow(2, zoom);
@@ -871,12 +930,12 @@ BaseMap: {
 			},
 			tileSize: new google.maps.Size(256, 256),
 			isPng: true,
-			minZoom: self.minZoom,
-			maxZoom: self.maxZoom,
-			opacity: self.opacity,
-			name: self.label
+			minZoom: self.properties.options.minZoom,
+			maxZoom: self.properties.options.maxZoom,
+			opacity: self.properties.options.opacity,
+			name: self.properties.label
 		};
-		
+
 		return new google.maps.ImageMapType(tile_options);
 	}
 },

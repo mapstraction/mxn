@@ -7,12 +7,13 @@
 	<script type="text/javascript" src="../source/mxn.js?(googlev3,[autoload])"></script>
 	<script type="text/javascript">
 
+
 	function defaultBaseMapHandler(name, source, args) {
-		console.log(name + ' for ' + args.baseMap.label);
+		console.log(name + ' for ' + args.baseMap.properties.label);
 	}
 
 	function defaultOverlayHandler(name, source, args) {
-		console.log(name + ' for ' + args.overlayMap.label);
+		console.log(name + ' for ' + args.overlayMap.properties.label);
 	}
 	
 	$(document).ready(function() {
@@ -34,26 +35,32 @@
 		map.overlayMapAdded.addHandler(defaultOverlayHandler);
 		
 		var basemaps = {
-			osm: new mxn.BaseMap('http://{S}.tile.openstreetmap.org/{Z}/{X}/{Y}.png',
-								'OSM',
-								'CC-BY-SA © OpenStreetMap contributors',
-								1.0,
-								1,
-								18,
-								['a', 'b', 'c']),
-			esri: new mxn.BaseMap(
-'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-						'ESRI',
-						'Tiles &copy; Esri',
-						1.0,
-						1,
-						18
-						)
+			osm: new mxn.BaseMap({
+				url: 'http://{S}.tile.openstreetmap.org/{Z}/{X}/{Y}.png',
+				label: 'OSM',
+				options: {
+					attribution: 'CC-BY-SA © OpenStreetMap contributors',
+					opacity: 1.0,
+					minZoom: 1,
+					maxZoom: 18,
+					subdomains: ['a', 'b', 'c']
+				}
+			}),			
+			esri: new mxn.BaseMap({
+				url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+				label: 'ESRI',
+				options: {
+					attribution: 'Tiles &copy; Esri',
+					opacity: 1.0,
+					minZoom: 1,
+					maxZoom: 18
+				}
+			})
 		};
 		
 		for (bm in basemaps) {
-			basemaps[bm].baseMapShown.addHandler(defaultBaseMapHandler);
-			basemaps[bm].baseMapHidden.addHandler(defaultBaseMapHandler);
+			basemaps[bm].baseMapControlAdded.addHandler(defaultBaseMapHandler);
+			basemaps[bm].baseMapControlRemoved.addHandler(defaultBaseMapHandler);
 		}
 		
 		var overlays = {
@@ -85,22 +92,55 @@
 			overlays[om].overlayMapHidden.addHandler(defaultOverlayHandler);
 		}
 
-		$('#add-osm').click(function() {
-			map.addBaseMap(basemaps.osm);
+		$('#map-osm').click(function() {
+			map.addBaseMap(basemaps.osm, {
+				addControl: true,
+				makeCurrent: true
+			});
 		});
-		$('#hide-osm').click(function() {
-			basemaps.osm.hide();
+		$('#add-osm').click(function() {
+			basemaps.osm.addControl();
+		})
+		$('#remove-osm').click(function() {
+			basemaps.osm.removeControl();
 		});
 
-		$('#add-esri').click(function() {
-			map.addBaseMap(basemaps.esri);
+		$('#map-esri').click(function() {
+			map.addBaseMap(basemaps.esri, {
+				addControl: false,
+				makeCurrent: false
+			});
 		});
-		$('#hide-esri').click(function() {
-			basemaps.esri.hide();
+		$('#add-esri').click(function() {
+			basemaps.esri.addControl();
+		})
+		$('#remove-esri').click(function() {
+			basemaps.esri.removeControl();
+		});
+
+		var acetate;
+		$('#map-acetate').click(function() {
+			acetate = map.addBaseMap('mxn.BaseMapProviders.Acetate.terrain', {
+				addControl: false,
+				makeCurrent: true
+			});
+			if (acetate !== null) {
+				acetate.baseMapAdded.addHandler(defaultBaseMapHandler);
+				acetate.baseMapRemoved.addHandler(defaultBaseMapHandler);
+			}
+		})
+		$('#add-acetate').click(function() {
+			acetate.addControl();
+		});
+		$('#remove-acetate').click(function() {
+			acetate.removeControl();
 		});
 
 		$('#add-toner').click(function() {
 			map.addOverlayMap(overlays.toner);
+		});
+		$('#show-toner').click(function() {
+			overlays.toner.show();
 		});
 		$('#hide-toner').click(function() {
 			overlays.toner.hide();
@@ -109,12 +149,18 @@
 		$('#add-watercolor').click(function() {
 			map.addOverlayMap(overlays.watercolor);
 		});
+		$('#show-watercolor').click(function() {
+			overlays.watercolor.show();
+		});
 		$('#hide-watercolor').click(function() {
 			overlays.watercolor.hide();
 		});
 
 		$('#add-weather').click(function() {
 			map.addOverlayMap(overlays.weather);
+		});
+		$('#show-weather').click(function() {
+			overlays.weather.show();
 		});
 		$('#hide-weather').click(function() {
 			overlays.weather.hide();
@@ -134,7 +180,9 @@
 <body>
 	<div id="map"></div>
 	<div id="nav">
-		<strong>Base Maps:</strong> <em>OSM</em> : <a href="#" id="add-osm">Show</a>|<a href="#" id="hide-osm">Hide</a>, <em>Esri</em> <a href="#" id="add-esri">Show</a>|<a href="#" id="hide-esri">Hide</a>, <strong>Overlays:</strong> <em>Toner</em> : <a href="#" id="add-toner">Show</a>|<a href="#" id="hide-toner">Hide</a> <em>Watercolor</em> : <a href="#" id="add-watercolor">Show</a>|<a href="#" id="hide-watercolor">Hide</a> <em>Pressure Contours</em> : <a href="#" id="add-weather">Show</a>|<a href="#" id="hide-weather">Hide</a>
+		<strong>Base Maps:</strong> <em>OSM</em>: <a href="#" id="map-osm">Map</a>|<a href="#" id="add-osm">Add</a>|<a href="#" id="remove-osm">Remove</a>, <em>Esri</em>: <a href="#" id="map-esri"> Map</a>|<a href="#" id="add-esri">Add</a>|<a href="#" id="remove-esri">Remove</a>, <em>Acetate</em>: <a href="#" id="map-acetate">Map</a>|<a href="#" id="add-acetate">Add</a>|<a href="#" id="remove-acetate">Remove</a>
+		<br />
+		<strong>Overlays:</strong> <em>Toner</em> : <a href="#" id="add-toner">Add</a>|<a href="#" id="show-toner">Show</a>|<a href="#" id="hide-toner">Hide</a> <em>Watercolor</em> : <a href="#" id="add-watercolor">Add</a>|<a href="#" id="show-watercolor">Show</a>|<a href="#" id="hide-watercolor">Hide</a> <em>Pressure Contours</em> : <a href="#" id="add-weather">Add</a>|<a href="#" id="show-weather">Show</a>|<a href="#" id="hide-weather">Hide</a>
 	</div>
 </body>
 </html>
