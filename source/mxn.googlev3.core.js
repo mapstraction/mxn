@@ -885,7 +885,7 @@ BaseMap: {
 			];
 
 			for (var id in this.mapstraction.customBaseMaps) {
-				if (this.mapstraction.customBaseMaps[id].visible) {
+				if (this.mapstraction.customBaseMaps[id].inControl) {
 					map_ids.push(this.mapstraction.customBaseMaps[id].label);
 				}
 			}
