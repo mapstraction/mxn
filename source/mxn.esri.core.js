@@ -49,6 +49,11 @@ mxn.register('esri', {
 						map: map,
 						attachTo: "bottom-left"
 					});
+					
+				map.graphics.on("click", function(evt) {
+					event.stopPropagation();
+					evt.graphic.mapstraction_marker.click.fire();
+				});
 
 				me.load.fire();
 				me.loaded[api] = true;				
@@ -60,6 +65,13 @@ mxn.register('esri', {
 			
 			map.on("pan-end", function() {
 				me.endPan.fire();
+			});
+			
+			map.on("click", function(evt) {
+				var pt = esri.geometry.webMercatorToGeographic(evt.mapPoint);
+				me.click.fire({'location': 
+					new  mxn.LatLonPoint(pt.y, pt.x)
+				});
 			});
 		},
 	
