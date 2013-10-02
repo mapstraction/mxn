@@ -183,7 +183,7 @@ Mapstraction: {
 				}
 				
 				if ('map_type' in controls && controls.map_type) {
-					this.controls.map_type = new L.Control.Layers(this.layers, this.features);
+					this.controls.map_type = new L.Control.Layers(this.layers, this.features, , {autoZIndex: false});
 				}
 			}
 
