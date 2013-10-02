@@ -86,30 +86,9 @@ Mapstraction: {
 			
 			if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
 				this.currentMapType = properties.map_type;
-				/*var layer;
-				
-				switch (properties.map_type) {
-					case mxn.Mapstraction.ROAD:
-						layer = this.road_tile;
-						break;
-					case mxn.Mapstraction.SATELLITE:
-						layer = this.satellite_tile;
-						break;
-					case mxn.Mapstraction.HYBRID:
-						layer = this.road_tile;
-						break;
-					case mxn.Mapstraction.PHYSICAL:
-						layer = this.road_tile;
-						break;
-					default:
-						break;
-				}
-				options.layers = layer.tileLayer.toProprietary(this.api);
-				this.currentMapType = properties.map_type;*/
 			}
 			
 			var defaultMap = this.getDefaultBaseMap(this.currentMapType);
-			//var baseMap = this.getCustomBaseMap(mxnType);
 			var baseMap = this.getCustomBaseMap(defaultMap.providerType);
 			
 			options.layers = [baseMap.tileObject];
@@ -188,10 +167,8 @@ Mapstraction: {
 					});
 				}
 			}
-
 		}
 
-		var me = this;
 		var map = new L.Map(element.id, options);
 		
 		for (var control in this.controls) {
@@ -201,10 +178,10 @@ Mapstraction: {
 		}
 		
 		map.addEventListener('moveend', function(){
-			me.endPan.fire();
+			self.endPan.fire();
 		}); 
 		map.on("click", function(e) {
-			me.click.fire({'location': new mxn.LatLonPoint(e.latlng.lat, e.latlng.lng)});
+			self.click.fire({'location': new mxn.LatLonPoint(e.latlng.lat, e.latlng.lng)});
 		});
 		map.on("popupopen", function(e) {
 			if (e.popup._source.mxnMarker) {
@@ -217,10 +194,10 @@ Mapstraction: {
 			}
 		});
 		map.on('load', function(e) {
-			me.load.fire();
+			self.load.fire();
 		});
 		map.on('zoomend', function(e) {
-			me.changeZoom.fire();
+			self.changeZoom.fire();
 		});
 		
 		var layerHandler = function(e) {
@@ -254,39 +231,6 @@ Mapstraction: {
 		map.on('layeradd', layerHandler);
 		
 		this.maps[api] = map;
-
-
-		// CODE HEALTH WARNING
-		// The MapQuest Open Aerial Tiles, via http://oatile1.mqcdn.com, is being obsoleted
-		// on 15/2/13.
-		// MapQuest OSM Tiles (mxn.Mapstraction.ROAD) are via:
-		//		http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg
-		// MapQuest Open Aerial Tiles (mxn.Mapstraction.SATELLITE) are now via:
-		//		http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg
-		//
-		// mxn.Mapstraction.HYBRID and mxn.Mapstraction.PHYSICAL remain unavailable via
-		// Leaflet support
-		//
-		// Also note that the MQ Open Aerial tiles are only available at zoom levels 0-11
-		// outside of the US.
-
-		this.road_tile = {
-			name: 'Roads',
-			attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png">',
-			url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg'
-		};
-		this.satellite_tile = {
-			name: 'Satellite',
-			attribution: 'Portions Courtesy NASA/JPL-Caltech and U.S. Depart. of Agriculture, Farm Service Agency',
-			url: 'http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg'
-		};
-		
-		var subdomains = [1, 2, 3, 4];
-		//this.addTileLayer (this.satellite_tile.url, 1.0, this.satellite_tile.name, this.satellite_tile.attribution, 0, 18, true, subdomains);
-		//this.addTileLayer (this.road_tile.url, 1.0, this.road_tile.name, this.road_tile.attribution, 0, 18, true, subdomains);
-
-		this.currentMapType = mxn.Mapstraction.ROAD;
-
 		this.loaded[api] = true;
 	},
 	
@@ -528,49 +472,6 @@ Mapstraction: {
 		return overlayMap.toProprietary(this.api);
 	},
 
-	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-		var map = this.maps[this.api];
-		var z_index = this.tileLayers.length || 0;
-		var options = {
-			minZoom: min_zoom,
-			maxZoom: max_zoom,
-			name: label,
-			attribution: attribution,
-			opacity: opacity
-		};
-		if (typeof subdomains !== 'undefined') {
-			options.subdomains = subdomains;
-		}
-		var url = mxn.util.sanitizeTileURL(tile_url);
-		
-		this.layers[label] = new L.TileLayer(url, options);
-		map.addLayer(this.layers[label]);
-		this.tileLayers.push([tile_url, this.layers[label], true, z_index]);
-
-		if (this.controls.map_type !== null) {
-			this.controls.map_type.addBaseLayer(this.layers[label], label);
-		}
-
-		return this.layers[label];
-	},
-
-	toggleTileLayer: function(tile_url) {
-		var map = this.maps[this.api];
-		for (var f = 0; f < this.tileLayers.length; f++) {
-			var tileLayer = this.tileLayers[f];
-			if (tileLayer[0] == tile_url) {
-				if (tileLayer[2]) {
-					tileLayer[2] = false;
-					map.removeLayer(tileLayer[1]);
-				}
-				else {
-					tileLayer[2] = true;
-					map.addLayer(tileLayer[1]);
-				}
-			}
-		}
-	},
-
 	getPixelRatio: function() {
 		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
@@ -620,17 +521,17 @@ LatLonPoint: {
 Marker: {
 	
 	toProprietary: function() {
-		var me = this;
+		var self = this;
 		var thisIcon = null;
 		var iconObj = null;
 		
-		if (me.htmlContent) {
+		if (self.htmlContent) {
 			var options = {};
-			options.html = me.htmlContent;
+			options.html = self.htmlContent;
 			options.className =  ''; //to override the default white square class
 			
-			if (me.iconAnchor) {
-				options.iconAnchor = new L.Point(me.iconAnchor[0], me.iconAnchor[1]);
+			if (self.iconAnchor) {
+				options.iconAnchor = new L.Point(self.iconAnchor[0], self.iconAnchor[1]);
 			}
 			iconObj = new L.divIcon(options); //Annoyingly extend doesn't work on divIcon.
 		}
@@ -641,38 +542,38 @@ Marker: {
 			else {
 				thisIcon = L.Icon;
 			}
-			if (me.iconUrl) {
+			if (self.iconUrl) {
 				thisIcon = thisIcon.extend({
 					options: {
-						iconUrl: me.iconUrl
+						iconUrl: self.iconUrl
 					}
 				});
 			}
-			if (me.iconSize) {
+			if (self.iconSize) {
 				thisIcon = thisIcon.extend({
 					options: {
-						iconSize: new L.Point(me.iconSize[0], me.iconSize[1])
+						iconSize: new L.Point(self.iconSize[0], self.iconSize[1])
 					}
 				});
 			}
-			if (me.iconAnchor) {
+			if (self.iconAnchor) {
 				thisIcon = thisIcon.extend({
 					options: {
-						iconAnchor: new L.Point(me.iconAnchor[0], me.iconAnchor[1])
+						iconAnchor: new L.Point(self.iconAnchor[0], self.iconAnchor[1])
 					}
 				});
 			}
-			if (me.iconShadowUrl) {
+			if (self.iconShadowUrl) {
 				thisIcon = thisIcon.extend({
 					options: {
-						shadowUrl: me.iconShadowUrl
+						shadowUrl: self.iconShadowUrl
 					}
 				});
 			}
-			if (me.iconShadowSize) {
+			if (self.iconShadowSize) {
 				thisIcon = thisIcon.extend({
 					options: {
-						shadowSize: new L.Point(me.iconShadowSize[0], me.iconShadowSize[1])
+						shadowSize: new L.Point(self.iconShadowSize[0], self.iconShadowSize[1])
 					}
 				});
 			}
@@ -683,11 +584,11 @@ Marker: {
 			this.location.toProprietary(this.api),
 			{ icon: iconObj }
 		);
-		(function(me, marker) {
+		(function(self, marker) {
 			marker.on("click", function (e) {
-				me.click.fire();
+				self.click.fire();
 			});
-		})(me, marker);
+		})(self, marker);
 		return marker;
 	},
 
@@ -878,4 +779,3 @@ OverlayMap: {
 }
 
 });
-
