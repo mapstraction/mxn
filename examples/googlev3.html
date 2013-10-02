@@ -30,7 +30,7 @@
 			},
 			'center': new mxn.LatLonPoint(51.50730, -0.12763),
 			'zoom': 12,
-			'map_type': mxn.Mapstraction.NORMAL
+			'map_type': mxn.Mapstraction.ROAD
 		};
 
 		map = new mxn.Mapstraction('map', 'googlev3', properties);
@@ -247,35 +247,39 @@
 			map.addControls({});
 			map.addControls({scale: true});
 		});
+
 		$('#osm-add').click(function() {
 			var opacity = 1;
 			var label = "OSM";
 			var attribution = 'CC-BY-SA © OpenStreetMap contributors';
 			var min_zoom = 1;
 			var max_zoom = 18;
-			var map_type = true;
-			
-			map.addTileLayer(osm_url, opacity, label, attribution, min_zoom, max_zoom, map_type, ['a', 'b', 'c']);
+			var tile = new mxn.TileLayer(osm_url, opacity, label, attribution, min_zoom, max_zoom, ['a', 'b', 'c']);
+
+			map.addTileLayer(tile, true);
 		});
+
 		$('#toner-add').click(function() {
 			var opacity = 1;
 			var label = "Toner";
 			var attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.';
 			var min_zoom = 1;
 			var max_zoom = 18;
-			var map_type = true;
-			
-			map.addTileLayer(toner_url, opacity, label, attribution, min_zoom, max_zoom, map_type);
+			var tile = new mxn.TileLayer(toner_url, opacity, label, attribution, min_zoom, max_zoom);
+
+			map.addTileLayer(tile, true);
 		});
+
 		$('#watercolor-add').click(function() {
 			var opacity = 1;
 			var label = "Watercolor";
 			var attribution = 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.';
 			var min_zoom = 1;
 			var max_zoom = 18;
-			var map_type = true;
-			
-			map.addTileLayer(watercolor_url, opacity, label, attribution, min_zoom, max_zoom, map_type);
+			var track = true;
+			var tile = new mxn.TileLayer(watercolor_url, opacity, label, attribution, min_zoom, max_zoom);
+
+			map.addTileLayer(tile, true);
 		});
 	});
 	</script>
