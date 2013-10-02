@@ -9,29 +9,48 @@ mxn.register('openlayersv3', {
 				throw new Error(api + ' map script not imported');
 			}
 
+			var baseMaps = [
+				{
+					mxnType: mxn.Mapstraction.ROAD,
+					providerType: 'mxn.BaseMapProviders.MapQuestOpen',
+					nativeType: false
+				},
+				{
+					mxnType: mxn.Mapstraction.SATELLITE,
+					providerType: 'mxn.BaseMapProviders.Esri.WorldImagery',
+					nativeType: false
+				},
+				{
+					mxnType: mxn.Mapstraction.HYBRID,
+					providerType: 'mxn.BaseMapProviders.Esri.WorldTopoMap',
+					nativeType: false
+				},
+				{
+					mxnType: mxn.Mapstraction.PHYSICAL,
+					providerType: 'mxn.BaseMapProviders.Esri.WorldPhysical',
+					nativeType: false
+				}
+			];
+			
+			this.initBaseMaps(baseMaps);
+			this.currentMapType = mxn.Mapstraction.ROAD;
+			var defaultMap = this.getDefaultBaseMap(this.currentMapType);
+			var baseMap = this.getCustomBaseMap(defaultMap.providerType);
+			
 			this.controls = {
 				pan: null,
 				zoom: null,
 				overview: null,
 				scale: null,
 				map_type: null
-			};
+			};			
 			
-			var osm = new ol.layer.TileLayer({
-				  source: new ol.source.OSM()
-			});
-				
-			var aerial = new ol.layer.TileLayer({
-			  source: new ol.source.MapQuestOpenAerial(),
-			  visible: false
-			});
-				
 			var map = new ol.Map({
 			  view: new ol.View2D({
 				center: [0, 0],
 				zoom: 3
 			  }),
-			  layers: [osm, aerial],
+			  layers: [baseMap.tileObject],
 			  target: element,
 			  renderer: ol.RendererHint.CANVAS //needed as webGL doesn't support vector layers yet
 			});
@@ -342,22 +361,46 @@ mxn.register('openlayersv3', {
 			return zoom;
 		},
 
-		setMapType: function(type) {
-			var map = this.maps[this.api];
+		setMapType: function(mapType) {
+			var i;
+			var name = null;
 			
-			switch (type) {
-				case mxn.Mapstraction.ROAD:
-					map.getLayers().getAt(1).setVisible(false);
-					map.getLayers().getAt(0).setVisible(true);					
-					
+			for (i=0; i<this.defaultBaseMaps.length; i++) {
+				if (this.defaultBaseMaps[i].mxnType === mapType) {
+					if (this.currentMapType === this.defaultBaseMaps[i].mxnType) {
+						return;
+					}
+					name = this.defaultBaseMaps[i].providerType;
 					break;
-				case mxn.Mapstraction.SATELLITE:
-					map.getLayers().getAt(1).setVisible(true);
-					map.getLayers().getAt(0).setVisible(false);
-					
-					break;
-				default:
-					options.mapTypeId = Microsoft.Maps.MapTypeId.road;
+				}
+			}
+			
+			if (name === null) {
+				name = mapType;
+			}
+
+			var layers = [];
+			var map = this.maps[this.api];
+
+			for (i=0; i<this.customBaseMaps.length; i++) {
+				if (this.customBaseMaps[i].name === name) {
+					map.addLayer(this.customBaseMaps[i].tileObject, true);
+				}
+				
+				else {
+					var ly = map.getLayers().getArray();
+					var cbm = this.customBaseMaps[i].tileObject;
+					for (j=0; j<ly.length; j++) {
+						if (ly[j] === cbm) {
+							layers.push(cbm);
+							break;
+						}
+					}
+				}
+			}
+
+			for (i=0; i<layers.length; i++) {
+				map.removeLayer(layers[i]);
 			}
 		},
 
@@ -436,7 +479,15 @@ mxn.register('openlayersv3', {
 			map.addLayer(kml);
 		},
 
-		addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
+		addBaseMap: function(baseMap) {
+			return baseMap.toProprietary(this.api);
+		},
+		
+		addOverlayMap: function(overlayMap) {
+			return overlayMap.toProprietary(this.api);
+		},
+		
+		addTile: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
 			var map = this.maps[this.api];
 			if (typeof subdomains !== 'undefined') {
 				//Use the first subdomain only for now
@@ -445,7 +496,7 @@ mxn.register('openlayersv3', {
 
 			var new_tile_url = tile_url.replace(/\{Z\}/gi,'{z}').replace(/\{X\}/gi,'{x}').replace(/\{Y\}/gi,'{y}');
 			
-			var overlay = new ol.layer.TileLayer({
+			var overlay = new ol.layer.Tile({
 			  source: new ol.source.XYZ({ //this source is not currently exported by openlayers3, so we have to use ol-simple.js until it is
 				attributions: [new ol.Attribution(attribution)],
 				url: new_tile_url,
@@ -457,15 +508,15 @@ mxn.register('openlayersv3', {
 			});
 			
 			map.addLayer(overlay);
-			this.tileLayers.push( [tile_url, overlay, true] );			
+			this.Tiles.push( [tile_url, overlay, true] );			
 		},
 
-		toggleTileLayer: function(tile_url) {
+		toggleTile: function(tile_url) {
 			var map = this.maps[this.api];
-			for (var f=this.tileLayers.length-1; f>=0; f--) {
-				if(this.tileLayers[f][0] == tile_url) {
-					this.tileLayers[f][2] = !this.tileLayers[f][2];
-					this.tileLayers[f][1].setVisibility(this.tileLayers[f][2]);
+			for (var f=this.Tiles.length-1; f>=0; f--) {
+				if(this.Tiles[f][0] == tile_url) {
+					this.Tiles[f][2] = !this.Tiles[f][2];
+					this.Tiles[f][1].setVisibility(this.Tiles[f][2]);
 				}
 			}	   
 		},
@@ -658,6 +709,179 @@ mxn.register('openlayersv3', {
 			//this.proprietary_polyline.style.display = 'none';
 			//this.proprietary_polyline.layer.redraw();		
 		}
+	},
+
+BaseMap: {
+	addControl: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': A BaseMap must be added to the map before calling addControl()');
+		}
+
+		if (!this.mapstraction.customBaseMaps[this.index].inControl) {
+			this.mapstraction.customBaseMaps[this.index].inControl = true;
+			this.mapstraction.layers[this.properties.options.label] = this.proprietary_tilemap;
+			if (this.mapstraction.controls.map_type !== null) {
+				this.mapstraction.controls.map_type.addBaseLayer(this.proprietary_tilemap, this.properties.options.label);
+			}
+		}
+	},
+	
+	removeControl: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': A BaseMap must be added to the map before calling removeControl()');
+		}
+
+		if (this.mapstraction.customBaseMaps[this.index].inControl) {
+			this.mapstraction.customBaseMaps[this.index].inControl = false;
+			delete this.mapstraction.layers[this.properties.options.label];
+			if (this.mapstraction.controls.map_type !== null) {
+				this.mapstraction.controls.map_type.removeLayer(this.proprietary_tilemap);
+			}
+		}
+	},
+	
+	toProprietary: function() {
+		var urls = null;
+		var url = mxn.util.sanitizeTileURL(this.properties.url);
+		var subdomains = this.properties.options.subdomains;
+		var source;
+		
+		if (this.properties.options.subdomains !== null) {
+			var pos = url.search('{s}');
+			if (pos !== -1) {
+				var i = 0;
+				var domain;
+				urls = [];
+				
+				for(var i = 0; i < subdomains.length; i++) {
+					if (typeof subdomains === 'string') {
+						domain = subdomains.substring(i, i + 1);
+					}
+					
+					else {
+						domain = subdomains[i];
+					}
+					
+					if (typeof domain !== 'undefined') {
+						urls.push(url.replace(/\{s\}/g, domain));
+					}
+				}
+			}
+		}
+	
+		if (urls != null)
+		{
+			source = new ol.source.XYZ({
+				attributions: [new ol.Attribution({html: this.properties.options.attribution})],
+				urls: urls
+			})
+		} else {
+			source = new ol.source.XYZ({
+				attributions: [new ol.Attribution({html: this.properties.options.attribution})],
+				url: url
+			})
+		}
+
+		var options = {
+			//minZoom: this.properties.options.minZoom,
+			//maxZoom: this.properties.options.maxZoom,
+			//name: this.properties.options.label,
+			opacity: this.properties.opacity,
+			//zIndex: this.index
+			projection: 'EPSG:4326',
+			source: source
+		};
+
+		return new ol.layer.Tile(options);
 	}
+},
+
+	
+	OverlayMap: {
+	hide: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An OverlayMap must be added to the map before calling hide()');
+		}
+
+		if (this.mapstraction.overlayMaps[this.index].visible) {
+			this.mapstraction.overlayMaps[this.index].visible = false;
+			if (this.map.hasLayer(this.proprietary_tilemap)) {
+				this.map.removeLayer(this.proprietary_tilemap);
+			}
+		}
+	},
+	
+	show: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An OverlayMap must be added to the map before calling show()');
+		}
+		
+		if (!this.mapstraction.overlayMaps[this.index].visible) {
+			this.mapstraction.overlayMaps[this.index].visible = true;
+
+			if (this.map.hasLayer(this.proprietary_tilemap)) {
+				this.proprietary_tilemap.bringToFront();
+			}
+			else {
+				this.map.addLayer(this.proprietary_tilemap, false);
+			}
+		}
+	},
+	
+	toProprietary: function() {
+		var urls = null;
+		var url = mxn.util.sanitizeTileURL(this.properties.url);
+		var subdomains = this.properties.options.subdomains;
+		var source;
+		
+		if (this.properties.options.subdomains !== null) {
+			var pos = url.search('{s}');
+			if (pos !== -1) {
+				var i = 0;
+				var domain;
+				urls = [];
+				
+				for(var i = 0; i < subdomains.length; i++) {
+					if (typeof subdomains === 'string') {
+						domain = subdomains.substring(i, i + 1);
+					}
+					
+					else {
+						domain = subdomains[i];
+					}
+					
+					if (typeof domain !== 'undefined') {
+						urls.push(url.replace(/\{s\}/g, domain));
+					}
+				}
+			}
+		}
+	
+		if (urls != null)
+		{
+			source = new ol.source.XYZ({
+				attributions: [new ol.Attribution({html: this.properties.options.attribution})],
+				urls: urls
+			})
+		} else {
+			source = new ol.source.XYZ({
+				attributions: [new ol.Attribution({html: this.properties.options.attribution})],
+				url: url
+			})
+		}
+
+		var options = {
+			//minZoom: this.properties.options.minZoom,
+			//maxZoom: this.properties.options.maxZoom,
+			//name: this.properties.options.label,
+			opacity: this.properties.opacity,
+			//zIndex: this.index
+			projection: 'EPSG:4326',
+			source: source
+		};
+
+		return new ol.layer.Tile(options);
+	}
+}
 
 });
