@@ -711,11 +711,42 @@ mxn.Providers = {
 			{
 				'src': 'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css',
 				'conditional': 'if lte IE 8'
+			},
+			{
+				'src': 'http://code.geotastic.org/mxn/plugins/leaflet/Leaflet.Pancontrol/src/L.Control.Pan.css',
+				'conditional': null
+			},
+			{
+				'src': 'http://code.geotastic.org/mxn/plugins/leaflet/Leaflet.Pancontrol/src/L.Control.Pan.ie.css',
+				'conditional': 'if lte IE 9'
+			},
+			{
+				'src': 'http://code.geotastic.org/mxn/plugins/leaflet/Leaflet.zoomslider/src/L.Control.Zoomslider.css',
+				'conditional': null
+			},
+			{
+				'src': 'http://code.geotastic.org/mxn/plugins/leaflet/Leaflet.zoomslider/src/L.Control.Zoomslider.ie.css',
+				'conditional': 'if lte IE 8'
 			}
 		],
 		'script': [
 			{
 				'src': 'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js',
+				'auth': false,
+				'authType': null
+			},
+			{
+				'src': 'http://code.geotastic.org/mxn/plugins/leaflet/Leaflet-MiniMap/src/Control.MiniMap.js',
+				'auth': false,
+				'authType': null
+			},
+			{
+				'src': 'http://code.geotastic.org/mxn/plugins/leaflet/Leaflet.Pancontrol/src/L.Control.Pan.js',
+				'auth': false,
+				'authType': null
+			},
+			{
+				'src': 'http://code.geotastic.org/mxn/plugins/leaflet/Leaflet.zoomslider/src/L.Control.Zoomslider.js',
 				'auth': false,
 				'authType': null
 			}
@@ -988,6 +1019,7 @@ mxn.Providers = {
 
 	var tags = document.getElementsByTagName('script');
 	var input_providers = null;
+	var support_modules = ['basemap'];
 	var input_modules = 'core';
 	var script_base = null;
 	var auto_meta = [];
@@ -1024,6 +1056,11 @@ mxn.Providers = {
 	var num_providers = input_providers.length;
 	var src = '';
 
+	for (var s=0; s<support_modules.length; s++) {
+		src = script_base + 'mxn.' + support_modules[s] + '.js';
+		core_scripts.push(makeScriptTag(src));
+	}
+	
 	for (var m=0; m<num_modules; m++) {
 		var module = input_modules[m];
 

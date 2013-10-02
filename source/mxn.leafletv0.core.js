@@ -7,10 +7,197 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		var baseMaps = [
+			{
+				mxnType: mxn.Mapstraction.ROAD,
+				providerType: 'mxn.BaseMapProviders.MapQuestOpen',
+				nativeType: false
+			},
+			{
+				mxnType: mxn.Mapstraction.SATELLITE,
+				providerType: 'mxn.BaseMapProviders.Esri.WorldImagery',
+				nativeType: false
+			},
+			{
+				mxnType: mxn.Mapstraction.HYBRID,
+				providerType: 'mxn.BaseMapProviders.Esri.WorldTopoMap',
+				nativeType: false
+			},
+			{
+				mxnType: mxn.Mapstraction.PHYSICAL,
+				providerType: 'mxn.BaseMapProviders.Esri.WorldPhysical',
+				nativeType: false
+			}
+		];
+
+		var self = this;
+		this.initBaseMaps(baseMaps);
+		this.layers = {};
+		this.features = [];
+		this.currentMapType = mxn.Mapstraction.ROAD;
+
+		for (var i=0; i<this.customBaseMaps.length; i++) {
+			this.layers[this.customBaseMaps[i].label] = this.customBaseMaps[i].tileObject;
+		}
+		
+		this.controls =  {
+			pan: null,
+			zoom: null,
+			overview: null,
+			scale: null,
+			map_type: null
+		};
+
+		// Code Health Warning
+		// The ZoomSlide and Pan controls add themselves into any new instance of L.Map
+		// by default. Clever but stupidly frustrating. So we need to disable them by
+		// default and only add them in when requested.
+		// See https://github.com/kartena/Leaflet.Pancontrol/issues/11
+		
+		var options = {
+			zoomControl: false,			// 'pure' Leaflet
+			zoomsliderControl: false,	// added in as default by Leaflet.zoomslider
+			panControl: false			// added in as default by Leaflet.Pancontrol
+		};
+
+		// Code Health Warning
+		// Note that Leaflet (plus the loaded plugins) only allow the zoom, zoom slide
+		// and pan controls to be added via options; you need to have the instance of
+		// the control stored away if you want to subsequently remove it. So we're not
+		// using the options method of adding these controls, but we create them, store
+		// them and then add them after we've instantiated L.Map.
+
+		if (typeof properties !== 'undefined' && properties !== null) {
+			if (properties.hasOwnProperty('center') && null !== properties.center) {
+				var point;
+				if (Object.prototype.toString.call(properties.center) === '[object Array]') {
+					point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
+				}
+				
+				else {
+					point = properties.center;
+				}
+				options.center = point.toProprietary(this.api);
+			}
+
+			if (properties.hasOwnProperty('zoom')) {
+				options.zoom = properties.zoom;
+			}
+			
+			if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
+				this.currentMapType = properties.map_type;
+				/*var layer;
+				
+				switch (properties.map_type) {
+					case mxn.Mapstraction.ROAD:
+						layer = this.road_tile;
+						break;
+					case mxn.Mapstraction.SATELLITE:
+						layer = this.satellite_tile;
+						break;
+					case mxn.Mapstraction.HYBRID:
+						layer = this.road_tile;
+						break;
+					case mxn.Mapstraction.PHYSICAL:
+						layer = this.road_tile;
+						break;
+					default:
+						break;
+				}
+				options.layers = layer.tileLayer.toProprietary(this.api);
+				this.currentMapType = properties.map_type;*/
+			}
+			
+			var defaultMap = this.getDefaultBaseMap(this.currentMapType);
+			//var baseMap = this.getCustomBaseMap(mxnType);
+			var baseMap = this.getCustomBaseMap(defaultMap.providerType);
+			
+			options.layers = [baseMap.tileObject];
+			
+			if (properties.hasOwnProperty('dragging')) {
+				options.dragging = properties.dragging;
+			}
+			
+			if (properties.hasOwnProperty('scroll_wheel')) {
+				options.scrollWheelZoom = properties.scroll_wheel;
+			}
+			
+			if (properties.hasOwnProperty('double_click')) {
+				options.doubleClickZoom = properties.double_click;
+			}
+
+			if (properties.hasOwnProperty('controls') && null !== properties.controls) {
+				var controls = properties.controls;
+				
+				if ('pan' in controls && controls.pan && L.Control.Pan) {
+					this.controls.pan = new L.Control.Pan();
+				}
+				
+				if ('zoom' in controls) {
+					// For a 'small' zoom control, use Leaflet's built-in zoom control.
+					// For a 'large' zoom control, use the ZoomSlide plugin control.
+		
+					if (controls.zoom === 'small') {
+						this.controls.zoom = new L.Control.Zoom();
+					}
+					
+					else if (controls.zoom === 'large') {
+						this.controls.zoom = L.Control.Zoomslider ? new L.Control.Zoomslider() : new L.Control.Zoom();
+					}
+				}
+				
+				if ('overview' in controls && controls.overview && L.Control.MiniMap) {
+					// Code Health Warning
+					//
+					// Hack to fix L.Control.MiniMap when working with L.Control.Pan
+					// and L.Control.Zoomslider
+					// See https://github.com/Norkart/Leaflet-MiniMap/issues/11
+					
+					L.Map.mergeOptions({
+						panControl: false,
+						zoomsliderControl: false
+					});
+					
+					if (typeof controls.overview !== 'number') {
+						controls.overview = 5;
+					}
+					
+					var minimap_opts = {
+						minZoom: 0,
+						maxZoom: baseMap.baseMap.properties.options.maxZoom - controls.overview
+					};
+
+					if (baseMap.baseMap.properties.options.subdomains) {
+						minimap_opts.subdomains = baseMap.baseMap.properties.options.subdomains;
+					}
+
+					this.minimap_layer = new L.TileLayer(baseMap.baseMap.properties.url, minimap_opts);
+					this.controls.overview = new L.Control.MiniMap(this.minimap_layer, {
+						toggleDisplay: true,
+						zoomLevelOffset: -this.controls.overview
+					});
+				}
+				
+				if ('scale' in controls && controls.scale) {
+					this.controls.scale = new L.Control.Scale();
+				}
+				
+				if ('map_type' in controls && controls.map_type) {
+					this.controls.map_type = new L.Control.Layers(this.layers, this.features);
+				}
+			}
+
+		}
+
 		var me = this;
-		var map = new L.Map(element.id, {
-			zoomControl: false
-		});
+		var map = new L.Map(element.id, options);
+		
+		for (var control in this.controls) {
+			if (this.controls[control] !== null) {
+				map.addControl(this.controls[control]);
+			}
+		}
+		
 		map.addEventListener('moveend', function(){
 			me.endPan.fire();
 		}); 
@@ -33,17 +220,39 @@ Mapstraction: {
 		map.on('zoomend', function(e) {
 			me.changeZoom.fire();
 		});
-		this.layers = {};
-		this.features = [];
+		
+		var layerHandler = function(e) {
+			var prevMapType = self.currentMapType;
+
+			var layerName = null;
+			for (var c=0; c<self.customBaseMaps.length; c++) {
+				if (e.type === 'baselayerchange' && self.customBaseMaps[c].label === e.name) {
+					layerName = self.customBaseMaps[c].name;
+					break;
+				}
+				
+				else {
+					if (e.type === 'layeradd' && self.customBaseMaps[c].tileObject == e.layer) {
+						layerName = self.customBaseMaps[c].name;
+						break;
+					}
+				}
+			}
+			
+			for (var d=0; d<self.defaultBaseMaps.length; d++) {
+				if (self.defaultBaseMaps[d].providerType === layerName) {
+					layerName = self.defaultBaseMaps[d].mxnType;
+				}
+			}
+			
+			self.currentMapType = layerName;
+		};
+		
+		map.on('baselayerchange', layerHandler);
+		map.on('layeradd', layerHandler);
+		
 		this.maps[api] = map;
 
-		this.controls =  {
-			pan: null,
-			zoom: null,
-			overview: null,
-			scale: null,
-			map_type: null
-		};
 
 		// CODE HEALTH WARNING
 		// The MapQuest Open Aerial Tiles, via http://oatile1.mqcdn.com, is being obsoleted
@@ -71,8 +280,8 @@ Mapstraction: {
 		};
 		
 		var subdomains = [1, 2, 3, 4];
-		this.addTileLayer (this.satellite_tile.url, 1.0, this.satellite_tile.name, this.satellite_tile.attribution, 0, 18, true, subdomains);
-		this.addTileLayer (this.road_tile.url, 1.0, this.road_tile.name, this.road_tile.attribution, 0, 18, true, subdomains);
+		//this.addTileLayer (this.satellite_tile.url, 1.0, this.satellite_tile.name, this.satellite_tile.attribution, 0, 18, true, subdomains);
+		//this.addTileLayer (this.road_tile.url, 1.0, this.road_tile.name, this.road_tile.attribution, 0, 18, true, subdomains);
 
 		this.currentMapType = mxn.Mapstraction.ROAD;
 
@@ -239,28 +448,39 @@ Mapstraction: {
 		return map.getBoundsZoom(bounds);
 	},
 
-	setMapType: function(type) {
-		switch(type) {
-			case mxn.Mapstraction.ROAD:
-				this.layers[this.road_tile.name].bringToFront();
-				this.currentMapType = mxn.Mapstraction.ROAD;
+	setMapType: function(mapType) {
+		var i;
+		var name = null;
+		
+		for (i=0; i<this.defaultBaseMaps.length; i++) {
+			if (this.defaultBaseMaps[i].mxnType === mapType) {
+				if (this.currentMapType === this.defaultBaseMaps[i].mxnType) {
+					return;
+				}
+				name = this.defaultBaseMaps[i].providerType;
 				break;
+			}
+		}
+		
+		if (name === null) {
+			name = mapType;
+		}
 
-			case mxn.Mapstraction.SATELLITE:
-				this.layers[this.satellite_tile.name].bringToFront();
-				this.currentMapType = mxn.Mapstraction.SATELLITE;
-				break;
+		var layers = [];
+		var map = this.maps[this.api];
 
-			case mxn.Mapstraction.HYBRID:
-				break;
+		for (i=0; i<this.customBaseMaps.length; i++) {
+			if (this.customBaseMaps[i].name === name) {
+				map.addLayer(this.customBaseMaps[i].tileObject, true);
+			}
 			
-			case mxn.Mapstraction.PHYSICAL:
-				break;
-				
-			default:
-				this.layers[this.road_tile.name].bringToFront();
-				this.currentMapType = mxn.Mapstraction.ROAD;
-				break;
+			else if (map.hasLayer(this.customBaseMaps[i].tileObject)) {
+				layers.push(this.customBaseMaps[i].tileObject);
+			}
+		}
+
+		for (i=0; i<layers.length; i++) {
+			map.removeLayer(layers[i]);
 		}
 	},
 
@@ -296,6 +516,14 @@ Mapstraction: {
 	
 	addOverlay: function(url, autoCenterAndZoom) {
 		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
+	},
+
+	addBaseMap: function(baseMap) {
+		return baseMap.toProprietary(this.api);
+	},
+	
+	addOverlayMap: function(overlayMap) {
+		return overlayMap.toProprietary(this.api);
 	},
 
 	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
@@ -549,6 +777,101 @@ Polyline: {
 		} else {
 			return true;
 		}
+	}
+},
+
+BaseMap: {
+	addControl: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': A BaseMap must be added to the map before calling addControl()');
+		}
+
+		if (!this.mapstraction.customBaseMaps[this.index].inControl) {
+			this.mapstraction.customBaseMaps[this.index].inControl = true;
+			this.mapstraction.layers[this.properties.options.label] = this.proprietary_tilemap;
+			if (this.mapstraction.controls.map_type !== null) {
+				this.mapstraction.controls.map_type.addBaseLayer(this.proprietary_tilemap, this.properties.options.label);
+			}
+		}
+	},
+	
+	removeControl: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': A BaseMap must be added to the map before calling removeControl()');
+		}
+
+		if (this.mapstraction.customBaseMaps[this.index].inControl) {
+			this.mapstraction.customBaseMaps[this.index].inControl = false;
+			delete this.mapstraction.layers[this.properties.options.label];
+			if (this.mapstraction.controls.map_type !== null) {
+				this.mapstraction.controls.map_type.removeLayer(this.proprietary_tilemap);
+			}
+		}
+	},
+	
+	toProprietary: function() {
+		var options = {
+			minZoom: this.properties.options.minZoom,
+			maxZoom: this.properties.options.maxZoom,
+			name: this.properties.options.label,
+			attribution: this.properties.options.attribution,
+			opacity: this.properties.opacity
+		};
+		
+		if (this.properties.options.subdomains !== null) {
+			options.subdomains = this.properties.options.subdomains;
+		}
+
+		return new L.TileLayer(mxn.util.sanitizeTileURL(this.properties.url), options);
+	}
+},
+
+OverlayMap: {
+	hide: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An OverlayMap must be added to the map before calling hide()');
+		}
+
+		if (this.mapstraction.overlayMaps[this.index].visible) {
+			this.mapstraction.overlayMaps[this.index].visible = false;
+			if (this.map.hasLayer(this.proprietary_tilemap)) {
+				this.map.removeLayer(this.proprietary_tilemap);
+			}
+		}
+	},
+	
+	show: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An OverlayMap must be added to the map before calling show()');
+		}
+		
+		if (!this.mapstraction.overlayMaps[this.index].visible) {
+			this.mapstraction.overlayMaps[this.index].visible = true;
+
+			if (this.map.hasLayer(this.proprietary_tilemap)) {
+				this.proprietary_tilemap.bringToFront();
+			}
+			else {
+				this.map.addLayer(this.proprietary_tilemap, false);
+			}
+		}
+	},
+	
+	toProprietary: function() {
+		var options = {
+			minZoom: this.properties.options.minZoom,
+			maxZoom: this.properties.options.maxZoom,
+			name: this.properties.options.label,
+			attribution: this.properties.options.attribution,
+			opacity: this.properties.opacity,
+			zIndex: this.index
+		};
+		
+		if (this.properties.options.subdomains !== null) {
+			options.subdomains = this.properties.options.subdomains;
+		}
+
+		return new L.TileLayer(mxn.util.sanitizeTileURL(this.properties.url), options);
 	}
 }
 

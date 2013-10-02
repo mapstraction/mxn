@@ -425,7 +425,6 @@ Mapstraction: {
 	},
 
 	removePolyline: function(polyline) {
-		var map = this.maps[this.api];
 		polyline.proprietary_polyline.setMap(null);
 	},
 	   
@@ -463,6 +462,8 @@ Mapstraction: {
 		var gLatLngBounds = new google.maps.LatLngBounds(sw, ne);
 		map.fitBounds(gLatLngBounds);
 		return map.getZoom();
+		
+		// TODO - see http://stackoverflow.com/questions/6048975/google-maps-v3-how-to-calculate-the-zoom-level-for-a-given-bounds
 	},
 
 	setMapType: function(mapType) {
@@ -477,7 +478,7 @@ Mapstraction: {
 		}
 
 		for (i=0; i<this.customBaseMaps.length; i++) {
-			if (this.customBaseMaps[i].label === mapType) {
+			if (this.customBaseMaps[i].name === mapType) {
 				map.setMapTypeId(this.customBaseMaps[i].label);
 				return;
 			}
@@ -499,7 +500,7 @@ Mapstraction: {
 
 		for (i=0; i<this.customBaseMaps.length; i++) {
 			if (this.customBaseMaps[i].label === mapType) {
-				return mapType;
+				return this.customBaseMaps[i].name;
 			}
 		}
 		
@@ -552,7 +553,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var tileMap = baseMap.toProprietary(this.api);
 		
-		map.mapTypes.set(baseMap.properties.label, tileMap);
+		map.mapTypes.set(baseMap.properties.options.label, tileMap);
 		
 		return tileMap;
 	},
@@ -895,9 +896,8 @@ BaseMap: {
 					mapTypeIds: map_ids
 				}
 			});
-			this.map.mapTypes.set(this.properties.label, null);
 
-			if (this.map.getMapTypeId() === this.properties.label) {
+			if (this.map.getMapTypeId() === this.properties.options.label) {
 				this.map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 			}
 		}
@@ -933,7 +933,8 @@ BaseMap: {
 			minZoom: self.properties.options.minZoom,
 			maxZoom: self.properties.options.maxZoom,
 			opacity: self.properties.options.opacity,
-			name: self.properties.label
+			name: self.properties.options.label,
+			alt: self.properties.options.alt
 		};
 
 		return new google.maps.ImageMapType(tile_options);

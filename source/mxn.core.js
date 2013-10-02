@@ -451,12 +451,21 @@ mxn.addProxyMethods(Mapstraction, [
  * @param {Object[]} baseMaps Array of object literals that define the default base map types.
  */
 Mapstraction.prototype.initBaseMaps = function(baseMaps) {
-	for (var i=0; i<baseMaps.length; i++) {
+	var i;
+	
+	for (i=0; i<baseMaps.length; i++) {
 		this.defaultBaseMaps.push(baseMaps[i]);
-		
-		/*if (!baseMaps[i].nativeType) {
-			// TODO -- add canned base map type here
-		}*/
+	}
+
+	var options = {
+		addControl: true,
+		makeCurrent: false
+	};
+	
+	for (i=0; i<this.defaultBaseMaps.length; i++) {
+		if (!this.defaultBaseMaps[i].nativeType) {
+			var baseMap = this.addBaseMap(this.defaultBaseMaps[i].providerType);
+		}
 	}
 };
 
@@ -1056,24 +1065,27 @@ Mapstraction.prototype.addOverlayMap = function(overlayMap) {
 	for (var i in this.overlayMaps) {
 		if (this.overlayMaps.hasOwnProperty(i)) {
 			var overlay = this.overlayMaps[i];
-			if (overlay.url === overlayMap.url && overlay.label === overlayMap.label) {
-				overlayMap.show();
+			if (overlay.url == overlayMap.url && overlay.name == overlayMap.properties.name) {
 				return overlayMap;
 			}
 		}
 	}
 	
 	if (overlayMap.proprietary_tilemap === null) {
-		overlayMap.proprietary_tilemap = this.invoker.go('addOverlayMap', arguments);
 		overlayMap.index = this.overlayMaps.length || 0;
+		overlayMap.proprietary_tilemap = this.invoker.go('addOverlayMap', arguments);
 		
-		this.overlayMaps.push({
-			label: overlayMap.label,
-			url: overlayMap.url,
+		var entry = {
+			name: overlayMap.properties.name,
+			label: overlayMap.properties.options.label,
+			url: overlayMap.properties.url,
 			tileObject: overlayMap.proprietary_tilemap,
 			visible: false,
-			index: overlayMap.index
-		});
+			index: overlayMap.index,
+			overlayMap: overlayMap
+		};
+
+		this.overlayMaps.push(entry);
 
 		this.overlayMapAdded.fire({
 			'overlayMap': overlayMap
@@ -1119,8 +1131,11 @@ Mapstraction.prototype.addBaseMap = function(baseMap, options) {
 		
 		var provider = {
 			url: mxn.BaseMapProviders[providerName].url,
-			label: mxn.BaseMapProviders[providerName].options.label,
+			//name: mxn.BaseMapProviders[providerName].name,
+			name: baseMap,
 			options: {
+				label: mxn.BaseMapProviders[providerName].options.label,
+				alt: mxn.BaseMapProviders[providerName].options.alt,
 				attribution: null,
 				opacity: null,
 				minZoom: null,
@@ -1140,6 +1155,7 @@ Mapstraction.prototype.addBaseMap = function(baseMap, options) {
 			
 			var variant = mxn.BaseMapProviders[providerName].variants[variantName];
 			provider.url = variant.url || provider.url;
+			provider.name = variant.name || provider.name;
 			mxn.util.merge(provider.options, variant.options);
 		}
 		
@@ -1149,14 +1165,16 @@ Mapstraction.prototype.addBaseMap = function(baseMap, options) {
 			}
 			return attr.replace(/\{attribution.(\w*)\}/,
 				function (match, attributionName) {
-					return attributionReplacer(providers[attributionName].options.attribution);
+					return attributionReplacer(mxn.BaseMapProviders[attributionName].options.attribution);
 				}
 			);
 		};
+
 		provider.options.attribution = attributionReplacer(provider.options.attribution);
 
 		baseMap = new mxn.BaseMap(provider);
 	}
+	
 	
 	baseMap.mapstraction = this;
 	baseMap.api = this.api;
@@ -1174,7 +1192,7 @@ Mapstraction.prototype.addBaseMap = function(baseMap, options) {
 	for (var i in this.customBaseMaps) {
 		if (this.customBaseMaps.hasOwnProperty(i)) {
 			var base = this.customBaseMaps[i];
-			if (base.url === baseMap.url && base.label === baseMap.properties.label) {
+			if (base.url === baseMap.url && base.name === baseMap.properties.name) {
 				return baseMap;
 			}
 		}
@@ -1184,14 +1202,17 @@ Mapstraction.prototype.addBaseMap = function(baseMap, options) {
 		baseMap.proprietary_tilemap = this.invoker.go('addBaseMap', arguments);
 		baseMap.index = this.customBaseMaps.length || 0;
 
-		this.customBaseMaps.push({
-			label: baseMap.properties.label,
-			url: baseMap.url,
+		var entry = {
+			name: baseMap.properties.name,
+			label: baseMap.properties.options.label,
+			url: baseMap.properties.url,
 			tileObject: baseMap.proprietary_tilemap,
 			inControl: false,
-			index: baseMap.index
-		});
+			index: baseMap.index,
+			baseMap: baseMap
+		};
 		
+		this.customBaseMaps.push(entry);
 		this.baseMapAdded.fire({
 			'baseMap': baseMap
 		});
@@ -1200,13 +1221,33 @@ Mapstraction.prototype.addBaseMap = function(baseMap, options) {
 			baseMap.invoker.go('addControl', arguments);
 		}
 		if (opts.makeCurrent) {
-			this.invoker.go('setMapType', [baseMap.properties.label]);
+			this.invoker.go('setMapType', [baseMap.properties.name]);
 		}
 
 		return baseMap;
 	}
 
 	return baseMap;
+};
+
+Mapstraction.prototype.getDefaultBaseMap = function(type) {
+	for (var i=0; i<this.defaultBaseMaps.length; i++) {
+		if (type === this.defaultBaseMaps[i].mxnType) {
+			return this.defaultBaseMaps[i];
+		}
+	}
+	
+	return null;
+};
+
+Mapstraction.prototype.getCustomBaseMap = function(name) {
+	for (var i=0; i<this.customBaseMaps.length; i++) {
+		if (name === this.customBaseMaps[i].name) {
+			return this.customBaseMaps[i];
+		}
+	}
+	
+	return null;
 };
 
 /**
@@ -2302,7 +2343,9 @@ Radius.prototype.getPolyline = function(radius, color) {
  * @constructor
  * @param {Object} properties Object literal that defines the base map.
  * @param {String} properties.url Template URL of the base map.
- * @param {String} properties.label The label to be used for the base map in the Map Type control.
+ * @param {String} properties.name The name of the base map; this should be unique across all base maps added to the map.
+ * @param {String} properties.options.label The label to be used for the base map in the Map Type control.
+ * @param {String} [properties.options.alt] Alternate text for the base map; used as hover text if the Map Type control supports this.
  * @param {String} [properties.options.attribution] The attribution and/or copyright text to use for the base map.
  * @param {Float} [properties.options.opacity] The opacity of the base map; from 0.0 (transparent) to 1.0 (opaque). Default: 1.0.
  * @param {Int} [properties.options.minZoom] Minimum (furthest out) zoom level that the base map tiles are available for. Default: 1.
@@ -2316,8 +2359,10 @@ var BaseMap = mxn.BaseMap = function(properties) {
 	this.api = null;
 	this.properties = {
 		url: properties.url,
-		label: properties.label,
+		name: properties.name,
 		options: {
+			label: properties.options.label,
+			alt: (properties.options.alt || null),
 			attribution: (properties.options.attribution || null),
 			opacity: (properties.options.opacity || 1.0),
 			minZoom: (properties.options.minZoom ? Number(properties.options.minZoom) : 1),
@@ -2399,40 +2444,43 @@ mxn.addProxyMethods(BaseMap, [
  *
  * <p>Some examples of templated tile server URLs are ...	
  * <ul>
- * <li>OpenStreetMap - <code>http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png</code></li>
- * <li>Stamen Toner - <code>http://tile.stamen.com/toner/{z}/{z}/{y}.png</code></li>
- * <li>MapQuest OSM - <code>http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpg</code></li>
- * <li>MapQuest Open Aerial - <code>http://otile{s}.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.jpg</code></li>
+ * <li>OpenWeatherMap Clouds - <code>http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png</code></li>
+ * <li>OpenWeatherMap Pressure Contours - <code>http://{s}.tile.openweathermap.org/map/pressure_cntr/{z}/{x}/{y}.png</code></li>
  * </ul>
  * </p>
  * 
  * @name mxn.OverlayMap
  * @constructor
- * @param {string} url Template URL of the tiles (required).
- * @param {string} label The label to be used for the tile layer in the Map Type control (required).
- * @param {string} attribution The attribution and/or copyright text to use for the tile layer (optional, default=<code>null</code>).
- * @param {number} opacity Opacity of the tile layer - 0 is transparent, 1 is opaque (optional, default=0.6).
- * @param {Int} minZoom Minimum (furthest out) zoom level that tiles are available (optional, default=1).
- * @param {Int} maxZoom Maximum (closest in) zoom level that the tiles are available (optional, default=18).
- * @param {String|Array} subdomains List of subdomains that the tile server in <code>url</code> refers to. Can be specified as a string, <code>abc</code> or as an array, <code>[1, 2, 3]</code> (optional).
+
+* @param {Object} properties Object literal that defines the overlay map.
+* @param {String} properties.url Template URL of the overlay map.
+* @param {String} properties.name The name of the overlay map; this should be unique across all overlay maps added to the map.
+* @param {String} [properties.options.attribution] The attribution and/or copyright text to use for the overlay map.
+* @param {Float} [properties.options.opacity] The opacity of the overlay map; from 0.0 (transparent) to 1.0 (opaque). Default: 1.0.
+* @param {Int} [properties.options.minZoom] Minimum (furthest out) zoom level that the overlay map tiles are available for. Default: 1.
+* @param {Int} [properties.options.maxZoom] Maximum (closest in) zoom level that the base overlay tiles are available for. Default: 18.
+* @param {String|String[]} [properties.options.subdomains] List of subdomains that the base overlay tiles served from <code>url</code> refers to. Can be specified as a string, <code>abc</code> or as an array, <code>[1, 2, 3]</code>
  * @return {Object} The overlay map object
  * @exports OverlayMap as mxn.OverlayMap
  */
 
-var OverlayMap = mxn.OverlayMap = function(url, label, attribution, opacity, minZoom, maxZoom, subdomains) {
+var OverlayMap = mxn.OverlayMap = function(properties) {
 	this.api = null;
-	this.url = url;
-	this.label = label;
-	
-	this.attribution = attribution || null;
-	this.opacty = opacity || 1.0;
-	this.minZoom = minZoom ? Number(minZoom) : 1;
-	this.maxZoom = maxZoom ? Number(maxZoom) : 18;
-	this.subdomains = subdomains || null;
-	
+	this.properties = {
+		url: properties.url,
+		name: properties.name,
+		options: {
+			label: properties.options.label,
+			alt: (properties.options.alt || null),
+			attribution: (properties.options.attribution || null),
+			opacity: (properties.options.opacity || 1.0),
+			minZoom: (properties.options.minZoom ? Number(properties.options.minZoom) : 1),
+			maxZoom: (properties.options.maxZoom ? Number(properties.options.maxZoom) : 18),
+			subdomains: (properties.options.subdomains || null)
+		}
+	};
 	this.index = null;
 	this.proprietary_tilemap = null;
-
 	this.invoker = new mxn.Invoker(this, 'OverlayMap', function() {
 		return this.api;
 	});
@@ -2482,148 +2530,3 @@ mxn.addProxyMethods(OverlayMap, [
 	]);
 	
 })();
-
-var BaseMapProviders = mxn.BaseMapProviders = {
-	OpenStreetMap: {
-		url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-		options: {
-			attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
-		},
-		variants: {
-			BlackAndWhite: {
-				url: 'http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png'
-			},
-			DE: {
-				url: 'http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png'
-			}
-		}
-	},
-	Acetate: {
-		url: 'http://a{s}.acetate.geoiq.com/tiles/acetate-hillshading/{z}/{x}/{y}.png',
-		options: {
-			label: 'Acetate',
-			attribution: '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth',
-			subdomains: '0123',
-			minZoom: 2,
-			maxZoom: 18
-		},
-		variants: {
-			basemap: {
-				url: 'http://a{s}.acetate.geoiq.com/tiles/acetate-base/{z}/{x}/{y}.png',
-				options: {
-					label: 'Acetate Base'
-				}
-			},
-			terrain: {
-				url: 'http://a{s}.acetate.geoiq.com/tiles/terrain/{z}/{x}/{y}.png',
-				options: {
-					label: 'Acetate Terrain'
-				}
-			},
-			foreground: {
-				url: 'http://a{s}.acetate.geoiq.com/tiles/acetate-fg/{z}/{x}/{y}.png',
-				options: {
-					label: 'Acetate Foreground'
-				}
-			},
-			roads: {
-				url: 'http://a{s}.acetate.geoiq.com/tiles/acetate-roads/{z}/{x}/{y}.png',
-				options: {
-					label: 'Acetate Roads'
-				}
-			},
-			labels: {
-				url: 'http://a{s}.acetate.geoiq.com/tiles/acetate-labels/{z}/{x}/{y}.png',
-				options: {
-					label: 'Acetate Labels'
-				}
-			},
-			hillshading: {
-				url: 'http://a{s}.acetate.geoiq.com/tiles/hillshading/{z}/{x}/{y}.png',
-				options: {
-					label: 'Acetate Hills'
-				}
-			}
-		}
-	},
-	Esri: {
-		url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-		options: {
-			attribution: 'Tiles &copy; Esri'
-		},
-		variants: {
-			WorldStreetMap: {
-				options: {
-					attribution: '{attribution.Esri} &mdash; ' +
-						'Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
-				}
-			},
-			DeLorme: {
-				url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}',
-				options: {
-					minZoom: 1,
-					maxZoom: 11,
-					attribution: '{attribution.Esri} &mdash; Copyright: &copy;2012 DeLorme'
-				}
-			},
-			WorldTopoMap: {
-				url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-				options: {
-					attribution: '{attribution.Esri} &mdash; ' +
-						'Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
-				}
-			},
-			WorldImagery: {
-				url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-				options: {
-					attribution: '{attribution.Esri} &mdash; ' +
-						'Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-				}
-			},
-			WorldTerrain: {
-				url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}',
-				options: {
-					maxZoom: 13,
-					attribution: '{attribution.Esri} &mdash; ' +
-						'Source: USGS, Esri, TANA, DeLorme, and NPS'
-				}
-			},
-			WorldShadedRelief: {
-				url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}',
-				options: {
-					maxZoom: 13,
-					attribution: '{attribution.Esri} &mdash; Source: Esri'
-				}
-			},
-			WorldPhysical: {
-				url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
-				options: {
-					maxZoom: 8,
-					attribution: '{attribution.Esri} &mdash; Source: US National Park Service'
-				}
-			},
-			OceanBasemap: {
-				url: 'http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}',
-				options: {
-					maxZoom: 13,
-					attribution: '{attribution.Esri} &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri'
-				}
-			},
-			NatGeoWorldMap: {
-				url: 'http://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
-				options: {
-					maxZoom: 16,
-					attribution: '{attribution.Esri} &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
-				}
-			},
-			WorldGrayCanvas: {
-				url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-				options: {
-					maxZoom: 16,
-					attribution: '{attribution.Esri} &mdash; Esri, DeLorme, NAVTEQ'
-				}
-			}
-		}
-	}
-};
