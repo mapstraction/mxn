@@ -40,7 +40,7 @@
 				<fileset dir="${build.dir}" includes="*.js"/>
 			</path>
 			<sequential>
-				<echo>@{file}</echo>
+				<echo>--- Linting @{file} ---</echo>
 				<java jar="tools/rhino/js.jar" fork="true" failonerror="true">
 					<arg value="tools/jslint/jslint.js"/>
 					<arg value="@{file}"/>
@@ -59,6 +59,7 @@
 			<arg value="${build.dir}/mxn.geocoder.js"/>
 			<arg value="-c=tools/jsdoc-toolkit/mxn.conf"/>
 			<arg value="-d=${build.dir}/docs"/>
+			<arg value="--verbose"/>
 		</java>
 		
 		<!-- minify our sources -->
@@ -68,6 +69,7 @@
 				<fileset dir="${build.dir}" includes="*.js"/>
 			</path>
 			<sequential>
+				<echo>--- Minifying @{file} ---</echo>
 				<propertyregex override="yes" property="minfile" input="@{file}" regexp=".*[\/\\]([a-z0-9\.]+)\.js" replace="\1-min.js"/>
 				<java jar="tools/yui-compressor/yuicompressor-2.4.7.jar" fork="true" failonerror="true">
 					<arg value="-o"/>
