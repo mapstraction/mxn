@@ -753,7 +753,7 @@ BaseMap: {
 				var domain;
 				urls = [];
 				
-				for(var i = 0; i < subdomains.length; i++) {
+				for(i = 0; i < subdomains.length; i++) {
 					if (typeof subdomains === 'string') {
 						domain = subdomains.substring(i, i + 1);
 					}
@@ -769,17 +769,17 @@ BaseMap: {
 			}
 		}
 	
-		if (urls != null)
+		if (urls !== null)
 		{
 			source = new ol.source.XYZ({
 				attributions: [new ol.Attribution({html: this.properties.options.attribution})],
 				urls: urls
-			})
+			});
 		} else {
 			source = new ol.source.XYZ({
 				attributions: [new ol.Attribution({html: this.properties.options.attribution})],
 				url: url
-			})
+			});
 		}
 
 		var options = {
@@ -841,7 +841,7 @@ BaseMap: {
 				var domain;
 				urls = [];
 				
-				for(var i = 0; i < subdomains.length; i++) {
+				for(i = 0; i < subdomains.length; i++) {
 					if (typeof subdomains === 'string') {
 						domain = subdomains.substring(i, i + 1);
 					}
@@ -857,17 +857,17 @@ BaseMap: {
 			}
 		}
 	
-		if (urls != null)
+		if (urls !== null)
 		{
 			source = new ol.source.XYZ({
 				attributions: [new ol.Attribution({html: this.properties.options.attribution})],
 				urls: urls
-			})
+			});
 		} else {
 			source = new ol.source.XYZ({
 				attributions: [new ol.Attribution({html: this.properties.options.attribution})],
 				url: url
-			})
+			});
 		}
 
 		var options = {
