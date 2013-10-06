@@ -381,21 +381,17 @@ mxn.register('openlayersv3', {
 
 			var layers = [];
 			var map = this.maps[this.api];
+			var fn = function(elem, index, array) { 
+						if (elem === this.customBaseMaps[i].tileObject) {
+							layers.push(elem);
+						}};
 
 			for (i=0; i<this.customBaseMaps.length; i++) {
 				if (this.customBaseMaps[i].name === name) {
 					map.addLayer(this.customBaseMaps[i].tileObject, true);
 				}
-				
 				else {
-					var ly = map.getLayers().getArray();
-					var cbm = this.customBaseMaps[i].tileObject;
-					for (j=0; j<ly.length; j++) {
-						if (ly[j] === cbm) {
-							layers.push(cbm);
-							break;
-						}
-					}
+					map.getLayers().forEach(fn, this);
 				}
 			}
 
@@ -797,7 +793,7 @@ BaseMap: {
 },
 
 	
-	OverlayMap: {
+OverlayMap: {
 	hide: function() {
 		if (this.proprietary_tilemap === null) {
 			throw new Error(this.api + ': An OverlayMap must be added to the map before calling hide()');
@@ -805,9 +801,7 @@ BaseMap: {
 
 		if (this.mapstraction.overlayMaps[this.index].visible) {
 			this.mapstraction.overlayMaps[this.index].visible = false;
-			if (this.map.hasLayer(this.proprietary_tilemap)) {
-				this.map.removeLayer(this.proprietary_tilemap);
-			}
+			this.map.removeLayer(this.proprietary_tilemap);
 		}
 	},
 	
@@ -818,13 +812,7 @@ BaseMap: {
 		
 		if (!this.mapstraction.overlayMaps[this.index].visible) {
 			this.mapstraction.overlayMaps[this.index].visible = true;
-
-			if (this.map.hasLayer(this.proprietary_tilemap)) {
-				this.proprietary_tilemap.bringToFront();
-			}
-			else {
-				this.map.addLayer(this.proprietary_tilemap, false);
-			}
+			this.map.addLayer(this.proprietary_tilemap, false);
 		}
 	},
 	
