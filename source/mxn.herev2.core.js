@@ -792,6 +792,21 @@ BaseMap: {
 	}
 },
 
+// Code Health Warning
+//
+// The Nokia/HERE API doesn't (currently) support custom base map tiles. The workaround
+// used here is to compartmentalise the HERE map's overlays property into two sections.
+// Though not documented, the index of an ImgTileProvider instance in the overlays property
+// is effectively its z-index. To support custom base maps, indices of < 1000 are assumed
+// to be base maps. Indices of >= 1000 are assumed to be overlays, so to add an overlay, the
+// index is incremented by 1000 so that the layers stack correctly.
+//
+// The obvious drawback here is that it limits an implementation to 1000 base map sets, but
+// this never comes into play as we remove the current base map in setMapType if it's not
+// a map type provided natively by the HERE API.
+//
+// All in all a horrible fugly cludge. I apologise to anyone reading this unreservedly.
+
 OverlayMap: {
 	hide: function() {
 		if (this.proprietary_tilemap === null) {
