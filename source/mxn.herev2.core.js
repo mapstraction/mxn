@@ -10,6 +10,31 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		var baseMaps = [
+			{
+				mxnType: mxn.Mapstraction.ROAD,
+				providerType: nokia.maps.map.Display.NORMAL,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.SATELLITE,
+				providerType: nokia.maps.map.Display.SATELLITE_PLAIN,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.HYBRID,
+				providerType: nokia.maps.map.Display.SATELLITE,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.PHYSICAL,
+				providerType: nokia.maps.map.Display.TERRAIN,
+				nativeType: true
+			}
+		];
+		this.initBaseMaps(baseMaps);
+		this.currentMapType = mxn.Mapstraction.ROAD;
+
 		var eventStates = {
 			"center": false,
 			"zoom": false,
@@ -104,7 +129,7 @@ Mapstraction: {
 			// properties.scroll_wheel and properties.double_click respectively, in cases where
 			// properties.controls.pan is not set.
 			
-			if (properties.hasOwnPropery('dragging') && properties.dragging) {
+			if (properties.hasOwnProperty('dragging') && properties.dragging) {
 				props.components.push(new nokia.maps.map.component.panning.Drag());
 			}
 
@@ -396,10 +421,50 @@ Mapstraction: {
 		return map.getBestZoomLevel(nokia_bb);
 	},
 	
-	setMapType: function(type) {
+	// TODO: set this.currentMapType and bale out with an exception if no map type matches
+	setMapType: function(mapType) {
 		var map = this.maps[this.api];
+		var i;
 		
-		switch (type) {
+		if (this.currentMapType === mapType) {
+			return;
+		}
+
+		var provider = false;
+		
+		for (i=0; i<this.defaultBaseMaps.length; i++) {
+			if (this.defaultBaseMaps[i].mxnType === mapType) {
+				map.set('baseMapType', this.defaultBaseMaps[i].providerType);
+				provider = true;
+			}
+		}
+		
+		var layers = [];
+
+		if (!provider) {
+			for (i=0; i<this.customBaseMaps.length; i++) {
+				var baseMap = this.customBaseMaps[i];
+				if (baseMap.name === mapType) {
+					map.overlays.add(baseMap.tileObject, baseMap.index);
+				}
+
+				else if (map.overlays.indexOf(baseMap.tileObject) >= 0) {
+					layers.push(baseMap)
+				}
+			}
+		}
+		else {
+			layers = this.customBaseMaps;
+		}
+		
+		this.currentMapType = mapType;
+		for (i=0; i<layers.length && i<1000; i++) {
+			map.overlays.remove(layers[i].tileObject);
+		}
+
+		//throw new Error(this.api + ': unable to find definition for map type ' + mapType);
+
+		/*switch (type) {
 			case mxn.Mapstraction.ROAD:
 				map.set("baseMapType", nokia.maps.map.Display.NORMAL);
 				break;
@@ -415,11 +480,13 @@ Mapstraction: {
 			default:
 				map.set("baseMapType", nokia.maps.map.Display.NORMAL);
 				break;
-		}	// end-switch ()
+		}*/	// end-switch ()
 	},
 	
 	getMapType: function() {
-		var map = this.maps[this.api];
+		return this.currentMapType;
+		
+		/*var map = this.maps[this.api];
 		var type = map.baseMapType;
 		
 		switch (type) {
@@ -433,7 +500,7 @@ Mapstraction: {
 				return mxn.Mapstraction.SATELLITE;
 			default:
 				return mxn.Mapstraction.ROAD;
-		}	// end-switch ()
+		}*/	// end-switch ()
 	},
 	
 	getBounds: function() {
@@ -467,51 +534,12 @@ Mapstraction: {
 		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 	
-	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-		var map = this.maps[this.api];
-		var z_index = this.tileLayers.length || 0;
-		
-		var tileProviderOptions = {
-			getUrl: function(zoom, row, column) {
-				var url = mxn.util.sanitizeTileURL(tile_url);
-				if (typeof subdomains !== 'undefined') {
-					url = mxn.util.getSubdomainTileURL(url, subdomains);
-				}
-				url = url.replace(/\{z\}/gi, zoom).replace(/\{x\}/gi, column).replace(/\{y\}/gi, row);
-				return url;
-			}, // obligatory 
-			max: max_zoom,  // max zoom level for overlay
-			min: min_zoom,  // min zoom level for overlay
-			opacity: opacity, // 0 = transparent overlay, 1 = opaque
-			alpha: true, // renderer to read alpha channel    
-			getCopyrights : function(area, zoom) {
-				return [{
-					label: attribution,
-					alt: attribution
-				}];
-			}// display copyright
-		};	
-		
-		var overlay =  new nokia.maps.map.provider.ImgTileProvider (tileProviderOptions);                
-		this.tileLayers.push( [tile_url, overlay, true, z_index] );
-		return map.overlays.add(overlay);
+	addBaseMap: function(baseMap) {
+		return baseMap.toProprietary(this.api);
 	},
 	
-	toggleTileLayer: function(tile_url) {
-		var map = this.maps[this.api];
-		for (var f = 0; f < this.tileLayers.length; f++) {
-			var tileLayer = this.tileLayers[f];
-			if (tileLayer[0] == tile_url) {
-				if (tileLayer[2]) {
-					tileLayer[2] = false;
-					map.overlays.remove(tileLayer[1]);
-				}
-				else {
-					tileLayer[2] = true;
-					map.overlays.add(tileLayer[1]);
-				}
-			}
-		}
+	addOverlayMap: function(overlayMap) {
+		return overlayMap.toProprietary(this.api);
 	},
 	
 	getPixelRatio: function() {
@@ -725,6 +753,104 @@ Polyline: {
 	
 	hide: function() {
 		this.proprietary_polyline.set('visibility', false);
+	}
+},
+
+BaseMap: {
+	addControl: function() {
+		
+	},
+	
+	removeControl: function() {
+		
+	},
+	
+	toProprietary: function() {
+		var self = this;
+		var options = {
+			getUrl: function(zoom, row, column) {
+				var url = mxn.util.sanitizeTileURL(self.properties.url);
+				if (self.properties.options.subdomains !== null) {
+					url = mxn.util.getSubdomainTileURL(url, self.properties.options.subdomains);
+				}
+				url = url.replace(/\{z\}/gi, zoom).replace(/\{x\}/gi, column).replace(/\{y\}/gi, row);
+				return url;
+			},
+			max: this.properties.options.maxZoom,
+			min: this.properties.options.minZoom,
+			opacity: this.properties.options.opacity,
+			alpha: true,
+			getCopyrights: function(area, zoom) {
+				return [{
+					label: this.properties.options.attribution,
+					alt: this.properties.options.attribution
+				}];
+			}
+		};
+		
+		return new nokia.maps.map.provider.ImgTileProvider(options);
+	}
+},
+
+OverlayMap: {
+	hide: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An OverlayMap must be added to the map before calling hide()');
+		}
+		
+		if (this.mapstraction.overlayMaps[this.index].visible) {
+			this.mapstraction.overlayMaps[this.index].visible = false;
+			
+			var index = this.index + 1000;
+			this.map.overlays.removeAt(index);
+			
+			this.overlayMapHidden.fire({
+				'overlayMap': this
+			});
+		}
+	},
+	
+	show: function() {
+		if (this.proprietary_tilemap === null) {
+			throw new Error(this.api + ': An OverlayMap must be added to the map before calling show()');
+		}
+
+		if (!this.mapstraction.overlayMaps[this.index].visible) {
+			this.mapstraction.overlayMaps[this.index].visible = true;
+			
+			var index = this.index + 1000;
+			this.map.overlays.add(this.proprietary_tilemap, index);
+			
+			this.overlayMapShown.fire({
+				'overlayMap': this
+			});
+		}
+	},
+	
+	toProprietary: function() {
+		var self = this;
+		var options = {
+			getUrl: function(zoom, row, column) {
+				var url = mxn.util.sanitizeTileURL(self.properties.url);
+				if (self.properties.options.subdomains !== null) {
+					url = mxn.util.getSubdomainTileURL(url, self.properties.options.subdomains);
+				}
+				url = url.replace(/\{z\}/gi, zoom).replace(/\{x\}/gi, column).replace(/\{y\}/gi, row);
+				return url;
+			},
+			max: this.properties.options.maxZoom,
+			min: this.properties.options.minZoom,
+			opacity: this.properties.options.opacity,
+			alpha: true,
+			getCopyrights: function(area, zoom) {
+				return [{
+					label: this.properties.options.attribution,
+					alt: this.properties.options.attribution
+				}];
+			}
+		};
+		
+		return new nokia.maps.map.provider.ImgTileProvider(options);
 	}
 }
 	
