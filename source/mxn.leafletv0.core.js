@@ -394,6 +394,7 @@ Mapstraction: {
 		return map.getBoundsZoom(bounds);
 	},
 
+	// TODO: set this.currentMapType and bale out with an exception if no map type matches
 	setMapType: function(mapType) {
 		var i;
 		var name = null;
@@ -425,6 +426,7 @@ Mapstraction: {
 			}
 		}
 
+		this.currentMapType = mapType;
 		for (i=0; i<layers.length; i++) {
 			map.removeLayer(layers[i]);
 		}
