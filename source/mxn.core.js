@@ -17,8 +17,32 @@ var init = function() {
 	if (this.maps[this.api] === null) {
 		throw new Error('Initialisation error; ' + this.api + ' has not created a map object');
 	}
-	if (this.defaultBaseMaps.length === 0) {
-		throw new Error('Initialisation error; ' + this.api + ' has not defined any base map types');
+
+	for (i=0; i<this.defaultBaseMaps.length; i++) {
+		if (this.defaultBaseMaps[i].mxnType == null) {
+			throw new Error('Initialisation error; ' + this.api +  ' has an empty/invalid Mapstraction default base map type');
+		}
+		if (this.defaultBaseMaps[i].providerType == null) {
+			var mxnType;
+			switch (this.defaultBaseMaps[i].mxnType) {
+				case mxn.Mapstraction.ROAD:
+					mxnType = 'mxn.Mapstraction.ROAD';
+					break;
+				case mxn.Mapstraction.SATELLITE:
+					mxnType = 'mxn.Mapstraction.SATELLITE';
+					break;
+				case mxn.Mapstraction.HYBRID:
+					mxnType = 'mxn.Mapstraction.HYBRID';
+					break;
+				case mxn.Mapstraction.PHYSICAL:
+					mxnType = 'mxn.Mapstraction.PHYSICAL';
+					break;
+				default:
+					mxnType = 'UNKNOWN';
+					break;
+			}
+			throw new Error('Initialisation error; ' + this.api + ' has not defined a default base map for ' + mxnType);
+		}
 	}
 };
 
@@ -107,7 +131,38 @@ var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 	this.tileLayers = [];	
 
 
-	this.defaultBaseMaps = [];
+	/**
+	 * Array of the default base maps that Mapstraction supports. This array <em>must</em>
+	 * be fully populated by a map provider's implementation as part of that provider's
+	 * <code>Mapstraction.init</code> method. Failure to do so will result in an exception
+	 * being thrown during the core Mapstraction <code>init</code> method.
+	 * @name mxn.Mapstraction#defaultBaseMaps
+	 * @property
+	 * @type {Array}
+	 * @private
+	 */
+	this.defaultBaseMaps = [
+		{
+			mxnType: mxn.Mapstraction.ROAD,
+			providerType: null,
+			nativeType: true
+		},
+		{
+			mxnType: mxn.Mapstraction.SATELLITE,
+			providerType: null,
+			nativeType: true
+		},
+		{
+			mxnType: mxn.Mapstraction.HYBRID,
+			providerType: null,
+			nativeType: true
+		},
+		{
+			mxnType: mxn.Mapstraction.PHYSICAL,
+			providerType: null,
+			nativeType: true
+		}
+	];
 	
 	/**
 	 * Array of all BaseMap layers that have been added to the map.
@@ -444,27 +499,20 @@ mxn.addProxyMethods(Mapstraction, [
 
 /**
  * Initialises the default set of base map types. This method <em>must</em> be called from
- * a provider's <code>init</code> method.
+ * a provider's <code>Mapstraction.init</code> method.
  * @name mxn.Mapstraction#initBaseMaps
  * @function
  * @private
- * @param {Object[]} baseMaps Array of object literals that define the default base map types.
  */
-Mapstraction.prototype.initBaseMaps = function(baseMaps) {
-	var i;
-	
-	for (i=0; i<baseMaps.length; i++) {
-		this.defaultBaseMaps.push(baseMaps[i]);
-	}
-
+Mapstraction.prototype.initBaseMaps = function() {
 	var options = {
 		addControl: true,
 		makeCurrent: false
 	};
 	
-	for (i=0; i<this.defaultBaseMaps.length; i++) {
+	for (var i=0; i<this.defaultBaseMaps.length; i++) {
 		if (!this.defaultBaseMaps[i].nativeType) {
-			var baseMap = this.addBaseMap(this.defaultBaseMaps[i].providerType);
+			var baseMap = this.addBaseMap(this.defaultBaseMaps[i].providerType, options);
 		}
 	}
 };
