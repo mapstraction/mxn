@@ -689,7 +689,7 @@ mxn.Providers = {
 		'style': null,
 		'script': [
 			{
-				'src': 'http://api.maps.nokia.com/2.2.4/jsl.js',
+				'src': 'http://js.api.here.com/se/2.5.3/jsl.js',
 				'auth': true,
 				'authType': 'js'
 			}
@@ -980,8 +980,8 @@ mxn.Providers = {
 	var makeAuthJavascript = function(provider) {
 		if (provider === 'herev2') {
 			var auth = '<script type="text/javascript">';
-			auth += '\nnokia.Settings.set("appID", "' + nokia_app_id + '");';
-			auth += '\nnokia.Settings.set("authenticationToken", "' + nokia_auth_token + '");';
+			auth += '\nnokia.Settings.set("app_id", "' + nokia_app_id + '");';
+			auth += '\nnokia.Settings.set("app_code", "' + nokia_auth_token + '");';
 			auth += '\n</script>';
 
 			return auth;
