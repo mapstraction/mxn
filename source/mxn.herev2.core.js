@@ -10,7 +10,7 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
-		var baseMaps = [
+		this.defaultBaseMaps = [
 			{
 				mxnType: mxn.Mapstraction.ROAD,
 				providerType: nokia.maps.map.Display.NORMAL,
@@ -32,7 +32,7 @@ Mapstraction: {
 				nativeType: true
 			}
 		];
-		this.initBaseMaps(baseMaps);
+		this.initBaseMaps();
 		this.currentMapType = mxn.Mapstraction.ROAD;
 
 		var eventStates = {
@@ -449,7 +449,7 @@ Mapstraction: {
 				}
 
 				else if (map.overlays.indexOf(baseMap.tileObject) >= 0) {
-					layers.push(baseMap)
+					layers.push(baseMap);
 				}
 			}
 		}
@@ -773,6 +773,8 @@ BaseMap: {
 				if (self.properties.options.subdomains !== null) {
 					url = mxn.util.getSubdomainTileURL(url, self.properties.options.subdomains);
 				}
+
+				// The HERE API doesn't know about templated tile URLs. No. Really
 				url = url.replace(/\{z\}/gi, zoom).replace(/\{x\}/gi, column).replace(/\{y\}/gi, row);
 				return url;
 			},
@@ -850,6 +852,8 @@ OverlayMap: {
 				if (self.properties.options.subdomains !== null) {
 					url = mxn.util.getSubdomainTileURL(url, self.properties.options.subdomains);
 				}
+
+				// The HERE API doesn't know about templated tile URLs. No. Really
 				url = url.replace(/\{z\}/gi, zoom).replace(/\{x\}/gi, column).replace(/\{y\}/gi, row);
 				return url;
 			},

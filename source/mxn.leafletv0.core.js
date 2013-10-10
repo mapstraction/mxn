@@ -7,7 +7,19 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
-		var baseMaps = [
+		var self = this;
+		this.layers = {};
+		this.features = [];
+		this.currentMapType = mxn.Mapstraction.ROAD;
+		this.controls =  {
+			pan: null,
+			zoom: null,
+			overview: null,
+			scale: null,
+			map_type: null
+		};
+
+		this.defaultBaseMaps = [
 			{
 				mxnType: mxn.Mapstraction.ROAD,
 				providerType: 'mxn.BaseMapProviders.MapQuestOpen',
@@ -29,25 +41,12 @@ Mapstraction: {
 				nativeType: false
 			}
 		];
-
-		var self = this;
-		this.initBaseMaps(baseMaps);
-		this.layers = {};
-		this.features = [];
-		this.currentMapType = mxn.Mapstraction.ROAD;
+		this.initBaseMaps();
 
 		for (var i=0; i<this.customBaseMaps.length; i++) {
 			this.layers[this.customBaseMaps[i].label] = this.customBaseMaps[i].tileObject;
 		}
 		
-		this.controls =  {
-			pan: null,
-			zoom: null,
-			overview: null,
-			scale: null,
-			map_type: null
-		};
-
 		// Code Health Warning
 		// The ZoomSlide and Pan controls add themselves into any new instance of L.Map
 		// by default. Clever but stupidly frustrating. So we need to disable them by
@@ -691,6 +690,7 @@ BaseMap: {
 			throw new Error(this.api + ': A BaseMap must be added to the map before calling addControl()');
 		}
 
+		console.log(this);
 		if (!this.mapstraction.customBaseMaps[this.index].inControl) {
 			this.mapstraction.customBaseMaps[this.index].inControl = true;
 			this.mapstraction.layers[this.properties.options.label] = this.proprietary_tilemap;

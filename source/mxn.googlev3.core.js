@@ -9,7 +9,7 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
-		var baseMaps = [
+		this.defaultBaseMaps = [
 			{
 				mxnType: mxn.Mapstraction.ROAD,
 				providerType: google.maps.MapTypeId.ROADMAP,
@@ -31,7 +31,7 @@ Mapstraction: {
 				nativeType: true
 			}
 		];
-		this.initBaseMaps(baseMaps);
+		this.initBaseMaps();
 
 		this.controls = {
 			pan: false,
@@ -976,9 +976,9 @@ OverlayMap: {
 		var self = this;
 		var tile_options = {
 			getTileUrl: function (coord, zoom) {
-				var url = mxn.util.sanitizeTileURL(self.url);
-				if (typeof self.subdomains !== 'undefined') {
-					url = mxn.util.getSubdomainTileURL(url, self.subdomains);
+				var url = mxn.util.sanitizeTileURL(self.properties.url);
+				if (typeof self.properties.options.subdomains !== 'undefined') {
+					url = mxn.util.getSubdomainTileURL(url, self.properties.options.subdomains);
 				}
 				var x = coord.x;
 				var maxX = Math.pow(2, zoom);
