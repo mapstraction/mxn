@@ -9,6 +9,30 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 		
+		this.defaultBaseMaps = [
+			{
+				mxnType: mxn.Mapstraction.ROAD,
+				providerType: null, // TODO: add equivalent provider base map type
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.SATELLITE,
+				providerType: null, // TODO: add equivalent provider base map type
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.HYBRID,
+				providerType: null, // TODO: add equivalent provider base map type
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.PHYSICAL,
+				providerType: null, // TODO: add equivalent provider base map type
+				nativeType: true
+			}
+		];
+		this.initBaseMaps();
+
 		// TODO: Add provider code
 	},
 
