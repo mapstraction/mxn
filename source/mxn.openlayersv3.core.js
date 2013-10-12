@@ -4,12 +4,13 @@ mxn.register('openlayersv3', {
 	
 		init: function(element, api){
 			var me = this;
-			
+			this.layers = {};
+					
 			if (typeof ol.Map === 'undefined') {
 				throw new Error(api + ' map script not imported');
 			}
 
-			var baseMaps = [
+			this.defaultBaseMaps = [
 				{
 					mxnType: mxn.Mapstraction.ROAD,
 					providerType: 'mxn.BaseMapProviders.MapQuestOpen',
@@ -32,7 +33,7 @@ mxn.register('openlayersv3', {
 				}
 			];
 			
-			this.initBaseMaps(baseMaps);
+			this.initBaseMaps();
 			this.currentMapType = mxn.Mapstraction.ROAD;
 			var defaultMap = this.getDefaultBaseMap(this.currentMapType);
 			var baseMap = this.getCustomBaseMap(defaultMap.providerType);
@@ -55,9 +56,6 @@ mxn.register('openlayersv3', {
 			  renderer: ol.RendererHint.CANVAS //needed as webGL doesn't support vector layers yet
 			});
 			
-			// initialize layers map (this was previously in mxn.core.js)
-			this.layers = {};
-	
 			// deal with click
 			map.on(['click'], function(evt) {
 				var lonlat = evt.getCoordinate();
@@ -716,7 +714,7 @@ BaseMap: {
 		if (!this.mapstraction.customBaseMaps[this.index].inControl) {
 			this.mapstraction.customBaseMaps[this.index].inControl = true;
 			this.mapstraction.layers[this.properties.options.label] = this.proprietary_tilemap;
-			if (this.mapstraction.controls.map_type !== null) {
+			if (typeof(this.mapstraction.controls.map_type) !== "undefined") {
 				this.mapstraction.controls.map_type.addBaseLayer(this.proprietary_tilemap, this.properties.options.label);
 			}
 		}
@@ -730,7 +728,7 @@ BaseMap: {
 		if (this.mapstraction.customBaseMaps[this.index].inControl) {
 			this.mapstraction.customBaseMaps[this.index].inControl = false;
 			delete this.mapstraction.layers[this.properties.options.label];
-			if (this.mapstraction.controls.map_type !== null) {
+			if (typeof(this.mapstraction.controls.map_type) !== "undefined") {
 				this.mapstraction.controls.map_type.removeLayer(this.proprietary_tilemap);
 			}
 		}
