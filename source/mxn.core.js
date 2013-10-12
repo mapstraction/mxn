@@ -19,10 +19,10 @@ var init = function() {
 	}
 
 	for (i=0; i<this.defaultBaseMaps.length; i++) {
-		if (this.defaultBaseMaps[i].mxnType == null) {
+		if (this.defaultBaseMaps[i].mxnType === null) {
 			throw new Error('Initialisation error; ' + this.api +  ' has an empty/invalid Mapstraction default base map type');
 		}
-		if (this.defaultBaseMaps[i].providerType == null) {
+		if (this.defaultBaseMaps[i].providerType === null) {
 			var mxnType;
 			switch (this.defaultBaseMaps[i].mxnType) {
 				case mxn.Mapstraction.ROAD:
