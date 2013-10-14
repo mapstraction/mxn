@@ -19,10 +19,10 @@ var init = function() {
 	}
 
 	for (i=0; i<this.defaultBaseMaps.length; i++) {
-		if (this.defaultBaseMaps[i].mxnType == null) {
+		if (this.defaultBaseMaps[i].mxnType === null) {
 			throw new Error('Initialisation error; ' + this.api +  ' has an empty/invalid Mapstraction default base map type');
 		}
-		if (this.defaultBaseMaps[i].providerType == null) {
+		if (this.defaultBaseMaps[i].providerType === null) {
 			var mxnType;
 			switch (this.defaultBaseMaps[i].mxnType) {
 				case mxn.Mapstraction.ROAD:
@@ -287,23 +287,22 @@ var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 		'polylineRemoved',
 		
 		/**
-		 * BaseMap is added {baseMap: BaseMap}
-		 * @name mxn.Mapstraction#baseMapAdded
+		 * TileMap is added {tileMap: TileMap}
+		 * @name mxn.Mapstraction#tileMapAdded
 		 * @event
 		 */
-		'baseMapAdded',
-		
-		/**
-		 * OverlayMap is added {overlayMap: OverlayMap}
-		 * @name mxn.Mapstraction#overlayMapAdded
-		 * @event
-		 */
-		'overlayMapAdded'
+		'tileMapAdded'
 	]);
 	
 	// finally initialize our proper API map
 	init.apply(this);
 };
+
+mxn.Mapstraction.TileType = Object.freeze({
+	'UNKNOWN': 0,
+	'BASE': 1,
+	'OVERLAY': 2
+});
 
 // Map type constants
 Mapstraction.UNKNOWN = 0;
@@ -386,12 +385,12 @@ mxn.addProxyMethods(Mapstraction, [
 	 * <li><code>mxn.Mapstraction.PHYSICAL</code></li>
 	 * </ul>
 	 *
-	 * <p>Or the label of a custom base map type, defined via <code>addBaseMap</code>
+	 * <p>Or the label of a custom base map type, defined via <code>addTileMap</code>
 	 *
 	 * @name mxn.Mapstraction#getMapType
 	 * @function
 	 * @see mxn.BaseMap
-	 * @see mxn.Mapstraction#addBaseMap
+	 * @see mxn.Mapstraction#addTileMap
 	 * @returns {Int|String} The current base map type. 
 	 */
 	'getMapType', 
@@ -478,12 +477,12 @@ mxn.addProxyMethods(Mapstraction, [
 	 * <li><code>mxn.Mapstraction.PHYSICAL</code></li>
 	 * </ul>
 	 *
-	 * <p>Or the label of a custom base map type, defined via <code>addBaseMap</code>
+	 * <p>Or the label of a custom base map type, defined via <code>addTileMap</code>
 	 *
 	 * @name mxn.Mapstraction#setMapType
 	 * @function
 	 * @see mxn.BaseMap
-	 * @see mxn.Mapstraction#addBaseMap
+	 * @see mxn.Mapstraction#addTileMap
 	 * @param {Int|String} mapType The required base map type. 
 	 */
 	'setMapType', 
@@ -512,7 +511,7 @@ Mapstraction.prototype.initBaseMaps = function() {
 	
 	for (var i=0; i<this.defaultBaseMaps.length; i++) {
 		if (!this.defaultBaseMaps[i].nativeType) {
-			var baseMap = this.addBaseMap(this.defaultBaseMaps[i].providerType, options);
+			var baseMap = this.addTileMap(this.defaultBaseMaps[i].providerType, options);
 		}
 	}
 };
@@ -1098,135 +1097,24 @@ Mapstraction.prototype.addJSON = function(json) {
 };
 
 /**
- * Adds a Mapstraction overlay map to the map. Once added the overlap map can be made visible
- * by calling the <code>show()</code> method.
- * @name mxn.Mapstraction#addOverlayMap
+ * Adds and shows a Mapstraction tile map to the map, adding it to the Map Type control,
+ * if present.
+ * @name mxn.Mapstraction#addTileMap
  * @function
- * @param {overlayMap} A Mapstraction <code>OverlayMap</code> object.
+ * @param {mxn.TileMap} tileMap A Mapstraction <code>TileMap</code> object.
+ * @param {Object} [options] Object literal that specifies display options for the tile map.
+ * @param {Boolean} [options.addControl] Specifies whether the tile map should be added to the Map Type control.
+ * @param {Boolean} [options.makeCurrent] Specifies whether the tile map should be set as the current map type.
  */
 
-Mapstraction.prototype.addOverlayMap = function(overlayMap) {
-	overlayMap.mapstraction = this;
-	overlayMap.api = this.api;
-	overlayMap.map = this.maps[this.api]; 
-
-	for (var i in this.overlayMaps) {
-		if (this.overlayMaps.hasOwnProperty(i)) {
-			var overlay = this.overlayMaps[i];
-			if (overlay.url == overlayMap.url && overlay.name == overlayMap.properties.name) {
-				return overlayMap;
-			}
-		}
-	}
-	
-	if (overlayMap.proprietary_tilemap === null) {
-		overlayMap.index = this.overlayMaps.length || 0;
-		overlayMap.proprietary_tilemap = this.invoker.go('addOverlayMap', arguments);
-		
-		var entry = {
-			name: overlayMap.properties.name,
-			label: overlayMap.properties.options.label,
-			url: overlayMap.properties.url,
-			tileObject: overlayMap.proprietary_tilemap,
-			visible: false,
-			index: overlayMap.index,
-			overlayMap: overlayMap
-		};
-
-		this.overlayMaps.push(entry);
-
-		this.overlayMapAdded.fire({
-			'overlayMap': overlayMap
-		});
-		
-		return overlayMap;
+Mapstraction.prototype.addTileMap = function(tileMap, options) {
+	if (typeof tileMap === 'string') {
+		tileMap = this.providerToTileMap(tileMap);
 	}
 
-	return overlayMap;
-};
-
-/**
- * Adds and shows a Mapstraction base map to the map, adding it to the Map Type control,
- * if present. Once added the base map can be made visible by calling the <code>show()</code> method.
- * @name mxn.Mapstraction#addBaseMap
- * @function
- * @param {mxn.BaseMap} baseMap A Mapstraction <code>BaseMap</code> object.
- * @param {Object} [options] Object literal that specifies display options for the base map.
- * @param {Boolean} [options.addControl] Specifies whether the base map should be added to the Map Type control.
- * @param {Boolean} [options.makeCurrent] Specifies whether the base map should be set as the current map type.
- */
-
-Mapstraction.prototype.addBaseMap = function(baseMap, options) {
-	if (typeof baseMap === 'string') {
-		var parts = baseMap.split('.');
-		var valid = true;
-
-		if (parts[0] !== 'mxn') {
-			valid = false;
-		}
-		else if (parts[1] !== 'BaseMapProviders') {
-			valid = false;
-		}
-		else if (!mxn.BaseMapProviders.hasOwnProperty(parts[2])) {
-			valid = false;
-		}
-		if (!valid) {
-			throw new Error('No such base map provider: ' + baseMap);
-		}
-
-		var providerName = parts[2];
-		var variantName = parts[3];
-		
-		var provider = {
-			url: mxn.BaseMapProviders[providerName].url,
-			//name: mxn.BaseMapProviders[providerName].name,
-			name: baseMap,
-			options: {
-				label: mxn.BaseMapProviders[providerName].options.label,
-				alt: mxn.BaseMapProviders[providerName].options.alt,
-				attribution: null,
-				opacity: null,
-				minZoom: null,
-				maxZoom: null,
-				subdomains: null
-			}
-		};
-		
-		if (mxn.BaseMapProviders[providerName].options) {
-			mxn.util.merge(provider.options, mxn.BaseMapProviders[providerName].options);
-		}
-
-		if (variantName && 'variants' in mxn.BaseMapProviders[providerName]) {
-			if (!(variantName in mxn.BaseMapProviders[providerName].variants)) {
-				throw new Error('No such variant (' + variantName + ') defined for base map ' + providerName);
-			}
-			
-			var variant = mxn.BaseMapProviders[providerName].variants[variantName];
-			provider.url = variant.url || provider.url;
-			provider.name = variant.name || provider.name;
-			mxn.util.merge(provider.options, variant.options);
-		}
-		
-		var attributionReplacer = function(attr) {
-			if (attr.indexOf('{attribution.') === -1) {
-				return attr;
-			}
-			return attr.replace(/\{attribution.(\w*)\}/,
-				function (match, attributionName) {
-					return attributionReplacer(mxn.BaseMapProviders[attributionName].options.attribution);
-				}
-			);
-		};
-
-		provider.options.attribution = attributionReplacer(provider.options.attribution);
-
-		baseMap = new mxn.BaseMap(provider);
-	}
-	
-	
-	baseMap.mapstraction = this;
-	baseMap.api = this.api;
-	baseMap.map = this.maps[this.api]; 
+	tileMap.mxn = this;
+	tileMap.api = this.api;
+	tileMap.map = this.maps[this.api]; 
 
 	var opts = {
 		addControl: false,
@@ -1237,45 +1125,126 @@ Mapstraction.prototype.addBaseMap = function(baseMap, options) {
 		mxn.util.merge(opts, options);
 	}
 
-	for (var i in this.customBaseMaps) {
-		if (this.customBaseMaps.hasOwnProperty(i)) {
-			var base = this.customBaseMaps[i];
-			if (base.url === baseMap.url && base.name === baseMap.properties.name) {
-				return baseMap;
+	var tileCache = null;
+	switch (tileMap.properties.type) {
+		case mxn.Mapstraction.TileType.BASE:
+			tileCache = this.customBaseMaps;
+			break;
+		case mxn.Mapstraction.TileType.OVERLAY:
+			tileCache = this.overlayMaps;
+			break;
+		case mxn.Mapstraction.TileType.UNKNOWN:
+			throw new Error('Invalid tile type supplied');
+		default:
+			throw new Error('Invalid tile type supplied');
+	}
+	
+	for (var i in tileCache) {
+		if (tileCache.hasOwnProperty(i)) {
+			var tile = tileCache[i];
+			if (tile.url === tileMap.url && tile.name === tileMap.properties.name) {
+				return tileMap;
 			}
 		}
 	}
-	
-	if (baseMap.proprietary_tilemap === null) {
-		baseMap.proprietary_tilemap = this.invoker.go('addBaseMap', arguments);
-		baseMap.index = this.customBaseMaps.length || 0;
+
+	if (tileMap.prop_tilemap === null) {
+		tileMap.prop_tilemap = this.invoker.go('addTileMap', arguments);
+		tileMap.index = tileCache.length || 0;
 
 		var entry = {
-			name: baseMap.properties.name,
-			label: baseMap.properties.options.label,
-			url: baseMap.properties.url,
-			tileObject: baseMap.proprietary_tilemap,
+			name: tileMap.properties.name,
+			label: tileMap.properties.options.label,
+			url: tileMap.properties.url,
+			tileObject: tileMap.prop_tilemap,
 			inControl: false,
-			index: baseMap.index,
-			baseMap: baseMap
+			index: tileMap.index,
+			tileMap: tileMap
 		};
 		
-		this.customBaseMaps.push(entry);
-		this.baseMapAdded.fire({
-			'baseMap': baseMap
+		tileCache.push(entry);
+		this.tileMapAdded.fire({
+			'tileMap': tileMap
 		});
 
 		if (opts.addControl) {
-			baseMap.invoker.go('addControl', arguments);
+			tileMap.invoker.go('addToMapTypeControl', arguments);
 		}
 		if (opts.makeCurrent) {
-			this.invoker.go('setMapType', [baseMap.properties.name]);
+			tileMap.invoker.go('show', arguments);
+			//this.invoker.go('setMapType', [tileMap.properties.name]);
 		}
-
-		return baseMap;
 	}
 
-	return baseMap;
+	return tileMap;
+};
+
+Mapstraction.prototype.providerToTileMap = function(providerName) {
+	var parts = providerName.split('.');
+	var valid = true;
+	
+	if (parts[0] !== 'mxn') {
+		valid = false;
+	}
+	else if (parts[1] !== 'BaseMapProviders') {
+		valid = false;
+	}
+	else if (!mxn.BaseMapProviders.hasOwnProperty(parts[2])) {
+		valid = false;
+	}
+	
+	if (!valid) {
+		throw new Error('No such tile map provider defined for ' + providerName);
+	}
+
+	var tileName = parts[2];
+	var variantName = parts[3];
+	
+	var provider = {
+		url: mxn.BaseMapProviders[tileName].url,
+		name: providerName,
+		type: mxn.Mapstraction.TileType.BASE,
+		options: {
+			label: mxn.BaseMapProviders[tileName].options.label,
+			alt: mxn.BaseMapProviders[tileName].options.alt,
+			attribution: null,
+			opacity: null,
+			minZoom: null,
+			maxZoom: null,
+			subdomains: null
+		}
+	};
+	
+	if (mxn.BaseMapProviders[tileName].options) {
+		mxn.util.merge(provider.options, mxn.BaseMapProviders[tileName].options);
+	}
+
+	if (variantName && 'variants' in mxn.BaseMapProviders[tileName]) {
+		if (!(variantName in mxn.BaseMapProviders[tileName].variants)) {
+			throw new Error('No such variant (' + variantName + ') defined for tile map ' + tileName);
+		}
+		
+		var variant = mxn.BaseMapProviders[tileName].variants[variantName];
+		provider.url = variant.url || provider.url;
+		provider.name = variant.name || provider.name;
+		mxn.util.merge(provider.options, variant.options);
+	}
+	
+	var attributionReplacer = function(attr) {
+		if (attr.indexOf('{attribution.') === -1) {
+			return attr;
+		}
+		return attr.replace(/\{attribution.(\w*)\}/,
+			function (match, attributionName) {
+				return attributionReplacer(mxn.BaseMapProviders[attributionName].options.attribution);
+			}
+		);
+	};
+
+	provider.options.attribution = attributionReplacer(provider.options.attribution);
+
+	tileMap = new mxn.TileMap(provider);
+	return tileMap;
 };
 
 Mapstraction.prototype.getDefaultBaseMap = function(type) {
@@ -2359,16 +2328,16 @@ Radius.prototype.getPolyline = function(radius, color) {
 
 //////////////////////////////
 //
-//  BaseMap
+//  TileMap
 //
 ///////////////////////////////
 
 /**
- * <p>Creates a standalone Mapstraction base map, which can be selected for display in addition
- * to the built in Mapstraction map types. When added to the map, a base map is automatically
+ * <p>Creates a standalone Mapstraction tile map, which can be selected for display in addition
+ * to the built in Mapstraction map types. When added to the map, a tile map is automatically
  * added to the Mapstraction Map Type control, if present.</p>
  *
- * <p>Creating a BaseMap requires providing a templated map tile server URL. Use the following
+ * <p>Creating a TileMap requires providing a templated map tile server URL. Use the following
  * template codes to specify where the parameters should be substituted in the templated URL.
  * <ul>
  * <li><code>{S}</code> is the (optional) subdomain to be used in the URL.</li>
@@ -2387,194 +2356,66 @@ Radius.prototype.getPolyline = function(radius, color) {
  * </ul>
  * </p>
  * 
- * @name mxn.BaseMap
+ * @name mxn.TileMap
  * @constructor
- * @param {Object} properties Object literal that defines the base map.
- * @param {String} properties.url Template URL of the base map.
- * @param {String} properties.name The name of the base map; this should be unique across all base maps added to the map.
- * @param {String} properties.options.label The label to be used for the base map in the Map Type control.
- * @param {String} [properties.options.alt] Alternate text for the base map; used as hover text if the Map Type control supports this.
- * @param {String} [properties.options.attribution] The attribution and/or copyright text to use for the base map.
- * @param {Float} [properties.options.opacity] The opacity of the base map; from 0.0 (transparent) to 1.0 (opaque). Default: 1.0.
- * @param {Int} [properties.options.minZoom] Minimum (furthest out) zoom level that the base map tiles are available for. Default: 1.
- * @param {Int} [properties.options.maxZoom] Maximum (closest in) zoom level that the base map tiles are available for. Default: 18.
- * @param {String|String[]} [properties.options.subdomains] List of subdomains that the base map tiles served from <code>url</code> refers to. Can be specified as a string, <code>abc</code> or as an array, <code>[1, 2, 3]</code>
- * @return {Object} The base map object
- * @exports BaseMap as mxn.BaseMap
+ * @param {Object} properties Object literal that defines the tile map.
+ * @param {String} properties.url Template URL of the tile map.
+ * @param {String} properties.name The name of the tile map; this should be unique across all tile maps added to the map.
+ * @param {String} properties.options.label The label to be used for the tile map in the Map Type control.
+ * @param {String} [properties.options.alt] Alternate text for the tile map; used as hover text if the Map Type control supports this.
+ * @param {String} [properties.options.attribution] The attribution and/or copyright text to use for the tile map.
+ * @param {Float} [properties.options.opacity] The opacity of the tile map; from 0.0 (transparent) to 1.0 (opaque). Default: 1.0.
+ * @param {Int} [properties.options.minZoom] Minimum (furthest out) zoom level that the tile map tiles are available for. Default: 1.
+ * @param {Int} [properties.options.maxZoom] Maximum (closest in) zoom level that the tile map tiles are available for. Default: 18.
+ * @param {String|String[]} [properties.options.subdomains] List of subdomains that the tile map tiles served from <code>url</code> refers to. Can be specified as a string, <code>abc</code> or as an array, <code>[1, 2, 3]</code>
+ * @return {Object} The tile map object
+ * @exports TileMap as mxn.TileMap
  */
 
-var BaseMap = mxn.BaseMap = function(properties) {
+var TileMap = mxn.TileMap = function(properties) {
 	this.api = null;
-	this.properties = {
-		url: properties.url,
-		name: properties.name,
-		options: {
-			label: properties.options.label,
-			alt: (properties.options.alt || null),
-			attribution: (properties.options.attribution || null),
-			opacity: (properties.options.opacity || 1.0),
-			minZoom: (properties.options.minZoom ? Number(properties.options.minZoom) : 1),
-			maxZoom: (properties.options.maxZoom ? Number(properties.options.maxZoom) : 18),
-			subdomains: (properties.options.subdomains || null)
-		}
-	};
+	this.mxn = null;
+	this.map = null;
 	this.index = null;
-	this.proprietary_tilemap = null;
-	this.invoker = new mxn.Invoker(this, 'BaseMap', function() {
+	this.prop_tilemap = null;
+	this.options = null;
+	this.properties = this.applyDefaults(properties);
+	this.invoker = new mxn.Invoker(this, 'TileMap', function() {
 		return this.api;
 	});
 
 	mxn.addEvents(this, [
-		/**
-		 * An mxn.BaseMap has been added to the Map Type control (if present) <code>{baseMap: BaseMap}</code>
-		 * @name mxn.BaseMap#baseMapAdded
-		 * @event
-		 */
-		'baseMapControlAdded',
-		
-		/**
-		 * An mxn.BaseMap has been removed from the Map Type control (if present) <code>{baseMap: BaseMap}</code>
-		 * @name mxn.BaseMap#baseMapRemoved
-		 * @event
-		 */
-		'baseMapControlRemoved'
+		'tileMapAdded',
+		'tileMapAddedToMapTypeControl',
+		'tileMapRemovedFromMapTypeControl',
+		'tileMapShown',
+		'tileMapHidden'
 	]);
 };
 
-mxn.addProxyMethods(BaseMap, [
-	/**
-	 * Adds the BaseMap to the Map Type control, if present.
-	 * @name mxn.BaseMap#addControl
-	 * @function
-	 * @param {string} api The API ID of the proprietary BaseMap
-	 */
-	'addControl',
-
-	/**
-	 * Removes the BaseMap from the Map Type control, if present.
-	 * @name mxn.BaseMap#removeControl
-	 * @function
-	 * @param {string} api The API ID of the proprietary BaseMap
-	 */
-	'removeControl',
-
-	/**
-	 * Converts the current BaseMap to a proprietary instance for the API specified by the <code>api</code> argument.
-	 * @name mxn.BaseMap#toProprietary
-	 * @function
-	 * @param {string} api The API ID of the proprietary BaseMap
-	 * @returns {Object} A Proprietary BaseMap object
-	 */
-	'toProprietary'
-	]);
-
-//////////////////////////////
-//
-//  OverlayMap
-//
-///////////////////////////////
-
-/**
- * <p>Creates a Mapstraction overlay map, which can be displayed on top of the currently
- * selected Mapstraction base map. Unlike base maps, overlay maps remain in view, on top
- * of the currently selected base map until they are hidden. Overlay maps are not added
- * to the Mapstraction Map Type control.</p>
- *
- * <p>Creating an OverlayMap requires providing a templated map tile server URL. Use the following
- * template codes to specify where the parameters should be substituted in the templated URL.
- * <ul>
- * <li><code>{S}</code> is the (optional) subdomain to be used in the URL.</li>
- * <li><code>{Z}</code> is the zoom level.</li>
- * <li><code>{X}</code> is the longitude of the tile.</li>
- * <li><code>{Y}</code> is the latitude of the tile.</li>
- * </ul>
- * </p>
- *
- * <p>Some examples of templated tile server URLs are ...	
- * <ul>
- * <li>OpenWeatherMap Clouds - <code>http://{s}.tile.openweathermap.org/map/clouds/{z}/{x}/{y}.png</code></li>
- * <li>OpenWeatherMap Pressure Contours - <code>http://{s}.tile.openweathermap.org/map/pressure_cntr/{z}/{x}/{y}.png</code></li>
- * </ul>
- * </p>
- * 
- * @name mxn.OverlayMap
- * @constructor
-
-* @param {Object} properties Object literal that defines the overlay map.
-* @param {String} properties.url Template URL of the overlay map.
-* @param {String} properties.name The name of the overlay map; this should be unique across all overlay maps added to the map.
-* @param {String} [properties.options.attribution] The attribution and/or copyright text to use for the overlay map.
-* @param {Float} [properties.options.opacity] The opacity of the overlay map; from 0.0 (transparent) to 1.0 (opaque). Default: 1.0.
-* @param {Int} [properties.options.minZoom] Minimum (furthest out) zoom level that the overlay map tiles are available for. Default: 1.
-* @param {Int} [properties.options.maxZoom] Maximum (closest in) zoom level that the base overlay tiles are available for. Default: 18.
-* @param {String|String[]} [properties.options.subdomains] List of subdomains that the base overlay tiles served from <code>url</code> refers to. Can be specified as a string, <code>abc</code> or as an array, <code>[1, 2, 3]</code>
- * @return {Object} The overlay map object
- * @exports OverlayMap as mxn.OverlayMap
- */
-
-var OverlayMap = mxn.OverlayMap = function(properties) {
-	this.api = null;
-	this.properties = {
-		url: properties.url,
-		name: properties.name,
-		options: {
-			label: properties.options.label,
-			alt: (properties.options.alt || null),
-			attribution: (properties.options.attribution || null),
-			opacity: (properties.options.opacity || 1.0),
-			minZoom: (properties.options.minZoom ? Number(properties.options.minZoom) : 1),
-			maxZoom: (properties.options.maxZoom ? Number(properties.options.maxZoom) : 18),
-			subdomains: (properties.options.subdomains || null)
-		}
-	};
-	this.index = null;
-	this.proprietary_tilemap = null;
-	this.invoker = new mxn.Invoker(this, 'OverlayMap', function() {
-		return this.api;
-	});
-	
-	mxn.addEvents(this, [
-		/**
-		 * OverlayMap is shown {overlayMap: OverlayMap}
-		 * @name mxn.OverlayMap#overlayMapShown
-		 * @event
-		 */
-		'overlayMapShown',
-		
-		/**
-		 * OverlayMap is hidden {overlayMap: OverlayMap}
-		 * @name mxn.OverlayMap#overlayMapHidden
-		 * @event
-		 */
-		'overlayMapHidden'
-	]);
-};
-
-mxn.addProxyMethods(OverlayMap, [
-	/**
-	 * Hides a previously added or shown OverlayMap.
-	 * @name mxn.OverlayMap#show
-	 * @function
-	 * @param {string} api The API ID of the proprietary OverlayMap
-	 */
+mxn.addProxyMethods(TileMap, [
+	'addToMapTypeControl',
 	'hide',
-
-	/**
-	 * Shows a previously added or hidden OverlayMap.
-	 * @name mxn.OverlayMap#hide
-	 * @function
-	 * @param {string} api The API ID of the proprietary OverlayMap
-	 */
+	'removeFromMapTypeControl',
 	'show',
-
-	/**
-	 * Converts the current OverlayMap to a proprietary instance for the API specified by the <code>api</code> argument.
-	 * @name mxn.OverlayMap#toProprietary
-	 * @function
-	 * @param {string} api The API ID of the proprietary OverlayMap
-	 * @returns {Object} A Proprietary Overlayap object
-	 */
 	'toProprietary'
 	]);
+	
+mxn.TileMap.prototype.applyDefaults = function(properties) {
+	return {
+		url: properties.url,
+		name: properties.name,
+		type: properties.type,
+		options: {
+			label: properties.options.label,
+			alt: (properties.options.alt || null),
+			attribution: (properties.options.attribution || null),
+			opacity: (properties.options.opacity || 1.0),
+			minZoom: (properties.options.minZoom ? Number(properties.options.minZoom) : 1),
+			maxZoom: (properties.options.maxZoom ? Number(properties.options.maxZoom) : 18),
+			subdomains: (properties.options.subdomains || null)
+		}
+	};
+};
 	
 })();

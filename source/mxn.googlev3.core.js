@@ -558,6 +558,15 @@ Mapstraction: {
 		return tileMap;
 	},
 	
+	addTileMap: function(tileMap) {
+		var map = this.maps[this.api];
+		var prop_tilemap = tileMap.toProprietary(this.api);
+
+		map.mapTypes.set(tileMap.properties.options.label, prop_tilemap);
+
+		return prop_tilemap;
+	},
+	
 	addOverlayMap: function(overlayMap) {
 		return overlayMap.toProprietary(this.api);
 	},
@@ -836,139 +845,133 @@ Polyline: {
 	}
 },
 
-BaseMap: {
-	addControl: function() {
-		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': A BaseMap must be added to the map before calling addControl()');
+TileMap: {
+	addToMapTypeControl: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling addControl()');
 		}
 
-		if (!this.mapstraction.customBaseMaps[this.index].inControl) {
-			this.mapstraction.customBaseMaps[this.index].inControl = true;
+		// Google v3 only supports adding/removing Base Map type tile overlays to the map type
+		// control. If this is an Overlay Map, just return with no action; it seems excessive
+		// to throw an exception for this to my mind.
 
-			var map_ids = [
-				google.maps.MapTypeId.ROADMAP,
-				google.maps.MapTypeId.HYBRID,
-				google.maps.MapTypeId.SATELLITE,
-				google.maps.MapTypeId.TERRAIN
-			];
+		if (this.properties.type === mxn.Mapstraction.TileType.BASE) {
+			var tileCache = this.mxn.customBaseMaps;
 
-			for (var id in this.mapstraction.customBaseMaps) {
-				if (this.mapstraction.customBaseMaps[id].inControl) {
-					map_ids.push(this.mapstraction.customBaseMaps[id].label);
+			if (!tileCache[this.index].inControl) {
+				tileCache[this.index].inControl = true;
+
+				var map_ids = [
+					google.maps.MapTypeId.ROADMAP,
+					google.maps.MapTypeId.HYBRID,
+					google.maps.MapTypeId.SATELLITE,
+					google.maps.MapTypeId.TERRAIN
+				];
+
+				for (var id in tileCache) {
+					if (tileCache[id].inControl) {
+						map_ids.push(tileCache[id].label);
+					}
 				}
-			}
 
-			this.map.setOptions({
-				mapTypeControlOptions: {
-					mapTypeIds: map_ids
-				}
-			});
-			
-			this.baseMapControlAdded.fire({
-				'baseMap': this
-			});
-		}
-	},
+				this.map.setOptions({
+					mapTypeControlOptions: {
+						mapTypeIds: map_ids
+					}
+				});
 
-	removeControl: function() {
-		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': An BaseMap must be added to the map before calling removeControl()');
-		}
-
-		if (this.mapstraction.customBaseMaps[this.index].inControl) {
-			this.mapstraction.customBaseMaps[this.index].inControl = false;
-
-			var map_ids = [
-				google.maps.MapTypeId.ROADMAP,
-				google.maps.MapTypeId.HYBRID,
-				google.maps.MapTypeId.SATELLITE,
-				google.maps.MapTypeId.TERRAIN
-			];
-
-			for (var id in this.mapstraction.customBaseMaps) {
-				if (this.mapstraction.customBaseMaps[id].inControl) {
-					map_ids.push(this.mapstraction.customBaseMaps[id].label);
-				}
-			}
-
-			this.map.setOptions({
-				mapTypeControlOptions: {
-					mapTypeIds: map_ids
-				}
-			});
-
-			if (this.map.getMapTypeId() === this.properties.options.label) {
-				this.map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+				this.tileMapAddedToMapTypeControl.fire({
+					'tileMap': this
+				});
 			}
 		}
-		
-		this.baseMapControlRemoved.fire({
-			'baseMap': this
-		});
 	},
 	
-	toProprietary: function() {
-		var self = this;
-		var tile_options = {
-			getTileUrl: function (coord, zoom) {
-				var url = mxn.util.sanitizeTileURL(self.properties.url);
-				if (self.properties.options.subdomains !== null) {
-					url = mxn.util.getSubdomainTileURL(url, self.properties.options.subdomains);
-				}
-				var x = coord.x;
-				var maxX = Math.pow(2, zoom);
-				while (x < 0) {
-					x += maxX;
-				}
-				while (x >= maxX) {
-					x -= maxX;
-				}
-				url = url.replace(/\{Z\}/gi, zoom);
-				url = url.replace(/\{X\}/gi, x);
-				url = url.replace(/\{Y\}/gi, coord.y);
-				return url;
-			},
-			tileSize: new google.maps.Size(256, 256),
-			isPng: true,
-			minZoom: self.properties.options.minZoom,
-			maxZoom: self.properties.options.maxZoom,
-			opacity: self.properties.options.opacity,
-			name: self.properties.options.label,
-			alt: self.properties.options.alt
-		};
-
-		return new google.maps.ImageMapType(tile_options);
-	}
-},
-
-OverlayMap: {
 	hide: function() {
-		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': An OverlayMap must be added to the map before calling hide()');
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling hide()');
 		}
 
-		if (this.mapstraction.overlayMaps[this.index].visible) {
-			this.map.overlayMapTypes.setAt(this.index, null);
-			this.mapstraction.overlayMaps[this.index].visible = false;
+		// For Google v3 it doesn't make sense to show/hide a Base Map type tile overlay
+		
+		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			var tileCache = this.mxn.overlayMaps;
 			
-			this.overlayMapHidden.fire({
-				'overlayMap': this
-			});
+			if (tileCache[this.index].visible) {
+				this.map.overlayMapTypes.setAt(this.index, null);
+				tileCache[this.index].visible = false;
+
+				this.tileMapHidden.fire({
+					'tileMap': this
+				});
+			}
 		}
 	},
-	
-	show: function() {
-		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': An OverlayMap must be added to the map before calling show()');
+
+	removeFromMapTypeControl: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling removeFromMapTypeControl()');
 		}
 
-		if (!this.mapstraction.overlayMaps[this.index].visible) {
-			this.map.overlayMapTypes.setAt(this.index, this.proprietary_tilemap);
-			this.mapstraction.overlayMaps[this.index].visible = true;
-			
-			this.overlayMapShown.fire({
-				'overlayMap': this
+		// Google v3 only supports adding/removing Base Map type tile overlays to the map type
+		// control. If this is an Overlay Map, just return with no action; it seems excessive
+		// to throw an exception for this to my mind.
+		
+		if (this.properties.type === mxn.Mapstraction.TileType.BASE) {
+			var tileCache = this.mxn.customBaseMaps;
+
+			if (tileCache[this.index].inControl) {
+				tileCache[this.index].inControl = false;
+
+				var map_ids = [
+					google.maps.MapTypeId.ROADMAP,
+					google.maps.MapTypeId.HYBRID,
+					google.maps.MapTypeId.SATELLITE,
+					google.maps.MapTypeId.TERRAIN
+				];
+
+				for (var id in tileCache) {
+					if (tileCache[id].inControl) {
+						map_ids.push(tileCache[id].label);
+					}
+				}
+
+				this.map.setOptions({
+					mapTypeControlOptions: {
+						mapTypeIds: map_ids
+					}
+				});
+
+				if (this.map.getMapTypeId() === this.properties.options.label) {
+					this.map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+				}
+			}
+
+			this.tileMapRemovedFromMapTypeControl.fire({
+				'tileMap': this
 			});
+			
+		}
+	},
+
+	show: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling show()');
+		}
+
+		// For Google v3 it doesn't make sense to show/hide a Base Map type tile overlay
+		
+		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			var tileCache = this.mxn.overlayMaps;
+
+			if (!tileCache[this.index].visible) {
+				this.map.overlayMapTypes.setAt(this.index, this.prop_tilemap);
+				tileCache[this.index].visible = true;
+			
+				this.tileMapShown.fire({
+					'tileMap': this
+				});
+			}
 		}
 	},
 	
@@ -995,10 +998,10 @@ OverlayMap: {
 			},
 			tileSize: new google.maps.Size(256, 256),
 			isPng: true,
-			minZoom: self.minZoom,
-			maxZoom: self.maxZoom,
-			opacity: self.opacity,
-			name: self.label
+			minZoom: self.properties.options.minZoom,
+			maxZoom: self.properties.options.maxZoom,
+			opacity: self.properties.options.opacity,
+			name: self.properties.options.label
 		};
 		
 		return new google.maps.ImageMapType(tile_options);
