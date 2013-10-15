@@ -2378,7 +2378,6 @@ var TileMap = mxn.TileMap = function(properties) {
 	this.map = null;
 	this.index = null;
 	this.prop_tilemap = null;
-	this.options = null;
 	this.properties = this.applyDefaults(properties);
 	this.invoker = new mxn.Invoker(this, 'TileMap', function() {
 		return this.api;
