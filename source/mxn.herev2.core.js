@@ -534,12 +534,12 @@ Mapstraction: {
 		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 	
-	addBaseMap: function(baseMap) {
-		return baseMap.toProprietary(this.api);
-	},
-	
-	addOverlayMap: function(overlayMap) {
-		return overlayMap.toProprietary(this.api);
+	addTileMap: function(tileMap) {
+		if (tileMap.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			return tileMap.toProprietary(this.api);
+		}
+
+		throw new Error('mxn.Mapstraction.TileType.BASE is not supported by provider ' + this.api);
 	},
 	
 	getPixelRatio: function() {
@@ -756,44 +756,6 @@ Polyline: {
 	}
 },
 
-BaseMap: {
-	addControl: function() {
-		
-	},
-	
-	removeControl: function() {
-		
-	},
-	
-	toProprietary: function() {
-		var self = this;
-		var options = {
-			getUrl: function(zoom, row, column) {
-				var url = mxn.util.sanitizeTileURL(self.properties.url);
-				if (self.properties.options.subdomains !== null) {
-					url = mxn.util.getSubdomainTileURL(url, self.properties.options.subdomains);
-				}
-
-				// The HERE API doesn't know about templated tile URLs. No. Really
-				url = url.replace(/\{z\}/gi, zoom).replace(/\{x\}/gi, column).replace(/\{y\}/gi, row);
-				return url;
-			},
-			max: this.properties.options.maxZoom,
-			min: this.properties.options.minZoom,
-			opacity: this.properties.options.opacity,
-			alpha: true,
-			getCopyrights: function(area, zoom) {
-				return [{
-					label: this.properties.options.attribution,
-					alt: this.properties.options.attribution
-				}];
-			}
-		};
-		
-		return new nokia.maps.map.provider.ImgTileProvider(options);
-	}
-},
-
 // Code Health Warning
 //
 // The Nokia/HERE API doesn't (currently) support custom base map tiles. The workaround
@@ -809,37 +771,66 @@ BaseMap: {
 //
 // All in all a horrible fugly cludge. I apologise to anyone reading this unreservedly.
 
-OverlayMap: {
+TileMap: {
+	addToMapTypeControl: function() {
+		
+	},
+	
 	hide: function() {
-		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': An OverlayMap must be added to the map before calling hide()');
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling hide()');
 		}
 		
-		if (this.mapstraction.overlayMaps[this.index].visible) {
-			this.mapstraction.overlayMaps[this.index].visible = false;
+		var tileCache = null;
+		var index = this.index;
+
+		if (this.properties.type === mxn.Mapstraction.TileType.BASE) {
+			tileCache = this.mxn.customBaseMaps;
+		}
+		else {
+			tileCache = this.mxn.overlayMaps;
+			index += 1000;
+		}
+		
+		if (tileCache[this.index].visible) {
+			tileCache[this.index].visible = false;
 			
-			var index = this.index + 1000;
 			this.map.overlays.removeAt(index);
 			
-			this.overlayMapHidden.fire({
-				'overlayMap': this
+			this.tileMapHidden.fire({
+				'tileMap': this
 			});
 		}
 	},
 	
+	removeFromMapTypeControl: function() {
+		
+	},
+	
 	show: function() {
-		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': An OverlayMap must be added to the map before calling show()');
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling show()');
 		}
 
-		if (!this.mapstraction.overlayMaps[this.index].visible) {
-			this.mapstraction.overlayMaps[this.index].visible = true;
+		var tileCache = null;
+		var index = this.index;
+
+		if (this.properties.type === mxn.Mapstraction.TileType.BASE) {
+			tileCache = this.mxn.customBaseMaps;
+		}
+		else {
+			tileCache = this.mxn.overlayMaps;
+			index += 1000;
+		}
+
+		if (!tileCache[this.index].visible) {
+			tileCache[this.index].visible = true;
 			
-			var index = this.index + 1000;
-			this.map.overlays.add(this.proprietary_tilemap, index);
+			//this.map.overlays.add(this.prop_tilemap, index);
+			this.map.overlays.add(this.prop_tilemap);
 			
-			this.overlayMapShown.fire({
-				'overlayMap': this
+			this.tileMapShown.fire({
+				'tileMap': this
 			});
 		}
 	},
