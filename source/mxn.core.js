@@ -1208,9 +1208,9 @@ Mapstraction.prototype.providerToTileMap = function(providerName) {
 			label: mxn.BaseMapProviders[tileName].options.label,
 			alt: mxn.BaseMapProviders[tileName].options.alt,
 			attribution: null,
-			opacity: null,
-			minZoom: null,
-			maxZoom: null,
+			opacity: 1.0,
+			minZoom: 1,
+			maxZoom: 18,
 			subdomains: null
 		}
 	};
