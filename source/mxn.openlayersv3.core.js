@@ -477,6 +477,10 @@ mxn.register('openlayersv3', {
 			return baseMap.toProprietary(this.api);
 		},
 		
+		addTileMap: function(tileMap) {
+			return tileMap.toProprietary(this.api);
+		},		
+			
 		addOverlayMap: function(overlayMap) {
 			return overlayMap.toProprietary(this.api);
 		},
@@ -640,6 +644,7 @@ mxn.register('openlayersv3', {
 			this.proprietary_marker.layer.redraw();		
 		},
 
+
 		show: function() {
 			this.proprietary_marker.style.display = 'true';
 			this.proprietary_marker.layer.redraw();
@@ -705,112 +710,59 @@ mxn.register('openlayersv3', {
 		}
 	},
 
-BaseMap: {
-	addControl: function() {
+TileMap: {
+	addToMapTypeControl : function() {
 		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': A BaseMap must be added to the map before calling addControl()');
+			throw new Error(this.api + ': A TileMap must be added to the map before calling addControl()');
 		}
 
-		if (!this.mapstraction.customBaseMaps[this.index].inControl) {
-			this.mapstraction.customBaseMaps[this.index].inControl = true;
-			this.mapstraction.layers[this.properties.options.label] = this.proprietary_tilemap;
-			if (typeof(this.mapstraction.controls.map_type) !== "undefined") {
-				this.mapstraction.controls.map_type.addBaseLayer(this.proprietary_tilemap, this.properties.options.label);
+		if (!this.mxn.customBaseMaps[this.index].inControl) {
+			this.mxn.customBaseMaps[this.index].inControl = true;
+			this.mxn.layers[this.properties.options.label] = this.proprietary_tilemap;
+			if (this.mxn.controls.map_type !== null && typeof(this.mxn.controls.map_type) !== "undefined") {
+				this.mxn.controls.map_type.addBaseLayer(this.proprietary_tilemap, this.properties.options.label);
 			}
 		}
 	},
 	
-	removeControl: function() {
+	removeFromMapTypeControl : function() {
 		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': A BaseMap must be added to the map before calling removeControl()');
+			throw new Error(this.api + ': A TileMap must be added to the map before calling removeControl()');
 		}
 
-		if (this.mapstraction.customBaseMaps[this.index].inControl) {
-			this.mapstraction.customBaseMaps[this.index].inControl = false;
-			delete this.mapstraction.layers[this.properties.options.label];
-			if (typeof(this.mapstraction.controls.map_type) !== "undefined") {
-				this.mapstraction.controls.map_type.removeLayer(this.proprietary_tilemap);
+		if (this.mxn.customBaseMaps[this.index].inControl) {
+			this.mxn.customBaseMaps[this.index].inControl = false;
+			delete this.mxn.layers[this.properties.options.label];
+			if (typeof(this.mxn.controls.map_type) !== "undefined") {
+				this.mxn.controls.map_type.removeLayer(this.proprietary_tilemap);
 			}
 		}
 	},
 	
-	toProprietary: function() {
-		var urls = null;
-		var url = mxn.util.sanitizeTileURL(this.properties.url);
-		var subdomains = this.properties.options.subdomains;
-		var source;
-		
-		if (this.properties.options.subdomains !== null) {
-			var pos = url.search('{s}');
-			if (pos !== -1) {
-				var i = 0;
-				var domain;
-				urls = [];
-				
-				for(i = 0; i < subdomains.length; i++) {
-					if (typeof subdomains === 'string') {
-						domain = subdomains.substring(i, i + 1);
-					}
-					
-					else {
-						domain = subdomains[i];
-					}
-					
-					if (typeof domain !== 'undefined') {
-						urls.push(url.replace(/\{s\}/g, domain));
-					}
-				}
-			}
-		}
-	
-		if (urls !== null)
-		{
-			source = new ol.source.XYZ({
-				attributions: [new ol.Attribution({html: this.properties.options.attribution})],
-				urls: urls
-			});
-		} else {
-			source = new ol.source.XYZ({
-				attributions: [new ol.Attribution({html: this.properties.options.attribution})],
-				url: url
-			});
-		}
-
-		var options = {
-			//minZoom: this.properties.options.minZoom,
-			//maxZoom: this.properties.options.maxZoom,
-			//name: this.properties.options.label,
-			opacity: this.properties.opacity,
-			//zIndex: this.index
-			projection: 'EPSG:4326',
-			source: source
-		};
-
-		return new ol.layer.Tile(options);
-	}
-},
-
-	
-OverlayMap: {
 	hide: function() {
 		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': An OverlayMap must be added to the map before calling hide()');
+			throw new Error(this.api + ': A TileMap must be added to the map before calling hide()');
 		}
 
-		if (this.mapstraction.overlayMaps[this.index].visible) {
-			this.mapstraction.overlayMaps[this.index].visible = false;
-			this.map.removeLayer(this.proprietary_tilemap);
+		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY)
+		{
+			if (this.mxn.overlayMaps[this.index].visible) {
+				this.mxn.overlayMaps[this.index].visible = false;
+				this.map.removeLayer(this.proprietary_tilemap);
+			}
 		}
 	},
 	
 	show: function() {
 		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': An OverlayMap must be added to the map before calling show()');
+			throw new Error(this.api + ': A TileMap must be added to the map before calling show()');
 		}
 		
-		if (!this.mapstraction.overlayMaps[this.index].visible) {
-			this.mapstraction.overlayMaps[this.index].visible = true;
-			this.map.addLayer(this.proprietary_tilemap, false);
+		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			if (!this.mxn.overlayMaps[this.index].visible) {
+				this.mxn.overlayMaps[this.index].visible = true;
+				this.map.addLayer(this.proprietary_tilemap, false);
+			}
 		}
 	},
 	
