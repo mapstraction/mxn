@@ -1156,9 +1156,9 @@ Mapstraction.prototype.addTileMap = function(tileMap, options) {
 			name: tileMap.properties.name,
 			label: tileMap.properties.options.label,
 			url: tileMap.properties.url,
-			tileObject: tileMap.prop_tilemap,
-			inControl: false,
 			index: tileMap.index,
+			inControl: false,
+			visible: false,
 			tileMap: tileMap
 		};
 		

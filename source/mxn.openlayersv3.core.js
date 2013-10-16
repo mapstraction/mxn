@@ -51,7 +51,7 @@ mxn.register('openlayersv3', {
 				center: [0, 0],
 				zoom: 3
 			  }),
-			  layers: [baseMap.tileObject],
+			  layers: [baseMap.tileMap.prop_tilemap],
 			  target: element,
 			  renderer: ol.RendererHint.CANVAS //needed as webGL doesn't support vector layers yet
 			});
@@ -380,13 +380,13 @@ mxn.register('openlayersv3', {
 			var layers = [];
 			var map = this.maps[this.api];
 			var fn = function(elem, index, array) { 
-						if (elem === this.customBaseMaps[i].tileObject) {
+						if (elem === this.customBaseMaps[i].tileMap.prop_tilemap) {
 							layers.push(elem);
 						}};
 
 			for (i=0; i<this.customBaseMaps.length; i++) {
 				if (this.customBaseMaps[i].name === name) {
-					map.addLayer(this.customBaseMaps[i].tileObject, true);
+					map.addLayer(this.customBaseMaps[i].tileMap.prop_tilemap, true);
 				}
 				else {
 					map.getLayers().forEach(fn, this);

@@ -45,7 +45,7 @@ Mapstraction: {
 		this.initBaseMaps();
 
 		for (var i=0; i<this.customBaseMaps.length; i++) {
-			this.layers[this.customBaseMaps[i].label] = this.customBaseMaps[i].tileObject;
+			this.layers[this.customBaseMaps[i].label] = this.customBaseMaps[i].tileMap.prop_tilemap;
 		}
 		
 		// Code Health Warning
@@ -91,7 +91,7 @@ Mapstraction: {
 			var defaultMap = this.getDefaultBaseMap(this.currentMapType);
 			var baseMap = this.getCustomBaseMap(defaultMap.providerType);
 			
-			options.layers = [baseMap.tileObject];
+			options.layers = [baseMap.tileMap.prop_tilemap];
 			
 			if (properties.hasOwnProperty('dragging')) {
 				options.dragging = properties.dragging;
@@ -211,7 +211,7 @@ Mapstraction: {
 				}
 				
 				else {
-					if (e.type === 'layeradd' && self.customBaseMaps[c].tileObject == e.layer) {
+					if (e.type === 'layeradd' && self.customBaseMaps[c].tileMap.prop_tilemap == e.layer) {
 						layerName = self.customBaseMaps[c].name;
 						break;
 					}
@@ -394,16 +394,16 @@ Mapstraction: {
 		return map.getBoundsZoom(bounds);
 	},
 
-	// TODO: set this.currentMapType and bale out with an exception if no map type matches
 	setMapType: function(mapType) {
 		var i;
 		var name = null;
 		
+		if (this.currentMapType === mapType) {
+			return;
+		}
+		
 		for (i=0; i<this.defaultBaseMaps.length; i++) {
 			if (this.defaultBaseMaps[i].mxnType === mapType) {
-				if (this.currentMapType === this.defaultBaseMaps[i].mxnType) {
-					return;
-				}
 				name = this.defaultBaseMaps[i].providerType;
 				break;
 			}
@@ -415,20 +415,28 @@ Mapstraction: {
 
 		var layers = [];
 		var map = this.maps[this.api];
-
+		var foundMapType = false;
+		
 		for (i=0; i<this.customBaseMaps.length; i++) {
 			if (this.customBaseMaps[i].name === name) {
-				map.addLayer(this.customBaseMaps[i].tileObject, true);
+				map.addLayer(this.customBaseMaps[i].tileMap.prop_tilemap, true);
+				foundMapType = true;
 			}
 			
-			else if (map.hasLayer(this.customBaseMaps[i].tileObject)) {
-				layers.push(this.customBaseMaps[i].tileObject);
+			else if (map.hasLayer(this.customBaseMaps[i].tileMap.prop_tilemap)) {
+				layers.push(this.customBaseMaps[i].tileMap.prop_tilemap);
 			}
 		}
 
-		this.currentMapType = mapType;
-		for (i=0; i<layers.length; i++) {
-			map.removeLayer(layers[i]);
+		if (foundMapType) {
+			this.currentMapType = mapType;
+			for (i=0; i<layers.length; i++) {
+				map.removeLayer(layers[i]);
+			}
+		}
+		
+		else {
+			throw new Error(this.api + ': unable to find definition for map type ' + mapType);
 		}
 	},
 

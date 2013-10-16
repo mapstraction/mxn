@@ -8,6 +8,30 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		this.defaultBaseMaps = [
+			{
+				mxnType: mxn.Mapstraction.ROAD,
+				providerType: Microsoft.Maps.MapTypeId.road,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.SATELLITE,
+				providerType: Microsoft.Maps.MapTypeId.aerial,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.HYBRID,
+				providerType: Microsoft.Maps.MapTypeId.birdseye,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.PHYSICAL,
+				providerType: Microsoft.Maps.MapTypeId.road,
+				nativeType: true
+			}
+		];
+		this.initBaseMaps();
+		
 		var options = {
 			credentials: microsoftv7_key,
 			enableClickableLogo: false,
@@ -401,50 +425,15 @@ Mapstraction: {
 		throw new Error('Mapstraction.addOverlay is not currently supported by provider ' + this.api);
 	},
 
-	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-		var map = this.maps[this.api];
-		var z_index = this.tileLayers.length || 0;
-
-		 var newtileobj = {
-			getTileUrl: function(tile){
-				if (typeof subdomains !== 'undefined') {
-					tile_url = mxn.util.getSubdomainTileURL(tile_url, subdomains);
-				}
-			
-				return tile_url.replace(/\{Z\}/gi, tile.levelOfDetail).replace(/\{X\}/gi, tile.x).replace(/\{Y\}/gi, tile.y);
-			}
-		 };
-
-        var tileSource = new Microsoft.Maps.TileSource({ uriConstructor: newtileobj.getTileUrl});
-
-        var tileLayerOptions = {};
-        tileLayerOptions.mercator = tileSource;
-		tileLayerOptions.opacity = opacity;
-
-        // Construct the layer using the tile source
-        var tilelayer = new Microsoft.Maps.TileLayer(tileLayerOptions);
-
-        // Push the tile layer to the map
-        map.entities.push(tilelayer);
-		
-		this.tileLayers.push( [tile_url, tilelayer, true, z_index] );
-		return tilelayer;
-	},
-
-	toggleTileLayer: function(tile_url) {
-		var map = this.maps[this.api];
-		for (var f = 0; f < this.tileLayers.length; f++) {
-			var tileLayer = this.tileLayers[f];
-			if (tileLayer[0] == tile_url) {
-				if (tileLayer[2]) {
-					tileLayer[2] = false;
-				}
-				else {
-					tileLayer[2] = true;
-				}
-				tileLayer[1].setOptions({ visible: tileLayer[2]});
-			}
+	addTileMap: function(tileMap) {
+		if (tileMap.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			var map = this.maps[this.api];
+			var prop_tilemap = tileMap.toProprietary(this.api);
+			map.entities.push(prop_tilemap);
+			return prop_tilemap;
 		}
+
+		throw new Error('mxn.Mapstraction.TileType.BASE is not supported by provider ' + this.api);
 	},
 
 	getPixelRatio: function() {
@@ -626,7 +615,86 @@ Polyline: {
 
 	hide: function() {
 		this.proprietary_polyline.setOptions({visible:false});
-	}	
+	}
+},
+
+TileMap: {
+	addToMapTypeControl: function() {
+		// The Bing v7 API only allows the contents of the Map Type selector control to
+		// be set at the time the map is constructed, plus adding base maps to a map
+		// isn't supported either, so this function is effectively a no-op.
+	},
+	
+	hide: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling hide()');
+		}
+
+		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			var tileCache = this.mxn.overlayMaps;
+
+			if (tileCache[this.index].visible) {
+				this.prop_tilemap.setOptions({
+					visible: false
+				});
+				tileCache[this.index].visible = false;
+			
+				this.tileMapHidden.fire({
+					'tileMap': this
+				});
+			}
+		}
+	},
+	
+	removeFromMapTypeControl: function() {
+		// See note on TileMap.addToMapTypeControl() above
+	},
+	
+	show: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling show()');
+		}
+
+		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			var tileCache = this.mxn.overlayMaps;
+			if (!tileCache[this.index].visible) {
+				this.prop_tilemap.setOptions({
+					visible: true
+				});
+				tileCache[this.index].visible = true;
+			
+				this.tileMapShown.fire({
+					'tileMap': this
+				});
+			}
+		}
+	},
+	
+	toProprietary: function() {
+		var self = this;
+		var source_options = {
+			getTileUrl: function(tile) {
+				var url = mxn.util.sanitizeTileURL(self.properties.url);
+				if (typeof self.properties.options.subdomains !== 'undefined') {
+					url = mxn.util.getSubdomainTileURL(url, self.properties.options.subdomains);
+				}
+				url = url.replace(/\{Z\}/gi, tile.levelOfDetail);
+				url = url.replace(/\{X\}/gi, tile.x);
+				url = url.replace(/\{Y\}/gi, tile.y);
+				return url;
+			}
+		};
+		var tileSource = new Microsoft.Maps.TileSource({
+			uriConstructor: source_options.getTileUrl
+		});
+		var layer_options = {
+			mercator: tileSource,
+			opacity: self.properties.options.opacity,
+			visible: false
+		};
+		
+		return new Microsoft.Maps.TileLayer(layer_options);
+	}
 }
 
 });
