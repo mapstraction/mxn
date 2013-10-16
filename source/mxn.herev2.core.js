@@ -422,6 +422,9 @@ Mapstraction: {
 	},
 	
 	// TODO: set this.currentMapType and bale out with an exception if no map type matches
+	// TODO: there's no custom base map support in the HERE API, so bale out if the supplied
+	// map type isn't found in defaultBaseMaps
+	
 	setMapType: function(mapType) {
 		var map = this.maps[this.api];
 		var i;
@@ -445,10 +448,10 @@ Mapstraction: {
 			for (i=0; i<this.customBaseMaps.length; i++) {
 				var baseMap = this.customBaseMaps[i];
 				if (baseMap.name === mapType) {
-					map.overlays.add(baseMap.tileObject, baseMap.index);
+					map.overlays.add(baseMap.tileMap.prop_tilemap, baseMap.index);
 				}
 
-				else if (map.overlays.indexOf(baseMap.tileObject) >= 0) {
+				else if (map.overlays.indexOf(baseMap.tileMap.prop_tilemap) >= 0) {
 					layers.push(baseMap);
 				}
 			}
@@ -459,7 +462,7 @@ Mapstraction: {
 		
 		this.currentMapType = mapType;
 		for (i=0; i<layers.length && i<1000; i++) {
-			map.overlays.remove(layers[i].tileObject);
+			map.overlays.remove(layers[i].tileMap.prop_tilemap);
 		}
 
 		//throw new Error(this.api + ': unable to find definition for map type ' + mapType);
