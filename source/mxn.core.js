@@ -1159,7 +1159,8 @@ Mapstraction.prototype.addTileMap = function(tileMap, options) {
 			tileObject: tileMap.prop_tilemap,
 			inControl: false,
 			index: tileMap.index,
-			tileMap: tileMap
+			tileMap: tileMap,
+			visible: false
 		};
 		
 		tileCache.push(entry);
