@@ -436,52 +436,6 @@ Mapstraction: {
 		throw new Error('mxn.Mapstraction.TileType.BASE is not supported by provider ' + this.api);
 	},
 
-	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-		var map = this.maps[this.api];
-		var z_index = this.tileLayers.length || 0;
-
-		 var newtileobj = {
-			getTileUrl: function(tile){
-				if (typeof subdomains !== 'undefined') {
-					tile_url = mxn.util.getSubdomainTileURL(tile_url, subdomains);
-				}
-			
-				return tile_url.replace(/\{Z\}/gi, tile.levelOfDetail).replace(/\{X\}/gi, tile.x).replace(/\{Y\}/gi, tile.y);
-			}
-		 };
-
-        var tileSource = new Microsoft.Maps.TileSource({ uriConstructor: newtileobj.getTileUrl});
-
-        var tileLayerOptions = {};
-        tileLayerOptions.mercator = tileSource;
-		tileLayerOptions.opacity = opacity;
-
-        // Construct the layer using the tile source
-        var tilelayer = new Microsoft.Maps.TileLayer(tileLayerOptions);
-
-        // Push the tile layer to the map
-        map.entities.push(tilelayer);
-		
-		this.tileLayers.push( [tile_url, tilelayer, true, z_index] );
-		return tilelayer;
-	},
-
-	toggleTileLayer: function(tile_url) {
-		var map = this.maps[this.api];
-		for (var f = 0; f < this.tileLayers.length; f++) {
-			var tileLayer = this.tileLayers[f];
-			if (tileLayer[0] == tile_url) {
-				if (tileLayer[2]) {
-					tileLayer[2] = false;
-				}
-				else {
-					tileLayer[2] = true;
-				}
-				tileLayer[1].setOptions({ visible: tileLayer[2]});
-			}
-		}
-	},
-
 	getPixelRatio: function() {
 		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
