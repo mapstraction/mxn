@@ -394,16 +394,16 @@ Mapstraction: {
 		return map.getBoundsZoom(bounds);
 	},
 
-	// TODO: set this.currentMapType and bale out with an exception if no map type matches
 	setMapType: function(mapType) {
 		var i;
 		var name = null;
 		
+		if (this.currentMapType === mapType) {
+			return;
+		}
+		
 		for (i=0; i<this.defaultBaseMaps.length; i++) {
 			if (this.defaultBaseMaps[i].mxnType === mapType) {
-				if (this.currentMapType === this.defaultBaseMaps[i].mxnType) {
-					return;
-				}
 				name = this.defaultBaseMaps[i].providerType;
 				break;
 			}
@@ -415,10 +415,12 @@ Mapstraction: {
 
 		var layers = [];
 		var map = this.maps[this.api];
-
+		var foundMapType = false;
+		
 		for (i=0; i<this.customBaseMaps.length; i++) {
 			if (this.customBaseMaps[i].name === name) {
 				map.addLayer(this.customBaseMaps[i].tileMap.prop_tilemap, true);
+				foundMapType = true;
 			}
 			
 			else if (map.hasLayer(this.customBaseMaps[i].tileMap.prop_tilemap)) {
@@ -426,9 +428,15 @@ Mapstraction: {
 			}
 		}
 
-		this.currentMapType = mapType;
-		for (i=0; i<layers.length; i++) {
-			map.removeLayer(layers[i]);
+		if (foundMapType) {
+			this.currentMapType = mapType;
+			for (i=0; i<layers.length; i++) {
+				map.removeLayer(layers[i]);
+			}
+		}
+		
+		else {
+			throw new Error(this.api + ': unable to find definition for map type ' + mapType);
 		}
 	},
 

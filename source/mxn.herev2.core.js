@@ -421,10 +421,6 @@ Mapstraction: {
 		return map.getBestZoomLevel(nokia_bb);
 	},
 	
-	// TODO: set this.currentMapType and bale out with an exception if no map type matches
-	// TODO: there's no custom base map support in the HERE API, so bale out if the supplied
-	// map type isn't found in defaultBaseMaps
-	
 	setMapType: function(mapType) {
 		var map = this.maps[this.api];
 		var i;
@@ -438,72 +434,16 @@ Mapstraction: {
 		for (i=0; i<this.defaultBaseMaps.length; i++) {
 			if (this.defaultBaseMaps[i].mxnType === mapType) {
 				map.set('baseMapType', this.defaultBaseMaps[i].providerType);
-				provider = true;
+				this.currentMapType = mapType;
+				return;
 			}
 		}
-		
-		var layers = [];
 
-		if (!provider) {
-			for (i=0; i<this.customBaseMaps.length; i++) {
-				var baseMap = this.customBaseMaps[i];
-				if (baseMap.name === mapType) {
-					map.overlays.add(baseMap.tileMap.prop_tilemap, baseMap.index);
-				}
-
-				else if (map.overlays.indexOf(baseMap.tileMap.prop_tilemap) >= 0) {
-					layers.push(baseMap);
-				}
-			}
-		}
-		else {
-			layers = this.customBaseMaps;
-		}
-		
-		this.currentMapType = mapType;
-		for (i=0; i<layers.length && i<1000; i++) {
-			map.overlays.remove(layers[i].tileMap.prop_tilemap);
-		}
-
-		//throw new Error(this.api + ': unable to find definition for map type ' + mapType);
-
-		/*switch (type) {
-			case mxn.Mapstraction.ROAD:
-				map.set("baseMapType", nokia.maps.map.Display.NORMAL);
-				break;
-			case mxn.Mapstraction.PHYSICAL:
-				map.set("baseMapType", nokia.maps.map.Display.TERRAIN);
-				break;
-			case mxn.Mapstraction.HYBRID:
-				map.set("baseMapType", nokia.maps.map.Display.SATELLITE);
-				break;
-			case mxn.Mapstraction.SATELLITE:
-				map.set("baseMapType", nokia.maps.map.Display.SATELLITE_PLAIN);
-				break;
-			default:
-				map.set("baseMapType", nokia.maps.map.Display.NORMAL);
-				break;
-		}*/	// end-switch ()
+		throw new Error(this.api + ': unable to find definition for map type ' + mapType);
 	},
 	
 	getMapType: function() {
 		return this.currentMapType;
-		
-		/*var map = this.maps[this.api];
-		var type = map.baseMapType;
-		
-		switch (type) {
-			case nokia.maps.map.Display.NORMAL:
-				return mxn.Mapstraction.ROAD;
-			case nokia.maps.map.Display.TERRAIN:
-				return mxn.Mapstraction.PHYSICAL;
-			case nokia.maps.map.Display.SATELLITE:
-				return mxn.Mapstraction.HYBRID;
-			case nokia.maps.map.Display.SATELLITE_PLAIN:
-				return mxn.Mapstraction.SATELLITE;
-			default:
-				return mxn.Mapstraction.ROAD;
-		}*/	// end-switch ()
 	},
 	
 	getBounds: function() {
