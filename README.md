@@ -10,6 +10,19 @@ Mapstraction is a library that provides a common API for various javascript mapp
 
 Users can switch maps as desired based on personal taste and quality of maps in their local area. Various tools built on top of Mapstraction allow users to easily integrate maps into their own sites, and configure them with different controls, styles, and provider.
 
+Which Mapstraction Version?
+---------------------------
+
+The last official and stable release of Mapstraction was v2.0.18 in 2011. Since then Mapstraction languished for a while but it's now under active development.
+
+A lot has changed in the world of maps APIs since v2.0.18. Some APIs have gone to the deadpool (farewell Yahoo! Maps) and some have changed substantially (hello Google v3 and Leaflet).
+
+If you want to live life on the bleeding edge you can try the [v3.0 branch](https://github.com/mapstraction/mxn/tree/release-3.0) but be warned, this branch is far from stable, is likely to continue to change as the official release of v3.0 draws ever nearer and also contains API changes which will break code that assumes Mapstraction v2.x. It's also not documented much, if at all.
+
+A safer bet is to use the [v2.1 branch](https://github.com/mapstraction/mxn/tree/release-2.1). Whilst not a formally released branch, this is relatively up to date and was destined to be the next release of Mapstraction before it became evident that the project would receive a major version number boost.
+
+In the meantime, v3.0 of Mapstraction continues onwards, [join us](https://github.com/mapstraction/mxn/wiki) and help us get Mapstraction v3.0 [out of the door](https://github.com/mapstraction/mxn/wiki/Contributing).
+
 Why Mapstraction?
 -----------------
 
