@@ -3,11 +3,13 @@ mxn.register('openlayersv2', {
 	Mapstraction: {
 
 		init: function(element, api, properties){
-			var me = this;
+			var self = this;
 			
 			if (typeof OpenLayers.Map === 'undefined') {
 				throw new Error(api + ' map script not imported');
 			}
+
+			OpenLayers.Util.onImageLoadErrorColor = "transparent"; //Otherwise missing tiles default to pink!	
 
 			this.controls = {
 				pan: null,
@@ -17,10 +19,43 @@ mxn.register('openlayersv2', {
 				map_type: null
 			};
 
+			this.layers = {};
+			this.overlays = {};
+			this.currentMapType = mxn.Mapstraction.ROAD;
+
+			this.defaultBaseMaps = [
+                {
+                    mxnType: mxn.Mapstraction.ROAD,
+                    providerType: 'mxn.BaseMapProviders.MapQuestOpen',
+                    nativeType: false
+                },
+                {
+                    mxnType: mxn.Mapstraction.SATELLITE,
+                    providerType: 'mxn.BaseMapProviders.Esri.WorldImagery',
+                    nativeType: false
+                },
+                {
+                    mxnType: mxn.Mapstraction.HYBRID,
+                    providerType: 'mxn.BaseMapProviders.Esri.WorldTopoMap',
+                    nativeType: false
+                },
+                {
+                    mxnType: mxn.Mapstraction.PHYSICAL,
+                    providerType: 'mxn.BaseMapProviders.Esri.WorldPhysical',
+                    nativeType: false
+                }
+			];
+
+			this.initBaseMaps();
+
+			for (var i = 0; i < this.customBaseMaps.length; i++) {
+			    this.layers[this.customBaseMaps[i].label] = this.customBaseMaps[i].tileMap.prop_tilemap;
+			}
+
 			var map = new OpenLayers.Map(
 				element.id,
 				{
-					projection: 'EPSG:900913',
+					projection: 'EPSG:4326', //TODO: should we use WGS84 here?
 					controls: [
 						new OpenLayers.Control.Navigation(),
 						new OpenLayers.Control.ArgParser(),
@@ -29,37 +64,28 @@ mxn.register('openlayersv2', {
 				}
 			);
 				
-			// initialize layers map (this was previously in mxn.core.js)
-			this.layers = {};
-
-			// create OSM layer using all 3 hostnames
-			this.layers.osm = new OpenLayers.Layer.OSM("OpenStreetMap",
-			  ["http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-			   "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-			   "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"]);
-		
 			// deal with click
 			map.events.register('click', map, function(evt){
 				var lonlat = map.getLonLatFromViewPortPx(evt.xy);
 				var point = new mxn.LatLonPoint();
 				point.fromProprietary(api, lonlat);
-				me.click.fire({'location': point });
+				self.click.fire({'location': point });
 			});
 
 			// deal with zoom change
 			map.events.register('zoomend', map, function(evt){
-				me.changeZoom.fire();
+				self.changeZoom.fire();
 			});
 		
 			// deal with map movement
 			map.events.register('moveend', map, function(evt){
-				me.moveendHandler(me);
-				me.endPan.fire();
+				self.moveendHandler(self);
+				self.endPan.fire();
 			});
 		
 			// deal with initial tile loading
 			var loadfire = function(e) {
-				me.load.fire();
+				self.load.fire();
 				this.events.unregister('loadend', this, loadfire);
 			};
 		
@@ -71,8 +97,8 @@ mxn.register('openlayersv2', {
 				}
 			}
 		
-			map.addLayer(this.layers.osm);
-			this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true]);
+			//map.addLayer(this.layers.osm);
+			//this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true]);
 			this.maps[api] = map;
 			this.loaded[api] = true;
 		},
@@ -467,13 +493,48 @@ mxn.register('openlayersv2', {
 			return zoom;
 		},
 
-		setMapType: function(type) {
-			// Only Open Street Map road map is implemented, so you can't change the Map Type
+		setMapType: function (mapType) {
+		    var i;
+		    var name = null;
+
+		    for (i = 0; i < this.defaultBaseMaps.length; i++) {
+		        if (this.defaultBaseMaps[i].mxnType === mapType) {
+		            if (this.currentMapType === this.defaultBaseMaps[i].mxnType) {
+		                return;
+		            }
+		            name = this.defaultBaseMaps[i].providerType;
+		            break;
+		        }
+		    }
+
+		    if (name === null) {
+		        name = mapType;
+		    }
+
+		    var layers = [];
+		    var map = this.maps[this.api];
+		    var fn = function (elem, index, array) {
+		        if (elem === this.customBaseMaps[i].tileMap.prop_tilemap) {
+		            layers.push(elem);
+		        }
+		    };
+
+		    for (i = 0; i < this.customBaseMaps.length; i++) {
+		        if (this.customBaseMaps[i].name === name) {
+		            map.addLayer(this.customBaseMaps[i].tileMap.prop_tilemap, true);
+		        }
+		        else {
+		            map.layers.forEach(fn, this);
+		        }
+		    }
+
+		    for (i = 0; i < layers.length; i++) {
+		        map.removeLayer(layers[i]);
+		    }
 		},
 
-		getMapType: function() {
-			// Only Open Street Map road map is implemented, so you can't change the Map Type
-			return mxn.Mapstraction.ROAD;
+		getMapType: function () {
+		    return this.currentMapType;
 		},
 
 		getBounds: function () {
@@ -544,31 +605,8 @@ mxn.register('openlayersv2', {
 			map.addLayer(kml);
 		},
 
-		addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-			var map = this.maps[this.api];
-			var new_tile_url = tile_url.replace(/\{Z\}/gi,'${z}').replace(/\{X\}/gi,'${x}').replace(/\{Y\}/gi,'${y}');
-			
-			if (typeof subdomains !== 'undefined') {
-				//make a new array of each subdomain.
-				var domain = [];
-				for(i = 0; i < subdomains.length; i++)
-				{
-					domain.push(mxn.util.getSubdomainTileURL(new_tile_url, subdomains[i]));
-				}
-			}	
-			
-			var overlay = new OpenLayers.Layer.OSM("OpenCycleMap", domain || new_tile_url);	
-			
-			if(!opacity) {
-				overlay.addOptions({opacity: opacity});
-			}
-			
-			if(!map_type) {
-				overlay.addOptions({displayInLayerSwitcher: false, isBaseLayer: false});
-			}
-			map.addLayer(overlay);
-			OpenLayers.Util.onImageLoadErrorColor = "transparent"; //Otherwise missing tiles default to pink!			
-			this.tileLayers.push( [tile_url, overlay, true] );			
+		addTileMap: function (tileMap) {
+		    return tileMap.toProprietary(this.api);
 		},
 
 		toggleTileLayer: function(tile_url) {
@@ -785,6 +823,112 @@ mxn.register('openlayersv2', {
 			this.proprietary_polyline.style.display = 'none';
 			this.proprietary_polyline.layer.redraw();		
 		}
-	}
+	},
 
+	TileMap: {
+	    addToMapTypeControl: function () {
+	        if (this.proprietary_tilemap === null) {
+	            throw new Error(this.api + ': A TileMap must be added to the map before calling addControl()');
+	        }
+
+	        if (!this.mxn.customBaseMaps[this.index].inControl) {
+	            this.mxn.customBaseMaps[this.index].inControl = true;
+	            this.mxn.layers[this.properties.options.label] = this.proprietary_tilemap;
+	            if (this.mxn.controls.map_type !== null && typeof (this.mxn.controls.map_type) !== "undefined") {
+	                this.mxn.controls.map_type.addBaseLayer(this.proprietary_tilemap, this.properties.options.label);
+	            }
+	        }
+	    },
+
+	    removeFromMapTypeControl: function () {
+	        if (this.proprietary_tilemap === null) {
+	            throw new Error(this.api + ': A TileMap must be added to the map before calling removeControl()');
+	        }
+
+	        if (this.mxn.customBaseMaps[this.index].inControl) {
+	            this.mxn.customBaseMaps[this.index].inControl = false;
+	            delete this.mxn.layers[this.properties.options.label];
+	            if (typeof (this.mxn.controls.map_type) !== "undefined") {
+	                this.mxn.controls.map_type.removeLayer(this.proprietary_tilemap);
+	            }
+	        }
+	    },
+
+	    hide: function () {
+	        if (this.proprietary_tilemap === null) {
+	            throw new Error(this.api + ': A TileMap must be added to the map before calling hide()');
+	        }
+
+	        if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+	            if (this.mxn.overlayMaps[this.index].visible) {
+	                this.mxn.overlayMaps[this.index].visible = false;
+	                this.map.removeLayer(this.proprietary_tilemap);
+	            }
+	        }
+	    },
+
+	    show: function () {
+	        if (this.proprietary_tilemap === null) {
+	            throw new Error(this.api + ': A TileMap must be added to the map before calling show()');
+	        }
+
+	        if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+	            if (!this.mxn.overlayMaps[this.index].visible) {
+	                this.mxn.overlayMaps[this.index].visible = true;
+	                this.map.addLayer(this.proprietary_tilemap, false);
+	            }
+	        }
+	    },
+
+	    toProprietary: function () {
+	        var urls = null;
+	        var url = mxn.util.sanitizeTileURL(this.properties.url);
+	        url = url.replace(/\{/g, '\/${'); //ol2 seems to need this format to do substitutions: '/mqopen/${Z}/${X}/${Y}.jpeg'
+	        var subdomains = this.properties.options.subdomains;
+	        var source;
+
+	        //TODO: This is duplicated in Leaflet, ol2, ol3 move it to utils.
+            //TODO: Actually ol probably copes with the domain parameter
+	        if (this.properties.options.subdomains !== null) {
+	            var pos = url.search('{s}');
+	            if (pos !== -1) {
+	                var i = 0;
+	                var domain;
+	                urls = [];
+
+	                for (i = 0; i < subdomains.length; i++) {
+	                    if (typeof subdomains === 'string') {
+	                        domain = subdomains.substring(i, i + 1);
+	                    }
+
+	                    else {
+	                        domain = subdomains[i];
+	                    }
+
+	                    if (typeof domain !== 'undefined') {
+	                        urls.push(url.replace(/\{s\}/g, domain));
+	                    }
+	                }
+	            }
+	        }
+
+	        var overlay = new OpenLayers.Layer.OSM(this.properties.options.label, urls || url);
+
+	        if(!this.properties.opacity) {
+	            overlay.addOptions({opacity: this.properties.opacity});
+	        }
+
+	        if(!this.properties.options.attribution) {
+	            overlay.addOptions({ attribution: this.properties.attribution });
+	        }
+			
+	        /* if(!map_type) {
+	            overlay.addOptions({displayInLayerSwitcher: false, isBaseLayer: false});
+	        } */
+	        //map.addLayer(overlay);		
+	        //this.tileLayers.push( [tile_url, overlay, true] );		
+
+	        return overlay;
+	    }
+	}
 });
