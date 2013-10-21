@@ -276,7 +276,6 @@ mxn.register('openlayersv3', {
 		},
 
 		removeMarker: function(marker) {
-			var map = this.maps[this.api];
 			var pin = marker.proprietary_marker;
 			this.layers.markers.removeFeatures([pin]);
 		},
@@ -300,7 +299,6 @@ mxn.register('openlayersv3', {
 		},
 
 		removePolyline: function(polyline) {
-			var map = this.maps[this.api];
 			var pl = polyline.proprietary_polyline;
 			this.layers.polylines.removeFeatures([pl]);
 		},
@@ -519,9 +517,8 @@ mxn.register('openlayersv3', {
 			}	   
 		},
 
-		getPixelRatio: function() {
-			var map = this.maps[this.api];
-
+		getPixelRatio: function () {
+            //TODO: ol3 probably can do this
 			throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 		},
 

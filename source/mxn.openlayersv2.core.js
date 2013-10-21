@@ -413,7 +413,6 @@ mxn.register('openlayersv2', {
 		},
 
 		removeMarker: function(marker) {
-			var map = this.maps[this.api];
 			var pin = marker.proprietary_marker;
 			this.layers.markers.removeFeatures([pin]);
 		},
@@ -434,7 +433,6 @@ mxn.register('openlayersv2', {
 		},
 
 		removePolyline: function(polyline) {
-			var map = this.maps[this.api];
 			var pl = polyline.proprietary_polyline;
 			this.layers.polylines.removeFeatures([pl]);
 		},
@@ -620,8 +618,6 @@ mxn.register('openlayersv2', {
 		},
 
 		getPixelRatio: function() {
-			var map = this.maps[this.api];
-
 			throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 		},
 
@@ -885,7 +881,6 @@ mxn.register('openlayersv2', {
 	        var url = mxn.util.sanitizeTileURL(this.properties.url);
 	        url = url.replace(/\{/g, '\/${'); //ol2 seems to need this format to do substitutions: '/mqopen/${Z}/${X}/${Y}.jpeg'
 	        var subdomains = this.properties.options.subdomains;
-	        var source;
 
 	        //TODO: This is duplicated in Leaflet, ol2, ol3 move it to utils.
             //TODO: Actually ol probably copes with the domain parameter

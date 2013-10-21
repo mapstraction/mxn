@@ -282,11 +282,6 @@ Mapstraction: {
 
 	getZoomLevelForBoundingBox: function( bbox ) {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		// NE and SW points from the bounding box.
-		var ne = bbox.getNorthEast();
-		var sw = bbox.getSouthWest();
-		var zoom;
 		
 		throw new Error('Mapstraction.getZoomLevelForBoundingBox is not currently supported by provider ' + this.api);
 	},

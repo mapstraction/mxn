@@ -9,7 +9,6 @@ Geocoder: {
 
 	geocode: function(address, rowlimit) {
 		var me = this;
-		var return_location = {};
 		var options = {};
 		options.maxResults = rowlimit;
 		options.thumbMaps = false;

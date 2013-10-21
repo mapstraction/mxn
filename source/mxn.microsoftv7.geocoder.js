@@ -8,7 +8,6 @@ Geocoder: {
 	geocode: function(query, rowlimit) {
 		this.row_limit = rowlimit;
 		var _address = '';
-		var is_reverse = false;
 		if (typeof(query) == 'object') {
 			// query is a LatLonPoint object (reverse geocode)
 			if (query.hasOwnProperty('lat') && query.hasOwnProperty('lon')) {

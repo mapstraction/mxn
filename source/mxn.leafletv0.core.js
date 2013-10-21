@@ -201,7 +201,6 @@ Mapstraction: {
 		});
 		
 		var layerHandler = function(e) {
-			var prevMapType = self.currentMapType;
 
 			var layerName = null;
 			for (var c=0; c<self.customBaseMaps.length; c++) {
