@@ -483,7 +483,6 @@ mxn.register('esriv3', {
 		toProprietary: function() {
 			var coords = [];
 			var path = null;
-			var fill = null;
 			var i;
 			var style = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color(this.color || "#FFFFFF"), this.width || 3);
 
