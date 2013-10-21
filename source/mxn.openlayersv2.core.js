@@ -912,6 +912,7 @@ mxn.register('openlayersv2', {
 	            }
 	        }
 
+            //OSM Layer works better than XYZ Layer for what we are doing here.
 	        var overlay = new OpenLayers.Layer.OSM(this.properties.options.label, urls || url);
 
 	        if(!this.properties.opacity) {
