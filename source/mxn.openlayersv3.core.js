@@ -113,24 +113,6 @@ mxn.register('openlayersv3', {
 
 		addControls: function( args ) {
 			var map = this.maps[this.api];	
-			/*for (var i = map.controls.length; i>1; i--) {
-				map.controls[i-1].deactivate();
-				map.removeControl(map.controls[i-1]);
-			}
-			if ( args.zoom == 'large' )	  {
-				map.addControl(new ol.control.PanZoomBar());
-			}
-			else if ( args.zoom == 'small' ) {
-				map.addControl(new ol.control.ZoomPanel());
-				if ( args.pan) {
-					map.addControl(new ol.control.PanPanel()); 
-				}
-			}
-			else {
-				if ( args.pan){
-					map.addControl(new ol.control.PanPanel()); 
-				}
-			}*/
 
 			if ('zoom' in args) {
 				if (args.zoom == 'large') {
@@ -141,12 +123,10 @@ mxn.register('openlayersv3', {
 					this.controls.zoom = this.addSmallControls();
 				}
 			}
-
 			else {
-				if (this.controls.zoom !== null) {
-					map.removeControl(this.controls.zoom);
-					this.controls.zoom = null;
-				}
+			    if (this.controls.zoom !== null && this.controls.zoom.getMap() !== null) {
+			        map.removeControl(this.controls.zoom);
+			    }
 			}
 
 			// See notes for addSmallControls and addLargeControls for why we suppress
@@ -184,7 +164,6 @@ mxn.register('openlayersv3', {
 			if ('map_type' in args && args.map_type) {
 				//this.controls.map_type = this.addMapTypeControls();
 			}
-			
 			else {
 				if (this.controls.map_type !== null) {
 					map.removeControl(this.controls.map_type);
@@ -193,16 +172,17 @@ mxn.register('openlayersv3', {
 			}
 
 			if ('scale' in args && args.scale) {
-				if (this.controls.scale === null) {
-					this.controls.scale = new ol.control.ScaleLine();
+			    if (this.controls.scale === null) {
+			        this.controls.scale = new ol.control.ScaleLine();
+			    }
+
+			    if (this.controls.scale.getMap() === null) {
 					map.addControl(this.controls.scale);
 				}
 			}
-
 			else {
-				if (this.controls.scale !== null) {
+			    if (this.controls.scale !== null && this.controls.scale.getMap() !== null) {
 					map.removeControl(this.controls.scale);
-					this.controls.scale = null;
 				}
 			}
 		},
@@ -210,8 +190,7 @@ mxn.register('openlayersv3', {
 		addSmallControls: function() {
 			var map = this.maps[this.api];
 
-			if (this.controls.zoom !== null) {
-				this.controls.zoom.deactivate();
+			if (this.controls.zoom !== null && this.controls.zoom.getMap() !== null) {
 				map.removeControl(this.controls.zoom);
 			}
 			// ZoomPanel == ZoomIn + ZoomOut + ZoomToMaxExtent
@@ -222,8 +201,7 @@ mxn.register('openlayersv3', {
 
 		addLargeControls: function() {
 			var map = this.maps[this.api];
-			if (this.controls.zoom !== null) {
-				this.controls.zoom.deactivate();
+			if (this.controls.zoom !== null && this.controls.zoom.getMap() !== null) {
 				map.removeControl(this.controls.zoom);
 			}
 			// PanZoomBar == PanPanel + ZoomBar
@@ -236,7 +214,7 @@ mxn.register('openlayersv3', {
 			var map = this.maps[this.api];
 			var control = null;
 			
-			if (this.controls.map_type === null) {
+			if (this.controls.map_type === null && this.controls.map_type.getMap() !== null) {
 				/*
 				control = new ol.control.LayerSwitcher({ 'ascending':false });
 				map.addControl(control); */
@@ -303,14 +281,10 @@ mxn.register('openlayersv3', {
 			this.layers.polylines.removeFeatures([pl]);
 		},
 		
-		removeAllPolylines: function() {
-			var olpolylines = [];
-			for (var i = 0, length = this.polylines.length; i < length; i++) {
-				olpolylines.push(this.polylines[i].proprietary_polyline);
-			}
-			if (this.layers.polylines) {
-				this.layers.polylines.removeFeatures(olpolylines);
-			}
+		removeAllPolylines: function () {
+		    if (this.layers.polylines) {
+		        this.layers.polylines.clear();
+		    }
 		},
 
 		getCenter: function() {
@@ -567,11 +541,9 @@ mxn.register('openlayersv3', {
 			this.proprietary_marker = new ol.Feature({});
 			this.proprietary_marker.setGeometry(point);
 			
-			var options = {
-				  url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png'
-			};
+			var options = {};
 
-			if (this.iconAnchor) { //not supported in ol3 yet
+			if (this.iconAnchor) { //TODO:not supported in ol3 yet
 				options.xOffset = this.iconAnchor[0];
 				options.yOffset = this.iconAnchor[1];
 			}
@@ -585,7 +557,7 @@ mxn.register('openlayersv3', {
 				new ol.style.Icon({
 				  url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png'
 				})
-			  ]);
+			  ]); 
 					
 			if (!!this.infoBubble) {
 				var popup = new ol.Overlay({
@@ -628,11 +600,11 @@ mxn.register('openlayersv3', {
 		},
 
 		closeBubble: function() {
-			if (!!this.popup) {
+			/*if (!!this.popup) {
 				this.popup.hide();
 				this.map.removePopup(this.popup);
 				this.popup = null;
-			}
+			} */
 			this.closeInfoBubble.fire( { 'marker': this } );
 		},
 
