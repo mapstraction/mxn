@@ -58,9 +58,8 @@ mxn.register('openlayersv3', {
 			
 			// deal with click
 			map.on(['click'], function(evt) {
-				var lonlat = evt.getCoordinate();
 				var point = new mxn.LatLonPoint();
-				point.fromProprietary(api, lonlat);
+				point.fromProprietary(api, evt.getCoordinate());
 				me.click.fire({'location': point });
 			});
 			
@@ -535,13 +534,12 @@ mxn.register('openlayersv3', {
 	Marker: {
 
 		toProprietary: function() {	
-			position = this.location.toProprietary('openlayersv3');		
-			point = new ol.geom.Point(position);		
-
-			this.proprietary_marker = new ol.Feature({});
-			this.proprietary_marker.setGeometry(point);
-			
-			var options = {};
+			var options = {
+			    geometry: new ol.geom.Point(this.location.toProprietary('openlayersv3')),
+			    symbolizers: [new ol.style.Icon({
+			        url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png'
+			    })]
+			};
 
 			if (this.iconAnchor) { //TODO:not supported in ol3 yet
 				options.xOffset = this.iconAnchor[0];
@@ -553,11 +551,8 @@ mxn.register('openlayersv3', {
 				options.height = this.iconSize[1];
 			}
 			
-			this.proprietary_marker.setSymbolizers([
-				new ol.style.Icon({
-				  url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png'
-				})
-			  ]); 
+			this.proprietary_marker = new ol.Feature(options);
+			//this.proprietary_marker.setSymbolizers([symbol]); 
 					
 			if (!!this.infoBubble) {
 				var popup = new ol.Overlay({
