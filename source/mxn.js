@@ -832,7 +832,6 @@ mxn.Providers = {
 		],
 		'script': [
 			{
-
 			    //'src': 'http://ol3js.org/en/master/build/ol.js', //TODO: When ol3 exports the features we need for removing polylines
 				'src': 'http://ol3js.org/en/master/build/ol-simple.js',
 				'auth': false,
