@@ -734,7 +734,7 @@ TileMap: {
 		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
 			var tileCache = this.mxn.overlayMaps;
 			
-			if (ttileCache[this.index].visible) {
+			if (tileCache[this.index].visible) {
 				tileCache[this.index].visible = false;
 				if (this.map.hasLayer(this.prop_tilemap)) {
 					this.map.removeLayer(this.prop_tilemap);
@@ -745,7 +745,7 @@ TileMap: {
 	
 	removeFromMapTypeControl: function() {
 		if (this.proprietary_tilemap === null) {
-			throw new Error(this.api + ': A TileMap must be added to the map before calling removeControl()');
+			throw new Error(this.api + ': A TileMap must be added to the map before calling removeFromMapTypeControl()');
 		}
 
 		var tileCache = null;
@@ -793,7 +793,6 @@ TileMap: {
 				}
 			}
 		}
-
 	},
 	
 	toProprietary: function() {
