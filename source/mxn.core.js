@@ -1149,8 +1149,8 @@ Mapstraction.prototype.addTileMap = function(tileMap, options) {
 	}
 
 	if (tileMap.prop_tilemap === null) {
-		tileMap.prop_tilemap = this.invoker.go('addTileMap', arguments);
 		tileMap.index = tileCache.length || 0;
+		tileMap.prop_tilemap = this.invoker.go('addTileMap', [tileMap]);
 
 		var entry = {
 			name: tileMap.properties.name,
@@ -1167,12 +1167,16 @@ Mapstraction.prototype.addTileMap = function(tileMap, options) {
 			'tileMap': tileMap
 		});
 
-		if (opts.addControl) {
+		if (opts.addControl && tileMap.properties.type === mxn.Mapstraction.TileType.BASE) {
 			tileMap.invoker.go('addToMapTypeControl', arguments);
 		}
 		if (opts.makeCurrent) {
-			tileMap.invoker.go('show', arguments);
-			//this.invoker.go('setMapType', [tileMap.properties.name]);
+			if (tileMap.properties.type === mxn.Mapstraction.TileType.BASE) {
+				this.invoker.go('setMapType', [tileMap.properties.name]);
+			}
+			else {
+				tileMap.invoker.go('show', arguments);
+			}
 		}
 	}
 
