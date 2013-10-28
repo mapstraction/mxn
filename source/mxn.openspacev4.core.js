@@ -250,7 +250,6 @@ Mapstraction: {
 	},
 	
 	addMarker: function(marker, old) {
-		var map = this.maps[this.api];
 		var pin = marker.toProprietary(this.api);
 
 		// Fire 'click' event for Marker ...
@@ -288,7 +287,6 @@ Mapstraction: {
 	},
 	
 	getCenter: function() {
-		var point;
 		var map = this.maps[this.api];
 	
 		var pt = map.getCenter(); // an OpenSpace.MapPoint, National Grid
@@ -377,7 +375,6 @@ Mapstraction: {
 	},
 
 	addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
-		var map = this.maps[this.api];
 		throw new Error('Mapstraction.addImageOverlay is not currently supported by provider ' + this.api);
 	},
 

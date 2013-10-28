@@ -48,7 +48,6 @@ Mapstraction: {
 		if (typeof properties !== 'undefined' && properties !== null) {
 			if (properties.hasOwnProperty('controls')) {
 				var controls = properties.controls;
-				var show_dashboard = false;
 				
 				if ('pan' in controls && controls.pan) {
 					options.showDashboard = true;
@@ -175,7 +174,7 @@ Mapstraction: {
 		
 		else if (element.attachEvent) {
 			element.attachEvent('contextmenu', function(event) {
-				evt.preventDefault();
+				event.preventDefault();
 			});
 		}
 
@@ -238,26 +237,18 @@ Mapstraction: {
 	// effectively no-ops and so they don't throw the unsupported feature exception.
 	
 	addControls: function( args ) {
-		var map = this.maps[this.api];
-	
 		//throw new Error('Mapstraction.addControls is not currently supported by provider ' + this.api);
 	},
 
 	addSmallControls: function() {
-		var map = this.maps[this.api];
-		
 		//throw new Error('Mapstraction.addSmallControls is not currently supported by provider ' + this.api);
 	},
 
 	addLargeControls: function() {
-		var map = this.maps[this.api];
-		
 		//throw new Error('Mapstraction.addLargeControls is not currently supported by provider ' + this.api);
 	},
 
 	addMapTypeControls: function() {
-		var map = this.maps[this.api];
-		
 		//throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
 	},
 
@@ -291,8 +282,6 @@ Mapstraction: {
 	},
 	
 	declutterMarkers: function(opts) {
-		var map = this.maps[this.api];
-		
 		throw new Error('Mapstraction.declutterMarkers is not currently supported by provider ' + this.api);
 	},
 
@@ -346,12 +335,6 @@ Mapstraction: {
 	},
 
 	getZoomLevelForBoundingBox: function( bbox ) {
-		var map = this.maps[this.api];
-		// NE and SW points from the bounding box.
-		var ne = bbox.getNorthEast();
-		var sw = bbox.getSouthWest();
-		var zoom;
-		
 		throw new Error('Mapstraction.getZoomLevelForBoundingBox is not currently supported by provider ' + this.api);
 	},
 
