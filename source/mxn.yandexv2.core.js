@@ -3,50 +3,159 @@ mxn.register('yandexv2', {
 Mapstraction: {
 
 	init: function(element, api, properties) {
-		var me = this;
-
+		var self = this;
+		
 		if (typeof ymaps === 'undefined') {
 			throw new Error(api + ' map script not imported');
 		}
 
-		this.controls =  {
-			pan: null,
-			zoom: null,
-			overview: null,
-			scale: null,
-			map_type: null
-		};
+		self.defaultBaseMaps = [
+			{
+				mxnType: mxn.Mapstraction.ROAD,
+				providerType: 'yandex#map',
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.SATELLITE,
+				providerType: 'yandex#satellite',
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.HYBRID,
+				providerType: 'yandex#hybrid',
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.PHYSICAL,
+				providerType: 'yandex#map',
+				nativeType: true
+			}
+		];
+		self.initBaseMaps();
 
-		me.loaded[api] = false;
-		ymaps.ready(function(){
-				var yandexMap = me.maps[api] = new ymaps.Map(element, {
-                    // When initializing a map, you HAVE TO specify
-                    // its center and zoom level
-                    center: [39.889847, 32.810152], // Antalya
-                    zoom: 9
-                });
-				
-				yandexMap.events.add('click', function (e) {
-                    var coords = e.get('coordPosition');
-					me.click.fire({'location': new mxn.LatLonPoint(coords[0], coords[1])});
-				});
-							
-				yandexMap.events.add('boundschange', function (e) {
-					if (e.get('newZoom') != e.get('oldZoom')) {
-						me.changeZoom.fire();
-					} else
-					{
-						me.endPan.fire();
+		self.loaded[api] = false;
+		ymaps.ready(function() {
+
+			self.controls =  {
+				pan: null,
+				zoom: null,
+				overview: null,
+				scale: null,
+				map_type: null
+			};
+
+			var state = {
+				type: 'yandex#map',
+				center: [51.50848, -0.12532],
+				zoom: 8
+			};
+
+			if (typeof properties !== 'undefined' && properties !== null) {
+				if (properties.hasOwnProperty('controls')) {
+					var controls = properties.controls;
+
+					if ('pan' in controls && controls.pan) {
+						self.controls.pan = new ymaps.control.MapTools();
 					}
-				});
 
-				me.loaded[api] = true;
+					if ('zoom' in controls) {
+						if (controls.zoom === 'small') {
+							self.controls.zoom = new ymaps.control.SmallZoomControl();
+						}
+
+						else if (controls.zoom === 'large') {
+							self.controls.zoom = new ymaps.control.ZoomControl();
+						}
+					}
+
+					if ('overview' in controls && controls.overview) {
+						self.controls.overview = new ymaps.control.MiniMap({
+							type: 'yandex#map'
+						});
+					}
+
+					if ('scale' in controls && controls.scale) {
+						self.controls.scale = new ymaps.control.ScaleLine();
+					}
+
+					if ('map_type' in controls && controls.map_type) {
+						self.controls.map_type = new ymaps.control.TypeSelector();
+					}
+				}
+
+				if (properties.hasOwnProperty('center') && null !== properties.center) {
+					var point;
+
+					if (Object.prototype.toString.call(properties.center) === '[object Array]') {
+						point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
+					}
+					else {
+						point = properties.center;
+					}
+					state.center = point.toProprietary(self.api);
+				}
+
+				if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
+					state.zoom = properties.zoom;
+				}
+
+				if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
+					for (i=0; i<self.defaultBaseMaps.length; i++) {
+						if (self.defaultBaseMaps[i].mxnType === properties.map_type) {
+							state.type = self.defaultBaseMaps[i].providerType;
+							break;
+						}
+					}
+				}
+
+				var behaviors = [];
+				if (properties.hasOwnProperty('dragging')) {
+					behaviors.push('drag');
+				}
+
+				if (properties.hasOwnProperty('scroll_wheel')) {
+					behaviors.push('scrollZoom');
+				}
+
+				if (properties.hasOwnProperty('double_click')) {
+					behaviors.push('dblClickZoom');
+				}
+				if (behaviors.length > 0) {
+					state.behaviors = behaviors;
+				}
+			}
+
+			var map = new ymaps.Map(element, state);
+			
+			for (var control in self.controls) {
+				if (self.controls[control] !== null) {
+					map.controls.add(self.controls[control]);
+				}
+			}
+
+			map.events.add('click', function(e) {
+				var coords = e.get('coordPosition');
+				self.click.fire({
+					location: new mxn.LatLonPoint(coords[0], coords[1])
+				});
+			});
+						
+			map.events.add('boundschange', function(e) {
+				if (e.get('newZoom') != e.get('oldZoom')) {
+					self.changeZoom.fire();
+				}
 				
-				//doing the load.fire directly it runs too fast and we dont get a chance to register the handler in the core tests, so had to add a delay.
-				setTimeout(function(){me.load.fire();},50);
-			}	
-		
-		);
+				else {
+					self.endPan.fire();
+				}
+			});
+
+			self.maps[api] = map;
+			self.loaded[api] = true;
+			
+			//doing the load.fire directly it runs too fast and we dont get a chance to register the handler in the core tests, so had to add a delay.
+			setTimeout(function(){self.load.fire();},50);
+		});
 	},
 	
 	getVersion: function() {
@@ -259,21 +368,30 @@ Mapstraction: {
 		return zoom;
 	},
 
-	setMapType: function(type) {
+	setMapType: function(mapType) {
 		var map = this.maps[this.api];
-		switch(type) {
-			case mxn.Mapstraction.ROAD:
-				map.setType('yandex#map');
-			break;
-			case mxn.Mapstraction.SATELLITE:
-				map.setType('yandex#satellite');
-				break;
-			case mxn.Mapstraction.HYBRID:
-				map.setType('yandex#hybrid');
-				break;
-			default:
-				this.setMapType(mxn.Mapstraction.ROAD);
-		}	 
+		var currType = map.getType();
+		var i;
+
+		if (currType == mapType) {
+			return;
+		}
+
+		for (i=0; i<this.defaultBaseMaps.length; i++) {
+			if (this.defaultBaseMaps[i].mxnType === mapType) {
+				map.setType(this.defaultBaseMaps[i].providerType);
+				return;
+			}
+		}
+
+		for (i=0; i<this.customBaseMaps.length; i++) {
+			if (this.customBaseMaps[i].name === mapType) {
+				map.setType(this.customBaseMaps[i].name);
+				return;
+			}
+		}
+
+		throw new Error(this.api + ': unable to find definition for map type ' + mapType);
 	},
 
 	getMapType: function() {
@@ -354,42 +472,19 @@ Mapstraction: {
 		
 		map.addOverlay(kml);
 	},
-
-	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-		var map = this.maps[this.api];	
-		var newLayer = new ymaps.Layer(tile_url.replace(/\{X\}/gi,'%x').replace(/\{Y\}/gi,'%y').replace(/\{Z\}/gi,'%z'));
-		// Copyrights
-		newLayer.getCopyrights = function () {
-			var promise = new ymaps.util.Promise();
-			promise.resolve(attribution);
-			return promise;
-		};
-		// Range of available zoom levels
-		newLayer.getZoomRange = function () {
-			var promise = new ymaps.util.Promise();
-			promise.resolve([min_zoom, max_zoom]);
-			return;
-		};		 
-						
-		map.layers.add(newLayer);
-		this.tileLayers.push( [tile_url, newLayer, true] );
-		return newLayer;
-	}, 
 	
-	toggleTileLayer: function(tile_url) {
-		var map = this.maps[this.api];
-		for (var f=0; f<this.tileLayers.length; f++) {
-			if(this.tileLayers[f][0] == tile_url) {
-				if(this.tileLayers[f][2]) {
-					this.maps[this.api].latyers.remove(this.tileLayers[f][1]);
-					this.tileLayers[f][2] = false;
-				}
-				else {
-					this.maps[this.api].layers.add(this.tileLayers[f][1]);
-					this.tileLayers[f][2] = true;
-				}
-			}
+	addTileMap: function(tileMap) {
+		var prop_tilemap = tileMap.toProprietary(this.api);
+
+		if (tileMap.properties.type === mxn.Mapstraction.TileType.BASE) {
+			ymaps.layer.storage.add(tileMap.properties.name, function() {
+				return prop_tilemap;
+			});
+			var mapType = new ymaps.MapType(tileMap.properties.options.label, [tileMap.properties.name]);
+			ymaps.mapType.storage.add(tileMap.properties.name, mapType);
 		}
+
+		return prop_tilemap;
 	},
 
 	getPixelRatio: function() {
@@ -467,19 +562,19 @@ Marker: {
 		
 		
 		if (this.hoverIconUrl) {
-			var me = this;
+			var self = this;
 			
-			ymarker.events.add('mouseenter', function (e) {
-				if (! me.iconUrl) {
+			ymarker.events.add('mouseenter', function(e) {
+				if (!self.iconUrl) {
 					// that dirtyhack saves default icon url
-					me.iconUrl = ymarker._icon._context._computedStyle.iconStyle.href;
+					self.iconUrl = ymarker._icon._context._computedStyle.iconStyle.href;
 				}
 
-				ymarker.options.iconImageHref = me.hoverIconUrl;
+				ymarker.options.iconImageHref = self.hoverIconUrl;
 			});
 			
-			ymarker.events.add('mouseleave', function (e) {
-				ymarker.options.iconImageHref = me.iconUrl;
+			ymarker.events.add('mouseleave', function(e) {
+				ymarker.options.iconImageHref = self.iconUrl;
 			});
 		}
 				
@@ -558,6 +653,105 @@ Polyline: {
 		this.proprietary_polyline.options.set({
 			visible: true
 		});	
+	}
+},
+
+TileMap: {
+	addToMapTypeControl: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling addToMapTypeControl()');
+		}
+
+		if (this.properties.type === mxn.Mapstraction.TileType.BASE) {
+			this.mxn.controls.map_type.addMapType(this.properties.name);
+		}		
+	},
+	
+	hide: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling hide()');
+		}
+
+		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			var tileCache = this.mxn.overlayMaps;
+			
+			if (tileCache[this.index].visible) {
+				this.map.layers.remove(this.prop_tilemap);
+				tileCache[this.index].visible = false;
+
+				this.tileMapHidden.fire({
+					'tileMap': this
+				});
+			}
+		}
+	},
+	
+	removeFromMapTypeControl: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling removeFromMapTypeControl()');
+		}
+
+		if (this.properties.type === mxn.Mapstraction.TileType.BASE) {
+			this.mxn.controls.map_type.removeMapType(this.properties.name);
+		}		
+	},
+	
+	show: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling show()');
+		}
+		
+		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			var tileCache = this.mxn.overlayMaps;
+
+			if (!tileCache[this.index].visible) {
+				this.map.layers.add(this.prop_tilemap);
+				tileCache[this.index].visible = true;
+			
+				this.tileMapShown.fire({
+					'tileMap': this
+				});
+			}
+		}
+	},
+	
+	toProprietary: function() {
+		var self = this;
+		var url = mxn.util.sanitizeTileURL(this.properties.url);
+
+		if (typeof this.properties.options.subdomains !== 'undefined') {
+			url = mxn.util.getSubdomainTileURL(url, this.properties.options.subdomains);
+		}
+		url = url.replace(/\{X\}/gi, '%x');
+		url = url.replace(/\{Y\}/gi, '%y');
+		url = url.replace(/\{Z\}/gi, '%z');
+
+		var prop_tilemap = new ymaps.Layer(url);
+		
+		// ymaps.Layer inherits from ymaps.ILayer, which defines three optional methods
+		// that we can override ...
+		// getBrightness() - the opacity of the layer; at least I think that's what it does -
+		// you never can tell with Google Translate going from Russian to English!
+		// getCopyrights() - the attribution of the layer
+		// getZoomRange() - the min/max zoom levels of the layer
+		
+		prop_tilemap.getBrightness = function() {
+			return self.properties.options.opacity;
+		};
+		
+		prop_tilemap.getCopyrights = function(coords, zoom) {
+			var p = new ymaps.util.Promise();
+			p.resolve(self.properties.options.attribution);
+			return p;
+		};
+		
+		prop_tilemap.getZoomRange = function(point) {
+			var p = new ymaps.util.Promise();
+			p.resolve([self.properties.options.minZoom, self.properties.options.maxZoom]);
+			return p;
+		};
+		
+		return prop_tilemap;
 	}
 }
 
