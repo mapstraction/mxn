@@ -549,28 +549,17 @@ Mapstraction: {
 		layer.setMap(map);
 	},
 	
-	addBaseMap: function(baseMap) {
-		var map = this.maps[this.api];
-		var tileMap = baseMap.toProprietary(this.api);
-		
-		map.mapTypes.set(baseMap.properties.options.label, tileMap);
-		
-		return tileMap;
-	},
-	
 	addTileMap: function(tileMap) {
 		var map = this.maps[this.api];
 		var prop_tilemap = tileMap.toProprietary(this.api);
 
-		map.mapTypes.set(tileMap.properties.options.label, prop_tilemap);
+		if (tileMap.properties.type === mxn.Mapstraction.TileType.BASE) {
+			map.mapTypes.set(tileMap.properties.options.label, prop_tilemap);
+		}
 
 		return prop_tilemap;
 	},
 	
-	addOverlayMap: function(overlayMap) {
-		return overlayMap.toProprietary(this.api);
-	},
-
 	getPixelRatio: function() {
 		throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 	},
@@ -848,7 +837,7 @@ Polyline: {
 TileMap: {
 	addToMapTypeControl: function() {
 		if (this.prop_tilemap === null) {
-			throw new Error(this.api + ': A TileMap must be added to the map before calling addControl()');
+			throw new Error(this.api + ': A TileMap must be added to the map before calling addToMapTypeControl()');
 		}
 
 		// Google v3 only supports adding/removing Base Map type tile overlays to the map type
