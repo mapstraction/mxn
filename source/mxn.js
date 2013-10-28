@@ -922,7 +922,7 @@ mxn.Providers = {
 		'style': null,
 		'script': [
 			{
-				'src': 'http://api-maps.yandex.ru/2.0/?load=package.full&lang=en-US',
+				'src': 'http://api-maps.yandex.ru/2.0-stable/?load=package.full&lang=en-US',
 				'auth': false,
 				'authType': null
 			}
