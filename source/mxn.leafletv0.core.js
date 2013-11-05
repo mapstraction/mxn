@@ -89,10 +89,12 @@ Mapstraction: {
 			}
 			
 			var defaultMap = this.getDefaultBaseMap(this.currentMapType);
-			var baseMap = this.getCustomBaseMap(defaultMap.providerType);
-			
-			options.layers = [baseMap.tileMap.prop_tilemap];
-			
+		    if (defaultMap !== null)
+		    {
+		        var baseMap = this.getCustomBaseMap(defaultMap.providerType);
+		        options.layers = [baseMap.tileMap.prop_tilemap];
+		    }
+
 			if (properties.hasOwnProperty('dragging')) {
 				options.dragging = properties.dragging;
 			}
@@ -310,6 +312,7 @@ Mapstraction: {
 	},
 
 	addLargeControls: function() {
+            //TODO: add zoomslider here instead
 		return this.addSmallControls();
 	},
 
