@@ -327,13 +327,70 @@ mxn.addProxyMethods(Mapstraction, [
 	 * @function
 	 */
 	'addLargeControls',
+
+    /**
+	 * Removes a large map panning control and zoom buttons to the map
+	 * @name mxn.Mapstraction#removeLargeControls
+	 * @function
+	 */
+	'removeLargeControls',
 		
 	/**
 	 * Adds a map type control to the map (streets, aerial imagery etc)
 	 * @name mxn.Mapstraction#addMapTypeControls
 	 * @function
 	 */
-	'addMapTypeControls', 
+	'addMapTypeControls',
+
+    /**
+	 * Removes a map type control from the map (streets, aerial imagery etc)
+	 * @name mxn.Mapstraction#removeMapTypeControls
+	 * @function
+	 */
+	'removeMapTypeControls',
+
+     /**
+	 * Adds a scale control to the map
+	 * @name mxn.Mapstraction#addScaleControls
+	 * @function
+	 */
+	'addScaleControls',
+
+	/**
+	 * Removes a scale control from the map
+	 * @name mxn.Mapstraction#removeScaleControls
+	 * @function
+	 */
+	'removeScaleControls',
+
+     /**
+	 * Adds a pan control to the map 
+	 * @name mxn.Mapstraction#addPanControls
+	 * @function
+	 */
+	'addPanControls',
+
+	/**
+	 * Removes a pan control from the map
+	 * @name mxn.Mapstraction#removePanControls
+	 * @function
+	 */
+	'removePanControls',
+
+   	/**
+	 * Adds a map overview control to the map using the current base layer with a default zoom offset of 5
+	 * @name mxn.Mapstraction#addOverviewControls
+	 * @function
+     * @param {Number} to specify different zoomOffset for example 2, defaults to 5
+	 */
+	'addOverviewControls',
+
+	/**
+	 * Removes a map overview control from the map
+	 * @name mxn.Mapstraction#removeOverviewControls
+	 * @function
+	 */
+	'removeOverviewControls',
 	
 	/**
 	 * Adds a GeoRSS or KML overlay to the map
@@ -723,7 +780,48 @@ Mapstraction.prototype.callEventListeners = function(sEventType, oEventArgs) {
  */
 Mapstraction.prototype.addControls = function( args ) {
 	this.addControlsArgs = args;
-	this.invoker.go('addControls', arguments);
+	
+    if ('overview' in args && args.overview) {
+        if (typeof args.overview !== 'number') {
+            args.overview = 5; //default
+        }
+        this.addOverviewControls(args.overview);
+    } else {
+        this.rewmoveOverviewControls();
+    }
+
+    if ('pan' in args && args.pan) {
+        this.addPanControls();
+    } else {
+        this.removePanControls();
+    }
+
+    if ('zoom' in args  && args.zoom ) { 
+        if (args.zoom  && args.zoom == 'large') {
+            this.addLargeControls();
+        } else
+        {
+            this.addSmallControls();
+        }
+    }
+    else {
+        this.removeSmallControls();
+        this.removeLargeControls();
+    }
+
+    if ('scale' in args && args.scale) {
+        this.addScaleControls();
+    }
+    else {
+        this.removeScaleControls();
+    }
+
+    if ('map_type' in args && args.map_type) {
+        this.addMapTypeControls();
+    }
+    else {
+        this.removeMapTypeControls();
+    }
 };
 
 /**

@@ -11,7 +11,8 @@ Mapstraction: {
 		this.layers = {};
 		this.overlays = {};
 		this.features = [];
-		this.currentMapType = mxn.Mapstraction.ROAD;
+		this.currentMap = {};
+		this.currentMap.type = mxn.Mapstraction.ROAD;
 		this.controls =  {
 			pan: null,
 			zoom: null,
@@ -45,7 +46,10 @@ Mapstraction: {
 		this.initBaseMaps();
 
 		for (var i=0; i<this.customBaseMaps.length; i++) {
-			this.layers[this.customBaseMaps[i].label] = this.customBaseMaps[i].tileMap.prop_tilemap;
+		    this.layers[this.customBaseMaps[i].label] = this.customBaseMaps[i].tileMap.prop_tilemap;
+		    if (this.customBaseMaps[i].label == this.currentMap.type) {
+		        this.currentMap.baselayer = this.customBaseMaps[i];
+		    }
 		}
 		
 		// Code Health Warning
@@ -67,7 +71,9 @@ Mapstraction: {
 		// using the options method of adding these controls, but we create them, store
 		// them and then add them after we've instantiated L.Map.
 
-		if (typeof properties !== 'undefined' && properties !== null) {
+		var hasOptions = (typeof properties !== 'undefined' && properties !== null);
+		if (hasOptions) {
+            //TODO change this to call our setcentre method instead?
 			if (properties.hasOwnProperty('center') && null !== properties.center) {
 				var point;
 				if (Object.prototype.toString.call(properties.center) === '[object Array]') {
@@ -79,20 +85,21 @@ Mapstraction: {
 				}
 				options.center = point.toProprietary(this.api);
 			}
-
-			if (properties.hasOwnProperty('zoom')) {
-				options.zoom = properties.zoom;
-			}
 			
 			if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
-				this.currentMapType = properties.map_type;
+				this.currentMap.type = properties.map_type;
 			}
 			
-			var defaultMap = this.getDefaultBaseMap(this.currentMapType);
+			var defaultMap = this.getDefaultBaseMap(this.currentMap.type);
 		    if (defaultMap !== null)
 		    {
-		        var baseMap = this.getCustomBaseMap(defaultMap.providerType);
-		        options.layers = [baseMap.tileMap.prop_tilemap];
+		        this.currentMap.baselayer = this.getCustomBaseMap(defaultMap.providerType);
+		        options.layers = [this.currentMap.baselayer.tileMap.prop_tilemap];
+		    }
+
+            //These will be standard in every init
+		    if (properties.hasOwnProperty('zoom')) {
+		        options.zoom = properties.zoom;
 		    }
 
 			if (properties.hasOwnProperty('dragging')) {
@@ -107,78 +114,14 @@ Mapstraction: {
 				options.doubleClickZoom = properties.double_click;
 			}
 
-			if (properties.hasOwnProperty('controls') && null !== properties.controls) {
-				var controls = properties.controls;
-				
-				if ('pan' in controls && controls.pan && L.Control.Pan) {
-					this.controls.pan = new L.Control.Pan();
-				}
-				
-				if ('zoom' in controls) {
-					// For a 'small' zoom control, use Leaflet's built-in zoom control.
-					// For a 'large' zoom control, use the ZoomSlide plugin control.
-		
-					if (controls.zoom === 'small') {
-						this.controls.zoom = new L.Control.Zoom();
-					}
-					
-					else if (controls.zoom === 'large') {
-						this.controls.zoom = L.Control.Zoomslider ? new L.Control.Zoomslider() : new L.Control.Zoom();
-					}
-				}
-				
-				if ('overview' in controls && controls.overview && L.Control.MiniMap) {
-					// Code Health Warning
-					//
-					// Hack to fix L.Control.MiniMap when working with L.Control.Pan
-					// and L.Control.Zoomslider
-					// See https://github.com/Norkart/Leaflet-MiniMap/issues/11
-					
-					L.Map.mergeOptions({
-						panControl: false,
-						zoomsliderControl: false
-					});
-					
-					if (typeof controls.overview !== 'number') {
-						controls.overview = 5;
-					}
-					
-					var minimap_opts = {
-						minZoom: 0,
-						maxZoom: baseMap.tileMap.properties.options.maxZoom - controls.overview
-					};
-
-					if (baseMap.tileMap.properties.options.subdomains) {
-						minimap_opts.subdomains = baseMap.tileMap.properties.options.subdomains;
-					}
-
-					this.minimap_layer = new L.TileLayer(baseMap.tileMap.properties.url, minimap_opts);
-					this.controls.overview = new L.Control.MiniMap(this.minimap_layer, {
-						toggleDisplay: true,
-						zoomLevelOffset: -this.controls.overview
-					});
-				}
-				
-				if ('scale' in controls && controls.scale) {
-					this.controls.scale = new L.Control.Scale();
-				}
-				
-				if ('map_type' in controls && controls.map_type) {
-					this.controls.map_type = new L.Control.Layers(this.layers, this.overlays, {
-						autoZIndex: false
-					});
-				}
-			}
 		}
 
-		var map = new L.Map(element.id, options);
-		
-		for (var control in this.controls) {
-			if (this.controls[control] !== null) {
-				map.addControl(this.controls[control]);
-			}
+		var map = this.maps[api] = new L.Map(element.id, options);
+
+		if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
+		    self.addControls(properties.controls);
 		}
-		
+
 		map.addEventListener('moveend', function(){
 			self.endPan.fire();
 		}); 
@@ -204,34 +147,36 @@ Mapstraction: {
 		
 		var layerHandler = function(e) {
 
-			var layerName = null;
+		    var currmap = {};
 			for (var c=0; c<self.customBaseMaps.length; c++) {
 				if (e.type === 'baselayerchange' && self.customBaseMaps[c].label === e.name) {
-					layerName = self.customBaseMaps[c].name;
+				    currmap.map = self.customBaseMaps[c];
+				    currmap.type = currmap.map.name;
 					break;
 				}
 				
 				else {
 					if (e.type === 'layeradd' && self.customBaseMaps[c].tileMap.prop_tilemap == e.layer) {
-						layerName = self.customBaseMaps[c].name;
+					    currmap.map = self.customBaseMaps[c];
+					    currmap.type = currmap.map.name;
 						break;
 					}
 				}
 			}
 			
 			for (var d=0; d<self.defaultBaseMaps.length; d++) {
-				if (self.defaultBaseMaps[d].providerType === layerName) {
-					layerName = self.defaultBaseMaps[d].mxnType;
+				if (self.defaultBaseMaps[d].providerType === e.layerName) {
+				    currmap.map = self.defaultBaseMaps[d];
+				    currmap.type = currmap.mxnType;
 				}
 			}
 			
-			self.currentMapType = layerName;
+			self.currentMap = currmap;
 		};
 		
 		map.on('baselayerchange', layerHandler);
 		map.on('layeradd', layerHandler);
 		
-		this.maps[api] = map;
 		this.loaded[api] = true;
 	},
 	
@@ -254,54 +199,6 @@ Mapstraction: {
 		this.maps[this.api].invalidateSize();
 	},
 
-	addControls: function(args) {
-		/* args = { 
-		 *     pan:      true,
-		 *     zoom:     'large' || 'small',
-		 *     overview: true,
-		 *     scale:    true,
-		 *     map_type: true,
-		 * }
-		 */
-
-		var map = this.maps[this.api];
-
-		if ('zoom' in args || ('pan' in args && args.pan)) {
-			if (args.pan || args.zoom || args.zoom == 'large' || args.zoom == 'small') {
-				this.addSmallControls();
-			}
-		}
-		else {
-			if (this.controls.zoom !== null) {
-				map.removeControl(this.controls.zoom);
-				this.controls.zoom = null;
-			}
-		}
-		
-		if ('scale' in args && args.scale) {
-			if (this.controls.scale === null) {
-				this.controls.scale = new L.Control.Scale();
-				map.addControl(this.controls.scale);
-			}
-		}
-		else {
-			if (this.controls.scale !== null) {
-				map.removeControl(this.controls.scale);
-				this.controls.scale = null;
-			}
-		}
-
-		if ('map_type' in args && args.map_type) {
-			this.addMapTypeControls();
-		}
-		else {
-			if (this.controls.map_type !== null) {
-				map.removeControl(this.controls.map_type);
-				this.controls.map_type = null;
-			}
-		}
-	},
-
 	addSmallControls: function() {
 		var map = this.maps[this.api];
 		
@@ -311,19 +208,135 @@ Mapstraction: {
 		}
 	},
 
+	removeSmallControls: function() {
+	    var map = this.maps[this.api];
+    	if (this.controls.zoom !== null) {
+	        map.removeControl(this.controls.zoom);
+            this.controls.zoom = null;
+        }
+	},
+
 	addLargeControls: function() {
-            //TODO: add zoomslider here instead
-		return this.addSmallControls();
+	    var map = this.maps[this.api];
+		
+        //Use zoomslider plugin if it is loaded
+	    if (this.controls.zoom === null) {
+	        this.controls.zoom =  L.Control.Zoomslider ? new L.Control.Zoomslider() : new L.Control.Zoom();
+	        map.addControl(this.controls.zoom);
+	    }
+    },
+
+	removeLargeControls: function () {
+	    this.removeSmallControls();
 	},
 
 	addMapTypeControls: function() {
 		var map = this.maps[this.api];
-		
+
 		if (this.controls.map_type === null) {
-			this.controls.map_type = new L.Control.Layers(this.layers, this.overlays);
+		    this.controls.map_type = new L.Control.Layers(this.layers, this.overlays, {
+		    autoZIndex: false
+		});
 			map.addControl(this.controls.map_type);
 		}
 	},
+
+	removeMapTypeControls: function() {
+        if (this.controls.map_type !== null) {
+            map.removeControl(this.controls.map_type);
+            this.controls.map_type = null;
+	    }
+    },
+
+	addScaleControls: function () {
+	    var map = this.maps[this.api];
+
+	    if (this.controls.scale === null) {
+	        this.controls.scale = new L.Control.Scale();
+	        map.addControl(this.controls.scale);
+	    }
+    },
+
+	removeScaleControls: function () {
+	    var map = this.maps[this.api];
+
+	    if (this.controls.scale !== null) {
+	        map.removeControl(this.controls.scale);
+	        this.controls.scale = null;
+	    }
+	},
+
+	addPanControls: function() {
+	    var map = this.maps[this.api];
+
+	    if (this.controls.pan === null && L.Control.Pan) {
+	        this.controls.pan = new L.Control.Pan();
+	        map.addControl(this.controls.pan);
+	    }
+	},
+    
+	removePanControls: function() {
+	    var map = this.maps[this.api];
+
+	    if (this.controls.pan !== null) {
+	        map.removeControl(this.controls.pan);
+	        this.controls.pan = null;
+	    }
+	},
+
+	addOverviewControls: function (zoomOffset) {
+	    var map = this.maps[this.api];
+
+	    if (this.controls.overview === null && L.Control.MiniMap) {
+	        //TODO: move this check back into mxn for all providers
+	        if (zoomOffset === null) {
+	            zoomOffset = 5;
+	        }
+
+	        // Code Health Warning
+	        //
+	        // Hack to fix L.Control.MiniMap when working with L.Control.Pan
+	        // and L.Control.Zoomslider
+	        // See https://github.com/Norkart/Leaflet-MiniMap/issues/11
+
+	        L.Map.mergeOptions({
+	            panControl: false,
+	            zoomsliderControl: false
+	        });
+
+	        var bmOptions = this.currentMap.baselayer.tileMap.properties.options;
+
+            //Keep the layer within its zoom bounds by overriding the zoomOffset if necessary
+	        if (zoomOffset > bmOptions.maxZoom - bmOptions.minZoom) {
+	            zoomOffset = bmOptions.maxZoom - bmOptions.minZoom;
+	        }
+
+	        var minimap_opts = {
+	            minZoom: bmOptions.minZoom,
+	            maxZoom: bmOptions.maxZoom - zoomOffset
+	        };
+
+	        if (bmOptions.subdomains) {
+	            minimap_opts.subdomains = bmOptions.subdomains;
+	        }
+
+	        var minimap_layer = new L.TileLayer(mxn.util.sanitizeTileURL(this.currentMap.baselayer.tileMap.properties.url), minimap_opts);
+	        this.controls.overview = new L.Control.MiniMap(minimap_layer, {
+	            toggleDisplay: true,
+	            zoomLevelOffset: -zoomOffset
+	        });
+
+	        map.addControl(this.controls.overview);
+	    }
+	},
+    
+	removeOverviewControls: function () {
+	    var map = this.maps[this.api];
+	    if (this.controls.overview !== null) {
+	        map.removeControl(this.controls.overview);
+	        this.controls.overview = null;
+	    }
+    },
 
 	setCenterAndZoom: function(point, zoom) { 
 		var map = this.maps[this.api];
@@ -399,14 +412,16 @@ Mapstraction: {
 	setMapType: function(mapType) {
 		var i;
 		var name = null;
+		var baselayer = null;
 		
-		if (this.currentMapType === mapType) {
+		if (this.currentMap.type === mapType) {
 			return;
 		}
 		
 		for (i=0; i<this.defaultBaseMaps.length; i++) {
 			if (this.defaultBaseMaps[i].mxnType === mapType) {
-				name = this.defaultBaseMaps[i].providerType;
+			    name = this.defaultBaseMaps[i].providerType;
+			    baselayer = this.defaultBaseMaps[i];
 				break;
 			}
 		}
@@ -421,20 +436,30 @@ Mapstraction: {
 		
 		for (i=0; i<this.customBaseMaps.length; i++) {
 			if (this.customBaseMaps[i].name === name) {
-				map.addLayer(this.customBaseMaps[i].tileMap.prop_tilemap, true);
+			    map.addLayer(this.customBaseMaps[i].tileMap.prop_tilemap, true);
+			    baselayer = this.customBaseMaps[i];
 				foundMapType = true;
 			}
 			
 			else if (map.hasLayer(this.customBaseMaps[i].tileMap.prop_tilemap)) {
+			    baselayer = this.customBaseMaps[i];
 				layers.push(this.customBaseMaps[i].tileMap.prop_tilemap);
 			}
 		}
 
 		if (foundMapType) {
-			this.currentMapType = mapType;
+		    this.currentMap.type = mapType;
+		    this.currentMap.baselayer = baselayer;
 			for (i=0; i<layers.length; i++) {
 				map.removeLayer(layers[i]);
 			}
+		    //TODO: If the Minimap is shown then remove and readd it to change the basemap in that too
+			if (this.controls.overview) {
+			    var zoomOffset = -this.controls.overview.options.zoomLevelOffset;
+			    this.removeOverviewControls();
+			    this.addOverviewControls(zoomOffset);
+			}
+
 		}
 		
 		else {
@@ -443,7 +468,7 @@ Mapstraction: {
 	},
 
 	getMapType: function() {
-		return this.currentMapType;
+		return this.currentMap.type;
 	},
 
 	getBounds: function () {
@@ -719,7 +744,7 @@ TileMap: {
 			propCache[this.properties.options.label] = this.prop_tilemap;
 			if (this.mxn.controls.map_type !== null) {
 				if (this.properties.type === mxn.Mapstraction.TileType.BASE) {
-					this.mxn.controls.map_type.addBaseLayer(this.prop_tilemap, this.properties.options.label);
+				    this.mxn.controls.map_type.addBaseLayer(this.prop_tilemap, this.properties.options.label);
 				}
 				else {
 					this.mxn.controls.map_type.addOverlay(this.prop_tilemap, this.properties.options.label);
