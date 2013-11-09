@@ -52,17 +52,68 @@ mxn.register('openlayersv2', {
 			    this.layers[this.customBaseMaps[i].label] = this.customBaseMaps[i].tileMap.prop_tilemap;
 			}
 
+			var options = {
+			    projection: 'EPSG:4326',
+			    crossorigin: 'anonymous',
+			    controls: [
+                    new OpenLayers.Control.Navigation(),
+                    new OpenLayers.Control.ArgParser(),
+                    new OpenLayers.Control.Attribution()]
+			}
+
+			var hasOptions = (typeof properties !== 'undefined' && properties !== null);
+			if (hasOptions) {
+			    //TODO change this to call our setcentre method instead?
+			    if (properties.hasOwnProperty('center') && null !== properties.center) {
+			        var point;
+			        if (Object.prototype.toString.call(properties.center) === '[object Array]') {
+			            point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
+			        }
+
+			        else {
+			            point = properties.center;
+			        }
+			        options.center = point.toProprietary(this.api);
+			    }
+
+			    if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
+			        this.currentMapType = properties.map_type;
+			    }
+
+			    var defaultMap = this.getDefaultBaseMap(this.currentMapType);
+			    if (defaultMap !== null) {
+			        var baselayer = this.getCustomBaseMap(defaultMap.providerType);
+			        options.layers = [baselayer.tileMap.prop_tilemap];
+			    }
+
+			    //These will be standard in every init
+			    if (properties.hasOwnProperty('zoom')) {
+			        options.zoom = properties.zoom;
+			    }
+
+			    if (properties.hasOwnProperty('dragging')) {
+			        options.dragging = properties.dragging;
+			    }
+
+			    if (properties.hasOwnProperty('scroll_wheel')) {
+			        options.scrollWheelZoom = properties.scroll_wheel;
+			    }
+
+			    if (properties.hasOwnProperty('double_click')) {
+			        options.doubleClickZoom = properties.double_click;
+			    }
+
+			}
+
 			var map = new OpenLayers.Map(
 				element.id,
-				{
-					projection: 'EPSG:4326', //TODO: should we use WGS84 here?
-					controls: [
-						new OpenLayers.Control.Navigation(),
-						new OpenLayers.Control.ArgParser(),
-						new OpenLayers.Control.Attribution()
-					]
-				}
+                options
 			);
+			this.maps[api] = map;
+            
+			if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
+			    self.addControls(properties.controls);
+			}
 				
 			// deal with click
 			map.events.register('click', map, function(evt){
@@ -97,9 +148,6 @@ mxn.register('openlayersv2', {
 				}
 			}
 		
-			//map.addLayer(this.layers.osm);
-			//this.tileLayers.push(["http://a.tile.openstreetmap.org/", this.layers.osm, true]);
-			this.maps[api] = map;
 			this.loaded[api] = true;
 		},
 
@@ -133,114 +181,9 @@ mxn.register('openlayersv2', {
 			this.maps[this.api].updateSize();
 		},
 
-		addControls: function( args ) {
-			/* args = { 
-			 *     pan:      true,
-			 *     zoom:     'large' || 'small',
-			 *     overview: true,
-			 *     scale:    true,
-			 *     map_type: true,
-			 * }
-			 */
-
-			var map = this.maps[this.api];	
-			// FIXME: OpenLayers has a bug removing all the controls says crschmidt
-			/*for (var i = map.controls.length; i>1; i--) {
-				map.controls[i-1].deactivate();
-				map.removeControl(map.controls[i-1]);
-			}
-			if ( args.zoom == 'large' )	  {
-				map.addControl(new OpenLayers.Control.PanZoomBar());
-			}
-			else if ( args.zoom == 'small' ) {
-				map.addControl(new OpenLayers.Control.ZoomPanel());
-				if ( args.pan) {
-					map.addControl(new OpenLayers.Control.PanPanel()); 
-				}
-			}
-			else {
-				if ( args.pan){
-					map.addControl(new OpenLayers.Control.PanPanel()); 
-				}
-			}*/
-
-			if ('zoom' in args) {
-				if (args.zoom == 'large') {
-					this.controls.zoom = this.addLargeControls();
-				}
-				
-				else if (args.zoom == 'small') {
-					this.controls.zoom = this.addSmallControls();
-				}
-			}
-
-			else {
-				if (this.controls.zoom !== null) {
-					this.controls.zoom.deactivate();
-					map.removeControl(this.controls.zoom);
-					this.controls.zoom = null;
-				}
-			}
-
-			// See notes for addSmallControls and addLargeControls for why we suppress
-			// the PanPanel if the 'zoom' arg is set ...
-			if ('pan' in args && args.pan && ((!'zoom' in args) || ('zoom' in args && args.zoom == 'small'))) {
-				if (this.controls.pan === null) {
-					this.controls.pan = new OpenLayers.Control.PanPanel();
-					map.addControl(this.controls.pan);
-				}
-			}
-
-			else {
-				if (this.controls.pan !== null) {
-					this.controls.pan.deactivate();
-					map.removeControl(this.controls.pan);
-					this.controls.pan = null;
-				}
-			}
-			
-			if ('overview' in args && args.overview) {
-				if (this.controls.overview === null) {
-					this.controls.overview = new OpenLayers.Control.OverviewMap();
-					map.addControl(this.controls.overview);
-				}
-			}
-
-			else {
-				if (this.controls.overview !== null) {
-					this.controls.overview.deactivate();
-					map.removeControl(this.controls.overview);
-					this.controls.overview = null;
-				}
-			}
-			
-			if ('map_type' in args && args.map_type) {
-				this.controls.map_type = this.addMapTypeControls();
-			}
-			
-			else {
-				if (this.controls.map_type !== null) {
-					this.controls.map_type.deactivate();
-					map.removeControl(this.controls.map_type);
-					this.controls.map_type = null;
-				}
-			}
-
-			if ('scale' in args && args.scale) {
-				if (this.controls.scale === null) {
-					this.controls.scale = new OpenLayers.Control.ScaleLine();
-					map.addControl(this.controls.scale);
-				}
-			}
-
-			else {
-				if (this.controls.scale !== null) {
-					this.controls.scale.deactivate();
-					map.removeControl(this.controls.scale);
-					this.controls.scale = null;
-				}
-			}
-		},
+		//TODO: See notes for addSmallControls and addLargeControls for why we suppress
+		// the PanPanel if the 'zoom' arg is set ...
+		//if ('pan' in args && args.pan && ((!'zoom' in args) || ('zoom' in args && args.zoom == 'small'))) {
 
 		addSmallControls: function() {
 			var map = this.maps[this.api];
@@ -255,6 +198,15 @@ mxn.register('openlayersv2', {
 			return this.controls.zoom;
 		},
 
+		removeSmallControls: function () {
+		    var map = this.maps[this.api];
+		    if (this.controls.zoom !== null) {
+		        this.controls.zoom.deactivate();
+		        map.removeControl(this.controls.zoom);
+		        this.controls.zoom = null;
+		    }
+		},
+
 		addLargeControls: function() {
 			var map = this.maps[this.api];
 			if (this.controls.zoom !== null) {
@@ -267,21 +219,88 @@ mxn.register('openlayersv2', {
 			return this.controls.zoom;
 		},
 
+		removeLargeControls: function () {
+		    this.removeSmallControls();
+		},
+
 		addMapTypeControls: function() {
 			var map = this.maps[this.api];
-			var control = null;
-			
+
 			if (this.controls.map_type === null) {
-				control = new OpenLayers.Control.LayerSwitcher({ 'ascending':false });
-				map.addControl(control);
+			    this.controls.map_type = new OpenLayers.Control.LayerSwitcher({ 'ascending': false });
+			    map.addControl(this.controls.map_type);
 			}
-			
-			else {
-				control = this.controls.map_type;
-			}
-			
-			return control;
 		},
+
+		removeMapTypeControls: function () {
+		    if (this.controls.map_type !== null) {
+		        map.removeControl(this.controls.map_type);
+		        this.controls.map_type = null;
+		    }
+		},
+
+		addScaleControls: function () {
+		    var map = this.maps[this.api];
+
+		    if (this.controls.scale === null) {
+		        this.controls.scale = new OpenLayers.Control.ScaleLine();
+		        map.addControl(this.controls.scale);
+		    }
+		},
+
+		removeScaleControls: function () {
+		    var map = this.maps[this.api];
+
+		    if (this.controls.scale !== null) {
+		        this.controls.scale.deactivate();
+		        map.removeControl(this.controls.scale);
+		        this.controls.scale = null;
+		    }
+		},
+
+		addPanControls: function () {
+		    var map = this.maps[this.api];
+
+		    if (this.controls.pan === null && L.Control.Pan) {
+		        this.controls.pan = new OpenLayers.Control.PanPanel();
+		        map.addControl(this.controls.pan);
+		    }
+		},
+
+		removePanControls: function () {
+		    var map = this.maps[this.api];
+
+		    if (this.controls.pan !== null) {
+		        this.controls.pan.deactivate();
+		        map.removeControl(this.controls.pan);
+		        this.controls.pan = null;
+		    }
+		},
+
+		addOverviewControls: function (zoomOffset) {
+		    var map = this.maps[this.api];
+
+		    if (this.controls.overview === null) {
+		        this.controls.overview = new OpenLayers.Control.OverviewMap({
+		            maximized: true,
+		            mapoptions: {
+		                projection: 'EPSG:4326',
+		                crossorigin: 'anonymous',
+		            }
+		        });
+		        map.addControl(this.controls.overview);
+		    }
+		},
+
+		removeOverviewControls: function () {
+		    var map = this.maps[this.api];
+		    if (this.controls.overview !== null) {
+		        this.controls.overview.destroy();
+		        map.removeControl(this.controls.overview);
+		        this.controls.overview = null;
+		    }
+		},
+
 
 		setCenterAndZoom: function(point, zoom) { 
 			var map = this.maps[this.api];
@@ -607,16 +626,6 @@ mxn.register('openlayersv2', {
 		    return tileMap.toProprietary(this.api);
 		},
 
-		toggleTileLayer: function(tile_url) {
-			var map = this.maps[this.api];
-			for (var f=this.tileLayers.length-1; f>=0; f--) {
-				if(this.tileLayers[f][0] == tile_url) {
-					this.tileLayers[f][2] = !this.tileLayers[f][2];
-					this.tileLayers[f][1].setVisibility(this.tileLayers[f][2]);
-				}
-			}	   
-		},
-
 		getPixelRatio: function() {
 			throw new Error('Mapstraction.getPixelRatio is not currently supported by provider ' + this.api);
 		},
@@ -831,7 +840,10 @@ mxn.register('openlayersv2', {
 	            this.mxn.customBaseMaps[this.index].inControl = true;
 	            this.mxn.layers[this.properties.options.label] = this.proprietary_tilemap;
 	            if (this.mxn.controls.map_type !== null && typeof (this.mxn.controls.map_type) !== "undefined") {
-	                this.mxn.controls.map_type.addBaseLayer(this.proprietary_tilemap, this.properties.options.label);
+	                this.mxn.maps[this.mxn.api].setBaseLayer(this.toProprietary());//this.proprietary_tilemap) ; //, this.properties.options.label);
+	                if (this.mxn.controls.overview !== null && typeof (this.mxn.controls.overview) !== "undefined") {
+	                    this.mxn.controls.overview.layers = [this.toProprietary()];
+	                }
 	            }
 	        }
 	    },
