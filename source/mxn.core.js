@@ -408,6 +408,13 @@ mxn.addProxyMethods(Mapstraction, [
 	 * @function
 	 */
 	'addSmallControls', 
+
+    /**
+	 * Removes a large map panning control and zoom buttons to the map
+	 * @name mxn.Mapstraction#removeSmallControls
+	 * @function
+	 */
+	'removeSmallControls',
 	
 	/**
 	 * Applies the current option settings

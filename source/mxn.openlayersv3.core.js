@@ -46,6 +46,63 @@ mxn.register('openlayersv3', {
 				map_type: null
 			};			
 			
+			var options = {
+			    projection: 'EPSG:4326', //TODO: check whether these ol2 properties are needed / useful
+			    crossOrigin: 'anonymous', //TODO: check whether these ol2 properties are needed / useful
+			    view: new ol.View2D({
+			        center: [0, 0],
+			        zoom: 3
+			    }),
+			    layers: [baseMap.tileMap.prop_tilemap],
+			    target: element,
+			    renderer: ol.RendererHint.CANVAS //needed as webGL doesn't support vector layers yet
+			};
+
+			var hasOptions = (typeof properties !== 'undefined' && properties !== null);
+			if (hasOptions) {
+			    //TODO change this to call our setcentre method instead?
+			    if (properties.hasOwnProperty('center') && null !== properties.center) {
+			        var point;
+			        if (Object.prototype.toString.call(properties.center) === '[object Array]') {
+			            point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
+			        }
+
+			        else {
+			            point = properties.center;
+			        }
+			        options.view.center = point.toProprietary(this.api);
+			    }
+
+			    if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
+			        this.currentMapType = properties.map_type;
+			    }
+
+			    defaultMap = this.getDefaultBaseMap(this.currentMapType);
+			    if (defaultMap !== null) {
+			        var baselayer = this.getCustomBaseMap(defaultMap.providerType);
+			        options.layers = [baselayer.tileMap.prop_tilemap];
+			    }
+
+			    //These will be standard in every init
+			    if (properties.hasOwnProperty('zoom')) {
+			        options.view.zoom = properties.zoom;
+			    }
+
+			    if (properties.hasOwnProperty('dragging')) {
+			        options.dragging = properties.dragging;
+			    }
+
+			    if (properties.hasOwnProperty('scroll_wheel')) {
+			        options.scrollWheelZoom = properties.scroll_wheel;
+			    }
+
+			    if (properties.hasOwnProperty('double_click')) {
+			        options.doubleClickZoom = properties.double_click;
+			    }
+
+			}
+
+
 			var map = new ol.Map({
 			  view: new ol.View2D({
 				center: [0, 0],
@@ -55,7 +112,12 @@ mxn.register('openlayersv3', {
 			  target: element,
 			  renderer: ol.RendererHint.CANVAS //needed as webGL doesn't support vector layers yet
 			});
+			this.maps[api] = map;
 			
+			if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
+			    this.addControls(properties.controls);
+			}
+
 			// deal with click
 			map.on(['click'], function(evt) {
 				var point = new mxn.LatLonPoint();
@@ -73,7 +135,6 @@ mxn.register('openlayersv3', {
 				me.endPan.fire();
 			});
 		
-			this.maps[api] = map;
 			this.loaded[api] = true;
 			
 			/* map.on(['load'], function(evt) {
@@ -110,110 +171,42 @@ mxn.register('openlayersv3', {
 			this.maps[this.api].updateSize();
 		},
 
-		addControls: function( args ) {
-			var map = this.maps[this.api];	
-
-			if ('zoom' in args) {
-				if (args.zoom == 'large') {
-					this.controls.zoom = this.addLargeControls();
-				}
-				
-				else if (args.zoom == 'small') {
-					this.controls.zoom = this.addSmallControls();
-				}
-			}
-			else {
-			    if (this.controls.zoom !== null && this.controls.zoom.getMap() !== null) {
-			        map.removeControl(this.controls.zoom);
-			    }
-			}
-
-			// See notes for addSmallControls and addLargeControls for why we suppress
-			// the PanPanel if the 'zoom' arg is set ...
-			if ('pan' in args && args.pan && ((!'zoom' in args) || ('zoom' in args && args.zoom == 'small'))) {
-				if (this.controls.pan === null) {
-					this.controls.pan = new ol.control.PanPanel();
-					map.addControl(this.controls.pan);
-				}
-			}
-
-			else {
-				if (this.controls.pan !== null) {
-					map.removeControl(this.controls.pan);
-					this.controls.pan = null;
-				}
-			}
-			
-			if ('overview' in args && args.overview) {
-				if (this.controls.overview === null) {
-					/*
-					this.controls.overview = new ol.control.OverviewMap();
-					map.addControl(this.controls.overview);
-					*/
-				}
-			}
-
-			else {
-				if (this.controls.overview !== null) {
-					map.removeControl(this.controls.overview);
-					this.controls.overview = null;
-				}
-			}
-			
-			if ('map_type' in args && args.map_type) {
-				//this.controls.map_type = this.addMapTypeControls();
-			}
-			else {
-				if (this.controls.map_type !== null) {
-					map.removeControl(this.controls.map_type);
-					this.controls.map_type = null;
-				}
-			}
-
-			if ('scale' in args && args.scale) {
-			    if (this.controls.scale === null) {
-			        this.controls.scale = new ol.control.ScaleLine();
-			    }
-
-			    if (this.controls.scale.getMap() === null) {
-					map.addControl(this.controls.scale);
-				}
-			}
-			else {
-			    if (this.controls.scale !== null && this.controls.scale.getMap() !== null) {
-					map.removeControl(this.controls.scale);
-				}
-			}
-		},
-
 		addSmallControls: function() {
 			var map = this.maps[this.api];
-
-			if (this.controls.zoom !== null && this.controls.zoom.getMap() !== null) {
-				map.removeControl(this.controls.zoom);
-			}
-			// ZoomPanel == ZoomIn + ZoomOut + ZoomToMaxExtent
+			this.removeSmallControls();
+		    // ZoomPanel == ZoomIn + ZoomOut + ZoomToMaxExtent
 			this.controls.zoom = new ol.control.Zoom();
 			map.addControl(this.controls.zoom);
 			return this.controls.zoom;
 		},
 
+		removeSmallControls: function () {
+		    var map = this.maps[this.api];
+		    if (this.controls.zoom !== null) {
+		        this.controls.zoom.deactivate();
+		        map.removeControl(this.controls.zoom);
+		        this.controls.zoom = null;
+		    }
+		},
+
 		addLargeControls: function() {
 			var map = this.maps[this.api];
-			if (this.controls.zoom !== null && this.controls.zoom.getMap() !== null) {
-				map.removeControl(this.controls.zoom);
-			}
+			this.removeLargeControls();
 			// PanZoomBar == PanPanel + ZoomBar
 			this.controls.zoom = new ol.control.ZoomSlider();
 			map.addControl(this.controls.zoom);
 			return this.controls.zoom;
 		},
 
+		removeLargeControls: function () {
+		    this.removeSmallControls();
+		},
+
 		addMapTypeControls: function() {
 			var map = this.maps[this.api];
 			var control = null;
 			
-			if (this.controls.map_type === null && this.controls.map_type.getMap() !== null) {
+			if (this.controls.map_type === null) {
 				/*
 				control = new ol.control.LayerSwitcher({ 'ascending':false });
 				map.addControl(control); */
@@ -224,6 +217,77 @@ mxn.register('openlayersv3', {
 			}
 			
 			return control;
+		},
+
+		removeMapTypeControls: function () {
+		    if (this.controls.map_type !== null) {
+		        map.removeControl(this.controls.map_type);
+		        this.controls.map_type = null;
+		    }
+		},
+
+		addScaleControls: function () {
+		    var map = this.maps[this.api];
+
+		    if (this.controls.scale === null) {
+		        this.controls.scale = new ol.control.ScaleLine();
+		        map.addControl(this.controls.scale);
+		    }
+		},
+
+		removeScaleControls: function () {
+		    var map = this.maps[this.api];
+
+		    if (this.controls.scale !== null) {
+		        this.controls.scale.deactivate();
+		        map.removeControl(this.controls.scale);
+		        this.controls.scale = null;
+		    }
+		},
+
+		addPanControls: function () {
+            /* TODO: ol3 doesnt have one yet
+		    var map = this.maps[this.api];
+
+		    if (this.controls.pan === null) {
+		        this.controls.pan = new ol.control.PanPanel()
+		        map.addControl(this.controls.pan);
+		    } */
+		},
+
+		removePanControls: function () {
+		    var map = this.maps[this.api];
+
+		    if (this.controls.pan !== null) {
+		        this.controls.pan.deactivate();
+		        map.removeControl(this.controls.pan);
+		        this.controls.pan = null;
+		    }
+		},
+
+		addOverviewControls: function (zoomOffset) {
+		    var map = this.maps[this.api];
+
+		    if (this.controls.overview === null) {
+                /*TODO: Not implemented in ol3 yet
+		        this.controls.overview = new OpenLayers.Control.OverviewMap({
+		            maximized: true,
+		            mapoptions: {
+		                projection: 'EPSG:4326',
+		                crossorigin: 'anonymous',
+		            }
+		        });
+		        map.addControl(this.controls.overview); */
+		    }
+		},
+
+		removeOverviewControls: function () {
+		    var map = this.maps[this.api];
+		    if (this.controls.overview !== null) {
+		        this.controls.overview.destroy();
+		        map.removeControl(this.controls.overview);
+		        this.controls.overview = null;
+		    }
 		},
 
 		setCenterAndZoom: function(point, zoom) { 
@@ -478,16 +542,6 @@ mxn.register('openlayersv3', {
 			
 			map.addLayer(overlay);
 			this.Tiles.push( [tile_url, overlay, true] );			
-		},
-
-		toggleTile: function(tile_url) {
-			var map = this.maps[this.api];
-			for (var f=this.Tiles.length-1; f>=0; f--) {
-				if(this.Tiles[f][0] == tile_url) {
-					this.Tiles[f][2] = !this.Tiles[f][2];
-					this.Tiles[f][1].setVisibility(this.Tiles[f][2]);
-				}
-			}	   
 		},
 
 		getPixelRatio: function () {

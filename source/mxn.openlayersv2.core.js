@@ -59,7 +59,7 @@ mxn.register('openlayersv2', {
                     new OpenLayers.Control.Navigation(),
                     new OpenLayers.Control.ArgParser(),
                     new OpenLayers.Control.Attribution()]
-			}
+			};
 
 			var hasOptions = (typeof properties !== 'undefined' && properties !== null);
 			if (hasOptions) {
@@ -187,11 +187,7 @@ mxn.register('openlayersv2', {
 
 		addSmallControls: function() {
 			var map = this.maps[this.api];
-
-			if (this.controls.zoom !== null) {
-				this.controls.zoom.deactivate();
-				map.removeControl(this.controls.zoom);
-			}
+			this.removeSmallControls();
 			// ZoomPanel == ZoomIn + ZoomOut + ZoomToMaxExtent
 			this.controls.zoom = new OpenLayers.Control.ZoomPanel();
 			map.addControl(this.controls.zoom);
@@ -209,11 +205,8 @@ mxn.register('openlayersv2', {
 
 		addLargeControls: function() {
 			var map = this.maps[this.api];
-			if (this.controls.zoom !== null) {
-				this.controls.zoom.deactivate();
-				map.removeControl(this.controls.zoom);
-			}
-			// PanZoomBar == PanPanel + ZoomBar
+			this.removeLargeControls();
+		    // PanZoomBar == PanPanel + ZoomBar
 			this.controls.zoom = new OpenLayers.Control.PanZoomBar();
 			map.addControl(this.controls.zoom);
 			return this.controls.zoom;
@@ -234,6 +227,7 @@ mxn.register('openlayersv2', {
 
 		removeMapTypeControls: function () {
 		    if (this.controls.map_type !== null) {
+		        this.controls.map_type.deactivate();
 		        map.removeControl(this.controls.map_type);
 		        this.controls.map_type = null;
 		    }
@@ -285,7 +279,7 @@ mxn.register('openlayersv2', {
 		            maximized: true,
 		            mapoptions: {
 		                projection: 'EPSG:4326',
-		                crossorigin: 'anonymous',
+		                crossorigin: 'anonymous'
 		            }
 		        });
 		        map.addControl(this.controls.overview);
@@ -300,7 +294,6 @@ mxn.register('openlayersv2', {
 		        this.controls.overview = null;
 		    }
 		},
-
 
 		setCenterAndZoom: function(point, zoom) { 
 			var map = this.maps[this.api];
@@ -842,7 +835,12 @@ mxn.register('openlayersv2', {
 	            if (this.mxn.controls.map_type !== null && typeof (this.mxn.controls.map_type) !== "undefined") {
 	                this.mxn.maps[this.mxn.api].setBaseLayer(this.toProprietary());//this.proprietary_tilemap) ; //, this.properties.options.label);
 	                if (this.mxn.controls.overview !== null && typeof (this.mxn.controls.overview) !== "undefined") {
-	                    this.mxn.controls.overview.layers = [this.toProprietary()];
+	                    var zoomOffset = //TODO: Unused at present:   -this.mxn.controls.overview.options.zoomLevelOffset;
+	                    this.mxn.removeOverviewControls();
+	                    var that = this;
+	                    setTimeout(function () { //Needs time for the basemap layer to be loaded, as the overview map deaults to use it.
+	                        that.mxn.addOverviewControls(zoomOffset);
+	                    }, 50);
 	                }
 	            }
 	        }
