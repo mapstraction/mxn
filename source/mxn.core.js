@@ -320,6 +320,15 @@ mxn.addProxyMethods(Mapstraction, [
 	 * return {string} the current, active, Map provider's version
 	 */
 	'getVersion',
+
+	/**
+	 * Adds a control to the map 
+	 * @name mxn.Mapstraction#addAControl
+	 * @function
+     * @param {Control}
+	 * return {Control} the Control, so it can be saved
+	 */
+	'addAControl',
 	
 	/**
 	 * Adds a large map panning control and zoom buttons to the map
@@ -614,6 +623,36 @@ Mapstraction.prototype.enableScrollWheelZoom = function() {
  */
 Mapstraction.prototype.dragging = function(on) {
 	this.setOption('enableDragging', on);
+};
+
+    /**
+ * Removes a map control from the map
+ * @name mxn.Mapstraction#removeAControl
+ * @function
+ * @param {Control} the control to remove from the map
+ */
+Mapstraction.prototype.removeAControl = function (control) {
+    if (control !== null) {
+        this.invoker.go('removeAControl', arguments);
+        //Because of Pass by Copy we need to update the underlying reference, not the parameter
+        switch (control) {
+            case this.controls.zoom:
+                this.controls.zoom = null;
+                break;
+            case this.controls.scale:
+                this.controls.scale = null;
+                break;
+            case this.controls.pan:
+                this.controls.pan = null;
+                break;
+            case this.controls.overview:
+                this.controls.overview = null;
+                break;
+            case this.controls.map_type:
+                this.controls.map_type = null;
+                break;
+        }
+    }
 };
 
 /**
