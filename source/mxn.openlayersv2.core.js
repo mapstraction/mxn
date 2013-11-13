@@ -185,7 +185,7 @@ mxn.register('openlayersv2', {
 		// the PanPanel if the 'zoom' arg is set ...
 		//if ('pan' in args && args.pan && ((!'zoom' in args) || ('zoom' in args && args.zoom == 'small'))) {
 
-		addAControl: function (control) {
+		addControl: function (control) {
 		    var map = this.maps[this.api];
 		    if (control !== null && typeof (control) !== "undefined" && !control.active) { 
 		        map.addControl(control);
@@ -193,7 +193,7 @@ mxn.register('openlayersv2', {
 		    return control;
 		},
 
-		removeAControl: function (control) {
+		removeControl: function (control) {
 		    var map = this.maps[this.api];
 		    if (control !== null && typeof (control) !== "undefined" && control.active) {
 		        control.deactivate();
@@ -204,49 +204,49 @@ mxn.register('openlayersv2', {
 		addSmallControls: function() {
 			this.removeSmallControls();
 			// ZoomPanel == ZoomIn + ZoomOut + ZoomToMaxExtent
-			this.controls.zoom = this.addAControl(new OpenLayers.Control.ZoomPanel());
+			this.controls.zoom = this.addControl(new OpenLayers.Control.ZoomPanel());
 		},
 
 		removeSmallControls: function () {
-		    this.removeAControl(this.controls.zoom);
+		    this.removeControl(this.controls.zoom);
 		},
 
 		addLargeControls: function() {
             this.removeLargeControls();
 		    // PanZoomBar == PanPanel + ZoomBar
-            this.controls.zoom = this.addAControl(new OpenLayers.Control.PanZoomBar());
+            this.controls.zoom = this.addControl(new OpenLayers.Control.PanZoomBar());
 		},
 
 		removeLargeControls: function () {
-		    this.removeAControl(this.controls.zoom);
+		    this.removeControl(this.controls.zoom);
 		},
 
 		addMapTypeControls: function () {
-		    this.controls.map_type = this.addAControl(new OpenLayers.Control.LayerSwitcher({ 'ascending': false }));
+		    this.controls.map_type = this.addControl(new OpenLayers.Control.LayerSwitcher({ 'ascending': false }));
 		},
 
 		removeMapTypeControls: function () {
-		    this.removeAControl(this.controls.map_type);
+		    this.removeControl(this.controls.map_type);
 		},
 
 		addScaleControls: function () {
-		    this.controls.scale = this.addAControl(new OpenLayers.Control.ScaleLine());
+		    this.controls.scale = this.addControl(new OpenLayers.Control.ScaleLine());
 		},
 
 		removeScaleControls: function () {
-		    this.removeAControl(this.controls.scale);
+		    this.removeControl(this.controls.scale);
 		},
 
 		addPanControls: function () {
-		    this.controls.pan = this.addAControl(new OpenLayers.Control.PanPanel());
+		    this.controls.pan = this.addControl(new OpenLayers.Control.PanPanel());
 		},
 
 		removePanControls: function () {
-		    this.removeAControl(this.controls.pan);
+		    this.removeControl(this.controls.pan);
 		},
 
 		addOverviewControls: function (zoomOffset) {
-		    this.controls.pan = this.addAControl(new OpenLayers.Control.OverviewMap({
+		    this.controls.pan = this.addControl(new OpenLayers.Control.OverviewMap({
 		            maximized: true,
 		            mapoptions: {
 		                projection: 'EPSG:4326',
@@ -256,7 +256,7 @@ mxn.register('openlayersv2', {
 		},
 
 		removeOverviewControls: function () {
-		    this.removeAControl(this.controls.overview);
+		    this.removeControl(this.controls.overview);
 		},
 
 		setCenterAndZoom: function(point, zoom) { 

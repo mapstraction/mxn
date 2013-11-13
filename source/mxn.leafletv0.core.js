@@ -199,7 +199,7 @@ Mapstraction: {
 		this.maps[this.api].invalidateSize();
 	},
 
-	addAControl: function (control) {
+	addControl: function (control) {
 	    var map = this.maps[this.api];
 	    if (control !== null && typeof (control) !== "undefined") {
 	        //Check its not already on the map, _map is an undocmented feature
@@ -210,7 +210,7 @@ Mapstraction: {
 	    return control;
 	},
 
-	removeAControl: function (control) {
+	removeControl: function (control) {
 	    var map = this.maps[this.api];
 	    //Check its not already on the map, _map is an undocmented feature
 	    if (control !== null && typeof (control) !== "undefined" && !!control._map) {
@@ -219,49 +219,49 @@ Mapstraction: {
 	},
 
 	addSmallControls: function () {
-	    this.controls.zoom = this.addAControl(new L.Control.Zoom());
+	    this.controls.zoom = this.addControl(new L.Control.Zoom());
 	},
 
 	removeSmallControls: function() {
-	    this.removeAControl(this.controls.zoom);
+	    this.removeControl(this.controls.zoom);
 	},
 
 	addLargeControls: function () {
 	    //Use zoomslider plugin if it is loaded
-	    this.controls.zoom = this.addAControl(L.Control.Zoomslider ? new L.Control.Zoomslider() : new L.Control.Zoom());
+	    this.controls.zoom = this.addControl(L.Control.Zoomslider ? new L.Control.Zoomslider() : new L.Control.Zoom());
     },
 
 	removeLargeControls: function () {
-	    this.removeAControl(this.controls.zoom);
+	    this.removeControl(this.controls.zoom);
 	},
 
 	addMapTypeControls: function () {
-	    this.controls.map_type = this.addAControl(new L.Control.Layers(this.layers, this.overlays, {
+	    this.controls.map_type = this.addControl(new L.Control.Layers(this.layers, this.overlays, {
 	        autoZIndex: false
 	    }));
 	},
 
 	removeMapTypeControls: function() {
-	    this.removeAControl(this.controls.map_type);
+	    this.removeControl(this.controls.map_type);
     },
 
 	addScaleControls: function () {
-	    this.controls.scale = this.addAControl(new L.Control.Scale());
+	    this.controls.scale = this.addControl(new L.Control.Scale());
     },
 
 	removeScaleControls: function () {
-	    this.removeAControl(this.controls.scale);
+	    this.removeControl(this.controls.scale);
 	},
 
 	addPanControls: function () {
 	    if (L.Control.Pan) {
             //If Pan module is loaded
-	        this.controls.scale = this.addAControl(new L.Control.Pan());
+	        this.controls.scale = this.addControl(new L.Control.Pan());
 	    }
 	},
     
 	removePanControls: function () {
-	    this.removeAControl(this.controls.pan);
+	    this.removeControl(this.controls.pan);
 	},
 
 	addOverviewControls: function (zoomOffset) {
@@ -299,7 +299,7 @@ Mapstraction: {
 	        }
 
 	        var minimap_layer = new L.TileLayer(mxn.util.sanitizeTileURL(this.currentMap.baselayer.tileMap.properties.url), minimap_opts);
-	        this.controls.overview = this.addAControl(new L.Control.MiniMap(minimap_layer, {
+	        this.controls.overview = this.addControl(new L.Control.MiniMap(minimap_layer, {
 	            toggleDisplay: true,
 	            zoomLevelOffset: -zoomOffset
 	        }));
@@ -307,7 +307,7 @@ Mapstraction: {
 	},
     
 	removeOverviewControls: function () {
-	    this.removeAControl(this.controls.overview);
+	    this.removeControl(this.controls.overview);
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
