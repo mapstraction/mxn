@@ -1,6 +1,22 @@
 <html>
 <head>
-	<script src="http://code.jquery.com/jquery-1.8.2.min.js" type="text/javascript"></script>
+
+    <script src="\jquery-1.8.2.min.js" type="text/javascript"></script>
+	
+	<link rel="stylesheet" href="\ol3\ol.css" type="text/css">
+	<!--script-- src="http://ol3js.org/en/master/build/ol.simple.js"></--script-->
+	<script src="\ol3\ol.js"></script>
+
+    <script src="\OpenLayers-2.13.1\OpenLayers.js"></script>
+
+    <script src="\leaflet\leaflet.js"></script>
+    <link rel="stylesheet" href="\leaflet\leaflet.css" type="text/css">
+    <script src="\leaflet\L.Control.Zoomslider.js"></script>
+    <link rel="stylesheet" href="\leaflet\L.Control.Zoomslider.css" type="text/css">
+    <script src="\leaflet\L.Control.Pan.js"></script>
+    <link rel="stylesheet" href="\leaflet\L.Control.Pan.css" type="text/css">
+    <script src="\leaflet\Control.Minimap.js"></script>
+
 	<script type="text/javascript">
 	var googlev3_key = 'AIzaSyDW21lnrSsBk4OyHUDmBQ7su9di3yMaO7I';
 	var nokia_app_id = 'FbgYuugcrj8Taq6JjmUK';
@@ -12,65 +28,102 @@
 	if (providerMatch) {
 		provider = providerMatch[1];
 	}
-	document.writeln('<script type="text/javascript" src="../source/mxn.js?(' + provider + ',[autoload])"><\/script>');
+	//document.writeln('<script type="text/javascript" src="../source/mxn.js?(' + provider + ',[autoload])"><\/script>');
+	var autoload = ',[autoload]'
+	if (provider == 'openlayersv3' || provider == 'openlayersv2' || provider == 'leafletv0' || provider == 'leaflet') {autoload='';}
+	document.writeln('<script type="text/javascript" src="../source/mxn.js?(' + provider + autoload +')"><\/script>');
 	</script>
 	<script type="text/javascript">
 
 	function defaultHandler(name, source, args) {
 		console.log(name + ' for ' + args.tileMap.properties.name);
 	}
+
+	function assert(map, args) {
+	    var pass = 0, fail = 0;
+	    //Check map centre - probably need to round this to 3dp or similar
+	    if (args.center && map.getCenter() == args.center) { pass += 1 } else { fail += 1; }
+
+	    //Check map zoom
+	    if (args.zoom && map.getZoom() == args.zoom) { pass += 1 } else { fail += 1; }
+
+        //Check map type
+	    //if (args.map_type && map.getMapType() == args.map_type) { pass += 1 } else { fail += 1; }
+
+        //Check for pan
+	    if (args.controls.pan && map.controls.pan == true) { pass += 1 } else { fail += 1; }
+
+	    //Check for zoom
+	    if (args.controls.pan && map.controls.zoom == true) { pass += 1 } else { fail += 1; }
+
+	    //Check for overview
+	    if (args.controls.overview && map.controls.overview == true) { pass += 1 } else { fail += 1; }
+
+	    //Check for scale
+	    if (args.controls.scale && map.controls.scale == true) { pass += 1 } else { fail += 1; }
+
+	    //Check for map_type
+	    if (args.controls.map_type && map.controls.map_type == true) { pass += 1 } else { fail += 1; }
+
+	    console.log('Initialise Tests pass ' + pass + ' and fail ' + fail);
+	}
 	
-	$(document).ready(function() {
-		var props = {
-			controls: {
-				pan: true,
-				zoom: 'large',
-				overview: true,
-				scale: true,
-				map_type: true
-			},
-			center: new mxn.LatLonPoint(51.50730, -0.12763),
-			zoom: 8,
-			map_type: mxn.Mapstraction.ROAD
-		};
-		var map = new mxn.Mapstraction('map', provider, props);
+	$(document).ready(function () {
+
+	    var basemaps = {
+	        local: new mxn.TileMap({
+	            url: window.location.origin + '/mqopen/{Z}/{X}/{Y}.jpeg',
+	            name: 'local',
+	            type: mxn.Mapstraction.TileType.BASE,
+	            options: {
+	                label: 'Local',
+	                alt: 'Local Mapquest Tiles',
+	                attribution: 'Tiles &copy; Mapquest',
+	                opacity: 1.0,
+	                minZoom: 3,
+	                maxZoom: 12
+	            }
+	        })
+	    };
+
+	    for (bm in basemaps) {
+	        basemaps[bm].tileMapAdded.addHandler(defaultHandler);
+	    }
+
+	    var props = {
+	        controls: {
+	            pan: true,
+	            zoom: 'large',
+	            overview: 9,
+	            scale: true,
+	            map_type: true
+	        },
+	        //center: new mxn.LatLonPoint(41.84756115424155,-91.70015573501587),
+	        center: new mxn.LatLonPoint(51.50730, -0.12763),
+	        zoom: 12,
+	        map_type: mxn.Mapstraction.ROAD //TODO:setting this to local here doesnt work - should it?
+	    };
+	    var map = new mxn.Mapstraction('map', provider, props);
+
+	    map.addTileMap(basemaps.local, {
+	        addControl: true,
+	        makeCurrent: true
+	    });
+	    map.setMapType('local');
+
+	    map.load.addHandler(function (sEvtName, oEvtSource, oEvtArgs) {
+	        console.log('Map loaded for provider: ' + oEvtSource.api);
+
+	        setTimeout(function () {
+	            //console.log(map.getCenter().toString());
+	            //assert(map, props);
+	            map.setCenter(new mxn.LatLonPoint(51.50730, -0.12763));
+	            map.setZoom(12);
+	        }, 1000);
+	    });
 
 		map.tileMapAdded.addHandler(defaultHandler);
-		
-		var basemaps = {
-			osm: new mxn.TileMap({
-				url: 'http://{S}.tile.openstreetmap.org/{Z}/{X}/{Y}.png',
-				name: 'osm',
-				type: mxn.Mapstraction.TileType.BASE,
-				options: {
-					label: 'OSM',
-					alt: 'OpenStreetMap Streets',
-					attribution: 'CC-BY-SA © OpenStreetMap contributors',
-					opacity: 1.0,
-					minZoom: 1,
-					maxZoom: 18,
-					subdomains: ['a', 'b', 'c']
-				}
-			}),			
-			esri: new mxn.TileMap({
-				url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-				name: 'esri',
-				type: mxn.Mapstraction.TileType.BASE,
-				options: {
-					label: 'Esri',
-					alt: 'Esri World Streets',
-					attribution: 'Tiles &copy; Esri',
-					opacity: 1.0,
-					minZoom: 1,
-					maxZoom: 18
-				}
-			})
-		};
-		
-		for (bm in basemaps) {
-			basemaps[bm].tileMapAdded.addHandler(defaultHandler);
-		}
-		
+	
 		var overlays = {
 			toner: new mxn.TileMap({
 				url: 'http://tile.stamen.com/toner/{Z}/{X}/{Y}.png',
@@ -119,7 +172,11 @@
 		}
 
 		$('#set-road').click(function() {
-			map.setMapType(mxn.Mapstraction.ROAD);
+		    //map.setMapType(mxn.Mapstraction.ROAD);
+		    map.removeScaleControls();
+		    map.removeLargeControls();
+		    map.removePanControls();
+		    map.removeMapTypeControls();
 		});
 		$('#set-satellite').click(function() {
 			map.setMapType(mxn.Mapstraction.SATELLITE);
@@ -226,7 +283,7 @@
 	}
 	</style>
 </head>
-<body>
+<body>;
 	<div id="map"></div>
 	<div id="nav">
 		<strong>Default Base Maps:</strong> <a href="#" id="set-road">Road</a>|<a href="#" id="set-satellite">Satellite</a>|<a href="#" id="set-hybrid">Hybrid</a>|<a href="#" id="set-physical">Physical</a>

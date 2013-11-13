@@ -199,95 +199,70 @@ Mapstraction: {
 		this.maps[this.api].invalidateSize();
 	},
 
-	addSmallControls: function() {
-		var map = this.maps[this.api];
-		
-		if (this.controls.zoom === null) {
-			this.controls.zoom = new L.Control.Zoom();
-			map.addControl(this.controls.zoom);
-		}
+	addAControl: function (control) {
+	    var map = this.maps[this.api];
+	    if (control !== null && typeof (control) !== "undefined") {
+	        //TODO: check its not already on the nmap
+	        map.addControl(control);
+	    }
+	    return control;
+	},
+
+	removeAControl: function (control) {
+	    var map = this.maps[this.api];
+	    if (control !== null && typeof (control) !== "undefined") {
+	        map.removeControl(control);
+	    }
+	},
+
+	addSmallControls: function () {
+	    this.controls.zoom = this.addAControl(new L.Control.Zoom());
 	},
 
 	removeSmallControls: function() {
-	    var map = this.maps[this.api];
-    	if (this.controls.zoom !== null) {
-	        map.removeControl(this.controls.zoom);
-            this.controls.zoom = null;
-        }
+	    this.removeAControl(this.controls.zoom);
 	},
 
-	addLargeControls: function() {
-	    var map = this.maps[this.api];
-		
-        //Use zoomslider plugin if it is loaded
-	    if (this.controls.zoom === null) {
-	        this.controls.zoom =  L.Control.Zoomslider ? new L.Control.Zoomslider() : new L.Control.Zoom();
-	        map.addControl(this.controls.zoom);
-	    }
+	addLargeControls: function () {
+	    //Use zoomslider plugin if it is loaded
+	    this.controls.zoom = this.addAControl(L.Control.Zoomslider ? new L.Control.Zoomslider() : new L.Control.Zoom());
     },
 
 	removeLargeControls: function () {
-	    this.removeSmallControls();
+	    this.removeAControl(this.controls.zoom);
 	},
 
-	addMapTypeControls: function() {
-		var map = this.maps[this.api];
-
-		if (this.controls.map_type === null) {
-		    this.controls.map_type = new L.Control.Layers(this.layers, this.overlays, {
-		    autoZIndex: false
-		});
-			map.addControl(this.controls.map_type);
-		}
+	addMapTypeControls: function () {
+	    this.controls.map_type = this.addAControl(new L.Control.Layers(this.layers, this.overlays, {
+	        autoZIndex: false
+	    }));
 	},
 
 	removeMapTypeControls: function() {
-        if (this.controls.map_type !== null) {
-            map.removeControl(this.controls.map_type);
-            this.controls.map_type = null;
-	    }
+	    this.removeAControl(this.controls.map_type);
     },
 
 	addScaleControls: function () {
-	    var map = this.maps[this.api];
-
-	    if (this.controls.scale === null) {
-	        this.controls.scale = new L.Control.Scale();
-	        map.addControl(this.controls.scale);
-	    }
+	    this.controls.scale = this.addAControl(new L.Control.Scale());
     },
 
 	removeScaleControls: function () {
-	    var map = this.maps[this.api];
-
-	    if (this.controls.scale !== null) {
-	        map.removeControl(this.controls.scale);
-	        this.controls.scale = null;
-	    }
+	    this.removeAControl(this.controls.scale);
 	},
 
-	addPanControls: function() {
-	    var map = this.maps[this.api];
-
-	    if (this.controls.pan === null && L.Control.Pan) {
-	        this.controls.pan = new L.Control.Pan();
-	        map.addControl(this.controls.pan);
+	addPanControls: function () {
+	    if (L.Control.Pan) {
+            //If Pan module is loaded
+	        this.controls.scale = this.addAControl(new L.Control.Pan());
 	    }
 	},
     
-	removePanControls: function() {
-	    var map = this.maps[this.api];
-
-	    if (this.controls.pan !== null) {
-	        map.removeControl(this.controls.pan);
-	        this.controls.pan = null;
-	    }
+	removePanControls: function () {
+	    this.removeAControl(this.controls.pan);
 	},
 
 	addOverviewControls: function (zoomOffset) {
-	    var map = this.maps[this.api];
-
-	    if (this.controls.overview === null && L.Control.MiniMap) {
+	    if (L.Control.MiniMap) {
 	        //TODO: move this check back into mxn for all providers
 	        if (zoomOffset === null) {
 	            zoomOffset = 5;
@@ -321,22 +296,16 @@ Mapstraction: {
 	        }
 
 	        var minimap_layer = new L.TileLayer(mxn.util.sanitizeTileURL(this.currentMap.baselayer.tileMap.properties.url), minimap_opts);
-	        this.controls.overview = new L.Control.MiniMap(minimap_layer, {
+	        this.controls.overview = this.addAControl(new L.Control.MiniMap(minimap_layer, {
 	            toggleDisplay: true,
 	            zoomLevelOffset: -zoomOffset
-	        });
-
-	        map.addControl(this.controls.overview);
+	        }));
 	    }
 	},
     
 	removeOverviewControls: function () {
-	    var map = this.maps[this.api];
-	    if (this.controls.overview !== null) {
-	        map.removeControl(this.controls.overview);
-	        this.controls.overview = null;
-	    }
-    },
+	    this.removeAControl(this.controls.overview);
+	},
 
 	setCenterAndZoom: function(point, zoom) { 
 		var map = this.maps[this.api];
