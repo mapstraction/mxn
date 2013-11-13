@@ -9,14 +9,6 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
-		this.controls =  {
-			pan: null,
-			zoom: null,
-			overview: null,
-			scale: null,
-			map_type: null
-		};
-
 		var yandexMap = this.maps[api] = new YMaps.Map(element);
 		
 		YMaps.Events.observe(yandexMap, yandexMap.Events.Click, function(map, mouseEvent) {

@@ -40,15 +40,7 @@ Mapstraction: {
 			"zoom": false,
 			"mapsize": false
 		};
-		
-		this.controls =  {
-			pan: null,
-			zoom: null,
-			overview: null,
-			scale: null,
-			map_type: null
-		};
-		
+			
 		var props = {
 			components: [
 				new nokia.maps.map.component.InfoBubbles()

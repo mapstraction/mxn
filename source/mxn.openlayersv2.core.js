@@ -11,14 +11,6 @@ mxn.register('openlayersv2', {
 
 			OpenLayers.Util.onImageLoadErrorColor = "transparent"; //Otherwise missing tiles default to pink!	
 
-			this.controls = {
-				pan: null,
-				zoom: null,
-				overview: null,
-				scale: null,
-				map_type: null
-			};
-
 			this.layers = {};
 			this.overlays = {};
 			this.currentMapType = mxn.Mapstraction.ROAD;

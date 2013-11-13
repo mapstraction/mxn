@@ -32,15 +32,7 @@ Mapstraction: {
 			}
 		];
 		this.initBaseMaps();
-
-		this.controls = {
-			pan: false,
-			zoom: false,
-			overview: false,
-			scale: false,
-			map_type: false
-		};
-		
+	
 		var options = {
 			disableDefaultUI: true,
 			disableDoubleClickZoom: true,

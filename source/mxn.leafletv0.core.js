@@ -13,13 +13,6 @@ Mapstraction: {
 		this.features = [];
 		this.currentMap = {};
 		this.currentMap.type = mxn.Mapstraction.ROAD;
-		this.controls =  {
-			pan: null,
-			zoom: null,
-			overview: null,
-			scale: null,
-			map_type: null
-		};
 
 		this.defaultBaseMaps = [
 			{

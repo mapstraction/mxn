@@ -36,15 +36,7 @@ mxn.register('openlayersv3', {
 			this.initBaseMaps();
 			this.currentMapType = mxn.Mapstraction.ROAD;
 			var defaultMap = this.getDefaultBaseMap(this.currentMapType);
-			var baseMap = this.getCustomBaseMap(defaultMap.providerType);
-			
-			this.controls = {
-				pan: null,
-				zoom: null,
-				overview: null,
-				scale: null,
-				map_type: null
-			};			
+			var baseMap = this.getCustomBaseMap(defaultMap.providerType);	
 			
 			var options = {
 			    projection: 'EPSG:4326', //TODO: check whether these ol2 properties are needed / useful

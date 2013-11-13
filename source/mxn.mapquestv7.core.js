@@ -36,11 +36,6 @@ Mapstraction: {
 		var map = new MQA.TileMap(options);
 		this.maps[api] = map;
 		this.loaded[api] = true;
-		this.controls = {
-			zoom: null,
-			overview: null,
-			map_type: null
-		};
 
 		MQA.EventManager.addListener(map, 'click', function(e) {
 			me.click.fire();

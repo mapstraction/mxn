@@ -14,14 +14,6 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
-		this.controls = {
-			pan: null,
-			zoom: null,
-			overview: null,
-			scale: null,
-			map_type: null
-		};
-
 		// create the map with no controls and don't centre popup info window
 		map = new OpenSpace.Map(element,{
 			controls: [],

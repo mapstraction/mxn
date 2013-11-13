@@ -198,7 +198,15 @@ var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 	
 	this.properties = properties;
 	this.images = [];
-	this.controls = [];	
+
+	this.controls = {
+	    pan: null,
+	    zoom: null,
+	    overview: null,
+	    scale: null,
+	    map_type: null
+	};
+
 	this.loaded = {};
 	this.onload = {};
     //this.loaded[api] = true; // FIXME does this need to be true? -ajturner

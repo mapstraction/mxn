@@ -36,14 +36,6 @@ Mapstraction: {
 		self.loaded[api] = false;
 		ymaps.ready(function() {
 
-			self.controls =  {
-				pan: null,
-				zoom: null,
-				overview: null,
-				scale: null,
-				map_type: null
-			};
-
 			var state = {
 				type: 'yandex#map',
 				center: [51.50848, -0.12532],

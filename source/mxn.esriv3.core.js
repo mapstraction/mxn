@@ -38,13 +38,6 @@ mxn.register('esriv3', {
 			
 			this.layers = {};
 			this.features = [];		
-			this.controls =  {
-				pan: null,
-				zoom: null,
-				overview: null,
-				scale: null,
-				map_type: null
-			};
 
 			this.maps[api] = map = new Map(element.id, {
 			  basemap: "streets",
