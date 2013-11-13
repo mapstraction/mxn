@@ -206,7 +206,6 @@ mxn.register('openlayersv2', {
 			this.removeSmallControls();
 			// ZoomPanel == ZoomIn + ZoomOut + ZoomToMaxExtent
 			this.controls.zoom = this.addAControl(new OpenLayers.Control.ZoomPanel());
-			return this.controls.zoom;
 		},
 
 		removeSmallControls: function () {
@@ -217,7 +216,6 @@ mxn.register('openlayersv2', {
             this.removeLargeControls();
 		    // PanZoomBar == PanPanel + ZoomBar
             this.controls.zoom = this.addAControl(new OpenLayers.Control.PanZoomBar());
-			return this.controls.zoom;
 		},
 
 		removeLargeControls: function () {
