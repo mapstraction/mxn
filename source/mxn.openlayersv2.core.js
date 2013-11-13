@@ -187,8 +187,7 @@ mxn.register('openlayersv2', {
 
 		addAControl: function (control) {
 		    var map = this.maps[this.api];
-		    if (control !== null && typeof (control) !== "undefined") {
-		        //TODO: check its not already on the nmap
+		    if (control !== null && typeof (control) !== "undefined" && !control.active) { 
 		        map.addControl(control);
 		    }
 		    return control;
@@ -196,7 +195,7 @@ mxn.register('openlayersv2', {
 
 		removeAControl: function (control) {
 		    var map = this.maps[this.api];
-		    if (control !== null && typeof (control) !== "undefined") {
+		    if (control !== null && typeof (control) !== "undefined" && control.active) {
 		        control.deactivate();
 		        map.removeControl(control);
 		    }

@@ -202,15 +202,18 @@ Mapstraction: {
 	addAControl: function (control) {
 	    var map = this.maps[this.api];
 	    if (control !== null && typeof (control) !== "undefined") {
-	        //TODO: check its not already on the nmap
-	        map.addControl(control);
+	        //Check its not already on the map, _map is an undocmented feature
+	        if (!control._map)  {
+	            map.addControl(control);
+	        }
 	    }
 	    return control;
 	},
 
 	removeAControl: function (control) {
 	    var map = this.maps[this.api];
-	    if (control !== null && typeof (control) !== "undefined") {
+	    //Check its not already on the map, _map is an undocmented feature
+	    if (control !== null && typeof (control) !== "undefined" && !!control._map) {
 	        map.removeControl(control);
 	    }
 	},
