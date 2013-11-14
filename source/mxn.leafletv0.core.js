@@ -177,14 +177,21 @@ Mapstraction: {
 		return L.version;
 	},
 	
-	applyOptions: function(){
-		if (this.options.enableScrollWheelZoom) {
-			this.maps[this.api].scrollWheelZoom.enable();
-		} else {
-			this.maps[this.api].scrollWheelZoom.disable();
-		}
-		return;
+	enableScrollWheelZoom: function () {
+        this.maps[this.api].scrollWheelZoom.enable();
 	},
+
+    disableScrollWheelZoom: function () {
+        this.maps[this.api].scrollWheelZoom.disable();
+	},
+
+    enableDragging: function() {
+        this.maps[this.api].dragging.enable();
+	},
+
+    disableDragging: function() {
+        this.maps[this.api].dragging.disable();
+    },
 
 	resizeTo: function(width, height){
 		this.currentElement.style.width = width;

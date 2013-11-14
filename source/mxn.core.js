@@ -329,6 +329,34 @@ mxn.addProxyMethods(Mapstraction, [
 	 */
 	'getVersion',
 
+    /**
+	 * Enables Scroll Wheel Zoom - defaults to disabled
+	 * @name mxn.Mapstraction#enableScrollWheelZoom
+	 * @function
+	 */
+	'enableScrollWheelZoom',
+
+     /**
+	 * Disables Scroll Wheel Zoom - (default)
+	 * @name mxn.Mapstraction#disableScrollWheelZoom
+	 * @function
+	 */
+	'disableScrollWheelZoom',
+
+    /**
+	 * Enables dragging the map - (default)
+	 * @name mxn.Mapstraction#enableDragging
+	 * @function
+	 */
+	'enableDragging',
+
+     /**
+	 * Disables dragging the map - (defaults to enabled)
+	 * @name mxn.Mapstraction#disableDragging
+	 * @function
+	 */
+	'disableDragging',
+
 	/**
 	 * Adds a control to the map 
 	 * @name mxn.Mapstraction#addControl
@@ -432,14 +460,7 @@ mxn.addProxyMethods(Mapstraction, [
 	 * @function
 	 */
 	'removeSmallControls',
-	
-	/**
-	 * Applies the current option settings
-	 * @name mxn.Mapstraction#applyOptions
-	 * @function
-	 */
-	'applyOptions',
-	
+	   
 	/**
 	 * Gets the BoundingBox of the map
 	 * @name mxn.Mapstraction#getBounds
@@ -612,28 +633,46 @@ Mapstraction.prototype.setOptions = function(oOpts){
  * @param vVal Option value
  */
 Mapstraction.prototype.setOption = function(sOptName, vVal){
-	this.options[sOptName] = vVal;
-	this.applyOptions();
+    this.setOptions({sOptName: vVal});
 };
 
 /**
- * Enable scroll wheel zooming
- * @deprecated Use setOption instead.
- */
-Mapstraction.prototype.enableScrollWheelZoom = function() {
-	this.setOption('enableScrollWheelZoom', true);
+* Enable/disable dragging of the map
+* @param {boolean} on
+*/
+Mapstraction.prototype.scrollWheelZoom = function(on) {
+    this.setOption('enableScrollWheelZoom', on);
 };
 
 /**
  * Enable/disable dragging of the map
  * @param {boolean} on
- * @deprecated Use setOption instead.
  */
 Mapstraction.prototype.dragging = function(on) {
-	this.setOption('enableDragging', on);
+    this.setOption('enableDragging', on);
 };
 
-    /**
+/**
+* Applies the current option settings
+* @name mxn.Mapstraction#applyOptions
+* @function
+*/
+Mapstraction.prototype.applyOptions = function () {
+    if(this.options.enableScrollWheelZoom) {
+        this.enableScrollWheelZoom();
+    } else {
+        this.disableScrollWheelZoom();
+    }
+
+    if(this.options.enableDragging) {
+        this.enableDragging();
+    } else {
+        this.disableDragging();
+    }
+};
+
+
+/**
  * Removes a map control from the map
  * @name mxn.Mapstraction#removeControl
  * @function
