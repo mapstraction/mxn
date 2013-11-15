@@ -66,17 +66,8 @@ Mapstraction: {
 
 		var hasOptions = (typeof properties !== 'undefined' && properties !== null);
 		if (hasOptions) {
-            //TODO change this to call our setcentre method instead?
 			if (properties.hasOwnProperty('center') && null !== properties.center) {
-				var point;
-				if (Object.prototype.toString.call(properties.center) === '[object Array]') {
-					point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
-				}
-				
-				else {
-					point = properties.center;
-				}
-				options.center = point.toProprietary(this.api);
+				options.center = properties.center.toProprietary(this.api);
 			}
 			
 			if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
@@ -90,20 +81,19 @@ Mapstraction: {
 		        options.layers = [this.currentMap.baselayer.tileMap.prop_tilemap];
 		    }
 
-            //These will be standard in every init
-		    if (properties.hasOwnProperty('zoom')) {
+		    if (properties.hasOwnProperty('zoom')  && null !== properties.zoom) {
 		        options.zoom = properties.zoom;
 		    }
 
-			if (properties.hasOwnProperty('dragging')) {
+		    if (properties.hasOwnProperty('dragging')  && null !== properties.dragging) {
 				options.dragging = properties.dragging;
 			}
 			
-			if (properties.hasOwnProperty('scroll_wheel')) {
+		    if (properties.hasOwnProperty('scroll_wheel')  && null !== properties.scroll_wheel) {
 				options.scrollWheelZoom = properties.scroll_wheel;
 			}
 			
-			if (properties.hasOwnProperty('double_click')) {
+		    if (properties.hasOwnProperty('double_click')  && null !== properties.double_click) {
 				options.doubleClickZoom = properties.double_click;
 			}
 
@@ -193,7 +183,8 @@ Mapstraction: {
         this.maps[this.api].dragging.disable();
     },
 
-	resizeTo: function(width, height){
+    resizeTo: function (width, height) {
+        //TODO: move the first 2 lines to core? 
 		this.currentElement.style.width = width;
 		this.currentElement.style.height = height;
 		this.maps[this.api].invalidateSize();

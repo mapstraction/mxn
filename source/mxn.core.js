@@ -10,7 +10,11 @@ var $m = mxn.util.$m;
  * from within Mapstraction code, not exposed as part of the API.
  * @private
  */
-var init = function() {
+var init = function () {
+    //Just need to force the centre property to an mxn point if its  present and an array.
+    if (this.properties.center && Object.prototype.toString.call(this.properties.center) === '[object Array]') {
+        this.properties.center = new mxn.LatLonPoint(this.properties.center[0], this.properties.center[1]);
+    }
     this.invoker.go('init', [this.currentElement, this.api, this.properties]);
 
 	if (this.maps[this.api] === null) {
