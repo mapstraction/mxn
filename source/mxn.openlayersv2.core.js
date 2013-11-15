@@ -147,24 +147,32 @@ mxn.register('openlayersv2', {
 			return OpenLayers.VERSION_NUMBER;
 		},
 
-		applyOptions: function(){
-			var map = this.maps[this.api],
-				navigators = map.getControlsByClass( 'OpenLayers.Control.Navigation' ),
-				navigator;
+		enableScrollWheelZoom: function () {
+		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation')
+		    if (navigators.length > 0) {
+		        navigators[0].enableZoomWheel();
+		    }
+		},
 
-			if ( navigators.length > 0 ) {
-				navigator = navigators[0];
-				if ( this.options.enableScrollWheelZoom ) {
-					navigator.enableZoomWheel();
-				} else {
-					navigator.disableZoomWheel();
-				}
-				if ( this.options.enableDragging ) {
-					navigator.activate();
-				} else {
-					navigator.deactivate();
-				}
-			}
+		disableScrollWheelZoom: function () {
+		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation')
+		    if (navigators.length > 0) {
+		        navigators[0].disableZoomWheel();
+		    }
+		},
+
+		enableDragging: function () {
+		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation')
+		    if (navigators.length > 0) {
+		        navigators[0].activate();
+		    }
+		},
+
+		disableDragging: function () {
+		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation')
+		    if (navigators.length > 0) {
+		        navigators[0].deactivate();
+		    }
 		},
 
 		resizeTo: function(width, height){	

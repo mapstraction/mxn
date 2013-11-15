@@ -11,12 +11,16 @@ var $m = mxn.util.$m;
  * @private
  */
 var init = function() {
-	this.invoker.go('init', [ this.currentElement, this.api, this.properties ]);
-	this.applyOptions();
-	
+    this.invoker.go('init', [this.currentElement, this.api, this.properties]);
+
 	if (this.maps[this.api] === null) {
 		throw new Error('Initialisation error; ' + this.api + ' has not created a map object');
 	}
+
+    //options have already been set to defaults so we need to merge any specific values here:
+	this.options.enableScrollWheelZoom = this.properties.enableScrollWheelZoom || this.options.enableScrollWheelZoom;
+	this.options.enableDragging = this.properties.enableDragging || this.options.enableDragging;
+	this.applyOptions();
 
 	for (i=0; i<this.defaultBaseMaps.length; i++) {
 		if (this.defaultBaseMaps[i].mxnType === null) {
