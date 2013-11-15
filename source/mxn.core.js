@@ -888,7 +888,7 @@ Mapstraction.prototype.addControls = function( args ) {
         }
         this.addOverviewControls(args.overview);
     } else {
-        this.rewmoveOverviewControls();
+        this.removeOverviewControls();
     }
 
     if ('pan' in args && args.pan) {
