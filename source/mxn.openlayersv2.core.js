@@ -46,7 +46,7 @@ mxn.register('openlayersv2', {
 
 			var options = {
 			    projection: 'EPSG:4326',
-			    crossorigin: 'anonymous',
+			    crossOriginKeyword: null,
 			    controls: [
                     new OpenLayers.Control.Navigation(),
                     new OpenLayers.Control.ArgParser(),
@@ -137,28 +137,28 @@ mxn.register('openlayersv2', {
 		},
 
 		enableScrollWheelZoom: function () {
-		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation')
+		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation');
 		    if (navigators.length > 0) {
 		        navigators[0].enableZoomWheel();
 		    }
 		},
 
 		disableScrollWheelZoom: function () {
-		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation')
+		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation');
 		    if (navigators.length > 0) {
 		        navigators[0].disableZoomWheel();
 		    }
 		},
 
 		enableDragging: function () {
-		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation')
+		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation');
 		    if (navigators.length > 0) {
 		        navigators[0].activate();
 		    }
 		},
 
 		disableDragging: function () {
-		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation')
+		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation');
 		    if (navigators.length > 0) {
 		        navigators[0].deactivate();
 		    }
@@ -239,7 +239,7 @@ mxn.register('openlayersv2', {
 		            maximized: true,
 		            mapoptions: {
 		                projection: 'EPSG:4326',
-		                crossorigin: 'anonymous'
+		                crossOriginKeyword: null
 		            }
 		        }));
 		},
