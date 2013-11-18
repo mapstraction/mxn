@@ -235,7 +235,7 @@ mxn.register('openlayersv2', {
 		},
 
 		addOverviewControls: function (zoomOffset) {
-		    this.controls.pan = this.addControl(new OpenLayers.Control.OverviewMap({
+		    this.controls.overview = this.addControl(new OpenLayers.Control.OverviewMap({
 		            maximized: true,
 		            mapoptions: {
 		                projection: 'EPSG:4326',
