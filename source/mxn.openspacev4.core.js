@@ -21,7 +21,7 @@ Mapstraction: {
 		this.defaultBaseMaps = [
             {
                 mxnType: mxn.Mapstraction.ROAD,
-                providerType: 'mxn.BaseMapProviders.MapQuestOpen',
+                providerType: 'mxn.BaseMapProviders.MapQuestOpen', //TODO: Set this to the OS Map! OpenSpace.Layer.WMS_19?
                 nativeType: false
             },
             {
@@ -50,7 +50,7 @@ Mapstraction: {
 		var options = {
             controls: [],
             centreInfoWindow: false,
-		    projection: 'EPSG:4326',
+            projection: 'EPSG:27700', //EPSG:4326 isnt supported on OS Tiles yet
 		    crossOriginKeyword: null
 		};
 
@@ -67,7 +67,7 @@ Mapstraction: {
 		    var defaultMap = this.getDefaultBaseMap(this.currentMapType);
 		    if (defaultMap !== null) {
 		        var baselayer = this.getCustomBaseMap(defaultMap.providerType);
-		        options.layers = [baselayer.tileMap.prop_tilemap];
+		        //options.layers = [baselayer.tileMap.prop_tilemap];
 		    }
 
 		    if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
@@ -252,7 +252,6 @@ Mapstraction: {
 	    this.controls.overview = this.addControl(new OpenSpace.Control.OverviewMap({
 	        maximized: true,
 	        mapoptions: {
-	            projection: 'EPSG:4326',
 	            crossOriginKeyword: null
 	        }
 	    }));
