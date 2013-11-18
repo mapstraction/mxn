@@ -953,7 +953,7 @@ mxn.Providers = {
 				}
 				break;
 
-			case 'openspace':
+			case 'openspacev4':
 				if (typeof openspacev4_key === 'undefined') {
 					src = src.replace('{%1}', openspace_key);
 				}
