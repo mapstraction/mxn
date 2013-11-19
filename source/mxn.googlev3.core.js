@@ -63,70 +63,12 @@ Mapstraction: {
 			options.backgroundColor = background;
 		}
 
-		if (typeof properties !== 'undefined' && properties !== null) {
-			if (properties.hasOwnProperty('controls')) {
-				var controls = properties.controls;
-				
-				if ('pan' in controls && controls.pan) {
-					options.panControl = true;
-					this.controls.pan = true;
-				}
-				
-				if ('zoom' in controls) {
-					if (controls.zoom || controls.zoom === 'small') {
-						options.zoomControl = true;
-						options.zoomControlOptions = {
-							style: google.maps.ZoomControlStyle.SMALL
-						};
-						this.controls.zoom = 'small';
-					}
-					
-					else if (controls.zoom === 'large') {
-						options.zoomControl = true;
-						options.zoomControlOptions = {
-							style: google.maps.ZoomControlStyle.LARGE
-						};
-						this.controls.zoom = 'large';
-					}
-				}
-				
-				if ('overview' in controls && controls.overview) {
-					options.overviewMapControl = true;
-					options.overviewMapControlOptions = {
-						opened: true
-					};
-					this.controls.overview = true;
-				}
-				
-				if ('scale' in controls && controls.scale) {
-					options.scaleControl = true;
-					options.scaleControlOptions = {
-						style: google.maps.ScaleControlStyle.DEFAULT
-					};
-					this.controls.scale = true;
-				}
-				
-				if ('map_type' in controls && controls.map_type) {
-					options.mapTypeControl = true;
-					options.mapTypeControlOptions = {
-						style: google.maps.MapTypeControlStyle.DEFAULT
-					};
-					this.controls.map_type = true;
-				}
-			}
-			
+		var hasOptions = (typeof properties !== 'undefined' && properties !== null);
+		if (hasOptions) {
 			if (properties.hasOwnProperty('center') && null !== properties.center) {
-				var point;
-				if (Object.prototype.toString.call(properties.center) === '[object Array]') {
-					point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
-				}
-				
-				else {
-					point = properties.center;
-				}
-				options.center = point.toProprietary(this.api);
+			    options.center = properties.center.toProprietary(this.api);
 			}
-			
+
 			if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
 				options.zoom = properties.zoom;
 			}
@@ -149,12 +91,18 @@ Mapstraction: {
 			}
 			
 			if (properties.hasOwnProperty('double_click')) {
+                //TODO: Decide if we support this for all providers?
 				options.disableDoubleClickZoom = !properties.double_click;
 			}
 		}
 
 		var map = new google.maps.Map(element, options);
-		
+		this.maps[api] = map;
+
+		if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
+		    me.addControls(properties.controls);
+		}
+
 		var fireOnNextIdle = [];
 		
 		google.maps.event.addListener(map, 'idle', function() {
@@ -212,36 +160,27 @@ Mapstraction: {
 			google.maps.event.removeListener( loadListener );
 		});			
 		
-		this.maps[api] = map;
 		this.loaded[api] = true;
 	},
 	
 	getVersion: function() {
 		return google.maps.version;
 	},
-	
-	applyOptions: function(){
-		var map = this.maps[this.api];
-		var myOptions = [];
-		if (this.options.enableDragging) {
-			myOptions.draggable = true;
-		} 
-		else{
-			myOptions.draggable = false;
-		}
-		if (this.options.enableScrollWheelZoom){
-			myOptions.scrollwheel = true;
-		} 
-		else{
-			myOptions.scrollwheel = false;
-		}
-		if(this.options.disableDoubleClickZoom){
-			myOptions.disableDoubleClickZoom = true;
-		}
-		else{
-			myOptions.disableDoubleClickZoom = false;
-		}
-		map.setOptions(myOptions);
+
+	enableScrollWheelZoom: function () {
+	    this.maps[this.api].setOptions({ scrollwheel: true });
+	},
+
+	disableScrollWheelZoom: function () {
+	    this.maps[this.api].setOptions({ scrollwheel: false });
+	},
+
+	enableDragging: function () {
+	    this.maps[this.api].setOptions({draggable: true});
+	},
+
+	disableDragging: function () {
+	    this.maps[this.api].setOptions({ draggable: false});
 	},
 
 	resizeTo: function(width, height){	
@@ -251,143 +190,91 @@ Mapstraction: {
 		google.maps.event.trigger(map,'resize');
   	},
 
-	addControls: function( args ) {
-		/* args = { 
-		 *     pan:      true,
-		 *     zoom:     'large' || 'small',
-		 *     overview: true,
-		 *     scale:    true,
-		 *     map_type: true,
-		 * }
-		 */
-
-		var map = this.maps[this.api];
-		var options = {};
-
-		// Google has a combined zoom and pan control.
-
-		if ('pan' in args && args.pan) {
-			options = {
-				panControl: true
-			};
-			map.setOptions(options);
-			this.controls.pan = true;
-			
-		}
-		
-		else if (!('pan' in args) || ('pan' in args && !args.pan)) {
-			options = {
-				panControl: false
-			};
-			map.setOptions(options);
-			this.controls.pan = false;
-		}
-		
-		if ('zoom' in args) {
-			if (args.zoom == 'small') {
-				this.addSmallControls();
-			}
-			
-			else if (args.zoom == 'large') {
-				this.addLargeControls();
-			}
-		}
-		
-		else {
-			options = {
-				zoomControl: false
-			};
-			map.setOptions(options);
-			this.controls.zoom = false;
-		}
-
-		if ('scale' in args && args.scale){
-			options = {
-				scaleControl: true,
-				scaleControlOptions: {
-					style:google.maps.ScaleControlStyle.DEFAULT
-				}				
-			};
-			map.setOptions(options);
-			this.controls.scale = true;
-		}
-		
-		else {
-			options = {
-				scaleControl: false
-			};
-			map.setOptions(options);
-			this.controls.scale = false;
-		}
-
-		if ('map_type' in args && args.map_type){
-			this.addMapTypeControls();
-		}
-
-		else {
-			options = {
-				mapTypeControl : false
-			};
-			map.setOptions(options);
-			this.controls.map_type = false;
-		}
-		
-		if ('overview' in args) {
-			options = {
-				overviewMapControl: true,
-				overviewMapControlOptions: {
-					opened: true
-				}
-			};
-			map.setOptions(options);
-			this.controls.overview = true;
-		}
-		
-		else {
-			options = {
-				overviewMapControl: false
-			};
-			map.setOptions(options);
-			this.controls.overview = false;
-		}
+	addControl: function (control) {
+	    //Google add/removes controls only using setOptions so this is unused
+	    throw new Error('Mapstraction.addControl is not currently required for provider ' + this.api);
 	},
 
+	removeControl: function (control) {
+	    //Google add/removes controls only using setOptions so this is unused
+	    throw new Error('Mapstraction.removeControl is not currently required for provider ' + this.api);
+	},
+
+    addScaleControls: function () {
+        this.maps[this.api].setOptions({
+            scaleControl: true,
+            scaleControlOptions: {style:google.maps.ScaleControlStyle.DEFAULT}				
+        });
+	    this.controls.scale = true;
+	},
+
+	removeScaleControls: function () {
+	    this.maps[this.api].setOptions({scaleControl: false});
+	    this.controls.scale = false;
+	},
+
+	addPanControls: function () {
+	    this.maps[this.api].setOptions({ panControl: true });
+	    this.controls.pan = true;
+	},
+
+	removePanControls: function () {
+	    this.maps[this.api].setOptions({ panControl: false });
+	    this.controls.pan = false;
+	},
+
+	addOverviewControls: function (zoomOffset) {
+	    this.maps[this.api].setOptions({
+	        overviewMapControl: true,
+	        overviewMapControlOptions: { opened: true }
+	    });
+	    this.controls.overview = true;
+	},
+
+	removeOverviewControls: function () {
+	    this.maps[this.api].setOptions({ overviewMapControl: false });
+	    this.controls.overview = false;
+	},
+    
 	addSmallControls: function() {
-		var map = this.maps[this.api];
-		var options = {
-			zoomControl: true,
-			zoomControlOptions: {
-				style: google.maps.ZoomControlStyle.SMALL
-			}
-		};
-		map.setOptions(options);
+	    this.maps[this.api].setOptions({
+	        zoomControl: true,
+	        zoomControlOptions: { style: google.maps.ZoomControlStyle.SMALL }
+	    });
 		this.controls.zoom = 'small';
 	},
 
+	removeSmallControls: function () {
+	    this.maps[this.api].setOptions({ zoomControl: false });
+	    this.controls.zoom = false;
+	},
+
 	addLargeControls: function() {
-		var map = this.maps[this.api];
-		var options = {
-			panControl: true,
-			zoomControl: true,
-			zoomControlOptions: {
-				style:google.maps.ZoomControlStyle.LARGE
-			}
-		};
-		map.setOptions(options);
+		this.maps[this.api].setOptions({
+		    panControl: true,
+		    zoomControl: true,
+		    zoomControlOptions: { style: google.maps.ZoomControlStyle.LARGE }
+		});
 		this.controls.pan = true;
 		this.controls.zoom = 'large';
 	},
 
+	removeLargeControls: function () {
+	    this.removeSmallControls();
+	    this.removePanControls();
+	},
+
 	addMapTypeControls: function() {
-		var map = this.maps[this.api];
-		var options = {
-			mapTypeControl: true,
-			mapTypeControlOptions: {
-				style: google.maps.MapTypeControlStyle.DEFAULT
-			}
-		};
-		map.setOptions(options);
-		this.controls.map_type = true;
+	    this.maps[this.api].setOptions({
+	        mapTypeControl: true,
+	        mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DEFAULT }
+	    });
+	    this.controls.map_type = true;
+	},
+
+	removeMapTypeControls: function () {
+	    this.maps[this.api].setOptions({ mapTypeControl: false });
+	    this.controls.map_type = false;
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
