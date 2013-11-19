@@ -20,6 +20,7 @@ Mapstraction: {
 
 		this.defaultBaseMaps = [
             {
+                maxZoom: 10, //OS Tiles only available down to zoom 10
                 mxnType: mxn.Mapstraction.ROAD,
                 providerType: 'mxn.BaseMapProviders.MapQuestOpen', //TODO: Set this to the OS Map! OpenSpace.Layer.WMS_19?
                 nativeType: false
@@ -113,7 +114,7 @@ Mapstraction: {
 				var point = this.getLonLatFromViewPortPx( evt.xy );
 				// convert to LatLonPoint
 				var llPoint = new mxn.LatLonPoint();
-				llPoint.fromProprietary(this.api, point);
+				llPoint.fromProprietary(me.api, point);
 				me.clickHandler( llPoint.lat, llPoint.lon );
 				return false;
 			}
