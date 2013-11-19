@@ -91,16 +91,20 @@ Mapstraction: {
 		// create the map with no controls and don't centre popup info window
 		map = new OpenSpace.Map(element, options);
 
-		// note that these four controls are always there and the fact that 
-		// there are three resident controls is used in addControls()
+		// note that these four controls are always there 
 		// enable map drag with mouse and keyboard
 
-		map.addControl(new OpenLayers.Control.Navigation());
-		map.addControl(new OpenLayers.Control.KeyboardDefaults());
-		// include copyright statement
-		map.addControl(new OpenSpace.Control.CopyrightCollection());
-		map.addControl(new OpenSpace.Control.PoweredBy());
-	
+		this.controls.navigation = new OpenLayers.Control.Navigation();
+		map.addControl(this.controls.navigation);
+		this.controls.keyboard = new OpenLayers.Control.KeyboardDefaults();
+		map.addControl(this.controls.keyboard);
+
+		// include Openspace copyright statements
+		this.controls.attribution = new OpenSpace.Control.CopyrightCollection();
+		map.addControl(this.controls.attribution);
+		this.controls.logo = new OpenSpace.Control.PoweredBy();
+		map.addControl(this.controls.logo);
+
 		this.maps[api] = map;
 
 		if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
@@ -150,31 +154,19 @@ Mapstraction: {
 	},
 	
 	enableScrollWheelZoom: function () {
-	    var navigators = this.maps[this.api].getControlsByClass('OpenSpace.Control.Navigation');
-	    if (navigators.length > 0) {
-	        navigators[0].enableZoomWheel();
-	    }
+	    this.controls.navigation.enableZoomWheel();
 	},
 
 	disableScrollWheelZoom: function () {
-	    var navigators = this.maps[this.api].getControlsByClass('OpenSpace.Control.Navigation');
-	    if (navigators.length > 0) {
-	        navigators[0].disableZoomWheel();
-	    }
+	    this.controls.navigation.disableZoomWheel();
 	},
 
 	enableDragging: function () {
-	    var navigators = this.maps[this.api].getControlsByClass('OpenSpace.Control.Navigation');
-	    if (navigators.length > 0) {
-	        navigators[0].activate();
-	    }
+	    this.controls.navigation.activate();
 	},
 
 	disableDragging: function () {
-	    var navigators = this.maps[this.api].getControlsByClass('OpenSpace.Control.Navigation');
-	    if (navigators.length > 0) {
-	        navigators[0].deactivate();
-	    }
+	    this.controls.navigation.deactivate();  //TODO: what is document.drag on navigation control?
 	},
 
 	resizeTo: function(width, height){
@@ -205,7 +197,6 @@ Mapstraction: {
 
 	addSmallControls: function() {
 	    this.removeSmallControls();
-	    // ZoomPanel == ZoomIn + ZoomOut + ZoomToMaxExtent
 	    this.controls.zoom = this.addControl(new OpenSpace.Control.SmallMapControl());
 	},
 
@@ -215,7 +206,6 @@ Mapstraction: {
 
 	addLargeControls: function() {
 	    this.removeLargeControls();
-	    // PanZoomBar == PanPanel + ZoomBar
 	    this.controls.zoom = this.addControl(new OpenSpace.Control.LargeMapControl());
 	},
 
