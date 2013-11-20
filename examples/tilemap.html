@@ -3,35 +3,19 @@
 
     <script src="\jquery-1.8.2.min.js" type="text/javascript"></script>
 	
-	<link rel="stylesheet" href="\ol3\ol.css" type="text/css">
-	<!--script-- src="http://ol3js.org/en/master/build/ol.simple.js"></--script-->
-	<script src="\ol3\ol.js"></script>
-
-    <script src="\OpenLayers-2.13.1\OpenLayers.js"></script>
-
-    <script src="\leaflet\leaflet.js"></script>
-    <link rel="stylesheet" href="\leaflet\leaflet.css" type="text/css">
-    <script src="\leaflet\L.Control.Zoomslider.js"></script>
-    <link rel="stylesheet" href="\leaflet\L.Control.Zoomslider.css" type="text/css">
-    <script src="\leaflet\L.Control.Pan.js"></script>
-    <link rel="stylesheet" href="\leaflet\L.Control.Pan.css" type="text/css">
-    <script src="\leaflet\Control.Minimap.js"></script>
-
 	<script type="text/javascript">
 	var googlev3_key = 'AIzaSyDW21lnrSsBk4OyHUDmBQ7su9di3yMaO7I';
 	var nokia_app_id = 'FbgYuugcrj8Taq6JjmUK';
 	var nokia_auth_token = 'Yy2i2n98kaWj69qysOmcYg';
 	var microsoftv7_key = 'AlneHdcKOFDot4FjwyuLH8ZSUIz5rv_X22vULKa7H5ia0JnsxiykdO8y-dgLQMU6';
 	var provider = 'googlev3';
+	var openspace_key = 'CEEFBE51588492CBE0405F0ACA6010B1';
 	
 	var providerMatch = location.search.match(/provider=([^&]*)/);
 	if (providerMatch) {
 		provider = providerMatch[1];
 	}
-	//document.writeln('<script type="text/javascript" src="../source/mxn.js?(' + provider + ',[autoload])"><\/script>');
-	var autoload = ',[autoload]'
-	if (provider == 'openlayersv3' || provider == 'openlayersv2' || provider == 'leafletv0' || provider == 'leaflet') {autoload='';}
-	document.writeln('<script type="text/javascript" src="../source/mxn.js?(' + provider + autoload +')"><\/script>');
+	document.writeln('<script type="text/javascript" src="../source/mxn.js?(' + provider + ',[autoload])"><\/script>');
 	</script>
 	<script type="text/javascript">
 
@@ -98,18 +82,20 @@
 	            scale: true,
 	            map_type: true
 	        },
-	        //center: new mxn.LatLonPoint(41.84756115424155,-91.70015573501587),
-	        center: new mxn.LatLonPoint(51.50730, -0.12763),
-	        zoom: 12,
+	        center: [51.50730, -0.12763],
+	        //center: new mxn.LatLonPoint(51.50730, -0.12763),
+	        zoom: 10, //Ordnance survey only goes to 10
+            enableScrollWheelZoom: true,
 	        map_type: mxn.Mapstraction.ROAD //TODO:setting this to local here doesnt work - should it?
 	    };
 	    var map = new mxn.Mapstraction('map', provider, props);
-
+        /*
 	    map.addTileMap(basemaps.local, {
 	        addControl: true,
 	        makeCurrent: true
 	    });
 	    map.setMapType('local');
+        */
 
 	    map.load.addHandler(function (sEvtName, oEvtSource, oEvtArgs) {
 	        console.log('Map loaded for provider: ' + oEvtSource.api);
