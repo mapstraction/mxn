@@ -120,9 +120,6 @@ Mapstraction: {
 			  e.popup._source.mxnMarker.closeInfoBubble.fire({'bubbleContainer': e.popup._container});
 			}
 		});
-		map.on('load', function(e) {
-			self.load.fire();
-		});
 		map.on('zoomend', function(e) {
 			self.changeZoom.fire();
 		});
@@ -160,6 +157,8 @@ Mapstraction: {
 		map.on('layeradd', layerHandler);
 		
 		this.loaded[api] = true;
+        //leaflet does have a map.load event but its timing is not useful for mxn.
+		setTimeout(function () { self.load.fire(); }, 50);
 	},
 	
 	getVersion: function() {

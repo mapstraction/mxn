@@ -96,7 +96,7 @@ var init = function () {
  * @constructor
  * @param {string} element The HTML element to replace with a map.
  * @param {string} api The API ID of the mapping API to use; if omitted, the first loaded provider implementation is used.
- * @param {object} [properties] options properties object to customize the default map controls, centre, zoom leve and map type.
+ * @param {object} [properties] options properties object to customize the default map controls, centre, zoom level and map type.
  * @exports Mapstraction as mxn.Mapstraction
  */
 
@@ -633,6 +633,14 @@ Mapstraction.prototype.initBaseMaps = function() {
 Mapstraction.prototype.setOptions = function(oOpts){
 	mxn.util.merge(this.options, oOpts);
 	this.applyOptions();
+    //If we were called with control args then cascade to addcontrols:
+    //TODO: Check this is the right place
+	if (oOpts.controls) {
+	    this.addControls(oOpts.controls);
+	}
+	if (oOpts.map_type) {
+	    this.setMapType(oOpts.map_type);
+	}
 };
 
 /**

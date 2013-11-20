@@ -46,55 +46,19 @@ Mapstraction: {
 				new nokia.maps.map.component.InfoBubbles()
 			]
 		};
-		if (typeof properties !== 'undefined' && properties !== null) {
-			if (properties.hasOwnProperty('controls')) {
-				var controls = properties.controls;
 
-				if ('pan' in controls && controls.pan) {
-					this.controls.pan = new nokia.maps.map.component.Behavior();
-					props.components.push(this.controls.pan);
-				}
-				
-				if ('zoom' in controls) {
-					if (controls.zoom || controls.zoom === 'large' || controls.zoom === 'small') {
-						this.controls.zoom = new nokia.maps.map.component.ZoomBar();
-						props.components.push(this.controls.zoom);
-					}
-				}
-
-				if ('overview' in controls && controls.overview) {
-					this.controls.overview = new nokia.maps.map.component.Overview();
-					props.components.push(this.controls.overview);
-				}
-
-				if ('scale' in controls && controls.scale) {
-					this.controls.scale = new nokia.maps.map.component.ScaleBar();
-					props.components.push(this.controls.scale);
-				}
-
-				if ('map_type' in controls && controls.map_type) {
-					this.controls.map_type = new nokia.maps.map.component.TypeSelector();
-					props.components.push(this.controls.map_type);
-				}
-			}
-
-			if (properties.hasOwnProperty('center') && null !== properties.center) {
-				var point;
-				if (Object.prototype.toString.call(properties.center) === '[object Array]') {
-					point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
-				}
-				
-				else {
-					point = properties.center;
-				}
-				props.center = point.toProprietary(this.api);
-			}
+		var hasOptions = (typeof properties !== 'undefined' && properties !== null);
+		if (hasOptions) {
+		    if (properties.hasOwnProperty('center') && null !== properties.center) {
+		        props.center = properties.center.toProprietary(this.api);
+		    }
 
 			if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
 				props.zoomLevel = properties.zoom;
 			}
 
 			if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
+                //TODO: Suspect this shouldnt be here as its duplicated.
 				switch (properties.map_type) {
 					case mxn.Mapstraction.ROAD:
 						props.baseMapType = nokia.maps.map.Display.NORMAL;
@@ -113,29 +77,14 @@ Mapstraction: {
 						break;
 				}
 			}
-			
-			// Code Health Warning
-			// If properties.controls.pan is true, then the Behavior component will already
-			// have been added, which wraps (amongst others) Drag, MouseWheel, DoubleClick
-			// and DoubleTap. But these can also be set individually via properties.dragging,
-			// properties.scroll_wheel and properties.double_click respectively, in cases where
-			// properties.controls.pan is not set.
-			
-			if (properties.hasOwnProperty('dragging') && properties.dragging) {
-				props.components.push(new nokia.maps.map.component.panning.Drag());
-			}
-
-			if (properties.hasOwnProperty('scroll_wheel') && properties.scroll_wheel) {
-				props.components.push(new nokia.maps.map.component.zoom.MouseWheel());
-			}
-			
-			if (properties.hasOwnProperty('double_click') && properties.double_click) {
-				props.components.push(new nokia.maps.map.component.zoom.DoubleClick());
-				props.components.push(new nokia.maps.map.component.zoom.DoubleTap());
-			}
 		}
 		
 		nokia_map = new nokia.maps.map.Display(element, props);
+		this.maps[api] = nokia_map;
+
+		if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
+		    me.addControls(properties.controls);
+		}
 
 		// Handle click event
 		nokia_map.addListener('click', function(event) {
@@ -207,136 +156,110 @@ Mapstraction: {
 			}
 		}, false);
 
-		this.maps[api] = nokia_map;
 		this.loaded[api] = true;
 	},
 	
 	getVersion: function() {
 		return nokia.maps.build;
 	},
-	
-	applyOptions: function() {
-		var map = this.maps[this.api];
-	    if (this.options.enableScrollWheelZoom) {
-			map.addComponent(new nokia.maps.map.component.zoom.MouseWheel());
-		}
-		else {
-			var cid = map.getComponentById('zoom.MouseWheel');
-			if (cid !== null) {
-				map.removeComponent(cid);
-			}
-		}
+
+	enableScrollWheelZoom: function () {
+	    this.controls.mouseWheel = this.addControl(new nokia.maps.map.component.zoom.MouseWheel());
 	},
-	
+
+	disableScrollWheelZoom: function () {
+	    this.removeControl(this.controls.mouseWheel);
+	},
+
+	enableDragging: function () {
+	    this.controls.dragging = this.addControl(new nokia.maps.map.component.panning.Drag());
+	},
+
+	disableDragging: function () {
+	    this.removeControl(this.controls.dragging);
+	},
+
 	resizeTo: function(width, height) {
 		this.currentElement.style.width = width;
 		this.currentElement.style.height = height;
 	},
-	
-	addControls: function(args) {
-		/* args = { 
-		 *     pan:      true,
-		 *     zoom:     'large' || 'small',
-		 *     overview: true,
-		 *     scale:    true,
-		 *     map_type: true,
-		 * }
-		 */
+    
+	addControl: function (control) {
+	    var map = this.maps[this.api];
+	    if (control !== null && typeof (control) !== "undefined") {
+	        var cid = map.getComponentById(control.getId());
+            if (cid === null) {
+                map.addComponent(control);
+	        } else
+            {
+                control = cid;
+            }
+	    }
+	    return control;
+	},
 
-		var map = this.maps[this.api];
-		var cid = null;
-		
-		if ('pan' in args && args.pan) {
-			cid = map.getComponentById('Behavior');
-			if (this.controls.pan === null) {
-				this.controls.pan = new nokia.maps.map.component.Behavior();
-				map.addComponent(this.controls.pan);
-			}
-		}
-
-		else {
-			if (this.controls.pan !== null) {
-				map.removeComponent(this.controls.pan);
-				this.controls.pan = null;
-			}
-		}
-		
-		// TODO: The Nokia Maps API doesn't currently differentiate between large and small
-		// style of Zoom controls so, for now, make them functionally equivalent
-		if ('zoom' in args) {
-			if (args.zoom || args.zoom == 'large' || args.zoom == 'small') {
-				this.addSmallControls();
-			}
-		}
-
-		else {
-			if (this.controls.zoom !== null) {
-				map.removeComponent(this.controls.zoom);
-				this.controls.zoom = null;
-			}
-		}
-		
-		if ('overview' in args && args.overview) {
-			cid = map.getComponentById('Overview');
-			if (this.controls.overview === null) {
-				this.controls.overview = new nokia.maps.map.component.Overview();
-				map.addComponent(this.controls.overview);
-			}
-		}
-
-		else {
-			if (this.controls.overview !== null) {
-				map.removeComponent(this.controls.overview);
-				this.controls.overview = null;
-			}
-		}
-		
-		if ('scale' in args && args.scale) {
-			if (this.controls.scale === null) {
-				this.controls.scale = new nokia.maps.map.component.ScaleBar();
-				map.addComponent(this.controls.scale);
-			}
-		}
-
-		else {
-			if (this.controls.scale !== null) {
-				map.removeComponent(this.controls.scale);
-				this.controls.scale = null;
-			}
-		}
-		
-		if ('map_type' in args && args.map_type) {
-			this.addMapTypeControls();
-		}
-
-		else {
-			if (this.controls.map_type !== null) {
-				map.removeComponent(this.controls.map_type);
-				this.controls.map_type = null;
-			}
-		}
+	removeControl: function (control) {
+	    var map = this.maps[this.api];
+	    if (control !== null && typeof (control) !== "undefined") {
+	        var cid = map.getComponentById(control.getId());
+	        if (cid !== null) {
+	            map.removeComponent(cid);
+	        }
+	    }
 	},
 
 	// TODO: The Nokia Maps API doesn't currently differentiate between large and small
 	// style of Zoom controls so, for now, make them functionally equivalent
 	addSmallControls: function() {
-		var map = this.maps[this.api];
-		if (this.controls.zoom === null) {
-			this.controls.zoom = new nokia.maps.map.component.ZoomBar();
-			map.addComponent(this.controls.zoom);
-		}
+	    this.controls.zoom = this.addControl(new nokia.maps.map.component.ZoomBar());
+	},
+
+	removeSmallControls: function () {
+	    this.removeControl(this.controls.zoom);
 	},
 	
 	addLargeControls: function() {
 		this.addSmallControls();
 	},
+
+	removeLargeControls: function () {
+	    this.removeSmallControls();
+	},
 	
-	addMapTypeControls: function() {
-		var map = this.maps[this.api];
-		if (this.controls.map_type === null) {
-			this.controls.map_type = new nokia.maps.map.component.TypeSelector();
-			map.addComponent(this.controls.map_type);
-		}
+	addMapTypeControls: function () {
+	    this.controls.map_type = this.addControl(new nokia.maps.map.component.TypeSelector());
+	},
+
+	removeMapTypeControls: function () {
+	    this.removeControl(this.controls.map_type);
+	},
+
+	addScaleControls: function () {
+	    this.controls.scale = this.addControl(new nokia.maps.map.component.ScaleBar());
+	},
+
+	removeScaleControls: function () {
+	    this.removeControl(this.controls.scale);
+	},
+
+	addPanControls: function () {
+	    this.controls.pan = this.addControl(new nokia.maps.map.component.Behavior());
+	},
+    
+	removePanControls: function () {
+	    this.removeControl(this.controls.pan);
+	},
+
+	addOverviewControls: function (zoomOffset) {
+	    this.controls.overview = this.addControl(new nokia.maps.map.component.Overview());
+        //TODO: Find the supporteed way to do this. API Docs sadly lacking
+	    this.controls.overview.De = zoomOffset;
+
+	    this.controls.overview.expand(); //Other Minimaps default to open.
+	},
+
+	removeOverviewControls: function () {
+	    this.removeControl(this.controls.overview);
 	},
 	
 	setCenterAndZoom: function(point, zoom) {
@@ -430,6 +353,8 @@ Mapstraction: {
 				return;
 			}
 		}
+
+        //TODO: Also set the overviewmap if (this.controls.overview)
 
 		throw new Error(this.api + ': unable to find definition for map type ' + mapType);
 	},
