@@ -247,7 +247,7 @@ Mapstraction: {
 	addPanControls: function () {
 	    if (L.Control.Pan) {
             //If Pan module is loaded
-	        this.controls.scale = this.addControl(new L.Control.Pan());
+	        this.controls.pan = this.addControl(new L.Control.Pan());
 	    }
 	},
     
