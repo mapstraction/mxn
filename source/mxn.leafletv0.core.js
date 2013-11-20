@@ -96,7 +96,6 @@ Mapstraction: {
 		    if (properties.hasOwnProperty('double_click')  && null !== properties.double_click) {
 				options.doubleClickZoom = properties.double_click;
 			}
-
 		}
 
 		var map = this.maps[api] = new L.Map(element.id, options);
