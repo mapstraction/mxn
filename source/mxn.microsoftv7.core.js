@@ -56,15 +56,12 @@ Mapstraction: {
 				if ('zoom' in controls && controls.zoom || controls.zoom === 'small' || controls.zoom === 'large') {
 					options.showDashboard = true;
 				}
-				
-				// The overview/mini-map control isn't supported in the Bing v7 API. No, really.
-				// See below for a rant.
-				// TODO: Investigate possibility of implementing a custom overview map, see
-				// http://pietschsoft.com/post/2010/12/19/Bing-Maps-Ajax-7-Add-a-Simple-Mini-Map
-				// http://bingmapsv7modules.codeplex.com/wikipage?title=Mini-Map%20Module
-				
-				/*if ('overview' in controls) {
-					
+							
+			    /*if ('overview' in controls && controls.overview) {
+				    // The overview/mini-map control isn't supported in the Bing v7 API. 
+				    // TODO: Investigate possibility of implementing a custom overview map, see
+				    // http://pietschsoft.com/post/2010/12/19/Bing-Maps-Ajax-7-Add-a-Simple-Mini-Map
+				    // http://bingmapsv7modules.codeplex.com/wikipage?title=Mini-Map%20Module
 				}*/
 				
 				if ('scale' in controls && controls.scale) {
@@ -79,15 +76,7 @@ Mapstraction: {
 			}
 			
 			if (properties.hasOwnProperty('center') && null !== properties.center) {
-				var point;
-				if (Object.prototype.toString.call(properties.center) === '[object Array]') {
-					point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
-				}
-				
-				else {
-					point = properties.center;
-				}
-				options.center = point.toProprietary(this.api);
+			    options.center = properties.center.toProprietary(this.api);
 			}
 			
 			if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
@@ -214,15 +203,21 @@ Mapstraction: {
 	getVersion: function() {
 		return Microsoft.Maps.Map.getVersion();
 	},
-	
-	applyOptions: function(){
-		var map = this.maps[this.api];
-		var opts = map.getOptions();
 
-		opts.disablePanning = !this.options.enableDragging;
-		opts.disableZooming = !this.options.enableScrollWheelZoom;
+	enableScrollWheelZoom: function () {
+	    this.maps[this.api].setOptions({ disableZooming: false });
+	},
 
-		map.setOptions(opts);
+	disableScrollWheelZoom: function () {
+	    this.maps[this.api].setOptions({ disableZooming: true });
+	},
+
+	enableDragging: function () {
+	    this.maps[this.api].setOptions({ disablePanning: false });
+	},
+
+	disableDragging: function () {
+	    this.maps[this.api].setOptions({ disablePanning: true });
 	},
 
 	resizeTo: function(width, height){	
@@ -234,22 +229,63 @@ Mapstraction: {
 	// Microsoft7 only supports (most of) the display controls as part of the Dashboard
 	// and this needs to be configured *before* the map is instantiated and displayed.
 	// So addControls, addSmallControls, addLargeControls and addMapTypeControls are
-	// effectively no-ops and so they don't throw the unsupported feature exception.
+    // effectively no-ops and so they don't throw the unsupported feature exception.
+    // TDOD: try a swap to the same api to see if that works!
 	
-	addControls: function( args ) {
+	addControl: function( args ) {
 		//throw new Error('Mapstraction.addControls is not currently supported by provider ' + this.api);
+	},
+
+	removeControl: function (args) {
+	    //throw new Error('Mapstraction.addControls is not currently supported by provider ' + this.api);
 	},
 
 	addSmallControls: function() {
 		//throw new Error('Mapstraction.addSmallControls is not currently supported by provider ' + this.api);
 	},
 
+	removeSmallControls: function () {
+	    //throw new Error('Mapstraction.addLargeControls is not currently supported by provider ' + this.api);
+	},
+
 	addLargeControls: function() {
 		//throw new Error('Mapstraction.addLargeControls is not currently supported by provider ' + this.api);
 	},
 
+	removeLargeControls: function () {
+	    //throw new Error('Mapstraction.addLargeControls is not currently supported by provider ' + this.api);
+	},
+
 	addMapTypeControls: function() {
 		//throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+	},
+
+	removeMapTypeControls: function () {
+	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+	},
+
+	addScaleControls: function () {
+	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+	},
+
+	removeScaleControls: function () {
+	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+	},
+
+	addPanControls: function () {
+	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+	},
+
+	removePanControls: function () {
+	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+	},
+
+	addOverviewControls: function (zoomOffset) {
+	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+	},
+
+	removeOverviewControls: function () {
+	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
@@ -269,8 +305,7 @@ Mapstraction: {
 		var pin = marker.toProprietary(this.api);
 		
 		map.entities.push(pin);
-		
-		
+
 		return pin;
 	},
 
