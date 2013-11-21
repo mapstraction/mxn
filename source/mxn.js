@@ -628,17 +628,17 @@ mxn.Providers = {
 		'meta': null,
 		'style': [
 			{
-				'src': 'http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/esri/css/esri.css',
+				'src': 'http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css',
 				'conditional': null
 			},
 			{
-				'src': 'http://serverapi.arcgisonline.com/jsapi/arcgis/3.2/js/dojo/dijit/themes/claro/claro.css',
+				'src': 'http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css',
 				'conditional': null
 			}
 		],
 		'script': [
 			{
-				'src': 'http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.2',
+				'src': 'http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.5',
 				'auth': false,
 				'authType': null
 			}
