@@ -548,7 +548,8 @@ mxn.util = {
 		return mxn.Providers.hasOwnProperty(provider);
 	},
 	
-	translateProvider: function(provider) {
+	translateProvider: function (provider) {
+	    provider = provider.toLowerCase();
 		if (mxn.Providers[provider].type === 'master') {
 			return provider;
 		}
@@ -1070,7 +1071,7 @@ mxn.Providers = {
 			core_scripts.push(makeScriptTag(src));
 		}
 		for (var p=0; p<num_providers; p++) {
-			var provider = input_providers[p];
+			var provider = input_providers[p].toLowerCase();
 
 			// Do we know about this provider?
 			if (!mxn.Providers.hasOwnProperty(provider)) {
