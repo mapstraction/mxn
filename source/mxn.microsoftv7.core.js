@@ -40,10 +40,6 @@ Mapstraction: {
 			showMapTypeSelector: false,
 			showScalebar: false
 		};
-		var disable = {
-			double_click: false,
-			scroll_wheel: false
-		};
 		
 		if (typeof properties !== 'undefined' && properties !== null) {
 			if (properties.hasOwnProperty('controls')) {
