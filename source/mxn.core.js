@@ -22,8 +22,9 @@ var init = function () {
 	}
 
     //options have already been set to defaults so we need to merge any specific values here:
-	this.options.enableScrollWheelZoom = this.properties.enableScrollWheelZoom || this.options.enableScrollWheelZoom;
-	this.options.enableDragging = this.properties.enableDragging || this.options.enableDragging;
+	this.options.enableScrollWheelZoom = typeof (this.properties.enableScrollWheelZoom) != "undefined" ? this.properties.enableScrollWheelZoom : this.options.enableScrollWheelZoom;
+	this.options.enableDragging = typeof(this.properties.enableDragging) != "undefined" ? this.properties.enableDragging : this.options.enableDragging;
+    //TODO: Add doubleclickzoom here too
 	this.applyOptions();
 
 	for (i=0; i<this.defaultBaseMaps.length; i++) {
@@ -685,6 +686,8 @@ Mapstraction.prototype.applyOptions = function () {
     } else {
         this.disableDragging();
     }
+
+    //TDOD: Add doubleclickzoom in here too
 };
 
 
