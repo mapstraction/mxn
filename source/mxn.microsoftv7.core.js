@@ -99,18 +99,6 @@ Mapstraction: {
 						break;
 				}
 			}
-			
-			if (properties.hasOwnProperty('dragging')) {
-				options.disableUserInput = true;
-			}
-
-			if (properties.hasOwnProperty('scroll_wheel')) {
-				disable.scroll_wheel = true;
-			}
-
-			if (properties.hasOwnProperty('double_click')) {
-				disable.double_click = true;
-			}
 		}
 		// The design decisions behind the Microsoft/Bing v7 API are simply jaw dropping.
 		// Want to show/hide the dashboard or show/hide the scale bar? Nope. You can only
@@ -136,7 +124,7 @@ Mapstraction: {
 			
 		// Disable scroll wheel/mouse wheel interaction if specified in the
 		// constructor properties
-
+        //TODO: Test if we still need this handlers and if they should be reading the settings!
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'mousewheel', function(event) {
 			if (event.targetType == 'map') {
 				event.handled = true;
@@ -145,7 +133,7 @@ Mapstraction: {
 		
 		// Disable double-click to zoom if specified in the constructor
 		// properties
-
+	    //TODO: Test if we still need this handlers and if they should be reading the settings!
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'dblclick', function(event) {
 			event.handled = true;
 		});

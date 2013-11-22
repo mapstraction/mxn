@@ -84,18 +84,6 @@ Mapstraction: {
 		    if (properties.hasOwnProperty('zoom')  && null !== properties.zoom) {
 		        options.zoom = properties.zoom;
 		    }
-
-		    if (properties.hasOwnProperty('dragging')  && null !== properties.dragging) {
-				options.dragging = properties.dragging;
-			}
-			
-		    if (properties.hasOwnProperty('scroll_wheel')  && null !== properties.scroll_wheel) {
-				options.scrollWheelZoom = properties.scroll_wheel;
-			}
-			
-		    if (properties.hasOwnProperty('double_click')  && null !== properties.double_click) {
-				options.doubleClickZoom = properties.double_click;
-			}
 		}
 
 		var map = this.maps[api] = new L.Map(element.id, options);
@@ -255,11 +243,6 @@ Mapstraction: {
 
 	addOverviewControls: function (zoomOffset) {
 	    if (L.Control.MiniMap) {
-	        //TODO: move this check back into mxn for all providers
-	        if (zoomOffset === null) {
-	            zoomOffset = 5;
-	        }
-
 	        // Code Health Warning
 	        //
 	        // Hack to fix L.Control.MiniMap when working with L.Control.Pan

@@ -237,6 +237,7 @@ var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 	this.options = {
 		enableScrollWheelZoom: false,
 		enableDragging: true
+        //TODO: Add doubleclickzoom here
 	};
 	
 	this.addControlsArgs = {};
@@ -430,14 +431,6 @@ mxn.addProxyMethods(Mapstraction, [
 	 * @function
 	 */
 	'removePanControls',
-
-   	/**
-	 * Adds a map overview control to the map using the current base layer with a default zoom offset of 5
-	 * @name mxn.Mapstraction#addOverviewControls
-	 * @function
-     * @param {Number} to specify different zoomOffset for example 2, defaults to 5
-	 */
-	'addOverviewControls',
 
 	/**
 	 * Removes a map overview control from the map
@@ -934,6 +927,19 @@ Mapstraction.prototype.addControls = function( args ) {
     else {
         this.removeMapTypeControls();
     }
+};
+
+/**
+	* Adds a map overview control to the map using the current base layer with a default zoom offset of 5
+	* @name mxn.Mapstraction#addOverviewControls
+	* @function
+    * @param {Number} to specify different zoomOffset for example 2, defaults to 5
+	*/
+Mapstraction.prototype.addOverviewControls = function (zoomOffset) {
+    if (typeof zoomOffset !== 'number') {
+        zoomOffset = 5; //default
+    }
+    this.invoker.go('addOverviewControls', [zoomOffset]);
 };
 
 /**

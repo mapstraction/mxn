@@ -69,21 +69,7 @@ mxn.register('openlayersv3', {
 			    if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
 			        options.view.zoom = properties.zoom;
 			    }
-
-			    if (properties.hasOwnProperty('dragging') && null !== properties.dragging) {
-			        options.dragging = properties.dragging;
-			    }
-
-			    if (properties.hasOwnProperty('scroll_wheel') && null !== properties.scroll_wheel) {
-			        options.scrollWheelZoom = properties.scroll_wheel;
-			    }
-
-			    if (properties.hasOwnProperty('double_click') && null !== properties.double_click) {
-			        options.doubleClickZoom = properties.double_click;
-			    }
-
 			}
-
 
 			var map = new ol.Map({
 			  view: new ol.View2D({
@@ -124,27 +110,6 @@ mxn.register('openlayersv3', {
 			}); This doesn't work so use the hack below */
 			//doing the load.fire directly it runs too fast and we dont get a chance to register the handler in the core tests, so had to add a delay.
 			setTimeout(function(){me.load.fire();},50);
-		},
-
-		applyOptions: function(){
-			var map = this.maps[this.api];
-			/*
-			var	navigators = map.getControlsByClass( 'ol.control.Navigation' ),
-				navigator;
-
-			if ( navigators.length > 0 ) {
-				navigator = navigators[0];
-				if ( this.options.enableScrollWheelZoom ) {
-					navigator.enableZoomWheel();
-				} else {
-					navigator.disableZoomWheel();
-				}
-				if ( this.options.enableDragging ) {
-					navigator.activate();
-				} else {
-					navigator.deactivate();
-				}
-			}*/
 		},
 
 		resizeTo: function(width, height){	

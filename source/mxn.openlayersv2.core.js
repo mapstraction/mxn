@@ -72,18 +72,6 @@ mxn.register('openlayersv2', {
 			    if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
 			        options.zoom = properties.zoom;
 			    }
-
-			    if (properties.hasOwnProperty('dragging') && null !== properties.dragging) {
-			        options.dragging = properties.dragging;
-			    }
-
-			    if (properties.hasOwnProperty('scroll_wheel') && null !== properties.scroll_wheel) {
-			        options.scrollWheelZoom = properties.scroll_wheel;
-			    }
-
-			    if (properties.hasOwnProperty('double_click') && null !== properties.double_click) {
-			        options.doubleClickZoom = properties.double_click;
-			    }
 			}
 
 			var map = new OpenLayers.Map(

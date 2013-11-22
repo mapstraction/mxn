@@ -35,14 +35,11 @@ Mapstraction: {
 	
 		var options = {
 			disableDefaultUI: true,
-			disableDoubleClickZoom: true,
-			draggable: true,
 			mapTypeControl: false,
 			mapTypeId: google.maps.MapTypeId.ROADMAP,
 			overviewMapControl: false,
 			panControl: false,
 			scaleControl: false,
-			scrollwheel: false,
 			zoomControl: false
 		};
 		
@@ -80,20 +77,7 @@ Mapstraction: {
 						break;
 					}
 				}
-			}
-			
-			if (properties.hasOwnProperty('dragging')) {
-				options.draggable = properties.dragging;
-			}
-			
-			if (properties.hasOwnProperty('scroll_wheel')) {
-				options.scrollwheel = properties.scroll_wheel;
-			}
-			
-			if (properties.hasOwnProperty('double_click')) {
-                //TODO: Decide if we support this for all providers?
-				options.disableDoubleClickZoom = !properties.double_click;
-			}
+			}			
 		}
 
 		var map = new google.maps.Map(element, options);
