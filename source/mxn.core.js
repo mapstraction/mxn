@@ -24,7 +24,7 @@ var init = function () {
     //options have already been set to defaults so we need to merge any specific values here:
 	this.options.enableScrollWheelZoom = typeof (this.properties.enableScrollWheelZoom) != "undefined" ? this.properties.enableScrollWheelZoom : this.options.enableScrollWheelZoom;
 	this.options.enableDragging = typeof(this.properties.enableDragging) != "undefined" ? this.properties.enableDragging : this.options.enableDragging;
-    //TODO: Add doubleclickzoom here too
+	this.options.enableDoubleClickZoom = typeof (this.properties.enableDoubleClickZoom) != "undefined" ? this.properties.enableDoubleClickZoom : this.options.enableDoubleClickZoom;
 	this.applyOptions();
 
 	for (i=0; i<this.defaultBaseMaps.length; i++) {
@@ -234,10 +234,10 @@ var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 	 * @name mxn.Mapstraction#options
 	 * @property {Object}
 	 */
-	this.options = {
-		enableScrollWheelZoom: false,
-		enableDragging: true
-        //TODO: Add doubleclickzoom here
+    this.options = {
+        enableScrollWheelZoom: false,
+        enableDragging: true,
+        enableDoubleClickZoom: true
 	};
 	
 	this.addControlsArgs = {};
@@ -680,7 +680,11 @@ Mapstraction.prototype.applyOptions = function () {
         this.disableDragging();
     }
 
-    //TDOD: Add doubleclickzoom in here too
+    if (this.options.enableDoubleClickZoom) {
+        this.enableDoubleClickZoom();
+    } else {
+        this.disableDoubleClickZoom();
+    }
 };
 
 
