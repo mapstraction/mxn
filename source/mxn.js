@@ -25,7 +25,7 @@ var apis = {};
  * @private
  */
 var invoke = function(sApiId, sObjName, sFnName, oScope, args){
-	if(!hasImplementation(sApiId, sObjName, sFnName)) {
+	if(!mxn.util.hasImplementation(sApiId, sObjName, sFnName)) {
 		throw 'Method ' + sFnName + ' of object ' + sObjName + ' is not supported by API ' + sApiId + '. Are you missing a script tag?';
 	}
 
@@ -46,7 +46,7 @@ var invoke = function(sApiId, sObjName, sFnName, oScope, args){
  * specified object and function name.
  * @private
  */
-var hasImplementation = function(sApiId, sObjName, sFnName){
+/*var hasImplementation = function(sApiId, sObjName, sFnName){
 	if(typeof(apis[sApiId]) == 'undefined') {
 		throw 'API ' + sApiId + ' not loaded. Are you missing a script tag?';
 	}
@@ -55,7 +55,7 @@ var hasImplementation = function(sApiId, sObjName, sFnName){
 	}
 
 	return typeof(apis[sApiId][sObjName][sFnName]) == 'function';
-};
+};*/
 
 /**
  * @name mxn
@@ -264,6 +264,22 @@ mxn.Invoker = function(aobj, asClassName, afnApiIdGetter){
  * @namespace
  */
 mxn.util = {
+	/**
+	 * Determines whether the specified API provides an implementation for the 
+	 * specified object and function name.
+	 * @private
+	 */
+	hasImplementation: function(sApiId, sObjName, sFnName) {
+		if (typeof(apis[sApiId]) == 'undefined') {
+			throw 'API ' + sApiId + ' not loaded. Are you missing a script tag?';
+		}
+		
+		if (typeof(apis[sApiId][sObjName]) == 'undefined') {
+			throw 'Object definition ' + sObjName + ' in API ' + sApiId + ' not loaded. Are you missing a script tag?'; 
+		}
+
+		return typeof(apis[sApiId][sObjName][sFnName]) == 'function';
+	},
 			
 	/**
 	 * Merges properties of one object into another recursively.
