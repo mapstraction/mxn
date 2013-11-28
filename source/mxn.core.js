@@ -12,7 +12,7 @@ var $m = mxn.util.$m;
  */
 var init = function () {
     //Just need to force the centre property to an mxn point if its  present and an array.
-    if (this.properties.center && Object.prototype.toString.call(this.properties.center) === '[object Array]') {
+    if (this.hasOwnProperty('properties') && this.properties !== null && this.properties.center && Object.prototype.toString.call(this.properties.center) === '[object Array]') {
         this.properties.center = new mxn.LatLonPoint(this.properties.center[0], this.properties.center[1]);
     }
     this.invoker.go('init', [this.currentElement, this.api, this.properties]);
@@ -22,9 +22,11 @@ var init = function () {
 	}
 
     //options have already been set to defaults so we need to merge any specific values here:
-	this.options.enableScrollWheelZoom = typeof (this.properties.enableScrollWheelZoom) != "undefined" ? this.properties.enableScrollWheelZoom : this.options.enableScrollWheelZoom;
-	this.options.enableDragging = typeof(this.properties.enableDragging) != "undefined" ? this.properties.enableDragging : this.options.enableDragging;
-	this.options.enableDoubleClickZoom = typeof (this.properties.enableDoubleClickZoom) != "undefined" ? this.properties.enableDoubleClickZoom : this.options.enableDoubleClickZoom;
+	if (this.hasOwnProperty('properties') && this.properties !== null) {
+		this.options.enableScrollWheelZoom = typeof (this.properties.enableScrollWheelZoom) != "undefined" ? this.properties.enableScrollWheelZoom : this.options.enableScrollWheelZoom;
+		this.options.enableDragging = typeof(this.properties.enableDragging) != "undefined" ? this.properties.enableDragging : this.options.enableDragging;
+		this.options.enableDoubleClickZoom = typeof (this.properties.enableDoubleClickZoom) != "undefined" ? this.properties.enableDoubleClickZoom : this.options.enableDoubleClickZoom;
+	}
 	this.applyOptions();
 
 	for (i=0; i<this.defaultBaseMaps.length; i++) {
