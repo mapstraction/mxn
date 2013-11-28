@@ -815,7 +815,7 @@ mxn.Providers = {
 		'style': null,
 		'script': [
 			{
-				'src': 'http://dev.openlayers.org/releases/OpenLayers-2.12/OpenLayers.js',
+				'src': 'http://dev.openlayers.org/releases/OpenLayers-2.13/OpenLayers.js',
 				'auth': false,
 				'authType': null
 			}

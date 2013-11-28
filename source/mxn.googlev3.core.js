@@ -167,6 +167,14 @@ Mapstraction: {
 	    this.maps[this.api].setOptions({ draggable: false});
 	},
 
+	enableDoubleClickZoom: function () {
+	    this.maps[this.api].setOptions({ disableDoubleClickZoom: false });
+	},
+
+	disableDoubleClickZoom: function () {
+	    this.maps[this.api].setOptions({ disableDoubleClickZoom: true });
+	},
+
 	resizeTo: function(width, height){	
 		this.currentElement.style.width = width;
 		this.currentElement.style.height = height;

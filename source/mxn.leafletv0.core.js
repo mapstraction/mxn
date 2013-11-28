@@ -169,6 +169,14 @@ Mapstraction: {
         this.maps[this.api].dragging.disable();
     },
 
+    enableDoubleClickZoom: function () {
+        this.maps[this.api].doubleClickZoom.enable();
+    },
+
+    disableDoubleClickZoom: function () {
+        this.maps[this.api].doubleClickZoom.disable();
+    },
+
     resizeTo: function (width, height) {
         //TODO: move the first 2 lines to core? 
 		this.currentElement.style.width = width;

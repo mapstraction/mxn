@@ -20,7 +20,7 @@ Mapstraction: {
 
 		this.defaultBaseMaps = [
             {
-                maxZoom: 10, //OS Tiles only available down to zoom 10
+                maxZoom: 16, //OS Tiles only available down to zoom 10 but we remove 6 from the zoom so maps to 16
                 mxnType: mxn.Mapstraction.ROAD,
                 providerType: 'mxn.BaseMapProviders.MapQuestOpen', //TODO: Set this to the OS Map! OpenSpace.Layer.WMS_19?
                 nativeType: false
@@ -70,11 +70,18 @@ Mapstraction: {
 		        var baselayer = this.getCustomBaseMap(defaultMap.providerType);
 		        //options.layers = [baselayer.tileMap.prop_tilemap];
 		    }
-
+            
 		    if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
-		        options.zoom = properties.zoom;
-		    }
+		        var oszoom = properties.zoom - 6;
+		        if (oszoom < 0) {
+		            oszoom = 0;
+		        }
+		        else if (oszoom > 10) {
+		            oszoom = 10;
+		        }
 
+		        options.zoom = oszoom;
+		    }
 		    if (properties.hasOwnProperty('dragging') && null !== properties.dragging) {
 		        options.dragging = properties.dragging;
 		    }
@@ -90,11 +97,25 @@ Mapstraction: {
 
 		// create the map with no controls and don't centre popup info window
 		map = new OpenSpace.Map(element, options);
+		this.maps[api] = map;
 
-		// note that these four controls are always there 
+        //setting the zoom property and passing to map init doesnt seem to do it, so double check here
+		if (properties.hasOwnProperty('zoom') && null !== properties.zoom && this.getZoom() != properties.zoom) {
+		    this.setZoom(properties.zoom);
+		}
+
+		// note that these controls are always there 
 		// enable map drag with mouse and keyboard
-
-		this.controls.navigation = new OpenLayers.Control.Navigation();
+		this.controls.navigation = new OpenLayers.Control.Navigation({
+		    defaultDblClick: function (event) {
+		        if (!me.options.enableDoubleClickZoom) {
+		            event.preventDefault();
+		        }
+		        else {
+		            me.setZoom(me.getZoom() + 1);
+		        }
+		    }
+		});
 		map.addControl(this.controls.navigation);
 		this.controls.keyboard = new OpenLayers.Control.KeyboardDefaults();
 		map.addControl(this.controls.keyboard);
@@ -104,8 +125,6 @@ Mapstraction: {
 		map.addControl(this.controls.attribution);
 		this.controls.logo = new OpenSpace.Control.PoweredBy();
 		map.addControl(this.controls.logo);
-
-		this.maps[api] = map;
 
 		if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
 		    me.addControls(properties.controls);
@@ -160,13 +179,22 @@ Mapstraction: {
 	disableScrollWheelZoom: function () {
 	    this.controls.navigation.disableZoomWheel();
 	},
-
+ 
 	enableDragging: function () {
 	    this.controls.navigation.activate();
 	},
 
 	disableDragging: function () {
-	    this.controls.navigation.deactivate();  //TODO: what is document.drag on navigation control?
+	    //TODO: This seems heavy handed and may disabled the scrollwheelzoom as well - what is documentdrag on navigation control?
+	    this.controls.navigation.deactivate(); 
+	},
+
+	enableDoubleClickZoom: function () {
+	    //null function as this is handled by checking the options in the event handler
+	},
+
+	disableDoubleClickZoom: function () {
+	    //null function as this is handled by checking the options in the event handler
 	},
 
 	resizeTo: function(width, height){
@@ -333,12 +361,7 @@ Mapstraction: {
 	},
 	
 	getZoom: function() {
-		var map = this.maps[this.api];
-		var zoom;
-	
-		zoom = map.zoom + 6;  // convert to equivalent google zoom
-	
-		return zoom;
+		return this.maps[this.api].zoom + 6;  // convert to equivalent google zoom
 	},
 
 	getZoomLevelForBoundingBox: function( bbox ) {

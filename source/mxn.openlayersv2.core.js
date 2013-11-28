@@ -48,7 +48,7 @@ mxn.register('openlayersv2', {
 			    projection: 'EPSG:4326',
 			    crossOriginKeyword: null,
 			    controls: [
-                    new OpenLayers.Control.Navigation(),
+                    new OpenLayers.Control.KeyboardDefaults(),
                     new OpenLayers.Control.ArgParser(),
                     new OpenLayers.Control.Attribution()]
 			};
@@ -79,7 +79,21 @@ mxn.register('openlayersv2', {
                 options
 			);
 			this.maps[api] = map;
-            
+
+		    // note that this controls is always there 
+		    // enable map drag with mouse and keyboard
+			this.controls.navigation = new OpenLayers.Control.Navigation({
+			    defaultDblClick: function (event) {
+			        if (!self.options.enableDoubleClickZoom) {
+			            event.preventDefault();
+			        }
+			        else {
+			            self.setZoom(self.getZoom() + 1);
+			        }
+			    }
+			});
+			map.addControl(this.controls.navigation);
+
 			if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
 			    self.addControls(properties.controls);
 			}
@@ -125,31 +139,28 @@ mxn.register('openlayersv2', {
 		},
 
 		enableScrollWheelZoom: function () {
-		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation');
-		    if (navigators.length > 0) {
-		        navigators[0].enableZoomWheel();
-		    }
+		    this.controls.navigation.enableZoomWheel();
 		},
 
 		disableScrollWheelZoom: function () {
-		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation');
-		    if (navigators.length > 0) {
-		        navigators[0].disableZoomWheel();
-		    }
+		    this.controls.navigation.disableZoomWheel();
 		},
 
 		enableDragging: function () {
-		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation');
-		    if (navigators.length > 0) {
-		        navigators[0].activate();
-		    }
+		    this.controls.navigation.activate();
 		},
 
 		disableDragging: function () {
-		    var navigators = this.maps[this.api].getControlsByClass('OpenLayers.Control.Navigation');
-		    if (navigators.length > 0) {
-		        navigators[0].deactivate();
-		    }
+		    //TODO: This seems heavy handed and may disabled the scrollwheelzoom as well - what is documentdrag on navigation control?
+		    this.controls.navigation.deactivate();
+		},
+
+		enableDoubleClickZoom: function () {
+		    //null function as this is handled by checking the options in the event handler
+		},
+
+		disableDoubleClickZoom: function () {
+		    //null function as this is handled by checking the options in the event handler
 		},
 
 		resizeTo: function(width, height){	

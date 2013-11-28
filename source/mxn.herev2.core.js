@@ -168,7 +168,9 @@ Mapstraction: {
 	},
 
 	disableScrollWheelZoom: function () {
-	    this.removeControl(this.controls.mouseWheel);
+	    //you have to have the control to disable the feature. Add returns the existing control if there is one
+	    this.enableScrollWheelZoom();
+	    this.controls.mouseWheel.enabled = false;
 	},
 
 	enableDragging: function () {
@@ -176,8 +178,23 @@ Mapstraction: {
 	},
 
 	disableDragging: function () {
-	    this.removeControl(this.controls.dragging);
+	    //you have to have the control to disable the feature. Add returns the existing control if there is one
+	    this.enableDragging();
+	    this.controls.dragging.enabled = false;
 	},
+
+	enableDoubleClickZoom: function () {
+	    this.controls.doubleClick = this.addControl(new nokia.maps.map.component.zoom.DoubleClick());
+	    this.controls.doubleTap = this.addControl(new nokia.maps.map.component.zoom.DoubleTap());
+	},
+
+	disableDoubleClickZoom: function () {
+	    //you have to have the control to disable the feature. Add returns the existing control if there is one
+	    this.enableDoubleClickZoom();
+	    this.controls.doubleClick.enabled = false;
+	    this.controls.doubleTap.enabled = false;
+	},
+
 
 	resizeTo: function(width, height) {
 		this.currentElement.style.width = width;

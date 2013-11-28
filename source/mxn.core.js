@@ -367,6 +367,20 @@ mxn.addProxyMethods(Mapstraction, [
 	 */
 	'disableDragging',
 
+    /**
+	 * Enables zooming the map with doubleclick - (default)
+	 * @name mxn.Mapstraction#enableDoubleClickZoom
+	 * @function
+	 */
+	'enableDoubleClickZoom',
+
+     /**
+	 * Disables zooming the map with doubleclick - (defaults to enabled)
+	 * @name mxn.Mapstraction#disableDoubleClickZoom
+	 * @function
+	 */
+	'disableDoubleClickZoom',
+
 	/**
 	 * Adds a control to the map 
 	 * @name mxn.Mapstraction#addControl

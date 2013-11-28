@@ -118,6 +118,7 @@ Mapstraction: {
 			}
 
 			var map = new ymaps.Map(element, state);
+			self.maps[api] = map;
 			
 			for (var control in self.controls) {
 				if (self.controls[control] !== null) {
@@ -142,7 +143,6 @@ Mapstraction: {
 				}
 			});
 
-			self.maps[api] = map;
 			self.loaded[api] = true;
 			
 			//doing the load.fire directly it runs too fast and we dont get a chance to register the handler in the core tests, so had to add a delay.
@@ -151,24 +151,32 @@ Mapstraction: {
 	},
 	
 	getVersion: function() {
-		return '2.2';
+        //TODO: Work out how to get the real version //seems to be 2.0.33 at the moment
+	    return '2.0';
 	},
-	
-	applyOptions: function(){
-		var map = this.maps[this.api];
-		
-		if (typeof map != 'undefined')
-		{
-			if(this.options.enableScrollWheelZoom){
-				map.behaviors.enable('scrollZoom');
-			}
-			
-			if (this.options.enableDragging) {
-				map.behaviors.enable('drag');
-			} else {
-				map.behaviors.disable('drag');
-			}
-		}
+
+	enableScrollWheelZoom: function () {
+	    this.maps[this.api].behaviors.enable('scrollZoom');
+	},
+
+	disableScrollWheelZoom: function () {
+	    this.maps[this.api].behaviors.disable('scrollZoom');
+	},
+
+	enableDragging: function () {
+	    this.maps[this.api].behaviors.enable('drag');
+	},
+
+	disableDragging: function () {
+	    this.maps[this.api].behaviors.disable('drag');
+	},
+
+	enableDoubleClickZoom: function () {
+	    this.maps[this.api].behaviors.enable('dblClickZoom');
+	},
+
+	disableDoubleClickZoom: function () {
+	    this.maps[this.api].behaviors.disable('dblClickZoom');
 	},
 
 	resizeTo: function(width, height){
@@ -177,118 +185,69 @@ Mapstraction: {
 		this.maps[this.api].container.fitToViewport();
 	},
 
-	addControls: function(args) {
-		/* args = { 
-		 *     pan:      true,
-		 *     zoom:     'large' || 'small',
-		 *     overview: true,
-		 *     scale:    true,
-		 *     map_type: true,
-		 * }
-		 */
-		
-		var map = this.maps[this.api];
-		
-		if ('pan' in args && args.pan) {
-			this.controls.pan = new ymaps.control.MapTools();
-			map.controls.add(this.controls.pan);
-		}
-		
-		else {
-			if (this.controls.pan !== null) {
-				map.controls.remove(this.controls.pan);
-				this.controls.pan = null;
-			}
-		}
-
-		if ('zoom' in args) {
-			if (args.zoom === true || args.zoom == 'small') {
-				this.addSmallControls();
-			}
-			
-			else if (args.zoom == 'large') {
-				this.addLargeControls();
-			}
-		}
-		
-		else {
-			if (this.controls.zoom !== null) {
-				map.controls.remove(this.controls.zoom);
-				this.controls.zoom = null;
-			}
-		}
-		
-		if ('overview' in args && args.overview) {
-			if (this.controls.overview === null) {
-				this.controls.overview = new ymaps.control.MiniMap({
-                    type: 'yandex#map'
-                });
-				map.controls.add(this.controls.overview);
-			}
-		}
-		
-		else {
-			if (this.controls.overview !== null) {
-				map.controls.remove(this.controls.overview);
-				this.controls.overview = null;
-			}
-		}
-		
-		if ('scale' in args && args.scale) {
-			if (this.controls.scale === null) {
-				this.controls.scale = new ymaps.control.ScaleLine();
-				map.controls.add(this.controls.scale);
-			}
-		}
-		
-		else {
-			if (this.controls.scale !== null) {
-				map.controls.remove(this.controls.scale);
-				this.controls.scale = null;
-			}
-		}
-		
-		if ('map_type' in args && args.map_type) {
-			this.addMapTypeControls();
-		}
-		
-		else {
-			if (this.controls.map_type !== null) {
-				map.controls.remove(this.controls.map_type);
-				this.controls.map_type = null;
-			}
-		}
+	addControl: function (control) {
+	    var map = this.maps[this.api];
+	    if (control !== null && typeof (control) !== "undefined") {
+	        map.controls.add(control);
+	    }
+	    return control;
 	},
 
-	addSmallControls: function() {
-		var map = this.maps[this.api];
-		
-		if (this.controls.zoom !== null) {
-			map.controls.remove(this.controls.zoom);
-		}
-		
-		this.controls.zoom = new ymaps.control.SmallZoomControl();
-		map.controls.add(this.controls.zoom);
+	removeControl: function (control) {
+	    var map = this.maps[this.api];
+	    if (control !== null && typeof (control) !== "undefined") {
+	        map.controls.remove(control);
+	    }
 	},
 
-	addLargeControls: function() {
-		var map = this.maps[this.api];
-		
-		if (this.controls.zoom !== null) {
-			map.controls.remove(this.controls.zoom);
-		}
-		
-		this.controls.zoom = new ymaps.control.ZoomControl();
-		map.controls.add(this.controls.zoom);
+	addSmallControls: function () {
+	    this.controls.zoom = this.addControl(new ymaps.control.SmallZoomControl());
+	},
+
+	removeSmallControls: function () {
+	    this.removeControl(this.controls.zoom);
+	},
+
+	addLargeControls: function () {
+	    this.controls.zoom = this.addControl(new ymaps.control.ZoomControl());
+	},
+
+	removeLargeControls: function () {
+	    this.removeControl(this.controls.zoom);
 	},
 
 	addMapTypeControls: function() {
-		var map = this.maps[this.api];
-		
-		if (this.controls.map_type === null) {
-			this.controls.map_type = new ymaps.control.TypeSelector();
-			map.controls.add(this.controls.map_type);
-		}
+	    this.controls.map_type = this.addControl(new ymaps.control.TypeSelector());
+	},
+
+	removeMapTypeControls: function () {
+	    this.removeControl(this.controls.map_type);
+	},
+
+	addScaleControls: function () {
+	    this.controls.scale = this.addControl(new ymaps.control.ScaleLine());
+	},
+
+	removeScaleControls: function () {
+	    this.removeControl(this.controls.scale);
+	},
+
+	addPanControls: function () {
+	    this.controls.pan = this.addControl(new ymaps.control.MapTools());
+	},
+
+	removePanControls: function () {
+	    this.removeControl(this.controls.pan);
+	},
+
+	addOverviewControls: function (zoomOffset) {
+	    this.controls.overview = this.addControl(new ymaps.control.MiniMap({
+	        type: 'yandex#map'
+	    }));
+	},
+
+	removeOverviewControls: function () {
+	    this.removeControl(this.controls.overview);
 	},
 
 	setCenterAndZoom: function(point, zoom) {

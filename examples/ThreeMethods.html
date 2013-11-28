@@ -26,6 +26,7 @@
 	}
 
 	$(document).ready(function () {
+	    var debug = false;
 
 	    var props = {
 	        controls: {
@@ -37,47 +38,51 @@
 	        },
 	        center: [51.50730, -0.12763],
 	        zoom: 10, //Ordnance survey only goes to 10
-            enableScrollWheelZoom: true,
-            map_type: mxn.Mapstraction.SATELLITE
+	        enableScrollWheelZoom: false,
+	        enableDragging: false,
+	        enableDoubleClickZoom: true,
+            map_type: mxn.Mapstraction.ROAD
 	    };
 
 	    var mapInit = new mxn.Mapstraction('mapInit', provider, props);
-	    var mapSetOptions = new mxn.Mapstraction('mapSetOptions', provider, {
-	        center: props.center,
-            zoom: props.zoom
-	    });
-        
-	    var mapFunctions = new mxn.Mapstraction('mapFunctions', provider, {
-	        center: props.center,
-	        zoom: props.zoom
-	    });
+	    if (!debug) {
+	        var mapSetOptions = new mxn.Mapstraction('mapSetOptions', provider, {
+	            center: props.center,
+	            zoom: props.zoom
+	        });
 
+	        var mapFunctions = new mxn.Mapstraction('mapFunctions', provider, {
+	            center: props.center,
+	            zoom: props.zoom
+	        });
+
+	        mapSetOptions.load.addHandler(function (sEvtName, oEvtSource, oEvtArgs) {
+	            console.log('Map loaded for provider: ' + oEvtSource.api);
+
+	            setTimeout(function () {
+	                mapSetOptions.setOptions(props);
+	            }, 1000);
+	        });
+
+	        mapFunctions.load.addHandler(function (sEvtName, oEvtSource, oEvtArgs) {
+	            console.log('Map loaded for provider: ' + oEvtSource.api);
+
+	            setTimeout(function () {
+	                mapFunctions.enableScrollWheelZoom();
+	                mapFunctions.disableDragging();
+	                mapFunctions.setMapType(props.map_type);
+	                mapFunctions.addScaleControls();
+	                mapFunctions.addOverviewControls(props.overview);
+	                mapFunctions.addMapTypeControls();
+	                mapFunctions.addPanControls();
+	                mapFunctions.addSmallControls();
+	            }, 1000);
+	        });
+	    }
 	    mapInit.load.addHandler(function (sEvtName, oEvtSource, oEvtArgs) {
 	        console.log('Map loaded for provider: ' + oEvtSource.api);
 	    });
-        
-	    mapSetOptions.load.addHandler(function (sEvtName, oEvtSource, oEvtArgs) {
-	        console.log('Map loaded for provider: ' + oEvtSource.api);
 
-	        setTimeout(function () {
-	            mapSetOptions.setOptions(props);
-	        }, 1000);
-	    });
-        
-	    mapFunctions.load.addHandler(function (sEvtName, oEvtSource, oEvtArgs) {
-	        console.log('Map loaded for provider: ' + oEvtSource.api);
-
-	        setTimeout(function () {
-	            mapFunctions.enableScrollWheelZoom();
-	            mapFunctions.setMapType(props.map_type);
-	            mapFunctions.addScaleControls();
-	            mapFunctions.addOverviewControls();
-	            mapFunctions.addMapTypeControls();
-	            mapFunctions.addPanControls();
-	            mapFunctions.addSmallControls();
-	        }, 1000);
-	    });
-	
 	});
 	</script>
 	<style type="text/css">

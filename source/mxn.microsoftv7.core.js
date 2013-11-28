@@ -122,20 +122,18 @@ Mapstraction: {
 				if(credentials !== null) { microsoft_key = credentials; } 
 			});
 			
-		// Disable scroll wheel/mouse wheel interaction if specified in the
-		// constructor properties
-        //TODO: Test if we still need this handlers and if they should be reading the settings!
+		// Disable scroll wheel/mouse wheel interaction 
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'mousewheel', function(event) {
-			if (event.targetType == 'map') {
+		    if (event.targetType == 'map' && !me.options.enableScrollWheelZoom) {
 				event.handled = true;
 			}
 		});
 		
-		// Disable double-click to zoom if specified in the constructor
-		// properties
-	    //TODO: Test if we still need this handlers and if they should be reading the settings!
-		Microsoft.Maps.Events.addHandler(this.maps[api], 'dblclick', function(event) {
-			event.handled = true;
+		// Disable double-click to zoom 
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'dblclick', function (event) {
+		    if (event.targetType == 'map' && !me.options.enableDoubleClickZoom) {
+		        event.handled = true;
+		    }
 		});
 
 		//Add Click Event - with IE7 workaround if needed
@@ -189,11 +187,11 @@ Mapstraction: {
 	},
 
 	enableScrollWheelZoom: function () {
-	    this.maps[this.api].setOptions({ disableZooming: false });
+	    //null function as this is handled by checking the options in the event handler	
 	},
 
 	disableScrollWheelZoom: function () {
-	    this.maps[this.api].setOptions({ disableZooming: true });
+	    //null function as this is handled by checking the options in the event handler	
 	},
 
 	enableDragging: function () {
@@ -202,6 +200,14 @@ Mapstraction: {
 
 	disableDragging: function () {
 	    this.maps[this.api].setOptions({ disablePanning: true });
+	},
+
+	enableDoubleClickZoom: function () {
+        //null function as this is handled by checking the options in the event handler
+	},
+
+	disableDoubleClickZoom: function () {
+	    //null function as this is handled by checking the options in the event handler
 	},
 
 	resizeTo: function(width, height){	
