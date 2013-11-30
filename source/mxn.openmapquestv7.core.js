@@ -81,11 +81,11 @@ Mapstraction: {
 
 	addControls: function( args ) {
 		/* args = { 
-		 *     pan:      true,
-		 *     zoom:     'large' || 'small',
-		 *     overview: true,
-		 *     scale:    true,
-		 *     map_type: true,
+		 *	 pan:	  true,
+		 *	 zoom:	 'large' || 'small',
+		 *	 overview: true,
+		 *	 scale:	true,
+		 *	 map_type: true,
 		 * }
 		 */
 
@@ -158,8 +158,8 @@ Mapstraction: {
 		MQA.withModule('smallzoom', function() {
 			me.controls.zoom = new MQA.SmallZoom();
 			map.addControl(
-			    me.controls.zoom, 
-			    new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
+				me.controls.zoom, 
+				new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
 			  );
 		});
 	},
@@ -177,7 +177,7 @@ Mapstraction: {
 			me.controls.zoom = new MQA.LargeZoom();
 			map.addControl(
 				me.controls.zoom, 
-			    new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
+				new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
 			  );
 		});
 	},
@@ -422,7 +422,7 @@ Marker: {
 				mk = new MQA.HtmlPoi(pt);
 				
 				/*MQA.HtmlPois will have their upper left corner placed with the lat/lng provided in the 
-				constructor. Use setHTML to provide valid HTML for your POI, xOffset, yOffset and a     CSS class name for your div.*/ 
+				constructor. Use setHTML to provide valid HTML for your POI, xOffset, yOffset and a	 CSS class name for your div.*/ 
 				var offset = this.iconAnchor ? this.iconAnchor : [0,0];
 				mk.setHtml(this.htmlContent, -offset[0], -offset[1], 'none');
 		} 
