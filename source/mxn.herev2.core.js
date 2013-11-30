@@ -156,6 +156,15 @@ Mapstraction: {
 			}
 		}, false);
 
+		this.controls.mouseWheel = new nokia.maps.map.component.zoom.MouseWheel();
+		this.controls.mouseWheel.enabled = true;
+		this.controls.dragging = new nokia.maps.map.component.panning.Drag();
+		this.controls.dragging.enabled = true;
+	    this.controls.doubleClick = new nokia.maps.map.component.zoom.DoubleClick();
+		this.controls.doubleClick.enabled = true;
+	    this.controls.doubleTap = new nokia.maps.map.component.zoom.DoubleTap();
+		this.controls.doubleTap.enabled = true;
+		
 		this.loaded[api] = true;
 	},
 	
@@ -164,37 +173,30 @@ Mapstraction: {
 	},
 
 	enableScrollWheelZoom: function () {
-	    this.controls.mouseWheel = this.addControl(new nokia.maps.map.component.zoom.MouseWheel());
+		this.controls.mouseWheel.enabled = true;
 	},
 
 	disableScrollWheelZoom: function () {
-	    //you have to have the control to disable the feature. Add returns the existing control if there is one
-	    this.enableScrollWheelZoom();
 	    this.controls.mouseWheel.enabled = false;
 	},
 
 	enableDragging: function () {
-	    this.controls.dragging = this.addControl(new nokia.maps.map.component.panning.Drag());
+		this.controls.dragging.enabled = true;
 	},
 
 	disableDragging: function () {
-	    //you have to have the control to disable the feature. Add returns the existing control if there is one
-	    this.enableDragging();
 	    this.controls.dragging.enabled = false;
 	},
 
 	enableDoubleClickZoom: function () {
-	    this.controls.doubleClick = this.addControl(new nokia.maps.map.component.zoom.DoubleClick());
-	    this.controls.doubleTap = this.addControl(new nokia.maps.map.component.zoom.DoubleTap());
+		this.controls.doubleClick.enabled = true;
+		this.controls.doubleTap.enabled = true;
 	},
 
 	disableDoubleClickZoom: function () {
-	    //you have to have the control to disable the feature. Add returns the existing control if there is one
-	    this.enableDoubleClickZoom();
 	    this.controls.doubleClick.enabled = false;
 	    this.controls.doubleTap.enabled = false;
 	},
-
 
 	resizeTo: function(width, height) {
 		this.currentElement.style.width = width;
@@ -260,11 +262,13 @@ Mapstraction: {
 	},
 
 	addPanControls: function () {
-	    this.controls.pan = this.addControl(new nokia.maps.map.component.Behavior());
+		// The HERE API doesn't (appear) to support a pan control. The documentation
+		// references nokia.maps.map.component.ViewControl() but this doesn't appear
+		// to have any effect.
 	},
     
 	removePanControls: function () {
-	    this.removeControl(this.controls.pan);
+		// See above comment for addPanControls()
 	},
 
 	addOverviewControls: function (zoomOffset) {
