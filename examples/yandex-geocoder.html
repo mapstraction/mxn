@@ -1,8 +1,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>Mapstraction Examples - yandex Geocoder</title>
-<script src="http://api-maps.yandex.ru/1.1/index.xml?key=AMVH-VABAAAAEdVkcQIAOS-fmBYJfLFV-YDg7ZCPjwVQycUAAAAAAAAAAADwTFcvgPirz7OV75IX_Gsopsw7jA==" type="text/javascript" charset="utf-8"></script>
-<script src="../source/mxn.js?(yandex,[geocoder])" type="text/javascript"></script>
+<script type="text/javascript">
+    var yandexv1_key = 'AMVH-VABAAAAEdVkcQIAOS-fmBYJfLFV-YDg7ZCPjwVQycUAAAAAAAAAAADwTFcvgPirz7OV75IX_Gsopsw7jA==';
+</script>
+<script src="../source/mxn.js?(yandexv1,[geocoder,autoload])" type="text/javascript"></script>
 <style type="text/css">
 
 	#mapdiv {
@@ -39,7 +41,7 @@
 	function initialize() {
 
 		// create mxn object
-		mapstraction = new mxn.Mapstraction('mapdiv','yandex');
+		mapstraction = new mxn.Mapstraction('mapdiv','yandexv1');
 
 		mapstraction.addControls({
 			pan: true,
@@ -52,7 +54,7 @@
 		mapstraction.setCenterAndZoom(latlon, 10);
 		mapstraction.mousePosition('position');
 		
-		geocoder = new mxn.Geocoder('yandex',geocode_return);
+		geocoder = new mxn.Geocoder('yandexv1',geocode_return);
 		
 		// add a marker
 		var marker = new mxn.Marker(latlon);

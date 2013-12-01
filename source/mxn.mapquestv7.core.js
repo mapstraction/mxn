@@ -61,16 +61,40 @@ Mapstraction: {
 		return MQTOOLKIT_VERSION;
 	},
 	
-	applyOptions: function(){
-		// applyOptions is called by mxn.core.js immediate after the provider specific call
-		// to init, so don't check for queued events just yet.
-		//this._fireQueuedEvents();
-		if (this.options.enableScrollWheelZoom) {
-			var map = this.maps[this.api];
-			MQA.withModule('mousewheel', function() {
-				map.enableMouseWheelZoom();
-			});
-		}
+	enableScrollWheelZoom: function () {
+	    this._fireQueuedEvents();
+	    var map = this.maps[this.api];
+	    MQA.withModule('mousewheel', function () {
+	        map.enableMouseWheelZoom();
+	    });
+	},
+
+	disableScrollWheelZoom: function () {
+	    this._fireQueuedEvents();
+	    var map = this.maps[this.api];
+	    MQA.withModule('mousewheel', function () {
+	        map.disableMouseWheelZoom();
+	    });
+	},
+
+	enableDragging: function () {
+	    this._fireQueuedEvents();
+        //TODO
+	},
+
+	disableDragging: function () {
+	    this._fireQueuedEvents();
+	    //TODO
+	},
+
+	enableDoubleClickZoom: function () {
+	    this._fireQueuedEvents();
+	    //TODO
+	},
+
+	disableDoubleClickZoom: function () {
+	    this._fireQueuedEvents();
+        //TODO
 	},
 
 	resizeTo: function(width, height){	
@@ -79,120 +103,102 @@ Mapstraction: {
 		this.currentElement.style.height = height;
 	},
 
-	addControls: function( args ) {
-		/* args = { 
-		 *     pan:      true,
-		 *     zoom:     'large' || 'small',
-		 *     overview: true,
-		 *     scale:    true,
-		 *     map_type: true,
-		 * }
-		 */
+	addControl: function (control, placement) {
+        //TODO a switch statement on the control placement 
+	    var map = this.maps[this.api];
+	    map.addControl(
+            control,
+            placement || new MQA.MapCornerPlacement(MQA.MapCorner.TOP_RIGHT)
+        );
+	    return control;
+	},
 
-		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		var me = this;
-
-		if ('zoom' in args || ('pan' in args && args.pan)) {
-			if (args.pan || args.zoom == 'small') {
-				this.addSmallControls();
-			}
-			
-			else if (args.zoom == 'large') {
-				this.addLargeControls();
-			}
-		}
-		
-		else {
-			if (this.controls.zoom) {
-				map.removeControl(this.controls.zoom);
-				this.controls.zoom = null;
-			}
-		}
-
-		if ('overview' in args && args.overview) {
-			if (this.controls.overview === null) {
-				MQA.withModule('insetmapcontrol', function() {
-					var options = {
-						size: { width: 150, height: 125},
-						zoom: 3,
-						mapType: 'map',
-						minimized: false
-					};
-					me.controls.overview = new MQA.InsetMapControl(options);
-					map.addControl(
-						me.controls.overview,
-						new MQA.MapCornerPlacement(MQA.MapCorner.BOTTOM_RIGHT));
-				});
-			}
-		}
-		
-		else {
-			if (this.controls.overview) {
-				map.removeControl(this.controls.overview);
-				this.controls.overview = null;
-			}
-		}
-		
-		if ('map_type' in args && args.map_type) {
-			this.addMapTypeControls();
-		}
-		
-		else {
-			if (this.controls.map_type) {
-				map.removeControl(this.controls.map_type);
-				this.controls.map_type = null;
-			}
-		}
+	removeControl: function (control) {
+	    this.maps[this.api].removeControl(control);
 	},
 
 	addSmallControls: function() {
 		this._fireQueuedEvents();
-		var map = this.maps[this.api];
 		var me = this;
 
-		if (this.controls.zoom !== null) {
-			map.removeControl(this.controls.zoom);
-		}
-
-		MQA.withModule('smallzoom', function() {
-			me.controls.zoom = new MQA.SmallZoom();
-			map.addControl(
-			    me.controls.zoom, 
-			    new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
-			  );
+		MQA.withModule('smallzoom', function () {
+		    me.controls.zoom = me.addControl(new MQA.SmallZoom(), new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5)));
 		});
+	},
+
+	removeSmallControls: function () {
+	    this.removeControl(this.controls.zoom);
 	},
 
 	addLargeControls: function() {
-		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		var me = this;
+	    this._fireQueuedEvents();
+	    var me = this;
 
-		if (this.controls.zoom !== null) {
-			map.removeControl(this.controls.zoom);
-		}
-		
-		MQA.withModule('largezoom', function() {
-			me.controls.zoom = new MQA.LargeZoom();
-			map.addControl(
-				me.controls.zoom, 
-			    new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
-			  );
-		});
+	    MQA.withModule('largezoom', function () {
+	        me.controls.zoom = me.addControl(new MQA.LargeZoom(), new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5)));
+	    });
+	},
+
+	removeLargeControls: function () {
+	    this.removeSmallControls();
 	},
 
 	addMapTypeControls: function() {
-		this._fireQueuedEvents();
-		var map = this.maps[this.api];
-		var me = this;
-		
-		if (this.controls.map_type === null) {
-			MQA.withModule('viewoptions', function() {
-				me.controls.map_type = new MQA.ViewOptions();
-				map.addControl(me.controls.map_type);
-			});
-		}
+	    this._fireQueuedEvents();
+	    var me = this;
+
+	    MQA.withModule('viewoptions', function () {
+	        me.controls.zoom = me.addControl(new MQA.ViewOptions());
+	    });
+	},
+
+	removeMapTypeControls: function () {
+	    this.removeControl(this.controls.map_type);
+	},
+
+	addScaleControls: function () {
+	    this._fireQueuedEvents();
+	    var me = this;
+        /* TODO
+	    MQA.withModule('viewoptions', function () {
+	        me.controls.scale = me.addControl(new MQA.ViewOptions());
+	    }); */
+	},
+
+	removeScaleControls: function () {
+	    this.removeControl(this.controls.scale);
+	},
+
+	addPanControls: function () {
+	    this._fireQueuedEvents();
+	    var me = this;
+	    /* TODO
+	    MQA.withModule('viewoptions', function () {
+	        me.controls.pan = me.addControl(new MQA.ViewOptions());
+	    }); */
+	},
+
+	removePanControls: function () {
+	    this.removeControl(this.controls.pan);
+	},
+
+	addOverviewControls: function (zoomOffset) {
+	    this._fireQueuedEvents();
+	    var me = this;
+	    var options = {
+	        size: { width: 150, height: 125 },
+	        zoom: 3,
+	        mapType: 'map',
+	        minimized: false
+	    };
+
+	    MQA.withModule('insetmapcontrol', function () {
+	        me.controls.overview = me.addControl(new MQA.InsetMapControl(options), new MQA.MapCornerPlacement(MQA.MapCorner.BOTTOM_RIGHT));
+	    });
+	},
+
+	removeOverviewControls: function () {
+	    this.removeControl(this.controls.overview);
 	},
 
 	setCenterAndZoom: function(point, zoom) { 

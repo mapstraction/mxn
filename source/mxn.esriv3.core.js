@@ -71,23 +71,31 @@ mxn.register('esriv3', {
 		getVersion: function() {
 			return esri.version;
 		},
-	
-		applyOptions: function(){
-			if (this.options.enableScrollWheelZoom) {
-				this.maps[this.api].enableScrollWheelZoom();
-			} else {
-				this.maps[this.api].disableScrollWheelZoom();
-			}
-			
-			if (this.options.enableDragging) {
-				this.maps[this.api].enablePan();
-			} else {
-				this.maps[this.api].disablePan();
-			}
-			
-			return;
+
+		enableScrollWheelZoom: function () {
+		    this.maps[this.api].enableScrollWheelZoom();
 		},
 
+		disableScrollWheelZoom: function () {
+		    this.maps[this.api].disableScrollWheelZoom();
+		},
+
+		enableDragging: function () {
+		    this.maps[this.api].enablePan();
+		},
+
+		disableDragging: function () {
+		    this.maps[this.api].disablePan();
+		},
+
+		enableDoubleClickZoom: function () {
+		    this.maps[this.api].enableDoubleClickZoom();
+		},
+
+		disableDoubleClickZoom: function () {
+		    this.maps[this.api].disableDoubleClickZoom();
+		},
+		
 		resizeTo: function(width, height){
 			this.currentElement.style.width = width;
 			this.currentElement.style.height = height;
@@ -95,62 +103,28 @@ mxn.register('esriv3', {
 			//TODO: recentre on original centre and fit
 		},
 
-		addControls: function(args) {
-			var map = this.maps[this.api];
+		addControl: function (control) {
+		    //Esri add/removes controls at start up so this is unused
+		},
 
-			if ('pan' in args && args.pan) {
-				map.showPanArrows();
-			} else {
-				map.hidePanArrows();
-			}
-
-			if ('zoom' in args && (args.zoom == 'small' || args.zoom == 'large')) {
-				this.addSmallControls();
-			} else {
-				map.hideZoomSlider();
-			}
-		
-			if ('overview' in args && args.overview) {
-				if (this.controls.overview !== null) {
-					this.controls.overview.show();
-				}
-			}else {
-				if (this.controls.overview !== null) {
-					this.controls.overview.hide();
-				}
-			}
-		
-			if ('scale' in args && args.scale) {
-				if (this.controls.scale !== null) {
-					this.controls.scale.show();
-				} 
-			} else {
-				if (this.controls.scale !== null) {
-					this.controls.scale.hide();
-				}
-			}
-		
-			if ('map_type' in args && args.map_type) {
-				if (this.controls.map_type === null) {
-					this.addMapTypeControls();
-				} else {
-					domStyle.set("outerbasemapMenu", "display", "block"); //make sure it is showing
-				}
-			} else {
-				if (this.controls.map_type !== null) {
-					domStyle.set("outerbasemapMenu", "display", "none"); //hide it
-				}
-			}
-		
+		removeControl: function (control) {
+		    //Esri add/removes controls at start up so this is unused
 		},
 
 		addSmallControls: function() {
-			var map = this.maps[this.api];
-			map.showZoomSlider();
+			this.maps[this.api].showZoomSlider();
+		},
+
+		removeSmallControls: function () {
+		    this.maps[this.api].hideZoomSlider();
 		},
 
 		addLargeControls: function() {
 			this.addSmallControls();
+		},
+
+		removeLargeControls: function () {
+		    this.removeSmallControls();
 		},
 
 		addMapTypeControls: function() {
@@ -217,6 +191,35 @@ mxn.register('esriv3', {
 				domStyle.set("outerbasemapMenu", "display", "block"); //make sure it is showing
 			}
 		},
+
+		removeMapTypeControls: function () {
+		    domStyle.set("outerbasemapMenu", "display", "none");
+		},
+
+		addScaleControls: function () {
+		    this.controls.scale.show();
+		},
+
+		removeScaleControls: function () {
+		    this.controls.scale.hide();
+		},
+
+		addPanControls: function () {
+		    map.showPanArrows();
+		},
+
+		removePanControls: function () {
+		    map.hidePanArrows();
+		},
+
+		addOverviewControls: function (zoomOffset) {
+		    this.controls.overview.show();
+		},
+
+		removeOverviewControls: function () {
+		    this.controls.overview.hide();
+		},
+
 
 		setCenterAndZoom: function(point, zoom) { 
 			var map = this.maps[this.api];

@@ -184,12 +184,10 @@ Mapstraction: {
 
 	addControl: function (control) {
 	    //Google add/removes controls only using setOptions so this is unused
-	    throw new Error('Mapstraction.addControl is not currently required for provider ' + this.api);
 	},
 
 	removeControl: function (control) {
 	    //Google add/removes controls only using setOptions so this is unused
-	    throw new Error('Mapstraction.removeControl is not currently required for provider ' + this.api);
 	},
 
     addScaleControls: function () {

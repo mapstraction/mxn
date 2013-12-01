@@ -1,15 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<title>Mapstraction Example - openlayersv3 v3</title>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-	<script src="http://code.jquery.com/jquery-1.8.2.min.js" type="text/javascript"></script>
+	<script src="\jquery-1.8.2.min.js" type="text/javascript"></script>
 	
-	<link rel="stylesheet" href="http://ol3js.org/en/master/build/ol.css" type="text/css">
-	<!--script src="http://ol3js.org/en/master/build/ol.js"></script-->
-	<script src="http://ol3js.org/en/master/build/ol-simple.js"></script>
-	
-	<script src="../source/mxn.js?(openlayersv3)" type="text/javascript"></script>
+	<script src="../source/mxn.js?(openlayersv3,[autoload])" type="text/javascript"></script>
 	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
 	<script type="text/javascript">
 	
@@ -28,6 +24,27 @@
 		latlon = new mxn.LatLonPoint(41.84756115424155,-91.70015573501587);
 		map.setCenterAndZoom(latlon, 12);
 		
+		var basemaps = {
+			local: new mxn.TileMap({
+			    url: window.location.origin + '/mqopen/{Z}/{X}/{Y}.jpeg',
+				name: 'local',
+				type: mxn.Mapstraction.TileType.BASE,
+				options: {
+					label: 'Local',
+					alt: 'Local Mapquest Tiles',
+					attribution: 'Tiles &copy; Mapquest',
+					opacity: 1.0,
+					minZoom: 12,
+					maxZoom: 12
+				}
+			})
+		};
+		
+		map.addTileMap(basemaps.local, {
+				addControl: true,
+				makeCurrent: true
+			});
+		map.setMapType('local');
 		
 		map.click.addHandler(function(en, es, ea) {
 			var point = ea.location;
@@ -58,8 +75,10 @@
 	
 	addMarker  = function () {
 		marker = new mxn.Marker(map.getCenter());
+
+		marker.addData({ 'infoBubble': 'This is an InfoBubble'});
+		marker.setIcon(window.location.origin + '/ol3/marker-gold.png');
 		map.addMarker(marker);
-		marker.addData({'infoBubble': 'This is an InfoBubble'});
 		marker.openBubble();
 		
 	}
@@ -71,8 +90,8 @@
 		icon_marker.setIcon(iconURL);
 		icon_marker.setIconSize([32,32]);
 		icon_marker.setIconAnchor([0,16]);
-		map.addMarker(icon_marker);
 		icon_marker.addData({'infoBubble': 'This icon is ' + iconURL});
+		map.addMarker(icon_marker);
 		icon_marker.openBubble();
 	}
 
