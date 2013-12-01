@@ -53,11 +53,11 @@ Mapstraction: {
 					options.showDashboard = true;
 				}
 							
-			    /*if ('overview' in controls && controls.overview) {
-				    // The overview/mini-map control isn't supported in the Bing v7 API. 
-				    // TODO: Investigate possibility of implementing a custom overview map, see
-				    // http://pietschsoft.com/post/2010/12/19/Bing-Maps-Ajax-7-Add-a-Simple-Mini-Map
-				    // http://bingmapsv7modules.codeplex.com/wikipage?title=Mini-Map%20Module
+				/*if ('overview' in controls && controls.overview) {
+					// The overview/mini-map control isn't supported in the Bing v7 API. 
+					// TODO: Investigate possibility of implementing a custom overview map, see
+					// http://pietschsoft.com/post/2010/12/19/Bing-Maps-Ajax-7-Add-a-Simple-Mini-Map
+					// http://bingmapsv7modules.codeplex.com/wikipage?title=Mini-Map%20Module
 				}*/
 				
 				if ('scale' in controls && controls.scale) {
@@ -72,7 +72,7 @@ Mapstraction: {
 			}
 			
 			if (properties.hasOwnProperty('center') && null !== properties.center) {
-			    options.center = properties.center.toProprietary(this.api);
+				options.center = properties.center.toProprietary(this.api);
 			}
 			
 			if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
@@ -124,16 +124,16 @@ Mapstraction: {
 			
 		// Disable scroll wheel/mouse wheel interaction 
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'mousewheel', function(event) {
-		    if (event.targetType == 'map' && !me.options.enableScrollWheelZoom) {
+			if (event.targetType == 'map' && !me.options.enableScrollWheelZoom) {
 				event.handled = true;
 			}
 		});
 		
 		// Disable double-click to zoom 
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'dblclick', function (event) {
-		    if (event.targetType == 'map' && !me.options.enableDoubleClickZoom) {
-		        event.handled = true;
-		    }
+			if (event.targetType == 'map' && !me.options.enableDoubleClickZoom) {
+				event.handled = true;
+			}
 		});
 
 		//Add Click Event - with IE7 workaround if needed
@@ -152,8 +152,8 @@ Mapstraction: {
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'click', function(event){
 			var map = me.maps[me.api];
 			if (event.originalEvent.preventDefault) {
-		        event.originalEvent.preventDefault();
-		    }
+				event.originalEvent.preventDefault();
+			}
 
 			if (event.targetType == 'pushpin') {
 				event.target.mapstraction_marker.click.fire();
@@ -174,7 +174,7 @@ Mapstraction: {
 		});
 
 		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', me.changeZoom.fire);
-		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', me.endPan.fire);    
+		Microsoft.Maps.Events.addHandler(this.maps[api], 'viewchangeend', me.endPan.fire);	
 	
 		var loadListener = Microsoft.Maps.Events.addHandler(this.maps[api], 'tiledownloadcomplete', function(event) {
 			me.load.fire();
@@ -187,27 +187,27 @@ Mapstraction: {
 	},
 
 	enableScrollWheelZoom: function () {
-	    //null function as this is handled by checking the options in the event handler	
+		//null function as this is handled by checking the options in the event handler	
 	},
 
 	disableScrollWheelZoom: function () {
-	    //null function as this is handled by checking the options in the event handler	
+		//null function as this is handled by checking the options in the event handler	
 	},
 
 	enableDragging: function () {
-	    this.maps[this.api].setOptions({ disablePanning: false });
+		this.maps[this.api].setOptions({ disablePanning: false });
 	},
 
 	disableDragging: function () {
-	    this.maps[this.api].setOptions({ disablePanning: true });
+		this.maps[this.api].setOptions({ disablePanning: true });
 	},
 
 	enableDoubleClickZoom: function () {
-        //null function as this is handled by checking the options in the event handler
+		//null function as this is handled by checking the options in the event handler
 	},
 
 	disableDoubleClickZoom: function () {
-	    //null function as this is handled by checking the options in the event handler
+		//null function as this is handled by checking the options in the event handler
 	},
 
 	resizeTo: function(width, height){	
@@ -219,15 +219,15 @@ Mapstraction: {
 	// Microsoft7 only supports (most of) the display controls as part of the Dashboard
 	// and this needs to be configured *before* the map is instantiated and displayed.
 	// So addControls, addSmallControls, addLargeControls and addMapTypeControls are
-    // effectively no-ops and so they don't throw the unsupported feature exception.
-    // TDOD: try a swap to the same api to see if that works!
+	// effectively no-ops and so they don't throw the unsupported feature exception.
+	// TDOD: try a swap to the same api to see if that works!
 	
 	addControl: function( args ) {
 		//throw new Error('Mapstraction.addControls is not currently supported by provider ' + this.api);
 	},
 
 	removeControl: function (args) {
-	    //throw new Error('Mapstraction.addControls is not currently supported by provider ' + this.api);
+		//throw new Error('Mapstraction.addControls is not currently supported by provider ' + this.api);
 	},
 
 	addSmallControls: function() {
@@ -235,7 +235,7 @@ Mapstraction: {
 	},
 
 	removeSmallControls: function () {
-	    //throw new Error('Mapstraction.addLargeControls is not currently supported by provider ' + this.api);
+		//throw new Error('Mapstraction.addLargeControls is not currently supported by provider ' + this.api);
 	},
 
 	addLargeControls: function() {
@@ -243,7 +243,7 @@ Mapstraction: {
 	},
 
 	removeLargeControls: function () {
-	    //throw new Error('Mapstraction.addLargeControls is not currently supported by provider ' + this.api);
+		//throw new Error('Mapstraction.addLargeControls is not currently supported by provider ' + this.api);
 	},
 
 	addMapTypeControls: function() {
@@ -251,31 +251,31 @@ Mapstraction: {
 	},
 
 	removeMapTypeControls: function () {
-	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+		//throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
 	},
 
 	addScaleControls: function () {
-	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+		//throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
 	},
 
 	removeScaleControls: function () {
-	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+		//throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
 	},
 
 	addPanControls: function () {
-	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+		//throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
 	},
 
 	removePanControls: function () {
-	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+		//throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
 	},
 
 	addOverviewControls: function (zoomOffset) {
-	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+		//throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
 	},
 
 	removeOverviewControls: function () {
-	    //throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
+		//throw new Error('Mapstraction.addMapTypeControls is not currently supported by provider ' + this.api);
 	},
 
 	setCenterAndZoom: function(point, zoom) { 
@@ -505,9 +505,9 @@ Marker: {
 			options.text = this.label;
 		}
 		if (this.htmlContent) {
-            options.htmlContent = this.htmlContent;
+			options.htmlContent = this.htmlContent;
 			options.anchor = mAnchorPoint;
-        }
+		}
 		
 		var mmarker = new Microsoft.Maps.Pushpin(this.location.toProprietary(this.api), options);  
 

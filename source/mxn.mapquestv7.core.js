@@ -123,6 +123,7 @@ Mapstraction: {
 
 		MQA.withModule('smallzoom', function () {
 		    me.controls.zoom = me.addControl(new MQA.SmallZoom(), new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5)));
+
 		});
 	},
 
@@ -430,7 +431,7 @@ Marker: {
 					mk = new MQA.HtmlPoi(pt);
 					
 					/*MQA.HtmlPois will have their upper left corner placed with the lat/lng provided in the 
-					constructor. Use setHTML to provide valid HTML for your POI, xOffset, yOffset and a     CSS class name for your div.*/ 
+					constructor. Use setHTML to provide valid HTML for your POI, xOffset, yOffset and a	 CSS class name for your div.*/ 
 					var offset = this.iconAnchor ? this.iconAnchor : [0,0];
 					mk.setHtml(this.htmlContent, -offset[0], -offset[1], 'none');
 			} 

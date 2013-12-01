@@ -6,7 +6,7 @@ Geocoder: {
 	
 		this.geocoders[this.api] = {};
 		
-		this.geocoders[this.api].gazetteer = new OpenSpace.Gazetteer();    
+		this.geocoders[this.api].gazetteer = new OpenSpace.Gazetteer();	
 		this.geocoders[this.api].postcodeService = new OpenSpace.Postcode();
 	},
 
@@ -83,7 +83,7 @@ Geocoder: {
 					places.push(return_location);
 				}
 			}  
-		}    
+		}	
 
 		if (places.length > rowlimit) {
 			places.length = rowlimit;

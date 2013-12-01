@@ -11,17 +11,17 @@ var $m = mxn.util.$m;
  * @private
  */
 var init = function () {
-    //Just need to force the centre property to an mxn point if its  present and an array.
-    if (this.hasOwnProperty('properties') && this.properties !== null && this.properties.center && Object.prototype.toString.call(this.properties.center) === '[object Array]') {
-        this.properties.center = new mxn.LatLonPoint(this.properties.center[0], this.properties.center[1]);
-    }
-    this.invoker.go('init', [this.currentElement, this.api, this.properties]);
+	//Just need to force the centre property to an mxn point if its  present and an array.
+	if (this.hasOwnProperty('properties') && this.properties !== null && this.properties.center && Object.prototype.toString.call(this.properties.center) === '[object Array]') {
+		this.properties.center = new mxn.LatLonPoint(this.properties.center[0], this.properties.center[1]);
+	}
+	this.invoker.go('init', [this.currentElement, this.api, this.properties]);
 
 	if (this.maps[this.api] === null) {
 		throw new Error('Initialisation error; ' + this.api + ' has not created a map object');
 	}
 
-    //options have already been set to defaults so we need to merge any specific values here:
+	//options have already been set to defaults so we need to merge any specific values here:
 	if (this.hasOwnProperty('properties') && this.properties !== null) {
 		this.options.enableScrollWheelZoom = typeof (this.properties.enableScrollWheelZoom) != "undefined" ? this.properties.enableScrollWheelZoom : this.options.enableScrollWheelZoom;
 		this.options.enableDragging = typeof(this.properties.enableDragging) != "undefined" ? this.properties.enableDragging : this.options.enableDragging;
@@ -211,16 +211,16 @@ var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 	this.images = [];
 
 	this.controls = {
-	    pan: null,
-	    zoom: null,
-	    overview: null,
-	    scale: null,
-	    map_type: null
+		pan: null,
+		zoom: null,
+		overview: null,
+		scale: null,
+		map_type: null
 	};
 
 	this.loaded = {};
 	this.onload = {};
-    //this.loaded[api] = true; // FIXME does this need to be true? -ajturner
+	//this.loaded[api] = true; // FIXME does this need to be true? -ajturner
 	this.onload[api] = [];
 	
 	/**
@@ -236,10 +236,10 @@ var Mapstraction = mxn.Mapstraction = function(element, api, properties) {
 	 * @name mxn.Mapstraction#options
 	 * @property {Object}
 	 */
-    this.options = {
-        enableScrollWheelZoom: false,
-        enableDragging: true,
-        enableDoubleClickZoom: true
+	this.options = {
+		enableScrollWheelZoom: false,
+		enableDragging: true,
+		enableDoubleClickZoom: true
 	};
 	
 	this.addControlsArgs = {};
@@ -341,42 +341,42 @@ mxn.addProxyMethods(Mapstraction, [
 	 */
 	'getVersion',
 
-    /**
+	/**
 	 * Enables Scroll Wheel Zoom - defaults to disabled
 	 * @name mxn.Mapstraction#enableScrollWheelZoom
 	 * @function
 	 */
 	'enableScrollWheelZoom',
 
-     /**
+	 /**
 	 * Disables Scroll Wheel Zoom - (default)
 	 * @name mxn.Mapstraction#disableScrollWheelZoom
 	 * @function
 	 */
 	'disableScrollWheelZoom',
 
-    /**
+	/**
 	 * Enables dragging the map - (default)
 	 * @name mxn.Mapstraction#enableDragging
 	 * @function
 	 */
 	'enableDragging',
 
-     /**
+	 /**
 	 * Disables dragging the map - (defaults to enabled)
 	 * @name mxn.Mapstraction#disableDragging
 	 * @function
 	 */
 	'disableDragging',
 
-    /**
+	/**
 	 * Enables zooming the map with doubleclick - (default)
 	 * @name mxn.Mapstraction#enableDoubleClickZoom
 	 * @function
 	 */
 	'enableDoubleClickZoom',
 
-     /**
+	 /**
 	 * Disables zooming the map with doubleclick - (defaults to enabled)
 	 * @name mxn.Mapstraction#disableDoubleClickZoom
 	 * @function
@@ -387,7 +387,7 @@ mxn.addProxyMethods(Mapstraction, [
 	 * Adds a control to the map 
 	 * @name mxn.Mapstraction#addControl
 	 * @function
-     * @param {Control}
+	 * @param {Control}
 	 * return {Control} the Control, so it can be saved
 	 */
 	'addControl',
@@ -399,7 +399,7 @@ mxn.addProxyMethods(Mapstraction, [
 	 */
 	'addLargeControls',
 
-    /**
+	/**
 	 * Removes a large map panning control and zoom buttons to the map
 	 * @name mxn.Mapstraction#removeLargeControls
 	 * @function
@@ -413,14 +413,14 @@ mxn.addProxyMethods(Mapstraction, [
 	 */
 	'addMapTypeControls',
 
-    /**
+	/**
 	 * Removes a map type control from the map (streets, aerial imagery etc)
 	 * @name mxn.Mapstraction#removeMapTypeControls
 	 * @function
 	 */
 	'removeMapTypeControls',
 
-     /**
+	 /**
 	 * Adds a scale control to the map
 	 * @name mxn.Mapstraction#addScaleControls
 	 * @function
@@ -434,7 +434,7 @@ mxn.addProxyMethods(Mapstraction, [
 	 */
 	'removeScaleControls',
 
-     /**
+	 /**
 	 * Adds a pan control to the map 
 	 * @name mxn.Mapstraction#addPanControls
 	 * @function
@@ -472,7 +472,7 @@ mxn.addProxyMethods(Mapstraction, [
 	 */
 	'addSmallControls', 
 
-    /**
+	/**
 	 * Removes a large map panning control and zoom buttons to the map
 	 * @name mxn.Mapstraction#removeSmallControls
 	 * @function
@@ -643,13 +643,13 @@ Mapstraction.prototype.initBaseMaps = function() {
 Mapstraction.prototype.setOptions = function(oOpts){
 	mxn.util.merge(this.options, oOpts);
 	this.applyOptions();
-    //If we were called with control args then cascade to addcontrols:
-    //TODO: Check this is the right place
+	//If we were called with control args then cascade to addcontrols:
+	//TODO: Check this is the right place
 	if (oOpts.controls) {
-	    this.addControls(oOpts.controls);
+		this.addControls(oOpts.controls);
 	}
 	if (oOpts.map_type) {
-	    this.setMapType(oOpts.map_type);
+		this.setMapType(oOpts.map_type);
 	}
 };
 
@@ -659,7 +659,7 @@ Mapstraction.prototype.setOptions = function(oOpts){
  * @param vVal Option value
  */
 Mapstraction.prototype.setOption = function(sOptName, vVal){
-    this.setOptions({sOptName: vVal});
+	this.setOptions({sOptName: vVal});
 };
 
 /**
@@ -667,7 +667,7 @@ Mapstraction.prototype.setOption = function(sOptName, vVal){
 * @param {boolean} on
 */
 Mapstraction.prototype.scrollWheelZoom = function(on) {
-    this.setOption('enableScrollWheelZoom', on);
+	this.setOption('enableScrollWheelZoom', on);
 };
 
 /**
@@ -675,7 +675,7 @@ Mapstraction.prototype.scrollWheelZoom = function(on) {
  * @param {boolean} on
  */
 Mapstraction.prototype.dragging = function(on) {
-    this.setOption('enableDragging', on);
+	this.setOption('enableDragging', on);
 };
 
 /**
@@ -684,23 +684,23 @@ Mapstraction.prototype.dragging = function(on) {
 * @function
 */
 Mapstraction.prototype.applyOptions = function () {
-    if(this.options.enableScrollWheelZoom) {
-        this.enableScrollWheelZoom();
-    } else {
-        this.disableScrollWheelZoom();
-    }
+	if(this.options.enableScrollWheelZoom) {
+		this.enableScrollWheelZoom();
+	} else {
+		this.disableScrollWheelZoom();
+	}
 
-    if(this.options.enableDragging) {
-        this.enableDragging();
-    } else {
-        this.disableDragging();
-    }
+	if(this.options.enableDragging) {
+		this.enableDragging();
+	} else {
+		this.disableDragging();
+	}
 
-    if (this.options.enableDoubleClickZoom) {
-        this.enableDoubleClickZoom();
-    } else {
-        this.disableDoubleClickZoom();
-    }
+	if (this.options.enableDoubleClickZoom) {
+		this.enableDoubleClickZoom();
+	} else {
+		this.disableDoubleClickZoom();
+	}
 };
 
 
@@ -711,27 +711,27 @@ Mapstraction.prototype.applyOptions = function () {
  * @param {Control} the control to remove from the map
  */
 Mapstraction.prototype.removeControl = function (control) {
-    if (control !== null) {
-        this.invoker.go('removeControl', arguments);
-        //Because of Pass by Copy we need to update the underlying reference, not the parameter
-        switch (control) {
-            case this.controls.zoom:
-                this.controls.zoom = null;
-                break;
-            case this.controls.scale:
-                this.controls.scale = null;
-                break;
-            case this.controls.pan:
-                this.controls.pan = null;
-                break;
-            case this.controls.overview:
-                this.controls.overview = null;
-                break;
-            case this.controls.map_type:
-                this.controls.map_type = null;
-                break;
-        }
-    }
+	if (control !== null) {
+		this.invoker.go('removeControl', arguments);
+		//Because of Pass by Copy we need to update the underlying reference, not the parameter
+		switch (control) {
+			case this.controls.zoom:
+				this.controls.zoom = null;
+				break;
+			case this.controls.scale:
+				this.controls.scale = null;
+				break;
+			case this.controls.pan:
+				this.controls.pan = null;
+				break;
+			case this.controls.overview:
+				this.controls.overview = null;
+				break;
+			case this.controls.map_type:
+				this.controls.map_type = null;
+				break;
+		}
+	}
 };
 
 /**
@@ -906,60 +906,60 @@ Mapstraction.prototype.callEventListeners = function(sEventType, oEventArgs) {
 Mapstraction.prototype.addControls = function( args ) {
 	this.addControlsArgs = args;
 	
-    if ('overview' in args && args.overview) {
-        if (typeof args.overview !== 'number') {
-            args.overview = 5; //default
-        }
-        this.addOverviewControls(args.overview);
-    } else {
-        this.removeOverviewControls();
-    }
+	if ('overview' in args && args.overview) {
+		if (typeof args.overview !== 'number') {
+			args.overview = 5; //default
+		}
+		this.addOverviewControls(args.overview);
+	} else {
+		this.removeOverviewControls();
+	}
 
-    if ('pan' in args && args.pan) {
-        this.addPanControls();
-    } else {
-        this.removePanControls();
-    }
+	if ('pan' in args && args.pan) {
+		this.addPanControls();
+	} else {
+		this.removePanControls();
+	}
 
-    if ('zoom' in args  && args.zoom ) { 
-        if (args.zoom  && args.zoom == 'large') {
-            this.addLargeControls();
-        } else
-        {
-            this.addSmallControls();
-        }
-    }
-    else {
-        this.removeSmallControls();
-        this.removeLargeControls();
-    }
+	if ('zoom' in args  && args.zoom ) { 
+		if (args.zoom  && args.zoom == 'large') {
+			this.addLargeControls();
+		} else
+		{
+			this.addSmallControls();
+		}
+	}
+	else {
+		this.removeSmallControls();
+		this.removeLargeControls();
+	}
 
-    if ('scale' in args && args.scale) {
-        this.addScaleControls();
-    }
-    else {
-        this.removeScaleControls();
-    }
+	if ('scale' in args && args.scale) {
+		this.addScaleControls();
+	}
+	else {
+		this.removeScaleControls();
+	}
 
-    if ('map_type' in args && args.map_type) {
-        this.addMapTypeControls();
-    }
-    else {
-        this.removeMapTypeControls();
-    }
+	if ('map_type' in args && args.map_type) {
+		this.addMapTypeControls();
+	}
+	else {
+		this.removeMapTypeControls();
+	}
 };
 
 /**
 	* Adds a map overview control to the map using the current base layer with a default zoom offset of 5
 	* @name mxn.Mapstraction#addOverviewControls
 	* @function
-    * @param {Number} to specify different zoomOffset for example 2, defaults to 5
+	* @param {Number} to specify different zoomOffset for example 2, defaults to 5
 	*/
 Mapstraction.prototype.addOverviewControls = function (zoomOffset) {
-    if (typeof zoomOffset !== 'number') {
-        zoomOffset = 5; //default
-    }
-    this.invoker.go('addOverviewControls', [zoomOffset]);
+	if (typeof zoomOffset !== 'number') {
+		zoomOffset = 5; //default
+	}
+	this.invoker.go('addOverviewControls', [zoomOffset]);
 };
 
 /**

@@ -64,11 +64,11 @@ Mapstraction: {
 
 	addControls: function(args) {
 		/* args = { 
-		 *     pan:      true,
-		 *     zoom:     'large' || 'small',
-		 *     overview: true,
-		 *     scale:    true,
-		 *     map_type: true,
+		 *	 pan:	  true,
+		 *	 zoom:	 'large' || 'small',
+		 *	 overview: true,
+		 *	 scale:	true,
+		 *	 map_type: true,
 		 * }
 		 */
 		

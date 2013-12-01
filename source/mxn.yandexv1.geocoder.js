@@ -29,7 +29,7 @@ Geocoder: {
 			
 			address = [];
 			address.address = parts.join(', ');
-	     }
+		 }
 
 		if (!address.address) {
 			me.error_callback('Empty address passed to geocoder.');

@@ -146,7 +146,7 @@ mxn.register('esriv3', {
 						});
 
 					basemapGallery.on("load", function() {
-						dojo.forEach(basemapGallery.basemaps, function(basemap) {            
+						dojo.forEach(basemapGallery.basemaps, function(basemap) {			
 							//Add a menu item for each basemap, when the menu items are selected
 							switch(basemap.title) {
 								case 'Streets':
@@ -292,7 +292,7 @@ mxn.register('esriv3', {
 			if (! basemapGallery){
 				return;
 			}			
-			dojo.forEach(basemapGallery.basemaps, function(basemap) {            
+			dojo.forEach(basemapGallery.basemaps, function(basemap) {			
 				switch(basemap.title) {
 					case 'Streets':
 						if (type === mxn.Mapstraction.ROAD) {

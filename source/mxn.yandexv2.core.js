@@ -151,32 +151,32 @@ Mapstraction: {
 	},
 	
 	getVersion: function() {
-        //TODO: Work out how to get the real version //seems to be 2.0.33 at the moment
-	    return '2.0';
+		//TODO: Work out how to get the real version //seems to be 2.0.33 at the moment
+		return '2.0';
 	},
 
 	enableScrollWheelZoom: function () {
-	    this.maps[this.api].behaviors.enable('scrollZoom');
+		this.maps[this.api].behaviors.enable('scrollZoom');
 	},
 
 	disableScrollWheelZoom: function () {
-	    this.maps[this.api].behaviors.disable('scrollZoom');
+		this.maps[this.api].behaviors.disable('scrollZoom');
 	},
 
 	enableDragging: function () {
-	    this.maps[this.api].behaviors.enable('drag');
+		this.maps[this.api].behaviors.enable('drag');
 	},
 
 	disableDragging: function () {
-	    this.maps[this.api].behaviors.disable('drag');
+		this.maps[this.api].behaviors.disable('drag');
 	},
 
 	enableDoubleClickZoom: function () {
-	    this.maps[this.api].behaviors.enable('dblClickZoom');
+		this.maps[this.api].behaviors.enable('dblClickZoom');
 	},
 
 	disableDoubleClickZoom: function () {
-	    this.maps[this.api].behaviors.disable('dblClickZoom');
+		this.maps[this.api].behaviors.disable('dblClickZoom');
 	},
 
 	resizeTo: function(width, height){
@@ -186,68 +186,68 @@ Mapstraction: {
 	},
 
 	addControl: function (control) {
-	    var map = this.maps[this.api];
-	    if (control !== null && typeof (control) !== "undefined") {
-	        map.controls.add(control);
-	    }
-	    return control;
+		var map = this.maps[this.api];
+		if (control !== null && typeof (control) !== "undefined") {
+			map.controls.add(control);
+		}
+		return control;
 	},
 
 	removeControl: function (control) {
-	    var map = this.maps[this.api];
-	    if (control !== null && typeof (control) !== "undefined") {
-	        map.controls.remove(control);
-	    }
+		var map = this.maps[this.api];
+		if (control !== null && typeof (control) !== "undefined") {
+			map.controls.remove(control);
+		}
 	},
 
 	addSmallControls: function () {
-	    this.controls.zoom = this.addControl(new ymaps.control.SmallZoomControl());
+		this.controls.zoom = this.addControl(new ymaps.control.SmallZoomControl());
 	},
 
 	removeSmallControls: function () {
-	    this.removeControl(this.controls.zoom);
+		this.removeControl(this.controls.zoom);
 	},
 
 	addLargeControls: function () {
-	    this.controls.zoom = this.addControl(new ymaps.control.ZoomControl());
+		this.controls.zoom = this.addControl(new ymaps.control.ZoomControl());
 	},
 
 	removeLargeControls: function () {
-	    this.removeControl(this.controls.zoom);
+		this.removeControl(this.controls.zoom);
 	},
 
 	addMapTypeControls: function() {
-	    this.controls.map_type = this.addControl(new ymaps.control.TypeSelector());
+		this.controls.map_type = this.addControl(new ymaps.control.TypeSelector());
 	},
 
 	removeMapTypeControls: function () {
-	    this.removeControl(this.controls.map_type);
+		this.removeControl(this.controls.map_type);
 	},
 
 	addScaleControls: function () {
-	    this.controls.scale = this.addControl(new ymaps.control.ScaleLine());
+		this.controls.scale = this.addControl(new ymaps.control.ScaleLine());
 	},
 
 	removeScaleControls: function () {
-	    this.removeControl(this.controls.scale);
+		this.removeControl(this.controls.scale);
 	},
 
 	addPanControls: function () {
-	    this.controls.pan = this.addControl(new ymaps.control.MapTools());
+		this.controls.pan = this.addControl(new ymaps.control.MapTools());
 	},
 
 	removePanControls: function () {
-	    this.removeControl(this.controls.pan);
+		this.removeControl(this.controls.pan);
 	},
 
 	addOverviewControls: function (zoomOffset) {
-	    this.controls.overview = this.addControl(new ymaps.control.MiniMap({
-	        type: 'yandex#map'
-	    }));
+		this.controls.overview = this.addControl(new ymaps.control.MiniMap({
+			type: 'yandex#map'
+		}));
 	},
 
 	removeOverviewControls: function () {
-	    this.removeControl(this.controls.overview);
+		this.removeControl(this.controls.overview);
 	},
 
 	setCenterAndZoom: function(point, zoom) {
