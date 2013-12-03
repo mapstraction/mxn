@@ -286,10 +286,6 @@ Mapstraction: {
 		}
 	},
 	
-	removeOverviewControls: function () {
-		this.removeControl(this.controls.overview);
-	},
-
 	setCenterAndZoom: function(point, zoom) { 
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);

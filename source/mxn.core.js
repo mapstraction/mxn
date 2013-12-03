@@ -448,12 +448,6 @@ mxn.addProxyMethods(Mapstraction, [
 	 */
 	'removePanControls',
 
-	/**
-	 * Removes a map overview control from the map
-	 * @name mxn.Mapstraction#removeOverviewControls
-	 * @function
-	 */
-	'removeOverviewControls',
 	
 	/**
 	 * Adds a GeoRSS or KML overlay to the map
@@ -732,6 +726,17 @@ Mapstraction.prototype.removeControl = function (control) {
 				break;
 		}
 	}
+};
+
+	/**
+	 * Removes a map overview control from the map
+	 * Optional, only needed if the provider must override the default implementation
+	 * @name mxn.Mapstraction#removeOverviewControls
+	 * @function
+	 */
+Mapstraction.prototype.removeOverviewControls = function () {
+	var me = this;
+	this.invoker.go('removeOverviewControls', [], { fallback: me.removeControl(me.controls.overview) });
 };
 
 /**

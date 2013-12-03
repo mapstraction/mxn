@@ -34,7 +34,7 @@
 	        controls: {
 	            pan: true,
 	            zoom: 'small',
-	            overview: false,
+	            overview: true,
 	            scale: true,
 	            map_type: true
 	        },
@@ -87,6 +87,8 @@
 	    }
 	    mapInit.load.addHandler(function (sEvtName, oEvtSource, oEvtArgs) {
 	        console.log('Map loaded for provider: ' + oEvtSource.api + ' zoom: ' + oEvtSource.getZoom());
+
+	        setTimeout(function () { oEvtSource.removeOverviewControls(); }, 50);
 	    });
 
 	});
