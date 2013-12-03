@@ -17,7 +17,7 @@ var init = function () {
 	}
 	this.invoker.go('init', [this.currentElement, this.api, this.properties]);
 
-	if (this.maps[this.api] === null) {
+	if (this.maps[this.api] === null || typeof(this.maps[this.api]) === "undefined") {
 		throw new Error('Initialisation error; ' + this.api + ' has not created a map object');
 	}
 
