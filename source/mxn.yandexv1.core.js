@@ -9,8 +9,37 @@ Mapstraction: {
 			throw new Error(api + ' map script not imported');
 		}
 
+		me.defaultBaseMaps = [
+			{
+				mxnType: mxn.Mapstraction.ROAD,
+				providerType: YMaps.MapType.MAP,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.SATELLITE,
+				providerType: YMaps.MapType.SATELLITE,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.HYBRID,
+				providerType: YMaps.MapType.HYBRID,
+				nativeType: true
+			},
+			{
+				mxnType: mxn.Mapstraction.PHYSICAL,
+				providerType:  YMaps.MapType.MAP,
+				nativeType: true
+			}
+		];
+		me.initBaseMaps();
+
 		var yandexMap = this.maps[api] = new YMaps.Map(element);
-		
+
+		var hasOptions = (typeof properties !== 'undefined' && properties !== null);
+		if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
+			me.addControls(properties.controls); //map hasnt inited by this time
+		}
+
 		YMaps.Events.observe(yandexMap, yandexMap.Events.Click, function(map, mouseEvent) {
 			var lat = mouseEvent.getCoordPoint().getX();
 			var lon = mouseEvent.getCoordPoint().getY();
@@ -29,32 +58,39 @@ Mapstraction: {
 			me.endPan.fire();
 		});
 
-		YMaps.Events.observe(yandexMap, yandexMap.Events.AddLayer, function(map, layer) {
-			me.load.fire();
-		});
-		
 		this.loaded[api] = true;
+		setTimeout(function () { me.load.fire(); }, 50);
 	},
 	
 	getVersion: function() {
 		return '1.1';
 	},
 	
-	applyOptions: function(){
-		var map = this.maps[this.api];
-		
-		if(this.options.enableScrollWheelZoom){
-			map.enableScrollZoom(true);
-		}
-		
-		if (this.options.enableDragging) {
-			map.enableDragging();
-		} else {
-			map.disableDragging();
-		}
+	enableScrollWheelZoom: function () {
+		this.maps[this.api].enableScrollZoom(true);
 	},
 
-	resizeTo: function(width, height){
+	disableScrollWheelZoom: function () {
+		this.maps[this.api].enableScrollZoom(false);
+	},
+
+	enableDragging: function () {
+		this.maps[this.api].enableDragging();
+	},
+
+	disableDragging: function () {
+		this.maps[this.api].disableDragging();
+	},
+
+	enableDoubleClickZoom: function () {
+		//TODO this.maps[this.api].enableDoubleClickZoom();
+	},
+
+	disableDoubleClickZoom: function () {
+		//TODO this.maps[this.api].disableDoubleClickZoom();
+	},
+
+	resizeTo: function (width, height) {
 		this.currentElement.style.width = width;
 		this.currentElement.style.height = height;
 		// YMaps do not has something like checkResize() notifer;
@@ -62,120 +98,67 @@ Mapstraction: {
 		this.maps[this.api].redraw();
 	},
 
-	addControls: function(args) {
-		/* args = { 
-		 *	 pan:	  true,
-		 *	 zoom:	 'large' || 'small',
-		 *	 overview: true,
-		 *	 scale:	true,
-		 *	 map_type: true,
-		 * }
-		 */
-		
+	addControl: function (control) {
 		var map = this.maps[this.api];
-		
-		if ('pan' in args && args.pan) {
-			if (this.controls.pan !== null) {
-				this.controls.pan = new YMaps.ToolBar();
-				map.addControl(this.controls.pan);
-			}
+		if (control !== null && typeof (control) !== "undefined") {
+			map.addControl(control);
 		}
-		
-		else {
-			if (this.controls.pan !== null) {
-				map.removeControl(this.controls.pan);
-				this.controls.pan = null;
-			}
-		}
+		return control;
+	},
 
-		if ('zoom' in args) {
-			if (args.zoom === true || args.zoom == 'small') {
-				this.addSmallControls();
-			}
-
-			else if (args.zoom == 'large') {
-				this.addLargeControls();
-			}
-		}		
-		else {
-			if (this.controls.zoom !== null) {
-				map.removeControl(this.controls.zoom);
-				this.controls.zoom = null;
-			}
-		}
-		
-		if ('overview' in args) {
-			if (this.controls.overview === null) {
-				if (typeof(args.overview) != 'number') {
-					args.overview = 5;
-				}
-				this.controls.overview = new YMaps.MiniMap(args.overview);
-				map.addControl(this.controls.overview);
-			}
-		}
-		
-		else {
-			if (this.controls.overview !== null) {
-				map.removeControl(this.controls.overview);
-				this.controls.overview = null;
-			}
-		}
-		
-		if ('scale' in args && args.scale) {
-			if (this.controls.scale === null) {
-				this.controls.scale = new YMaps.ScaleLine();
-				map.addControl(this.controls.scale);
-			}
-		}
-		
-		else {
-			if (this.controls.scale !== null) {
-				map.removeControl(this.controls.scale);
-				this.controls.scale = null;
-			}
-		}
-		
-		if ('map_type' in args && args.map_type) {
-			this.addMapTypeControls();
-		}
-		
-		else {
-			if (this.controls.map_type !== null) {
-				map.removeControl(this.controls.map_type);
-				this.controls.map_type = null;
-			}
+	removeControl: function (control) {
+		var map = this.maps[this.api];
+		if (control !== null && typeof (control) !== "undefined") {
+			map.removeControl(control);
 		}
 	},
 
 	addSmallControls: function() {
-		var map = this.maps[this.api];
-		
-		if (this.controls.zoom !== null) {
-			map.removeControl(this.controls.zoom);
-		}
-		
-		this.controls.zoom = new YMaps.SmallZoom();
-		map.addControl(this.controls.zoom);
+		this.controls.zoom = this.addControls(new YMaps.SmallZoom());
+	},
+
+	removeSmallControls: function () {
+		this.removeControl(this.controls.zoom);
 	},
 
 	addLargeControls: function() {
-		var map = this.maps[this.api];
-		
-		if (this.controls.zoom !== null) {
-			map.removeControl(this.controls.zoom);
-		}
-		
-		this.controls.zoom = new YMaps.Zoom();
-		map.addControl(this.controls.zoom);
+		this.controls.zoom = this.addControls(new YMaps.Zoom());
 	},
 
-	addMapTypeControls: function() {
-		var map = this.maps[this.api];
-		
-		if (this.controls.map_type === null) {
-			this.controls.map_type = new YMaps.TypeControl();
-			map.addControl(this.controls.map_type);
-		}
+	removeLargeControls: function () {
+		this.removeControl(this.controls.zoom);
+	},
+
+	addMapTypeControls: function () {
+		this.controls.map_type = this.addControl(new YMaps.TypeControl());
+	},
+
+	removeMapTypeControls: function () {
+		this.removeControl(this.controls.map_type);
+	},
+
+	addScaleControls: function () {
+		this.controls.scale = this.addControl(new YMaps.ScaleLine());
+	},
+
+	removeScaleControls: function () {
+		this.removeControl(this.controls.scale);
+	},
+
+	addPanControls: function () {
+		this.controls.pan = this.addControl(new YMaps.ToolBar());
+	},
+
+	removePanControls: function () {
+		this.removeControl(this.controls.pan);
+	},
+
+	addOverviewControls: function (zoomOffset) {
+		this.controls.overview = this.addControl(new YMaps.MiniMap(zoomOffset));
+	},
+
+	removeOverviewControls: function () {
+		this.removeControl(this.controls.overview);
 	},
 
 	setCenterAndZoom: function(point, zoom) {
@@ -354,65 +337,19 @@ Mapstraction: {
 		});
 	},
 
-	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-		var map = this.maps[this.api];
-		var dataSource = new YMaps.TileDataSource(tile_url, true, true);
-		dataSource.getTileUrl = function (t, s) {
-			var tile_url = this._tileUrlTemplate.replace(/\{X\}/gi,t.x).replace(/\{Y\}/gi,t.y).replace(/\{Z\}/gi,s); 
-			if (typeof subdomains !== 'undefined') {
-				tile_url = mxn.util.getSubdomainTileURL(tile_url, subdomains);
-			}		
-			return tile_url;
-		};
-		var newLayer = new YMaps.Layer(dataSource);
-		newLayer._$element.css('opacity', opacity);
+	addTileMap: function (tileMap) {
+		//TODO copied from Y2
+		/* var prop_tilemap = tileMap.toProprietary(this.api);
 
-		if (map_type) {
-			var layerID = Math.round(Math.random()*Date.now()).toString(); // silly hash function
-			YMaps.Layers.add(layerID, newLayer);
-			var newType = new YMaps.MapType([layerID],
-				attribution,
-				{ 
-					textColor: "#706f60",
-					minZoom:   min_zoom,
-					maxZoom:   max_zoom 
-				}
-			);
-			var tp;
-			for (var controlName in map.__controls) {
-				if (map.__controls[controlName] instanceof YMaps.TypeControl) {
-					tp = map.__controls[controlName];
-					break;
-				}
-			}
-			if (!tp) {
-				tp = new YMaps.TypeControl();
-				map.addControl(tp);
-			}
-			tp.addType(newType);
-		} 
-		else {
-			map.addLayer(newLayer);
-			map.addCopyright(attribution);
+		if (tileMap.properties.type === mxn.Mapstraction.TileType.BASE) {
+			ymaps.layer.storage.add(tileMap.properties.name, function () {
+				return prop_tilemap;
+			});
+			var mapType = new ymaps.MapType(tileMap.properties.options.label, [tileMap.properties.name]);
+			ymaps.mapType.storage.add(tileMap.properties.name, mapType);
 		}
-		this.tileLayers.push( [tile_url, newLayer, true] );
-		return newLayer;
-	},
 
-	toggleTileLayer: function(tile_url) {
-		var map = this.maps[this.api];
-		for (var f=0; f<this.tileLayers.length; f++) {
-			if(this.tileLayers[f][0] == tile_url) {
-				if(this.tileLayers[f][2]) {
-					this.maps[this.api].removeLayer(this.tileLayers[f][1]);
-					this.tileLayers[f][2] = false;
-				}
-				else {
-					this.maps[this.api].addLayer(this.tileLayers[f][1]);
-					this.tileLayers[f][2] = true;
-				}
-			}
-		}
+		return prop_tilemap; */
 	},
 
 	getPixelRatio: function() {
@@ -585,6 +522,155 @@ Polyline: {
 
 	show: function() {
 		this.proprietary_polyline._container._$container.removeClass("YMaps-display-none");
+	}
+},
+/*
+addTileLayer: function (tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
+	var map = this.maps[this.api];
+
+	if (map_type) {
+		var layerID = Math.round(Math.random() * Date.now()).toString(); // silly hash function
+		YMaps.Layers.add(layerID, newLayer);
+		var newType = new YMaps.MapType([layerID],
+			attribution,
+			{
+				textColor: "#706f60",
+				minZoom: min_zoom,
+				maxZoom: max_zoom
+			}
+		);
+		var tp;
+		for (var controlName in map.__controls) {
+			if (map.__controls[controlName] instanceof YMaps.TypeControl) {
+				tp = map.__controls[controlName];
+				break;
+			}
+		}
+		if (!tp) {
+			tp = new YMaps.TypeControl();
+			map.addControl(tp);
+		}
+		tp.addType(newType);
+	}
+	else {
+		map.addLayer(newLayer);
+		map.addCopyright(attribution);
+	}
+	this.tileLayers.push([tile_url, newLayer, true]);
+	return newLayer;
+},
+*/
+
+TileMap: {
+	addToMapTypeControl: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling addToMapTypeControl()');
+		}
+
+		if (this.properties.type === mxn.Mapstraction.TileType.BASE) {
+			var layerID = Math.round(Math.random() * Date.now()).toString(); // silly hash function
+			YMaps.Layers.add(layerID, this.prop_tilemap);
+			var newType = new YMaps.MapType([layerID],
+				self.properties.options.attribution,
+				{
+					textColor: "#706f60",
+					minZoom: min_zoom,
+					maxZoom: max_zoom
+				}
+			);
+
+			this.mxn.controls.map_type.addType(newType);// this.properties.name);
+		}		
+	},
+	
+	hide: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling hide()');
+		}
+
+		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			var tileCache = this.mxn.overlayMaps;
+			
+			if (tileCache[this.index].visible) {
+				this.map.layers.remove(this.prop_tilemap);
+				tileCache[this.index].visible = false;
+
+				this.tileMapHidden.fire({
+					'tileMap': this
+				});
+			}
+		}
+	},
+	
+	removeFromMapTypeControl: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling removeFromMapTypeControl()');
+		}
+
+		if (this.properties.type === mxn.Mapstraction.TileType.BASE) {
+			this.mxn.controls.map_type.removeType(this.properties.name);
+		}		
+	},
+	
+	show: function() {
+		if (this.prop_tilemap === null) {
+			throw new Error(this.api + ': A TileMap must be added to the map before calling show()');
+		}
+		
+		if (this.properties.type === mxn.Mapstraction.TileType.OVERLAY) {
+			var tileCache = this.mxn.overlayMaps;
+
+			if (!tileCache[this.index].visible) {
+				this.map.layers.add(this.prop_tilemap);
+				tileCache[this.index].visible = true;
+			
+				this.tileMapShown.fire({
+					'tileMap': this
+				});
+			}
+		}
+	},
+	
+	toProprietary: function() {
+		var self = this;
+		var url = mxn.util.sanitizeTileURL(this.properties.url);
+
+		var dataSource = new YMaps.TileDataSource(url, true, true);
+		dataSource.getTileUrl = function (t, s) {
+			var tile_url = this._tileUrlTemplate.replace(/\{X\}/gi, t.x).replace(/\{Y\}/gi, t.y).replace(/\{Z\}/gi, s);
+			if (typeof subdomains !== 'undefined') {
+				tile_url = mxn.util.getSubdomainTileURL(tile_url, subdomains);
+			}
+			return tile_url;
+		};
+		var prop_tilemap = new YMaps.Layer(dataSource);
+		prop_tilemap._$element.css('opacity', self.properties.options.opacity);
+
+		
+		
+		// ymaps.Layer inherits from ymaps.ILayer, which defines three optional methods
+		// that we can override ...
+		// getBrightness() - the opacity of the layer
+		// getCopyrights() - the attribution of the layer
+		// getZoomRange() - the min/max zoom levels of the layer
+		
+		prop_tilemap.getBrightness = function() {
+			return self.properties.options.opacity;
+		};
+		
+		prop_tilemap.getCopyrights = function(coords, zoom) {
+			var p = new ymaps.util.Promise();
+			p.resolve(self.properties.options.attribution);
+			return p;
+		};
+		
+		prop_tilemap.getZoomRange = function(point) {
+			var p = new ymaps.util.Promise();
+			p.resolve([self.properties.options.minZoom, self.properties.options.maxZoom]);
+			return p;
+		};
+		
+		return prop_tilemap;
 	}
 }
 

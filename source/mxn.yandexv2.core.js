@@ -39,91 +39,37 @@ Mapstraction: {
 			var state = {
 				type: 'yandex#map',
 				center: [51.50848, -0.12532],
-				zoom: 8
+				zoom: 8,
+				behaviors: []
 			};
 
-			if (typeof properties !== 'undefined' && properties !== null) {
+			var hasOptions = (typeof properties !== 'undefined' && properties !== null);
+			if (hasOptions) {
 				if (properties.hasOwnProperty('controls')) {
-					var controls = properties.controls;
-
-					if ('pan' in controls && controls.pan) {
-						self.controls.pan = new ymaps.control.MapTools();
+					if (properties.hasOwnProperty('center') && null !== properties.center) {
+						state.center = properties.center.toProprietary(self.api);
 					}
 
-					if ('zoom' in controls) {
-						if (controls.zoom === 'small') {
-							self.controls.zoom = new ymaps.control.SmallZoomControl();
-						}
-
-						else if (controls.zoom === 'large') {
-							self.controls.zoom = new ymaps.control.ZoomControl();
-						}
+					if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
+						state.zoom = properties.zoom;
 					}
 
-					if ('overview' in controls && controls.overview) {
-						self.controls.overview = new ymaps.control.MiniMap({
-							type: 'yandex#map'
-						});
-					}
-
-					if ('scale' in controls && controls.scale) {
-						self.controls.scale = new ymaps.control.ScaleLine();
-					}
-
-					if ('map_type' in controls && controls.map_type) {
-						self.controls.map_type = new ymaps.control.TypeSelector();
-					}
-				}
-
-				if (properties.hasOwnProperty('center') && null !== properties.center) {
-					var point;
-
-					if (Object.prototype.toString.call(properties.center) === '[object Array]') {
-						point = new mxn.LatLonPoint(properties.center[0], properties.center[1]);
-					}
-					else {
-						point = properties.center;
-					}
-					state.center = point.toProprietary(self.api);
-				}
-
-				if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
-					state.zoom = properties.zoom;
-				}
-
-				if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
-					for (i=0; i<self.defaultBaseMaps.length; i++) {
-						if (self.defaultBaseMaps[i].mxnType === properties.map_type) {
-							state.type = self.defaultBaseMaps[i].providerType;
-							break;
+					if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
+						for (i = 0; i < self.defaultBaseMaps.length; i++) {
+							if (self.defaultBaseMaps[i].mxnType === properties.map_type) {
+								state.type = self.defaultBaseMaps[i].providerType;
+								break;
+							}
 						}
 					}
-				}
-
-				var behaviors = [];
-				if (properties.hasOwnProperty('dragging')) {
-					behaviors.push('drag');
-				}
-
-				if (properties.hasOwnProperty('scroll_wheel')) {
-					behaviors.push('scrollZoom');
-				}
-
-				if (properties.hasOwnProperty('double_click')) {
-					behaviors.push('dblClickZoom');
-				}
-				if (behaviors.length > 0) {
-					state.behaviors = behaviors;
 				}
 			}
 
 			var map = new ymaps.Map(element, state);
 			self.maps[api] = map;
 			
-			for (var control in self.controls) {
-				if (self.controls[control] !== null) {
-					map.controls.add(self.controls[control]);
-				}
+			if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
+				self.addControls(properties.controls);
 			}
 
 			map.events.add('click', function(e) {
@@ -681,8 +627,7 @@ TileMap: {
 		
 		// ymaps.Layer inherits from ymaps.ILayer, which defines three optional methods
 		// that we can override ...
-		// getBrightness() - the opacity of the layer; at least I think that's what it does -
-		// you never can tell with Google Translate going from Russian to English!
+		// getBrightness() - the opacity of the layer
 		// getCopyrights() - the attribution of the layer
 		// getZoomRange() - the min/max zoom levels of the layer
 		
