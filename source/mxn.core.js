@@ -1755,7 +1755,6 @@ mxn.addProxyMethods(MapType, [
 var LatLonPoint = mxn.LatLonPoint = function(lat, lon) {	
 	this.lat = Number(lat); // force to be numeric
 	this.lon = Number(lon);
-	this.lng = this.lon; // lets be lon/lng agnostic
 	
 	this.invoker = new mxn.Invoker(this, 'LatLonPoint');		
 };

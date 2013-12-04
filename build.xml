@@ -32,6 +32,11 @@
 			</fileset>
 		</copy>
 		
+		<!-- update version and build properties in mxn.js -->
+		<echo>--- UPDATE VERSION AND BUILD NUMBERS ---</echo>
+		<replace file="${build.dir}/mxn.js" token="@VERSION@" value="${build.major}.${build.minor}"/>
+		<replace file="${build.dir}/mxn.js" token="@BUILD@" value="${build.ver}"/>
+		
 		<!-- lint our sources -->
 		<echo>--- LINT ---</echo>
 		

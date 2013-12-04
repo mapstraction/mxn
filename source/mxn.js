@@ -350,23 +350,6 @@ mxn.util = {
 	},
 
 	/**
-	 * @private
-	 * @param {Object} point
-	 * @param {Object} level
-	 */
-	convertLatLonXY_Yahoo: function(point, level) { //Mercator
-		var size = 1 << (26 - level);
-		var pixel_per_degree = size / 360.0;
-		var pixel_per_radian = size / (2 * Math.PI);
-		var origin = new YCoordPoint(size / 2 , size / 2);
-		var answer = new YCoordPoint();
-		answer.x = Math.floor(origin.x + point.lon * pixel_per_degree);
-		var sin = Math.sin(point.lat * Math.PI / 180.0);
-		answer.y = Math.floor(origin.y + 0.5 * Math.log((1 + sin) / (1 - sin)) * -pixel_per_radian);
-		return answer;
-	},
-
-	/**
 	 * Load a stylesheet from a remote file.
 	 * @name mxn.util.loadStyle
 	 * @param {String} href URL to the CSS file
@@ -633,6 +616,9 @@ mxn.util.Color.prototype.getHexColor = function() {
 };
 
 })();
+
+mxn.Version = '@VERSION@';
+mxn.Build = '@BUILD@';
 
 mxn.Providers = {
 	'cloudmade': {

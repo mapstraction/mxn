@@ -605,10 +605,8 @@ mxn.register('openlayersv2', {
 			var lat = (olPoint.lat / 20037508.34) * 180;
 			lat = 180/Math.PI * (2 * Math.atan(Math.exp(lat * Math.PI / 180)) - Math.PI / 2);
 			this.lon = lon;
-			this.lng = this.lon;
 			this.lat = lat;
 		}
-
 	},
 
 	Marker: {
