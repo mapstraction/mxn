@@ -1,5 +1,5 @@
 (function(){
-	var google_key = 'AIzaSyDW21lnrSsBk4OyHUDmBQ7su9di3yMaO7I';
+	var googlev3_key = 'AIzaSyDW21lnrSsBk4OyHUDmBQ7su9di3yMaO7I';
 	var nokia_app_id = 'FbgYuugcrj8Taq6JjmUK';
 	var nokia_auth_token = 'Yy2i2n98kaWj69qysOmcYg';
 	var microsoftv7_key = 'AlneHdcKOFDot4FjwyuLH8ZSUIz5rv_X22vULKa7H5ia0JnsxiykdO8y-dgLQMU6';

@@ -9,6 +9,14 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=7; IE=EmulateIE9" />
 		
 	<script type="text/javascript">
+    var googlev3_key = 'AIzaSyDW21lnrSsBk4OyHUDmBQ7su9di3yMaO7I';
+    var nokia_app_id = 'FbgYuugcrj8Taq6JjmUK';
+    var nokia_auth_token = 'Yy2i2n98kaWj69qysOmcYg';
+    var microsoftv7_key = 'AlneHdcKOFDot4FjwyuLH8ZSUIz5rv_X22vULKa7H5ia0JnsxiykdO8y-dgLQMU6';
+    var openspace_key = 'CEEFBE51588492CBE0405F0ACA6010B1';
+    var mapquest_key = 'Fmjtd%7Cluub29uy25%2Crs%3Do5-96zl9y';
+    var yandexv1_key = 'AMVH-VABAAAAEdVkcQIAOS-fmBYJfLFV-YDg7ZCPjwVQycUAAAAAAAAAAADwTFcvgPirz7OV75IX_Gsopsw7jA==';
+	
 	var provider;
 	var autoRun = 'false';
 
@@ -105,6 +113,30 @@
 		var providerElm = document.getElementById('provider');
 		
 		providerElm.innerHTML = provider;
+
+	    //TODO: move this to utils?
+		var supportedProviders = [];
+		for (var prov in mxn.Providers) {
+		    if (mxn.Providers[prov].state === "active" && mxn.Providers[prov].type === "master") {
+		        supportedProviders.push(prov.valueOf());
+		    }
+		}
+
+		var list = document.getElementById("providers");
+		var auto = document.createElement("li");
+		auto.innerHTML = '<a href="core.html?provider=' + supportedProviders[0] + '&auto=true">Auto-run all providers</a>';
+		list.appendChild(auto);
+
+		for (var prov in supportedProviders) {
+		    //p.provder-selection
+		    var newli = document.createElement("li");
+		    var newlink = document.createElement("a");
+            var newname = document.createTextNode(supportedProviders[prov]);
+            newli.appendChild(newlink);
+            newlink.appendChild(newname);
+            newlink.href = "core.html?provider=" + supportedProviders[prov];
+		    list.appendChild(newli);
+		}
 		
 		m = new mxn.Mapstraction('map', provider);
 
@@ -569,13 +601,6 @@
 				action: function(){
 				    if (autoRun === 'true') {
 
-				        var supportedProviders = [];
-				        for (var p in mxn.Providers) {
-				            if (p.type == 'master' && p.state == 'active') {
-				                supportedProviders.push(p);
-				            }
-				        }
-
 						idx = arrayIndex(supportedProviders, provider);
 						if (++idx < supportedProviders.length) {
 							var nextProvider = supportedProviders[idx];
@@ -602,18 +627,7 @@
 		<div>
 			<h3>Providers</h3>
 			<ul id="providers" >
-				<li><a href="core.html?provider=esriv3">ESRI v3</a></li>
-				<li><a href="core.html?provider=google">Google v3</a></li>
-				<li><a href="core.html?provider=here">HERE v2</a></li>
-				<li><a href="core.html?provider=leafletv0">Leaflet</a></li>
-				<li><a href="core.html?provider=mapquestv7">MapQuest v7</a></li>
-				<li><a href="core.html?provider=microsoftv7">Microsoft v7</a></li>
-				<li><a href="core.html?provider=openlayersv2">OpenLayers v2</a></li>
-				<li><a href="core.html?provider=openmapquestv7">Open MapQuest v7</a></li>
-				<li><a href="core.html?provider=openspacev4">OS OpenSpace v4</a></li>
-				<li><a href="core.html?provider=yandexv1">Yandex v1</a></li>
-				<li><a href="core.html?provider=yandexv2">Yandex v2</a></li>
-			</ul>
+            </ul>
 		</div>
 		<div id="box-wrapper">
 			<div class="box">
@@ -631,19 +645,6 @@
 				<div id="events"></div>
 			</div>
 		</div>
-		<p id="provider-selection">
-			<a href="core.html?provider=esriv3&auto=true">Auto-run all provider core tests</a> or run with provider: <a href="?provider=esriv3">esriv3</a>,
-			<a href="?provider=google">google</a>,
-			<a href="?provider=here">here</a>,
-			<a href="?provider=leafletv0">leafletv0</a>,
-			<a href="?provider=mapquestv7">mapquestv7</a>,
-			<a href="?provider=microsoftv7">microsoftv7</a>,
-			<a href="?provider=openlayersv2">openlayersv2</a>,
-			<a href="?provider=openmapquestv7">openmqv7</a>,
-			<a href="?provider=openspacev4">openspacev4</a>,
-			<a href="?provider=yandexv1">yandexv1</a>,
-			<a href="?provider=yandexv2">yandexv2</a>.
-		</p>
 	</div>
 </body>
 </html>
