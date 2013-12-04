@@ -496,7 +496,6 @@ LatLonPoint: {
 		this.lat = googlePoint.lat();
 		this.lon = googlePoint.lng();
 	}
-	
 },
 
 Marker: {

@@ -451,7 +451,6 @@ LatLonPoint: {
 	fromProprietary: function(nokiaCoordinate) {
 		this.lat = nokiaCoordinate.latitude;
 		this.lon = nokiaCoordinate.longitude;
-		this.lng = this.lon;
 	}
 },
 
@@ -507,7 +506,6 @@ Marker: {
 				if (bb.contains(new_coords)) {
 					self.location.lat = new_coords.latitude;
 					self.location.lon = new_coords.longitude;
-					self.location.lng = self.location.lon;
 				}
 				
 				if (prop_marker.get("restore_infobubble")) {
