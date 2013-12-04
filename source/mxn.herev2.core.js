@@ -268,10 +268,8 @@ Mapstraction: {
 	},
 
 	addOverviewControls: function (zoomOffset) {
+		//Here doesn't support specifying the zoomoffset so this is unused
 		this.controls.overview = this.addControl(new nokia.maps.map.component.Overview());
-		//TODO: Find the supporteed way to do this. API Docs sadly lacking
-		this.controls.overview.De = zoomOffset;
-
 		this.controls.overview.expand(); //Other Minimaps default to open.
 	},
 
