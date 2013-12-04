@@ -1,35 +1,14 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 	<title>Mapstraction V3 Core Tests</title>
 	<script type="text/javascript" src="mxn-harness.js"></script>
-	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-	<script src="http://api.maps.nokia.com/2.2.3/jsl.js" type="text/javascript" charset="utf-8"></script>
-	<script type="text/javascript">
-	</script>
+
 	<link rel="stylesheet" type="text/css" media="all" href="css/core.css" />
 	<meta http-equiv="X-UA-Compatible" content="IE=7; IE=EmulateIE9" />
 		
 	<script type="text/javascript">
-	//<![CDATA[
-	nokia.Settings.set ("appId", "FbgYuugcrj8Taq6JjmUK");
-	nokia.Settings.set ("authenticationToken", "Yy2i2n98kaWj69qysOmcYg");
-
-	var supportedProviders = [
-		'esriv3',
-		'herev2',
-		'googlev3',
-		'leafletv0',
-		'mapquestv7',
-		'microsoftv7',
-		'openlayersv2',
-		'openmapquestv2',
-		'openspacev4',
-		'yandexv1',
-		'yandexv2'
-	];
-	
 	var provider;
 	var autoRun = 'false';
 
@@ -42,7 +21,7 @@
 		}
 		
 		else {
-			provider = 'googlev3';
+			provider = 'google';
 		}
 
 		if (autorunMatch) {
@@ -51,81 +30,21 @@
 				autoRun = 'false';
 			}
 		}
-		
+	
 		switch (provider) {
 			case 'nokia':
-				new_provider = 'googlev3';
+				new_provider = 'google';
 				break;
 			default:
 				new_provider = 'nokia';
 				break;
 		}
 
-		switch ( provider ) {
-			case 'esriv3':
-				document.write ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/esri/css/esri.css" media="all" rel="stylesheet" type="text/css" \/>');
-				document.write ('<link href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.5/js/dojo/dijit/themes/claro/claro.css" media="all" rel="stylesheet" type="text/css" \/>');
-				document.write ('<script src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.5" type="text/javascript"><\/script>');
-				break;
-
-			case 'herev2':
-				// already loaded
-				break;
-
-			case 'googlev3':
-				// already loaded
-				break;
-
-			case 'leafletv0':
-				document.write('<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" \/>');
-				document.write('<!--[if lte IE 8]>');
-			    document.write('<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" \/>');
-			 	document.write('<![endif]-->');
-				document.write('<script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"><\/script>');
-				break;
-
-			case 'mapquestv7':
-				document.write('<script src="http://www.mapquestapi.com/sdk/js/v7.0.s/mqa.toolkit.js?key=Fmjtd%7Cluub29uy25%2Crs%3Do5-96zl9y" type="text/javascript"><\/script>');
-				break;
-				
-			case 'microsoftv7':
-				document.write('<script charset="UTF-8" type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"><\/script>');
-				document.write('<script type="text/javascript">');
-				document.write('var microsoftv7_key = "AlneHdcKOFDot4FjwyuLH8ZSUIz5rv_X22vULKa7H5ia0JnsxiykdO8y-dgLQMU6";');
-				document.write('<\/script>');
-				break;
-
-
-			case 'openlayersv2':
-				document.write( '<script type="text/javascript" src="http://dev.openlayers.org/releases/OpenLayers-2.9.1/OpenLayers.js"><\/script>' );
-				break;
-				
-			case 'openmapquestv7':
-				document.write('<script src="http://open.mapquestapi.com/sdk/js/v7.0.s/mqa.toolkit.js"><\/script>');
-				break;
-				
-			case 'openspacev4':
-				document.write('<script type="text/javascript" src="http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key=CEEFBE51588492CBE0405F0ACA6010B1"><\/script>');
-				break;
-
-			case 'yandexv1':
-				document.write('<script src="http://api-maps.yandex.ru/1.1/index.xml?key=AMVH-VABAAAAEdVkcQIAOS-fmBYJfLFV-YDg7ZCPjwVQycUAAAAAAAAAAADwTFcvgPirz7OV75IX_Gsopsw7jA==" type="text/javascript"><\/script >');
-				break;
-
-			case 'yandexv2':
-				document.write('<script src="http://api-maps.yandex.ru/2.0/?load=package.full&lang=en-US" type="text/javascript" charset="utf-8"><\/script>');
-				break;
-				
-			default:
-				// already loaded
-				break;
-		}
-
-		var providers = 'googlev3, herev2';
-		if (provider != 'googlev3' && provider != 'herev2') {
+		var providers = 'google,here';
+		if (provider != 'google' && provider != 'here') {
 			providers = provider + ',' + providers;
 		}
-		document.write('<script type="text/javascript" src="../source/mxn.js?(' + providers + ')"><\/script>');
+		document.write('<script type="text/javascript" src="../source/mxn.js?(' + providers + ',[autoload])"><\/script>');
 	})();
 
 	var events = {
@@ -636,11 +555,11 @@
 			{
 				desc: 'Swap API',
 				action: function(){
-					if (provider == 'googlev3') {
-						m.swap('map', 'herev2');
+					if (provider == 'google') {
+						m.swap('map', 'here');
 					}
 					else {
-						m.swap('map', 'googlev3');
+						m.swap('map', 'google');
 					}
 				}
 			},
@@ -648,7 +567,15 @@
 			{
 				desc: 'Done.',
 				action: function(){
-					if (autoRun === 'true') {
+				    if (autoRun === 'true') {
+
+				        var supportedProviders = [];
+				        for (var p in mxn.Providers) {
+				            if (p.type == 'master' && p.state == 'active') {
+				                supportedProviders.push(p);
+				            }
+				        }
+
 						idx = arrayIndex(supportedProviders, provider);
 						if (++idx < supportedProviders.length) {
 							var nextProvider = supportedProviders[idx];
@@ -676,8 +603,8 @@
 			<h3>Providers</h3>
 			<ul id="providers" >
 				<li><a href="core.html?provider=esriv3">ESRI v3</a></li>
-				<li><a href="core.html?provider=googlev3">Google v3</a></li>
-				<li><a href="core.html?provider=herev2">HERE v2</a></li>
+				<li><a href="core.html?provider=google">Google v3</a></li>
+				<li><a href="core.html?provider=here">HERE v2</a></li>
 				<li><a href="core.html?provider=leafletv0">Leaflet</a></li>
 				<li><a href="core.html?provider=mapquestv7">MapQuest v7</a></li>
 				<li><a href="core.html?provider=microsoftv7">Microsoft v7</a></li>
@@ -706,8 +633,8 @@
 		</div>
 		<p id="provider-selection">
 			<a href="core.html?provider=esriv3&auto=true">Auto-run all provider core tests</a> or run with provider: <a href="?provider=esriv3">esriv3</a>,
-			<a href="?provider=googlev3">googlev3</a>,
-			<a href="?provider=herev2">herev2</a>,
+			<a href="?provider=google">google</a>,
+			<a href="?provider=here">here</a>,
 			<a href="?provider=leafletv0">leafletv0</a>,
 			<a href="?provider=mapquestv7">mapquestv7</a>,
 			<a href="?provider=microsoftv7">microsoftv7</a>,
