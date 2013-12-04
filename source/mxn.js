@@ -617,6 +617,9 @@ mxn.util.Color.prototype.getHexColor = function() {
 
 })();
 
+mxn.Version = '@VERSION@';
+mxn.Build = '@BUILD@';
+
 mxn.Providers = {
 	'cloudmade': {
 		'type': 'master',
