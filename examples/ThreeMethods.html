@@ -27,7 +27,7 @@
 		console.log(name + ' for ' + args.tileMap.properties.name);
 	}
 
-	$(document).ready(function () {
+	function makemap() {
 	    var debug = true;
 
 	    var props = {
@@ -43,7 +43,7 @@
 	        enableScrollWheelZoom: true,
 	        enableDragging: false,
 	        enableDoubleClickZoom: true,
-            map_type: mxn.Mapstraction.ROAD
+	        map_type: mxn.Mapstraction.ROAD
 	    };
 
 	    var mapInit = new mxn.Mapstraction('mapInit', provider, props);
@@ -80,8 +80,7 @@
 	                mapFunctions.addSmallControls();
 	            }, 1000);
 	        });
-	    } else
-	    {
+	    } else {
 	        //jquery change class on Initmap to be debugmap
 
 	    }
@@ -89,7 +88,25 @@
 	        console.log('Map loaded for provider: ' + oEvtSource.api + ' zoom: ' + oEvtSource.getZoom());
 	    });
 
+	};
+
+	$(document).ready(function () {
+	    if (provider !== 'esri') {
+	        makemap();
+	    } else {
+
+	        //When the esri map is ready run the setup for the map and the controls
+	        require([
+            "esri/map",
+            "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol", "esri/layers/WebTiledLayer",
+            "esri/graphic", "esri/dijit/OverviewMap", "esri/dijit/Scalebar", "esri/dijit/BasemapGallery",
+            "dijit/form/Button", "dijit/Menu",
+            "dojo/_base/Color", "dojo/dom", "dojo/on", "dojo/dom-construct", "dojo/_base/window", "dojo/dom-style", "dojo/domReady!"
+	        ], function () { makemap(); });
+
+	    }
 	});
+
 	</script>
 	<style type="text/css">
 	.map {
