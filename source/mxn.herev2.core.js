@@ -157,13 +157,9 @@ Mapstraction: {
 		}, false);
 
 		this.controls.mouseWheel = new nokia.maps.map.component.zoom.MouseWheel();
-		this.controls.mouseWheel.enabled = true;
 		this.controls.dragging = new nokia.maps.map.component.panning.Drag();
-		this.controls.dragging.enabled = true;
 		this.controls.doubleClick = new nokia.maps.map.component.zoom.DoubleClick();
-		this.controls.doubleClick.enabled = true;
 		this.controls.doubleTap = new nokia.maps.map.component.zoom.DoubleTap();
-		this.controls.doubleTap.enabled = true;
 		
 		this.loaded[api] = true;
 	},
