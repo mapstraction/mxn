@@ -240,21 +240,6 @@ Mapstraction: {
 		
 	},
 
-	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-		var map = this.maps[this.api];
-		var me = this;
-		
-		google.earth.fetchKml(map, tile_url, function(kmlObject) {
-			if (kmlObject) {
-				map.getFeatures().appendChild(kmlObject);
-				me.tileLayers.push( [tile_url, kmlObject, true] );
-			}
-			else {
-				throw 'Invalid KML file';
-			}
-		});
-	},
-
 	getPixelRatio: function() {
 		var map = this.maps[this.api];
 
