@@ -255,23 +255,6 @@ Mapstraction: {
 		});
 	},
 
-	toggleTileLayer: function(tile_url) {
-		var map = this.maps[this.api];
-		
-		for (var f=0; f<this.tileLayers.length; f++) {
-			if(this.tileLayers[f][0] == tile_url) {
-				if(this.tileLayers[f][2]) {
-					map.getFeatures().removeChild(this.tileLayers[f][1]); 
-					this.tileLayers[f][2] = false;
-				}
-				else {
-					map.getFeatures().appendChild(this.tileLayers[f][1]); 
-					this.tileLayers[f][2] = true;
-				}
-			}
-		}
-	},
-
 	getPixelRatio: function() {
 		var map = this.maps[this.api];
 

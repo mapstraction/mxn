@@ -235,18 +235,6 @@ Mapstraction: {
 		
 	},
 
-	addTileLayer: function(tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-	},
-
-	toggleTileLayer: function(tile_url) {
-		var map = this.maps[this.api];
-		
-		// TODO: Add provider code
-	},
-
 	getPixelRatio: function() {
 		var map = this.maps[this.api];
 

@@ -524,42 +524,6 @@ Polyline: {
 		this.proprietary_polyline._container._$container.removeClass("YMaps-display-none");
 	}
 },
-/*
-addTileLayer: function (tile_url, opacity, label, attribution, min_zoom, max_zoom, map_type, subdomains) {
-	var map = this.maps[this.api];
-
-	if (map_type) {
-		var layerID = Math.round(Math.random() * Date.now()).toString(); // silly hash function
-		YMaps.Layers.add(layerID, newLayer);
-		var newType = new YMaps.MapType([layerID],
-			attribution,
-			{
-				textColor: "#706f60",
-				minZoom: min_zoom,
-				maxZoom: max_zoom
-			}
-		);
-		var tp;
-		for (var controlName in map.__controls) {
-			if (map.__controls[controlName] instanceof YMaps.TypeControl) {
-				tp = map.__controls[controlName];
-				break;
-			}
-		}
-		if (!tp) {
-			tp = new YMaps.TypeControl();
-			map.addControl(tp);
-		}
-		tp.addType(newType);
-	}
-	else {
-		map.addLayer(newLayer);
-		map.addCopyright(attribution);
-	}
-	this.tileLayers.push([tile_url, newLayer, true]);
-	return newLayer;
-},
-*/
 
 TileMap: {
 	addToMapTypeControl: function() {

@@ -258,9 +258,6 @@
 			
 			map.addTileLayer(osm_url, opacity, label, attribution, min_zoom, max_zoom, map_type, ['a', 'b', 'c']);
 		});
-		$('#osm-toggle').click(function() {
-			map.toggleTileLayer(osm_url);
-		});
 		$('#toner-add').click(function() {
 			var opacity = 1;
 			var label = "Toner";
@@ -271,9 +268,6 @@
 			
 			map.addTileLayer(toner_url, opacity, label, attribution, min_zoom, max_zoom, map_type);
 		});
-		$('#toner-toggle').click(function() {
-			map.toggleTileLayer(toner_url);
-		});
 		$('#watercolor-add').click(function() {
 			var opacity = 1;
 			var label = "Watercolor";
@@ -283,9 +277,6 @@
 			var map_type = true;
 			
 			map.addTileLayer(watercolor_url, opacity, label, attribution, min_zoom, max_zoom, map_type);
-		});
-		$('#watercolor-toggle').click(function() {
-			map.toggleTileLayer(watercolor_url);
 		});
 	}
 	</script>
@@ -319,7 +310,6 @@
 					<li>Add a <a id="add-icon-marker" href="#">marker with a custom icon</a> or <a id="remove-icon-marker" href="#">remove it</a>.</li>
 					<li>Add a <a id="add-polyline" href="#">polyline</a> or <a id="remove-polyline" href="#">remove it</a>.</li>
 					<li>Add <a id="osm-add" href="#">OSM</a>, <a id="toner-add" href="#">Toner</a>, <a id="watercolor-add" href="#">Watercolor</a> tiles.</li>
-					<li>Toggle <a id="osm-toggle" href="#">OSM</a>, <a id="toner-toggle" href="#">Toner</a>, <a id="watercolor-toggle" href="#">Watercolor</a> tiles.</li>
 				</ul>
 			</div>
 		</div>
