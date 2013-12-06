@@ -39,20 +39,20 @@
 			}
 		}
 	
-		switch (provider) {
-			case 'nokia':
+		switch (provider.substr(0, 4)) {
+		    //TODO: Should really check the here synonyms from the Providers list cheat by using the left 4 chars
+			case 'noki':
 				new_provider = 'google';
 				break;
+		    case 'here':
+		        new_provider = 'google';
+		        break;
 			default:
-				new_provider = 'nokia';
+				new_provider = 'here';
 				break;
 		}
 
-		var providers = 'google,here';
-		if (provider != 'google' && provider != 'here') {
-			providers = provider + ',' + providers;
-		}
-		document.write('<script type="text/javascript" src="../source/mxn.js?(' + providers + ',[autoload])"><\/script>');
+		document.write('<script type="text/javascript" src="../source/mxn.js?(' + provider + ',' + new_provider + ',[autoload])"><\/script>');
 	})();
 
 	var events = {
@@ -149,8 +149,9 @@
 			events.LOAD.value = true;
 		});
 
-		// So far this is only necessary for leaflet.
-		m.setCenterAndZoom(new mxn.LatLonPoint(37.4419, -122.1419), 10);
+	    // So far this is only necessary for leaflet.
+        //TODO Test leaflet 0.7 to see if we still need it.
+		//m.setCenterAndZoom(new mxn.LatLonPoint(37.4419, -122.1419), 10);
 
 		m.endPan.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			var center = oEvtSource.getCenter();
@@ -537,17 +538,8 @@
 					m.addMapTypeControls();
 				}
 			},
-			/*
 			{
-				desc: 'Add Base map type',
-				action: function() {
-					m.addTileLayer("http://tile.openstreetmap.org/{Z}/{X}/{Y}.png", 1.0, "OSM", 1, 19, true);
-					// m.setMapType("OSM");
-				}
-			},
-			*/			
-			{
-				desc: 'Change type',
+				desc: 'Change map type',
 				action: function(){
 					m.setMapType(mxn.Mapstraction.SATELLITE);
 				}
@@ -587,12 +579,7 @@
 			{
 				desc: 'Swap API',
 				action: function(){
-					if (provider == 'google') {
-						m.swap('map', 'here');
-					}
-					else {
-						m.swap('map', 'google');
-					}
+					m.swap('map', new_provider);
 				}
 			},
 			
