@@ -524,7 +524,7 @@ mxn.util = {
 	 */
 	getSubdomainTileURL: function (url, subdomains) {
 		var pos = url.search('{s}');
-		if (pos !== -1) {
+		if (pos !== -1 && subdomains !== null) {
 			var random_element = Math.floor(Math.random() * subdomains.length);
 			var domain;
 			if (typeof subdomains === 'string') {
