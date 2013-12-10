@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 /* CSS Document */
 
 html, body, #map {
@@ -21,8 +21,12 @@ html, body, #map {
 	background-color: #DDD;
 }
 
-.box div, .box ol {
+.box div {
 	overflow-y: scroll;
+	height: 430px; 
+}
+
+.box ol {
 	height: 430px; 
 }
 

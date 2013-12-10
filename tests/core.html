@@ -19,6 +19,7 @@
 	
 	var provider;
 	var autoRun = 'false';
+	var infoElm;
 
 	(function() {
 		var providerMatch = location.search.match( /provider=([^&]*)/ );
@@ -42,13 +43,11 @@
 		switch (provider.substr(0, 4)) {
 		    //TODO: Should really check the here synonyms from the Providers list cheat by using the left 4 chars
 			case 'noki':
-				new_provider = 'google';
-				break;
 		    case 'here':
-		        new_provider = 'google';
+		        new_provider = 'googlev3';
 		        break;
 			default:
-				new_provider = 'here';
+				new_provider = 'herev2';
 				break;
 		}
 
@@ -67,7 +66,19 @@
 		POLYLINE_ADDED: {name: 'polylineAdded', value: false},
 		POLYLINE_REMOVED: {name: 'polylineRemoved', value: false}
 	};
-	
+
+	function logTest(msg, test, actual) {
+	    var pass = (test === actual) | false;
+	    msg += ' Value: ' + actual;
+	    if (!pass) {
+	        infoElm.style.backgroundColor = '#FCC';
+	        msg += ' <b>Failed</b>';
+	    } else {
+	        msg += ' Passed';
+	    }
+	    logInfo(msg);
+	}
+
 	function logInfo(msg) {
 		logMessage ('info', msg);
 	}
@@ -108,7 +119,7 @@
 	var m;
 	window.onload = function() {
 		var actionElm = document.getElementById('actions');
-		var infoElm = document.getElementById('info');		
+        infoElm = document.getElementById('info');		
 		var eventsElm = document.getElementById('events');
 		var providerElm = document.getElementById('provider');
 		
@@ -124,17 +135,16 @@
 
 		var list = document.getElementById("providers");
 		var auto = document.createElement("li");
-		auto.innerHTML = '<a href="core.html?provider=' + supportedProviders[0] + '&auto=true">Auto-run all providers</a>';
+		auto.innerHTML = '<a href="' + location.pathname + '?provider=' + supportedProviders[0] + '&auto=true">Auto-run all providers</a>';
 		list.appendChild(auto);
 
 		for (var prov in supportedProviders) {
-		    //p.provder-selection
 		    var newli = document.createElement("li");
 		    var newlink = document.createElement("a");
             var newname = document.createTextNode(supportedProviders[prov]);
             newli.appendChild(newlink);
             newlink.appendChild(newname);
-            newlink.href = "core.html?provider=" + supportedProviders[prov];
+            newlink.href = location.pathname + "?provider=" + supportedProviders[prov];
 		    list.appendChild(newli);
 		}
 		
@@ -209,8 +219,8 @@
 			{
 				desc: 'Get API version',
 				action: function() {
-					var version = m.getVersion();
-					logInfo('API Version "' + version + '" for "' + provider + '" loaded');
+				    var version = m.getVersion();
+				    logInfo('API Version ' + version + ' for ' + provider + ' loaded');
 				}
 			},
 			{
@@ -229,34 +239,76 @@
 							break;
 					}
 					m.setCenterAndZoom(point, zoom);
-				} 
-			},		 
+				    //test this after 2 seconds in the next action to give it time to happen
+				}
+			},
+            {
+            	desc: 'Center map check',
+            	action: function () {
+            		var point;
+            		var zoom;
+            		switch (provider) {
+            			case 'openspacev4':
+            			    point = new mxn.LatLonPoint(52.6959, 1.6846);
+            			    zoom = 12;
+            			    break;
+            			default:
+            			    point = new mxn.LatLonPoint(37.4419, -122.1419);
+            			    zoom = 9;
+            			    break;
+            		}
+
+            		var ll = m.getCenter();
+            		logTest(this.desc + ' Latitude', point.lat.toFixed(5), ll.lat.toFixed(5));
+            		logTest(this.desc + ' Longitude', point.lon.toFixed(5), ll.lon.toFixed(5));
+            	}
+            },
 			{
 				desc: 'Pan map',
 				action: function(){
 					var point;
 					switch (provider) {
 						case 'openspacev4':
-							point = new mxn.LatLonPoint(51.4269, -0.3339);
+							point = new mxn.LatLonPoint(51.426923, -0.333978);
 							break;
 						default:
-							point = new mxn.LatLonPoint(37.3419, -122.0419);
+						    point = new mxn.LatLonPoint(37.341923, -122.041978);
 							break;
 					}
 					
-					m.setCenter(point, {pan: true});
+					m.setCenter(point, { pan: true });
+                    //test this after 2 seconds in the next action to give it time to happen
 				}
 			},
+            {
+            	desc: 'Pan map check',
+            	action: function () {
+            		var point;
+            		switch (provider) {
+            			case 'openspacev4':
+            			    point = new mxn.LatLonPoint(51.426923, -0.333978);
+            			    break;
+            			default:
+            			    point = new mxn.LatLonPoint(37.341923, -122.041978);
+            			    break;
+            		}
+
+            		var ll = m.getCenter();
+            		logTest(this.desc + ' Latitude', point.lat.toFixed(5), ll.lat.toFixed(5));
+            		logTest(this.desc + ' Longitude', point.lon.toFixed(5), ll.lon.toFixed(5));
+            	}
+            },
+
 			{
 				desc: 'Get info',
 				action: function(){
-					logInfo('Info');
-					var bb = m.getBounds();
-					logInfo('Bounds:<br/>' + Dump(bb));
-					var ll = m.getCenter();
-					logInfo('Center: ' + Dump(ll));
-					logInfo('Map type: ' + m.getMapType());
-					logInfo('Zoom: ' + m.getZoom());
+				    logInfo('<b>Info</b>');
+				    var bb = m.getBounds();
+				    logInfo('-- Bounds:<br/>' + Dump(bb));
+				    var ll = m.getCenter();
+				    logInfo('-- Center: ' + Dump(ll));
+				    logInfo('-- Map type: ' + m.getMapType());
+				    logInfo('-- Zoom: ' + m.getZoom());
 				}
 			},
 			{
@@ -272,7 +324,24 @@
 							break;
 					}
 					m.setZoom(zoom);
+				    //test this after 2 seconds in the next action to give it time to happen
 				}
+			},
+			{
+			    desc: 'Set zoom check',
+			    action: function () {
+			        var zoom;
+			        switch (provider) {
+			            case 'openspacev4':
+			                zoom = 9;
+			                break;
+			            default:
+			                zoom = 8;
+			                break;
+			        }
+
+			        logTest(this.desc, zoom, m.getZoom());
+			    }
 			},
 			{
 				desc: 'Add marker',
@@ -295,6 +364,9 @@
 					mkr.setLabel(label);
 					m.setCenter(point);
 					m.addMarker(mkr);
+
+					logTest(this.desc + ' Latitude', point.lat.toFixed(5), mkr.location.lat.toFixed(5));
+					logTest(this.desc + ' Longitude', point.lon.toFixed(5), mkr.location.lon.toFixed(5));
 				}
 			},
 			{
@@ -363,6 +435,9 @@
 					mkr.closeInfoBubble.addHandler(markerEventHandler);
 					m.setCenter(point);
 					m.addMarker(mkr);
+
+					logTest(this.desc + ' Latitude', point.lat.toFixed(5), mkr.location.lat.toFixed(5));
+					logTest(this.desc + ' Longitude', point.lon.toFixed(5), mkr.location.lon.toFixed(5));
 				}
 			},
 			{
@@ -392,6 +467,9 @@
 					var mkr = new mxn.Marker(point);
 					mkr.setLabel('Some other place');
 					m.addMarker(mkr);
+
+					logTest(this.desc + ' Latitude', point.lat.toFixed(5), mkr.location.lat.toFixed(5));
+					logTest(this.desc + ' Longitude', point.lon.toFixed(5), mkr.location.lon.toFixed(5));
 				}
 			},
 			{
@@ -540,10 +618,21 @@
 			},
 			{
 				desc: 'Change map type',
-				action: function(){
-					m.setMapType(mxn.Mapstraction.SATELLITE);
+				action: function () {
+				    var type = mxn.Mapstraction.SATELLITE;
+				    m.setMapType(type);
+
+				    //test this after 2 seconds in the next action to give it time to happen
 				}
 			},
+            {
+            	desc: 'Change map type Check',
+            	action: function () {
+            		var type = mxn.Mapstraction.SATELLITE;
+
+            		logTest(this.desc, type, m.getMapType());
+            	}
+            },
 			{
 				desc: 'Check events',
 				action: function() {
