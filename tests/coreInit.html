@@ -1,0 +1,303 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title>Mapstraction V3 Core Init Tests</title>
+	<script type="text/javascript" src="mxn-harness.js"></script>
+
+	<link rel="stylesheet" type="text/css" media="all" href="css/core.css" />
+	<meta http-equiv="X-UA-Compatible" content="IE=7; IE=EmulateIE9" />
+		
+	<script type="text/javascript">
+    var googlev3_key = 'AIzaSyDW21lnrSsBk4OyHUDmBQ7su9di3yMaO7I';
+    var nokia_app_id = 'FbgYuugcrj8Taq6JjmUK';
+    var nokia_auth_token = 'Yy2i2n98kaWj69qysOmcYg';
+    var microsoftv7_key = 'AlneHdcKOFDot4FjwyuLH8ZSUIz5rv_X22vULKa7H5ia0JnsxiykdO8y-dgLQMU6';
+    var openspace_key = 'CEEFBE51588492CBE0405F0ACA6010B1';
+    var mapquest_key = 'Fmjtd%7Cluub29uy25%2Crs%3Do5-96zl9y';
+    var yandexv1_key = 'AMVH-VABAAAAEdVkcQIAOS-fmBYJfLFV-YDg7ZCPjwVQycUAAAAAAAAAAADwTFcvgPirz7OV75IX_Gsopsw7jA==';
+	
+	var provider;
+	var autoRun = 'false';
+	var infoElm;
+
+	(function() {
+		var providerMatch = location.search.match( /provider=([^&]*)/ );
+		var autorunMatch = location.search.match( /auto=([^&]*)/ );
+
+		if (providerMatch) {
+			provider = providerMatch[1];
+		}
+		
+		else {
+			provider = 'google';
+		}
+
+		if (autorunMatch) {
+			autoRun = autorunMatch[1];
+			if (autoRun !== 'true') {
+				autoRun = 'false';
+			}
+		}
+	
+		document.write('<script type="text/javascript" src="../source/mxn.js?(' + provider + ',[autoload])"><\/script>');
+	})();
+
+	var events = {
+		LOAD: {name: 'load', value: false}
+	};
+
+	function logTest(msg, test, actual) {
+	    var pass = (test === actual) | false;
+	    msg += ' Value: ' + actual;
+	    if (!pass) {
+	        infoElm.style.backgroundColor = '#FCC';
+	        msg += ' <b>Failed</b>';
+	    } else {
+	        msg += ' Passed';
+	    }
+	    logInfo(msg);
+	}
+
+	function logInfo(msg) {
+	    logMessage('info', msg);
+	}
+	
+	function logEvent(msg) {
+		logMessage ('events', msg);
+	}
+
+	function logMessage(element, msg) {
+		var	display = document.getElementById(element);
+		
+		display.innerHTML += msg + '<br />';
+		display.scrollTop = display.scrollHeight - display.clientHeight;
+		return false;
+	}
+	
+	function arrayContains(a, obj) {
+	    var i = a.length;
+	    while (i--) {
+	       if (a[i] === obj) {
+	           return true;
+	       }
+	    }
+	    return false;
+	}
+	
+	function arrayIndex(arr, obj) {
+		var i = arr.length;
+		while (i--) {
+			if (arr[i] === obj) {
+				return i
+			}
+		}
+		
+		return false;
+	}
+	
+	var m;
+	window.onload = function() {
+		var actionElm = document.getElementById('actions');
+		infoElm = document.getElementById('info');		
+		var eventsElm = document.getElementById('events');
+		var providerElm = document.getElementById('provider');
+		
+		providerElm.innerHTML = provider;
+
+	    //TODO: move this to utils?
+		var supportedProviders = [];
+		for (var prov in mxn.Providers) {
+		    if (mxn.Providers[prov].state === "active" && mxn.Providers[prov].type === "master") {
+		        supportedProviders.push(prov.valueOf());
+		    }
+		}
+
+		var list = document.getElementById("providers");
+		var auto = document.createElement("li");
+		auto.innerHTML = '<a href="' + location.pathname + '?provider=' + supportedProviders[0] + '&auto=true">Auto-run all providers</a>';
+		list.appendChild(auto);
+
+		for (var prov in supportedProviders) {
+		    var newli = document.createElement("li");
+		    var newlink = document.createElement("a");
+		    var newname = document.createTextNode(supportedProviders[prov]);
+		    newli.appendChild(newlink);
+		    newlink.appendChild(newname);
+		    newlink.href = location.pathname + "?provider=" + supportedProviders[prov];
+		    list.appendChild(newli);
+		};
+		
+		var center = new mxn.LatLonPoint(51.50730, -0.12763);
+    	var props = {
+		    controls: {
+		        pan: true,
+		        zoom: 'small',
+		        overview: true,
+		        scale: true,
+		        map_type: true
+		    },
+		    center: center,
+		    zoom: 8, //Ordnance survey only goes to 10
+		    enableScrollWheelZoom: true,
+		    enableDragging: true,
+		    enableDoubleClickZoom: true,
+		    map_type: mxn.Mapstraction.HYBRID
+		};
+
+		m = new mxn.Mapstraction('map', provider, props);
+
+		// Ensure load event is handled before a subsequent call to setCenterAndZoom so
+		// that the CloudMade load event fires correctly (it appears to trap the first
+		// call to setCenter after map load, not the actual loading itself)
+
+		m.load.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
+			logEvent('Map loaded for provider: ' + oEvtSource.api);
+			events.LOAD.value = true;
+		});
+
+	    // So far this is only necessary for leaflet.
+        //TODO Test leaflet 0.7 to see if we still need it.
+		//m.setCenterAndZoom(new mxn.LatLonPoint(37.4419, -122.1419), 10);
+				
+		var ops = [
+			{
+				desc: 'Get API version',
+				action: function() {
+					var version = m.getVersion();
+					logInfo('API Version ' + version + ' for ' + provider + ' loaded');
+				}
+			},
+            {
+                desc: 'Get info',
+                action: function () {
+                    logInfo('<b>Info</b>');
+                    var bb = m.getBounds();
+                    logInfo('-- Bounds:<br/>' + Dump(bb));
+                    var ll = m.getCenter();
+                    logInfo('-- Center: ' + Dump(ll));
+                    logInfo('-- Map type: ' + m.getMapType());
+                    logInfo('-- Zoom: ' + m.getZoom());
+                }
+            },
+			{
+			    desc: 'map center',
+			    action: function(){
+			        var ll = m.getCenter();
+			        logTest(this.desc + ' Latitude', props.center.lat.toFixed(5), ll.lat.toFixed(5));
+			        logTest(this.desc + ' Longitude', props.center.lon.toFixed(5), ll.lon.toFixed(5));
+			    }
+			},
+			{
+			    desc: 'map zoom',
+			    action: function(){
+			        logTest(this.desc, props.zoom, m.getZoom());
+			    }
+			},
+            {
+                desc: 'map type',
+                action: function () {
+                    logTest(this.desc, props.map_type, m.getMapType());
+                }
+            },
+            {
+                desc: 'draggingOption',
+                action: function () {
+                    logTest(this.desc, props.enableDragging, m.options.enableDragging);
+                }
+            },
+            {
+                desc: 'doubleclickZoomOption',
+                action: function () {
+                    logTest(this.desc, props.enableDoubleClickZoom, m.options.enableDoubleClickZoom);
+                }
+            },
+            {
+                desc: 'scrollWheelOption',
+                action: function () {
+                    logTest(this.desc, props.enableScrollWheelZoom, m.options.enableScrollWheelZoom);
+                }
+            }, {
+				desc: 'events',
+				action: function() {
+					var evt;
+					for (evt in events) {
+						var props = events[evt];
+						var check = true;
+						
+						if (props.hasOwnProperty('skip')) {
+							var skip = props.skip.split(',');
+							if (arrayContains(skip, provider)) {
+								check = false;
+							}
+						}
+						
+						if (check) {
+							if (props.value) {
+								logInfo('Event: ' + props.name + ' Passed');
+							}
+							else {
+								infoElm.style.backgroundColor = '#FCC';
+								logInfo('Event: ' + props.name + ' <b>Failed</b>');
+							}
+						}
+						
+						else {
+							logInfo ('Event: ' + props.name + ' Skipped');
+						}
+					}
+				}
+			},
+			{
+				desc: 'Done.',
+				action: function(){
+				    if (autoRun === 'true') {
+
+						idx = arrayIndex(supportedProviders, provider);
+						if (++idx < supportedProviders.length) {
+							var nextProvider = supportedProviders[idx];
+							var nextURL =  location.pathname + '?auto=true&provider=' + nextProvider;
+							window.location = nextURL;
+							return false;
+						}
+					}
+				}
+			}
+		];
+		
+		RunTests(ops, actionElm, infoElm);
+	
+	};
+		
+	//]]>
+	</script>
+</head>
+<body>
+	<h1>Mapstraction Core Test Init For Provider "<span id="provider"></span>"</h1>
+	<div id="wrapper">
+		<div id="map"></div>
+		<div>
+			<h3>Providers</h3>
+			<ul id="providers" >
+            </ul>
+		</div>
+		<div id="box-wrapper">
+			<div class="box">
+				<h2>Actions</h2>
+				<div id="container">
+					<ol id="actions"></ol>
+				</div>
+			</div>
+			<div class="box">
+				<h2>Info</h2>
+				<div id="info"></div>
+			</div>
+			<div class="box">
+				<h2>Events</h2>
+				<div id="events"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+
