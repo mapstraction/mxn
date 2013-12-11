@@ -520,8 +520,12 @@ Marker: {
 		if (!this.map) {
 			throw new Error('Marker.openBubble; this marker must be added to a map in order to manage a Bubble');
 		}
-		this.proprietary_infobubble = this.map.getComponentById("InfoBubbles").addBubble(this.infoBubble, this.location.toProprietary(this.api));
-		this.openInfoBubble.fire( { 'marker': this } );		
+		this.proprietary_infobubble = this.map.getComponentById('InfoBubbles').openBubble(
+			this.infoBubble,
+			this.location.toProprietary(this.api));
+		this.openInfoBubble.fire({
+			'marker': this
+		});		
 	},
 	
 	closeBubble: function() {
@@ -529,11 +533,14 @@ Marker: {
 			throw new Error('Marker.closeBubble; this marker must be added to a map in order to manage a Bubble');
 		}
 
-		if (this.map.getComponentById("InfoBubbles").bubbleExists(this.proprietary_infobubble)) {
-			this.map.getComponentById("InfoBubbles").removeBubble(this.proprietary_infobubble);
+		var component = this.map.getComponentById('InfoBubbles');
+		if (component.openBubbleHandles.indexOf(this.proprietary_infobubble) != -1) {
+			component.closeBubble(this.proprietary_infobubble);
 		}
 		this.proprietary_infobubble = null;
-		this.closeInfoBubble.fire( { 'marker': this } );		
+		this.closeInfoBubble.fire({
+			'marker': this
+		});		
 	},
 	
 	hide: function() {
