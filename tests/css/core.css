@@ -31,7 +31,8 @@ html, body, #map {
 }
 
 #provider-selection {
-	clear:both;
+    padding-left: 10px;
+    display: inline-block;
 }
 
 #wrapper {
