@@ -39,13 +39,73 @@ mxn.register('esriv3', {
 			this.layers = {};
 			this.features = [];		
 
-			this.maps[api] = map = new Map(element.id, {
-			  basemap: "streets",
-			  center: [-25.312, 34.307],
-			  zoom: 3,
-			  wrapAround180: true,
-			  spatialReference: 4326
-			});
+			this.defaultBaseMaps = [
+				{
+					mxnType: mxn.Mapstraction.ROAD,
+					providerType: 'Streets',
+					nativeType: true
+				},
+				{
+					mxnType: mxn.Mapstraction.SATELLITE,
+					providerType: 'Imagery',
+					nativeType: true
+				},
+				{
+					mxnType: mxn.Mapstraction.HYBRID,
+					providerType: 'Imagery with Labels',
+					nativeType: true
+				},
+				{
+					mxnType: mxn.Mapstraction.PHYSICAL,
+					providerType: 'Topographic',
+					nativeType: true
+				}
+			];
+			this.initBaseMaps();
+
+			me.currentMapType = mxn.Mapstraction.ROAD;
+
+  				var options = {
+  					basemap: 'streets',
+  					center: [-25.312, 34.307],
+  					zoom: 3,
+  					wrapAround180: true,
+  					spatialReference: 4326
+  				};
+
+  				var hasOptions = (typeof properties !== 'undefined' && properties !== null);
+  				if (hasOptions) {
+  					if (properties.hasOwnProperty('center') && null !== properties.center) {
+  						options.center = properties.center.toProprietary(this.api);
+  					}
+
+  					if (properties.hasOwnProperty('zoom') && null !== properties.zoom) {
+  						options.zoom = properties.zoom;
+  					}
+
+  					if (properties.hasOwnProperty('map_type') && null !== properties.map_type) {
+  						//TODO: Suspect this shouldnt be here as its duplicated.
+  						switch (properties.map_type) {
+  							case mxn.Mapstraction.ROAD:
+  								options.basemap = 'streets';
+  								break;
+  							case mxn.Mapstraction.PHYSICAL:
+  								options.basemap = 'Topographic';
+  								break;
+  							case mxn.Mapstraction.HYBRID:
+  								options.basemap = 'Imagery with Labels';
+  								break;
+  							case mxn.Mapstraction.SATELLITE:
+  								options.basemap = 'Imagery';
+  								break;
+  							default:
+  								options.basemap = 'streets';
+  								break;
+  						}
+  					}
+  				}
+
+  				this.maps[api] = map = new Map(element.id, options);
 			
 			map.on("load", function() {					
 				me.controls.overview = new esri.dijit.OverviewMap({map: map});			

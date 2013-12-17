@@ -94,6 +94,7 @@ mxn.register('openlayersv2', {
 			});
 			map.addControl(this.controls.navigation);
 
+			//TODO: can we remove this now its in core?
 			if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
 				self.addControls(properties.controls);
 			}

@@ -198,18 +198,16 @@
 		    enableScrollWheelZoom: true,
 		    enableDragging: true,
 		    enableDoubleClickZoom: true,
-		    map_type: mxn.Mapstraction.HYBRID
+		    map_type: mxn.Mapstraction.ROAD
 		};
 
 		m = new mxn.Mapstraction('map', provider, props);
 
-		// Ensure load event is handled before a subsequent call to setCenterAndZoom so
-		// that the CloudMade load event fires correctly (it appears to trap the first
-		// call to setCenter after map load, not the actual loading itself)
-
 		m.load.addHandler(function(sEvtName, oEvtSource, oEvtArgs){
 			logEvent('Map loaded for provider: ' + oEvtSource.api);
 			events.LOAD.value = true;
+
+			RunTests(ops, actionElm, infoElm);
 		});
 
 	    // So far this is only necessary for leaflet.
@@ -327,8 +325,6 @@
 				}
 			}
 		];
-		
-		RunTests(ops, actionElm, infoElm);
 	
 	};
 		

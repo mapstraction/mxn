@@ -70,7 +70,10 @@ window.Dump = function(obj) {
 	}
 	else if (obj instanceof mxn.BoundingBox) {
 		return 'SW' + Dump(obj.sw) + '<br/>NE' + Dump(obj.ne) + '<br/>SE ' + Dump(obj.se) + '<br/>NW ' + Dump(obj.nw);
-		
+
+	}
+	else if (obj == null) {
+		return "<b>NULL</b>";
 	}
 	throw 'Not recognised';
 };
