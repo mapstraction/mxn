@@ -4,15 +4,6 @@
 	<script type="text/javascript" src="../source/mxn.js?(leaflet,[autoload])"></script>
 	<script type="text/javascript">
 
-
-	function defaultBaseMapHandler(name, source, args) {
-		console.log(name + ' for ' + args.baseMap.properties.name);
-	}
-
-	function defaultOverlayHandler(name, source, args) {
-		console.log(name + ' for ' + args.overlayMap.properties.name);
-	}
-	
 	$(document).ready(function() {
 		var props = {
 			controls: {
@@ -28,11 +19,8 @@
 		};
 		var map = new mxn.Mapstraction('map', 'leaflet', props);
 
-		map.baseMapAdded.addHandler(defaultBaseMapHandler);
-		map.overlayMapAdded.addHandler(defaultOverlayHandler);
-		
 		var basemaps = {
-			osm: new mxn.BaseMap({
+			osm: {
 				url: 'http://{S}.tile.openstreetmap.org/{Z}/{X}/{Y}.png',
 				name: 'osm',
 				options: {
@@ -44,8 +32,8 @@
 					maxZoom: 18,
 					subdomains: ['a', 'b', 'c']
 				}
-			}),			
-			esri: new mxn.BaseMap({
+			},			
+			esri: {
 				url: 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
 				name: 'esri',
 				options: {
@@ -56,18 +44,19 @@
 					minZoom: 1,
 					maxZoom: 18
 				}
-			})
+			}   
 		};
 		
 		for (bm in basemaps) {
-			basemaps[bm].baseMapControlAdded.addHandler(defaultBaseMapHandler);
-			basemaps[bm].baseMapControlRemoved.addHandler(defaultBaseMapHandler);
+			//basemaps[bm].baseMapControlAdded.addHandler(defaultBaseMapHandler);
+			//basemaps[bm].baseMapControlRemoved.addHandler(defaultBaseMapHandler);
 		}
 		
 		var overlays = {
-			toner: new mxn.OverlayMap({
+			toner: new mxn.TileMap ({
 					url: 'http://tile.stamen.com/toner/{Z}/{X}/{Y}.png',
 					name: 'toner',
+					type: mxn.Mapstraction.TileType.OVERLAY,
 					options: {
 						label: 'Toner',
 						alt: 'Toner',
@@ -77,9 +66,10 @@
 						maxZoom: 18,
 					}
 				}),
-			watercolor: new mxn.OverlayMap({
+			watercolor: new mxn.TileMap ({
 					url: 'http://tile.stamen.com/watercolor/{Z}/{X}/{Y}.png',
 					name: 'watercolor',
+					type: mxn.Mapstraction.TileType.OVERLAY,
 					options: {
 						label: 'Watercolor',
 						attribution: 'CC-BY-SA © OpenStreetMap contributors',
@@ -88,9 +78,10 @@
 						maxZoom: 18
 					}
 				}),
-			weather: new mxn.OverlayMap({
+			    weather: new mxn.TileMap ({
 					url: 'http://tile.openweathermap.org/map/pressure_cntr/{z}/{x}/{y}.png',
 					name: 'weather',
+					type: mxn.Mapstraction.TileType.OVERLAY,
 					options: {
 						label: 'Weather',
 						alt: 'Weather',
@@ -101,11 +92,6 @@
 					}
 				})
 		};
-
-		for (om in overlays) {
-			overlays[om].overlayMapShown.addHandler(defaultOverlayHandler);
-			overlays[om].overlayMapHidden.addHandler(defaultOverlayHandler);
-		}
 
 		$('#set-road').click(function() {
 			map.setMapType(mxn.Mapstraction.ROAD);
@@ -143,13 +129,13 @@
 			});
 		});
 		$('#add-esri').click(function() {
-			basemaps.esri.addControl();
+			//basemaps.esri.addControl();
 		});
 		$('#set-esri').click(function() {
 			map.setMapType('esri');
 		});
 		$('#remove-esri').click(function() {
-			basemaps.esri.removeControl();
+			//basemaps.esri.removeControl();
 		});
 
 		var acetate;
@@ -173,8 +159,8 @@
 			acetate.removeControl();
 		});
 
-		$('#add-toner').click(function() {
-			map.addOverlayMap(overlays.toner);
+		$('#add-toner').click(function () {
+		    map.addTileMap(overlays.toner);
 		});
 		$('#show-toner').click(function() {
 			overlays.toner.show();
@@ -184,7 +170,7 @@
 		});
 
 		$('#add-watercolor').click(function() {
-			map.addOverlayMap(overlays.watercolor);
+			map.addTileMap(overlays.watercolor);
 		});
 		$('#show-watercolor').click(function() {
 			overlays.watercolor.show();
@@ -194,7 +180,7 @@
 		});
 
 		$('#add-weather').click(function() {
-			map.addOverlayMap(overlays.weather);
+			map.addTileMap(overlays.weather);
 		});
 		$('#show-weather').click(function() {
 			overlays.weather.show();
