@@ -708,12 +708,8 @@ mxn.Providers = {
 		'meta': null,
 		'style': [
 			{
-				'src': 'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css',
+				'src': 'http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css',
 				'conditional': null
-			},
-			{
-				'src': 'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css',
-				'conditional': 'if lte IE 8'
 			},
 			{
 				'src': 'http://code.geotastic.org/mxn/plugins/leaflet/Leaflet.Pancontrol/src/L.Control.Pan.css',
@@ -734,7 +730,7 @@ mxn.Providers = {
 		],
 		'script': [
 			{
-				'src': 'http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js',
+				'src': 'http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js',
 				'auth': false,
 				'authType': null
 			},
