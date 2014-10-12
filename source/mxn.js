@@ -708,7 +708,7 @@ mxn.Providers = {
 		'meta': null,
 		'style': [
 			{
-				'src': 'http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css',
+				'src': 'http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css',
 				'conditional': null
 			},
 			{
@@ -730,7 +730,7 @@ mxn.Providers = {
 		],
 		'script': [
 			{
-				'src': 'http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js',
+				'src': 'http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js',
 				'auth': false,
 				'authType': null
 			},
