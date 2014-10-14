@@ -41,13 +41,12 @@ mxn.register('openlayersv3', {
 			var options = {
 				projection: 'EPSG:4326', //TODO: check whether these ol2 properties are needed / useful
 				crossOrigin: 'anonymous', //TODO: check whether these ol2 properties are needed / useful
-				view: new ol.View2D({
+				view: new ol.View({
 					center: [0, 0],
 					zoom: 3
 				}),
 				layers: [baseMap.tileMap.prop_tilemap],
-				target: element,
-				renderer: ol.RendererHint.CANVAS //needed as webGL doesn't support vector layers yet
+				target: element
 			};
 
 			var hasOptions = (typeof properties !== 'undefined' && properties !== null);
@@ -72,13 +71,12 @@ mxn.register('openlayersv3', {
 			}
 
 			var map = new ol.Map({
-			  view: new ol.View2D({
+			  view: new ol.View({
 				center: [0, 0],
 				zoom: 3
 			  }),
 			  layers: [baseMap.tileMap.prop_tilemap],
-			  target: element,
-			  renderer: ol.RendererHint.CANVAS //needed as webGL doesn't support vector layers yet
+			  target: element
 			});
 			this.maps[api] = map;
 			
@@ -240,7 +238,7 @@ mxn.register('openlayersv3', {
 		setCenterAndZoom: function(point, zoom) { 
 			var map = this.maps[this.api];
 			var pt = point.toProprietary(this.api);
-			var view = new ol.View2D({
+			var view = new ol.View({
 				center: pt,
 				zoom: zoom
 			  });
@@ -393,7 +391,7 @@ mxn.register('openlayersv3', {
 
 		getBounds: function () {
 			var map = this.maps[this.api];
-			var olbox = map.getView().getView2D().calculateExtent(map.getSize());
+			var olbox = map.getView().getView().calculateExtent(map.getSize());
 			
 			var ol_sw = [olbox[0], olbox[2]];
 			var mxn_sw = new mxn.LatLonPoint(0,0);
@@ -412,7 +410,7 @@ mxn.register('openlayersv3', {
 			var ne_ol = bounds.getNorthEast().toProprietary(this.api);
 			var obounds = [sw_ol[0],ne_ol[0],sw_ol[1],ne_ol[1]];
 			
-			map.getView().getView2D().fitExtent(obounds, map.getSize());
+			map.getView().getView().fitExtent(obounds, map.getSize());
 		},
 
 		addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
