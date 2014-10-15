@@ -825,14 +825,13 @@ mxn.Providers = {
 		'meta': null,
 		'style': [
 			{
-				'src': 'http://ol3js.org/en/master/build/ol.css',
+				'src': 'http://openlayers.org/en/v3.0.0/css/ol.css',
 				'conditional': null
 			}
 		],
 		'script': [
 			{
-				//'src': 'http://ol3js.org/en/master/build/ol.js', //TODO: When ol3 exports the features we need for removing polylines
-				'src': 'http://ol3js.org/en/master/build/ol.js',
+				'src': 'http://openlayers.org/en/v3.0.0/build/ol.js',
 				'auth': false,
 				'authType': null
 			}
