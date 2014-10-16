@@ -336,7 +336,7 @@ Mapstraction: {
 		var map = this.maps[this.api];
 		var pt = point.toProprietary(this.api);
 		if (options && options.pan) { 
-			map.panTo(pt); 
+			map.panTo(pt, { animate: true });
 		}
 		else { 
 			map.setView(pt, map.getZoom(), true);
