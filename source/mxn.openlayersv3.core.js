@@ -126,6 +126,9 @@ mxn.register('openlayersv3', {
 			setTimeout(function(){me.load.fire();},50);
 		},
 
+		getVersion: function () {
+			return "3.0.0";
+		},
 
 		enableScrollWheelZoom: function () {
 			var interactions = this.maps[this.api].getInteractions();
