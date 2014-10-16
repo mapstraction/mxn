@@ -463,7 +463,7 @@ mxn.register('openlayersv3', {
 
 		getBounds: function () {
 			var map = this.maps[this.api];
-			var olbox = map.getView().getView().calculateExtent(map.getSize());
+			var olbox = map.getView().calculateExtent(map.getSize());
 			
 			var ol_sw = [olbox[0], olbox[2]];
 			var mxn_sw = new mxn.LatLonPoint(0,0);
@@ -482,7 +482,7 @@ mxn.register('openlayersv3', {
 			var ne_ol = bounds.getNorthEast().toProprietary(this.api);
 			var obounds = [sw_ol[0],ne_ol[0],sw_ol[1],ne_ol[1]];
 			
-			map.getView().getView().fitExtent(obounds, map.getSize());
+			map.getView().fitExtent(obounds, map.getSize());
 		},
 
 		addImageOverlay: function(id, src, opacity, west, south, east, north, oContext) {
