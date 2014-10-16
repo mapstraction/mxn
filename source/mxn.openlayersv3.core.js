@@ -87,7 +87,7 @@ mxn.register('openlayersv3', {
 			// deal with click
 			map.on(['click'], function(evt) {
 				var point = new mxn.LatLonPoint();
-				point.fromProprietary(api, evt.getCoordinate());
+				point.fromProprietary(api, evt.coordinate);
 				me.click.fire({'location': point });
 			});
 			
@@ -100,7 +100,23 @@ mxn.register('openlayersv3', {
 			map.on(['moveend'], function(evt) {
 				me.endPan.fire();
 			});
-		
+
+			for (var interaction in map.getInteractions().getArray())
+			{
+				if (map.getInteractions().getArray()[interaction] instanceof ol.interaction.DoubleClickZoom)
+				{				
+					dbcz = map.getInteractions().remove(map.getInteractions().getArray()[interaction]);
+				}
+
+				if (map.getInteractions().getArray()[interaction] instanceof ol.interaction.MouseWheelZoom) {
+					mwz = map.getInteractions().remove(map.getInteractions().getArray()[interaction]);
+				}
+
+				if (map.getInteractions().getArray()[interaction] instanceof ol.interaction.DragPan) {
+					drag = map.getInteractions().remove(map.getInteractions().getArray()[interaction]);
+				}
+			}
+
 			this.loaded[api] = true;
 			
 			/* map.on(['load'], function(evt) {
@@ -108,6 +124,59 @@ mxn.register('openlayersv3', {
 			}); This doesn't work so use the hack below */
 			//doing the load.fire directly it runs too fast and we dont get a chance to register the handler in the core tests, so had to add a delay.
 			setTimeout(function(){me.load.fire();},50);
+		},
+
+
+		enableScrollWheelZoom: function () {
+			var interactions = this.maps[this.api].getInteractions();
+			var alreadyset = false;
+			for (var interaction in interactions.getArray()) {
+				if (interactions.getArray()[interaction] instanceof ol.interaction.MouseWheelZoom) {
+					alreadyset = true;
+					break;
+				}
+			}
+
+			if (!alreadyset) interactions.push(mwz);
+		},
+
+		disableScrollWheelZoom: function () {
+			this.maps[this.api].getInteractions().remove(dbcz);
+		},
+
+		enableDragging: function () {
+			var interactions = this.maps[this.api].getInteractions();
+			var alreadyset = false;
+			for (var interaction in interactions.getArray()) {
+				if (interactions.getArray()[interaction] instanceof ol.interaction.DragPan) {
+					alreadyset = true;
+					break;
+				}
+			}
+
+			if (!alreadyset) interactions.push(drag);
+		},
+
+		disableDragging: function () {
+			this.maps[this.api].getInteractions().remove(drag);
+		},
+
+		enableDoubleClickZoom: function () {
+			var interactions = this.maps[this.api].getInteractions();
+			var alreadyset = false;
+			for (var interaction in interactions.getArray())
+			{
+				if (interactions.getArray()[interaction] instanceof ol.interaction.DoubleClickZoom) {
+					alreadyset = true;
+					break;
+				}
+			}
+
+			if (!alreadyset) interactions.push(dbcz);
+		},
+
+		disableDoubleClickZoom: function () {
+			this.maps[this.api].getInteractions().remove(dbcz);
 		},
 
 		resizeTo: function(width, height){	
