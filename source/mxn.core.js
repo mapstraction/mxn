@@ -1343,9 +1343,11 @@ Mapstraction.prototype.addJSON = function(json) {
  * @param {Boolean} [options.makeCurrent] Specifies whether the tile map should be set as the current map type.
  */
 
-Mapstraction.prototype.addTileMap = function(tileMap, options) {
-	if (typeof tileMap === 'string') {
-		tileMap = this.providerToTileMap(tileMap);
+Mapstraction.prototype.addTileMap = function(tile, options) {
+	if (typeof tile === 'string') {
+		var tileMap = this.providerToTileMap(tile);
+	} else {
+		var tileMap = tile;
 	}
 
 	tileMap.mxn = this;
