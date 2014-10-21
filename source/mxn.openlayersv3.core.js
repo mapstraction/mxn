@@ -70,12 +70,18 @@ mxn.register('openlayersv3', {
 				}
 			}
 
+			this.pins = new ol.source.Vector();
+			this.layers.markers = new ol.layer.Vector({
+				source: this.pins,
+				projection: ol.proj.get('EPSG:4326')
+			});
+
 			var map = new ol.Map({
 			  view: new ol.View({
 				center: [0, 0],
 				zoom: 3
 			  }),
-			  layers: [baseMap.tileMap.prop_tilemap],
+			  layers: [baseMap.tileMap.prop_tilemap, this.layers.markers],
 			  target: element
 			});
 			this.maps[api] = map;
@@ -298,7 +304,6 @@ mxn.register('openlayersv3', {
 		removeOverviewControls: function () {
 			var map = this.maps[this.api];
 			if (this.controls.overview !== null) {
-				this.controls.overview.destroy();
 				map.removeControl(this.controls.overview);
 				this.controls.overview = null;
 			}
@@ -316,23 +321,14 @@ mxn.register('openlayersv3', {
 		},
 
 		addMarker: function(marker, old) {
-			var map = this.maps[this.api];
 			var pin = marker.toProprietary(this.api);
-
-			if (!this.layers.markers) {
-				this.layers.markers = new ol.layer.Vector({
-					source: new ol.source.Vector({data: null}),
-					projection: ol.proj.get('EPSG:4326')			
-				});
-				map.addLayer(this.layers.markers);
-			}
-			this.layers.markers.addFeatures([pin]);
+			this.pins.addFeature(pin);
 			return pin;
 		},
 
 		removeMarker: function(marker) {
 			var pin = marker.proprietary_marker;
-			this.layers.markers.removeFeatures([pin]);
+			this.pins.removeFeature(pin);
 		},
 
 		declutterMarkers: function(opts) {
@@ -842,7 +838,7 @@ TileMap: {
 			//minZoom: this.properties.options.minZoom,
 			//maxZoom: this.properties.options.maxZoom,
 			//name: this.properties.options.label,
-			opacity: this.properties.opacity,
+			opacity: this.properties.options.opacity,
 			//zIndex: this.index
 			projection: 'EPSG:4326',
 			source: source
