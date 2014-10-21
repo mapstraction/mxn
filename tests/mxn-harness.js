@@ -50,7 +50,7 @@ window.RunTests = function(ops, actionElm, infoElm) {
 				a.action();
 			}
 			catch(err){
-				infoElm.innerHTML += 'ERROR: ' + err;
+				infoElm.innerHTML += 'ERROR: ' + err + ' ' + err.stack;
 				infoElm.style.backgroundColor = '#FCC';
 				clearInterval(intervalID);
 				throw err;
