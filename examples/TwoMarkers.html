@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" media="all" href="css/examples.css">
+	
+	<script type="text/javascript">
+		var provider = 'leaflet';
+		var label = 'leaflet'
+		var map;
+
+		var googlev3_key = 'AIzaSyDW21lnrSsBk4OyHUDmBQ7su9di3yMaO7I';
+		var nokia_app_id = 'FbgYuugcrj8Taq6JjmUK';
+		var nokia_auth_token = 'Yy2i2n98kaWj69qysOmcYg';
+		var microsoftv7_key = 'AlneHdcKOFDot4FjwyuLH8ZSUIz5rv_X22vULKa7H5ia0JnsxiykdO8y-dgLQMU6';
+		var provider = 'googlev3';
+		var openspace_key = 'CEEFBE51588492CBE0405F0ACA6010B1';
+		var mapquest_key = 'Fmjtd%7Cluub29uy25%2Crs%3Do5-96zl9y';
+
+		
+		(function() {
+			var providerMatch = location.search.match( /provider=([^&]*)/ );
+
+			if (providerMatch) {
+			    provider = providerMatch[1];
+                label = provider
+			}
+
+			document.writeln('<script type="text/javascript" src="../source/mxn.js?(' + provider + ',[autoload])"><\/script>');
+			
+		})();
+		
+		window.onload = function() {
+			if (provider == 'esri') {
+				document.body.className = 'claro';
+			}
+			map = new mxn.Mapstraction('map', provider);
+			if (provider == 'esri') {
+				map.load.addHandler(function(en, es, ea) {
+					initMap();
+				});
+			}
+			else {
+				initMap();
+			}
+		};
+		
+		function initMap() {
+			map.addControls({
+				pan:	 true,
+				zoom:	 'large',
+				overview: false, //set to true and it breaks leaflet somehow
+				scale: true,
+				map_type: true
+			});
+			var point = new mxn.LatLonPoint(51.984954,-0.220926);
+			map.setCenterAndZoom(point, 13);
+			
+			var marker = new mxn.Marker(point);
+			marker.setInfoBubble ('Marker no: 1 on ' + label + ' maps');
+			map.addMarker(marker);
+			marker.openBubble();
+			
+			var point2 = new mxn.LatLonPoint(51.977056,-0.271225);
+			var marker2 = new mxn.Marker(point2);
+			marker2.setInfoBubble ('Marker no: 2 on ' + label + ' maps');
+			map.addMarker(marker2);
+			marker2.openBubble();			
+		}
+	</script>
+	<style type="text/css">
+		/* Note !important on div sizing for Bing/Microsoft v6.3 */
+		#map {
+			position: relative;
+			width: 900px !important;
+			height: 450px !important;
+			float: left;
+			margin: 0 20px 20px 0;
+		}
+	</style>
+</head>
+<body>
+	<div id="map">
+	</div>
+	<p id="provider-selection">
+		<a href="?provider=googlev3">googlev3</a>,
+		<a href="?provider=leaflet">leaflet</a>,
+		<a href="?provider=microsoftv7">microsoftv7</a>,
+		<a href="?provider=mapquest">mapquest</a>,		
+		<a href="?provider=openmq">openmq</a>,		
+		<a href="?provider=openspace">openspace</a>,
+	</p>
+	
+</body>
+</html>
