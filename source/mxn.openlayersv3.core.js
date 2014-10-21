@@ -200,7 +200,6 @@ mxn.register('openlayersv3', {
 		removeSmallControls: function () {
 			var map = this.maps[this.api];
 			if (this.controls.zoom !== null) {
-				this.controls.zoom.deactivate();
 				map.removeControl(this.controls.zoom);
 				this.controls.zoom = null;
 			}
@@ -256,7 +255,6 @@ mxn.register('openlayersv3', {
 			var map = this.maps[this.api];
 
 			if (this.controls.scale !== null) {
-				this.controls.scale.deactivate();
 				map.removeControl(this.controls.scale);
 				this.controls.scale = null;
 			}
@@ -276,7 +274,6 @@ mxn.register('openlayersv3', {
 			var map = this.maps[this.api];
 
 			if (this.controls.pan !== null) {
-				this.controls.pan.deactivate();
 				map.removeControl(this.controls.pan);
 				this.controls.pan = null;
 			}
@@ -719,7 +716,7 @@ mxn.register('openlayersv3', {
 		
 			this.proprietary_polyline = new ol.Feature({});
 			this.proprietary_polyline.setGeometry(ring);
-			this.proprietary_polyline.setSymbolizers([
+			this.proprietary_polyline.setStyle([
 				new ol.style.Stroke({
 					strokeColor: this.color,
 					strokeOpacity: this.opacity,
