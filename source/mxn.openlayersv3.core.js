@@ -284,7 +284,7 @@ mxn.register('openlayersv3', {
 
 			if (this.controls.overview === null) {
 				/*TODO: Not implemented in ol3 yet
-				this.controls.overview = new OpenLayers.Control.OverviewMap({
+				this.controls.overview = new ol.control.OverviewMap({
 					maximized: true,
 					mapoptions: {
 						projection: 'EPSG:4326',
