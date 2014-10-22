@@ -592,12 +592,33 @@ mxn.register('openlayersv3', {
 
 	Marker: {
 
-		toProprietary: function() {	
+		toProprietary: function () {
+			var fill = new ol.style.Fill({
+				color: this.color,
+				opacity: this.opacity
+			});
+			var stroke = new ol.style.Stroke({
+				color: this.color,
+				opacity: this.opacity,
+				width: this.width
+			});
+			var styles = [
+			  new ol.style.Style({
+			  	icon: new ol.style.Icon({
+			  		url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png'
+			  	}), 
+			  	/* image: new ol.style.Circle({
+			  		fill: fill,
+			  		stroke: stroke,
+			  		radius: 5
+			  	}), */
+			  	fill: fill,
+			  	stroke: stroke
+			  })
+			];
+
 			var options = {
-				geometry: new ol.geom.Point(this.location.toProprietary('openlayersv3')),
-				symbolizers: [new ol.style.Icon({
-					url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png'
-				})]
+				geometry: new ol.geom.Point(this.location.toProprietary('openlayersv3'))
 			};
 
 			if (this.iconAnchor) { //TODO:not supported in ol3 yet
@@ -611,8 +632,9 @@ mxn.register('openlayersv3', {
 			}
 			
 			this.proprietary_marker = new ol.Feature(options);
-			//this.proprietary_marker.setSymbolizers([symbol]); 
-					
+			this.proprietary_marker.setStyle(styles);
+
+
 			if (!!this.infoBubble) {
 				var popup = new ol.Overlay({
 				  map: this.map
@@ -706,19 +728,29 @@ mxn.register('openlayersv3', {
 				// a line
 				ring = new ol.geom.LineString(coords);
 			}
-		
-			this.proprietary_polyline = new ol.Feature({});
-			this.proprietary_polyline.setGeometry(ring);
-			this.proprietary_polyline.setStyle([
-				new ol.style.Stroke({
-					strokeColor: this.color,
-					strokeOpacity: this.opacity,
-					strokeWidth  : this.width}),
-				new ol.style.Fill({
-					fillColor	: this.fillColor,
-					fillOpacity  : this.opacity})
-					
-			]);
+
+			var fill = new ol.style.Fill({
+				color: this.color,
+				opacity: this.opacity
+			});
+			var stroke = new ol.style.Stroke({
+				color: this.color,
+				opacity: this.opacity,
+				width: this.width
+			});
+			var styles = [
+			  new ol.style.Style({
+			  	fill: fill,
+			  	stroke: stroke
+			  })
+			];
+
+			this.proprietary_polyline = new ol.Feature(
+				{
+					geometry: ring
+				});
+			this.proprietary_polyline.setStyle(styles);
+
 			return this.proprietary_polyline;
 		},
 
