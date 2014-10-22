@@ -76,12 +76,18 @@ mxn.register('openlayersv3', {
 				projection: ol.proj.get('EPSG:4326')
 			});
 
+			this.polys = new ol.source.Vector();
+			this.layers.polylines = new ol.layer.Vector({
+				source: this.polys,
+				projection: ol.proj.get('EPSG:4326')
+			});
+			
 			var map = new ol.Map({
 			  view: new ol.View({
 				center: [0, 0],
 				zoom: 3
 			  }),
-			  layers: [baseMap.tileMap.prop_tilemap, this.layers.markers],
+			  layers: [baseMap.tileMap.prop_tilemap, this.layers.polylines, this.layers.markers],
 			  target: element
 			});
 			this.maps[api] = map;
@@ -338,26 +344,17 @@ mxn.register('openlayersv3', {
 		addPolyline: function(polyline, old) {
 			var map = this.maps[this.api];
 			var pl = polyline.toProprietary(this.api);
-			if (!this.layers.polylines) {
-				this.layers.polylines = new ol.layer.Vector({
-					source: new ol.source.Vector({data: null}),
-					projection: ol.proj.get('EPSG:4326')
-				});
-				map.addLayer(this.layers.polylines);
-			}
-			this.layers.polylines.addFeatures([pl]);
+			this.polys.addFeature(pl);
 			return pl;
 		},
 
 		removePolyline: function(polyline) {
 			var pl = polyline.proprietary_polyline;
-			this.layers.polylines.removeFeatures([pl]);
+			this.polys.removeFeature(pl);
 		},
 		
 		removeAllPolylines: function () {
-			if (this.layers.polylines) {
-				this.layers.polylines.clear();
-			}
+			this.layers.polylines.clear();
 		},
 
 		getCenter: function() {
