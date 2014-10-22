@@ -597,38 +597,44 @@ mxn.register('openlayersv3', {
 				opacity: this.opacity,
 				width: this.width
 			});
+
+			/* TODO Not exported yet
 			var styles = [
 			  new ol.style.Style({
-			  	icon: new ol.style.Icon({
-			  		url: this.iconUrl || 'http://openlayers.org/dev/img/marker-gold.png'
-			  	}), 
-			  	/* image: new ol.style.Circle({
+			 /* 	icon: new ol.style.Icon({
+			  		src: this.iconUrl || 'http://www.openstreetmap.org/openlayers/img/marker-gold.png',
+			  		anchor: [0.5, 46],
+			  		anchorXUnits: 'fraction',
+					anchorYUnits: 'pixels',
+					opacity: this.opacity,
+			  	})
+			   image: new ol.style.Circle({
 			  		fill: fill,
 			  		stroke: stroke,
 			  		radius: 5
-			  	}), */
+			  	}), 
 			  	fill: fill,
-			  	stroke: stroke
+			  	stroke: stroke 
 			  })
-			];
+			]; */
+
+			/*
+			if (this.iconAnchor) { //TODO:not supported in ol3 yet
+				options.xOffset = this.iconAnchor[0];
+				options.yOffset = this.iconAnchor[1];
+			}
+	
+			if (this.iconSize) {
+				options.width = this.iconSize[0];
+				options.height = this.iconSize[1];
+			}*/
 
 			var options = {
 				geometry: new ol.geom.Point(this.location.toProprietary('openlayersv3'))
 			};
 
-			if (this.iconAnchor) { //TODO:not supported in ol3 yet
-				options.xOffset = this.iconAnchor[0];
-				options.yOffset = this.iconAnchor[1];
-			}
-				
-			if (this.iconSize) {
-				options.width = this.iconSize[0];
-				options.height = this.iconSize[1];
-			}
-			
 			this.proprietary_marker = new ol.Feature(options);
-			this.proprietary_marker.setStyle(styles);
-
+			//this.proprietary_marker.setStyle(styles);
 
 			if (!!this.infoBubble) {
 				var popup = new ol.Overlay({
