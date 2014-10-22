@@ -37,6 +37,18 @@ mxn.register('openlayersv3', {
 			this.currentMapType = mxn.Mapstraction.ROAD;
 			var defaultMap = this.getDefaultBaseMap(this.currentMapType);
 			var baseMap = this.getCustomBaseMap(defaultMap.providerType);	
+
+			this.pins = new ol.source.Vector();
+			this.layers.markers = new ol.layer.Vector({
+				source: this.pins,
+				projection: ol.proj.get('EPSG:4326')
+			});
+
+			this.polys = new ol.source.Vector();
+			this.layers.polylines = new ol.layer.Vector({
+				source: this.polys,
+				projection: ol.proj.get('EPSG:4326')
+			});
 			
 			var options = {
 				projection: 'EPSG:4326', //TODO: check whether these ol2 properties are needed / useful
@@ -45,7 +57,7 @@ mxn.register('openlayersv3', {
 					center: [0, 0],
 					zoom: 3
 				}),
-				layers: [baseMap.tileMap.prop_tilemap],
+				layers: [baseMap.tileMap.prop_tilemap, this.layers.polylines, this.layers.markers],
 				target: element
 			};
 
@@ -70,26 +82,7 @@ mxn.register('openlayersv3', {
 				}
 			}
 
-			this.pins = new ol.source.Vector();
-			this.layers.markers = new ol.layer.Vector({
-				source: this.pins,
-				projection: ol.proj.get('EPSG:4326')
-			});
-
-			this.polys = new ol.source.Vector();
-			this.layers.polylines = new ol.layer.Vector({
-				source: this.polys,
-				projection: ol.proj.get('EPSG:4326')
-			});
-			
-			var map = new ol.Map({
-			  view: new ol.View({
-				center: [0, 0],
-				zoom: 3
-			  }),
-			  layers: [baseMap.tileMap.prop_tilemap, this.layers.polylines, this.layers.markers],
-			  target: element
-			});
+			var map = new ol.Map(options);
 			this.maps[api] = map;
 			
 			if (hasOptions && properties.hasOwnProperty('controls') && null !== properties.controls) {
@@ -444,10 +437,12 @@ mxn.register('openlayersv3', {
 			var map = this.maps[this.api];		
 			var maypType = mxn.Mapstraction.ROAD;
 			
-			if (map.getLayers().getAt(1).getVisible()) {
-				maypType = mxn.Mapstraction.SATELLITE;
-			}
-				
+			//if (map.getLayers().getAt(1).getVisible()) {
+			//	maypType = mxn.Mapstraction.SATELLITE;
+			//}
+
+			//TODO: read it from the map!	
+			maptype = this.currentMapType;
 			return maypType;
 		},
 
