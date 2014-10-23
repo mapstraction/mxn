@@ -602,12 +602,8 @@ mxn.register('openlayersv3', {
 			var styles = [
 			  new ol.style.Style({
 			 /* 	icon: new ol.style.Icon({
-			  		src: this.iconUrl || 'http://www.openstreetmap.org/openlayers/img/marker-gold.png',
-			  		anchor: [0.5, 46],
-			  		anchorXUnits: 'fraction',
-					anchorYUnits: 'pixels',
-					opacity: this.opacity,
-			  	})
+			  		src: this.iconUrl || 'http://www.openstreetmap.org/openlayers/img/marker-gold.png'
+			  	}) 
 			   image: new ol.style.Circle({
 			  		fill: fill,
 			  		stroke: stroke,
@@ -634,7 +630,19 @@ mxn.register('openlayersv3', {
 			};
 
 			this.proprietary_marker = new ol.Feature(options);
-			//this.proprietary_marker.setStyle(styles);
+			//TODO: just define this once, not per marker / poly
+			this.proprietary_marker.visible = true;
+			var FeatureStyleFunction = function (resolution) {
+				if (this.visible) {
+					return this.visibleStyles;
+				} else {
+					return null;
+				}
+			};
+
+			//TODO: Enable show / hide when we can make a style work for markers - working for polys already.
+			//this.proprietary_marker.visibleStyles = styles;
+			//this.proprietary_marker.setStyle(FeatureStyleFunction);
 
 			if (!!this.infoBubble) {
 				var popup = new ol.Overlay({
@@ -686,14 +694,14 @@ mxn.register('openlayersv3', {
 		},
 
 		hide: function() {
-			delete this.proprietary_marker.style.display;
-			this.proprietary_marker.layer.redraw();		
+			this.proprietary_marker.visible = false;
+			this.mapstraction.layers.markers.dispatchChangeEvent();
 		},
 
 
 		show: function() {
-			this.proprietary_marker.style.display = 'true';
-			this.proprietary_marker.layer.redraw();
+			this.proprietary_marker.visible = true;
+			this.mapstraction.layers.markers.dispatchChangeEvent();
 		},
 
 		update: function() {
@@ -750,19 +758,32 @@ mxn.register('openlayersv3', {
 				{
 					geometry: ring
 				});
-			this.proprietary_polyline.setStyle(styles);
+			this.proprietary_polyline.visibleStyles = styles;
+			this.proprietary_polyline.visible = true;
+
+			var FeatureStyleFunction = function (resolution) {
+				if (this.visible) {
+					return this.visibleStyles;
+				} else {
+					return null;
+				}
+			};
+
+			this.proprietary_polyline.setStyle(FeatureStyleFunction);
 
 			return this.proprietary_polyline;
 		},
 
-		show: function() {
-			//delete this.proprietary_polyline.style.display;
-			//this.proprietary_polyline.layer.redraw();		
+		show: function () {
+			this.proprietary_polyline.visible = true;
+			//TODO this fails for polylines but works for markers: 
+			//this.mapstraction.layers.polylines.dispatchChangeEvent();
 			},
 
 		hide: function() {
-			//this.proprietary_polyline.style.display = 'none';
-			//this.proprietary_polyline.layer.redraw();		
+			this.proprietary_polyline.visible = false;
+			//TODO this fails for polylines but works for markers: 
+			//this.mapstraction.layers.polylines.dispatchChangeEvent();
 		}
 	},
 
